@@ -7,15 +7,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { grillTabActions } from '../../store';
-import type { RootState, AppDispatch } from '../../store';
+import { grillTabActions } from '../store';
+import type { RootState, AppDispatch } from '../store';
 
 interface Props {
-  intent: string; // User's task description
+  intent?: string; // User's task description (optional for standalone use)
   onBriefGenerated?: (brief: string) => void;
 }
 
-export const GrillTabPanel: React.FC<Props> = ({ intent, onBriefGenerated }) => {
+export const GrillTabPanel: React.FC<Props> = ({ intent = 'Start a new task breakdown', onBriefGenerated }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { ladder, currentQuestion, currentRecommended, brief, isDone, progress, loading } =
     useSelector((state: RootState) => state.grillTab);
@@ -213,10 +213,11 @@ ${ladder.find((r) => r.category === 'architecture')?.answer || 'Not specified'}`
 
 const styles = {
   container: {
-    padding: '20px',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '8px',
-    maxWidth: '600px',
+    padding: '16px',
+    backgroundColor: 'var(--color-bg-secondary, #f5f5f5)',
+    borderRadius: '6px',
+    height: '100%',
+    overflow: 'auto',
     fontFamily: 'system-ui, -apple-system, sans-serif',
   } as React.CSSProperties,
   title: {

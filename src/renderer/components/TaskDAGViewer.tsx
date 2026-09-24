@@ -10,7 +10,7 @@
 
 import React from 'react';
 import { useSelector } from 'react-redux';
-import type { RootState } from '../../store';
+import type { RootState } from '../store';
 
 interface Props {
   workflowId?: string;
@@ -155,9 +155,11 @@ function getTierColor(tier: number): string {
 
 const styles = {
   container: {
-    padding: '20px',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '8px',
+    padding: '16px',
+    backgroundColor: 'var(--color-bg-secondary, #f5f5f5)',
+    borderRadius: '6px',
+    height: '100%',
+    overflow: 'auto',
     fontFamily: 'system-ui, -apple-system, sans-serif',
   } as React.CSSProperties,
   title: {
