@@ -10,6 +10,9 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, "dist/renderer"),
     emptyOutDir: true,
+    rolldownOptions: {
+      treeshake: false,
+    },
   },
   resolve: {
     alias: {

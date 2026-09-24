@@ -1513,12 +1513,14 @@ export function MissionControlPanel({
               <button
                 className={`mc-tab-btn ${rightTab === "grill" ? "active" : ""}`}
                 onClick={() => setRightTab("grill")}
+                title="Grill-Tab task breakdown"
               >
                 🎯 Grill-Tab
               </button>
               <button
                 className={`mc-tab-btn ${rightTab === "dag" ? "active" : ""}`}
                 onClick={() => setRightTab("dag")}
+                title="TaskDAG Gantt viewer"
               >
                 📊 DAG
               </button>
