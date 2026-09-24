@@ -32,6 +32,8 @@ import { MentionList } from "./MentionList";
 import { StandupReportViewer } from "./StandupReportViewer";
 import { AgentTeamsPanel } from "./AgentTeamsPanel";
 import { AgentPerformanceReviewViewer } from "./AgentPerformanceReviewViewer";
+import { GrillTabPanel } from "./GrillTabPanel";
+import { TaskDAGViewer } from "./TaskDAGViewer";
 import { useAgentContext } from "../hooks/useAgentContext";
 import type { UiCopyKey } from "../utils/agentMessages";
 import { getEffectiveTaskEventType } from "../utils/task-event-compat";
@@ -100,7 +102,7 @@ export function MissionControlPanel({
   const [agentError, setAgentError] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [rightTab, setRightTab] = useState<"feed" | "task" | "ops">("feed");
+  const [rightTab, setRightTab] = useState<"feed" | "task" | "ops" | "grill" | "dag">("feed");
   const [feedFilter, setFeedFilter] = useState<"all" | "tasks" | "comments" | "status">("all");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [commentText, setCommentText] = useState("");
@@ -1508,6 +1510,18 @@ export function MissionControlPanel({
               >
                 Ops
               </button>
+              <button
+                className={`mc-tab-btn ${rightTab === "grill" ? "active" : ""}`}
+                onClick={() => setRightTab("grill")}
+              >
+                🎯 Grill-Tab
+              </button>
+              <button
+                className={`mc-tab-btn ${rightTab === "dag" ? "active" : ""}`}
+                onClick={() => setRightTab("dag")}
+              >
+                📊 DAG
+              </button>
             </div>
             {rightTab === "task" && selectedTask && (
               <button className="mc-clear-task" onClick={() => setSelectedTaskId(null)}>
@@ -2104,7 +2118,11 @@ export function MissionControlPanel({
                 <div className="mc-task-empty">{agentContext.getUiCopy("mcTaskEmpty")}</div>
               )}
             </div>
-          )}
+          ) : rightTab === "grill" ? (
+            <GrillTabPanel />
+          ) : rightTab === "dag" ? (
+            <TaskDAGViewer />
+          ) : null}
         </aside>
       </div>
 
