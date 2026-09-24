@@ -56,7 +56,7 @@ async function runVideoWorkflowCaseStudy() {
 
   // ===== PHASE 5: EXECUTE (SIMULATED) =====
   console.log("▶ PHASE 5: Dispatching to CoWork Orchestrator...\n");
-  const plan = await executeVideoWorkflowInCoWork(executionPlan);
+  await executeVideoWorkflowInCoWork(executionPlan);
   console.log(`✓ Plan dispatched to orchestrate_agents tool\n`);
 
   // ===== PHASE 6: RESULTS =====
