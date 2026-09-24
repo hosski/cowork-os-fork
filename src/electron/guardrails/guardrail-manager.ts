@@ -19,7 +19,7 @@ const LEGACY_SETTINGS_FILE = "guardrail-settings.json";
 
 const DEFAULT_SETTINGS: GuardrailSettings = {
   // Token Budget
-  maxTokensPerTask: 100000,
+  maxTokensPerTask: 500000,
   tokenBudgetEnabled: true,
 
   // Cost Budget
