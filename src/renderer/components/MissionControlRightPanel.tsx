@@ -1,13 +1,5 @@
-import { useState, useCallback, useMemo } from "react";
-import type {
-  Goal,
-  HeartbeatRun,
-  HeartbeatRunEvent,
-  Issue,
-  IssueComment,
-  Project,
-  Task,
-} from "../../shared/types";
+import { useMemo } from "react";
+import type { Task } from "../../shared/types";
 import { GrillTabPanel } from "./GrillTabPanel";
 import { TaskDAGViewer } from "./TaskDAGViewer";
 import { useAgentContext } from "../hooks/useAgentContext";
@@ -19,26 +11,9 @@ interface Props {
   setRightTab: (tab: "feed" | "task" | "ops" | "grill" | "dag") => void;
   onClose: () => void;
   selectedTask: Task | null;
-  setSelectedTaskId: (id: string | null) => void;
   activities: any[];
   events: any[];
   agents: any[];
-  goals: Goal[];
-  projects: Project[];
-  issues: Issue[];
-  issueComments: IssueComment[];
-  issueRuns: HeartbeatRun[];
-  runEvents: HeartbeatRunEvent[];
-  selectedIssueId: string | null;
-  setSelectedIssueId: (id: string | null) => void;
-  selectedIssueRunId: string | null;
-  setSelectedIssueRunId: (id: string | null) => void;
-  selectedPlannerRunId: string | null;
-  setSelectedPlannerRunId: (id: string | null) => void;
-  plannerRuns: any[];
-  commandCenterSummary: any;
-  selectedCompanyId: string | null;
-  selectedWorkspaceId: string | null;
   feedFilter: "all" | "tasks" | "comments" | "status";
   setFeedFilter: (filter: "all" | "tasks" | "comments" | "status") => void;
   selectedAgent: string | null;
@@ -56,26 +31,9 @@ export function MissionControlRightPanel({
   setRightTab,
   onClose,
   selectedTask,
-  setSelectedTaskId,
   activities,
   events,
   agents,
-  goals,
-  projects,
-  issues,
-  issueComments,
-  issueRuns,
-  runEvents,
-  selectedIssueId,
-  setSelectedIssueId,
-  selectedIssueRunId,
-  setSelectedIssueRunId,
-  selectedPlannerRunId,
-  setSelectedPlannerRunId,
-  plannerRuns,
-  commandCenterSummary,
-  selectedCompanyId,
-  selectedWorkspaceId,
   feedFilter,
   setFeedFilter,
   selectedAgent,
@@ -157,41 +115,6 @@ export function MissionControlRightPanel({
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, 50);
   }, [activities, events, feedFilter, selectedAgent, getAgent, agentContext]);
-
-  const selectedIssue = useMemo(
-    () => issues.find((issue) => issue.id === selectedIssueId) || null,
-    [issues, selectedIssueId],
-  );
-
-  const selectedIssueRun = useMemo(
-    () => issueRuns.find((run) => run.id === selectedIssueRunId) || null,
-    [issueRuns, selectedIssueRunId],
-  );
-
-  const selectedPlannerRun = useMemo(
-    () => plannerRuns.find((run) => run.id === selectedPlannerRunId) || null,
-    [plannerRuns, selectedPlannerRunId],
-  );
-
-  const plannerRunIssueIds = useMemo(() => {
-    const metadata = selectedPlannerRun?.metadata as
-      | {
-          createdIssueIds?: string[];
-          updatedIssueIds?: string[];
-        }
-      | undefined;
-    return new Set([...(metadata?.createdIssueIds || []), ...(metadata?.updatedIssueIds || [])]);
-  }, [selectedPlannerRun]);
-
-  const plannerRunIssues = useMemo(
-    () => issues.filter((issue) => plannerRunIssueIds.has(issue.id)),
-    [issues, plannerRunIssueIds],
-  );
-
-  const commandCenterOutputs = commandCenterSummary?.outputs || [];
-  const commandCenterReviewQueue = commandCenterSummary?.reviewQueue || [];
-  const commandCenterOperators = commandCenterSummary?.operators || [];
-  const commandCenterExecutionMap = commandCenterSummary?.executionMap || [];
 
   return (
     <div className="mc-right-panel-overlay">
@@ -324,8 +247,8 @@ export function MissionControlRightPanel({
                   <h3>{selectedTask.title}</h3>
                 </div>
                 <div className="mc-task-detail-body">
-                  {selectedTask.description && (
-                    <p className="mc-task-description">{selectedTask.description}</p>
+                  {selectedTask.prompt.trim() && (
+                    <p className="mc-task-description">{selectedTask.prompt}</p>
                   )}
                   <div className="mc-comment-form">
                     <textarea
