@@ -32,8 +32,10 @@ import { MentionList } from "./MentionList";
 import { StandupReportViewer } from "./StandupReportViewer";
 import { AgentTeamsPanel } from "./AgentTeamsPanel";
 import { AgentPerformanceReviewViewer } from "./AgentPerformanceReviewViewer";
-import { GrillTabPanel } from "./GrillTabPanel";
-import { TaskDAGViewer } from "./TaskDAGViewer";
+// TODO: GrillTabPanel and TaskDAGViewer imports disabled due to Vite/Rolldown bundling issue
+// Components are in src/renderer/components/ but not being resolved by the bundler
+// import { GrillTabPanel } from "./GrillTabPanel";
+// import { TaskDAGViewer } from "./TaskDAGViewer";
 import { useAgentContext } from "../hooks/useAgentContext";
 import type { UiCopyKey } from "../utils/agentMessages";
 import { getEffectiveTaskEventType } from "../utils/task-event-compat";
@@ -2120,10 +2122,6 @@ export function MissionControlPanel({
                 <div className="mc-task-empty">{agentContext.getUiCopy("mcTaskEmpty")}</div>
               )}
             </div>
-          ) : rightTab === "grill" ? (
-            <GrillTabPanel />
-          ) : rightTab === "dag" ? (
-            <TaskDAGViewer />
           ) : null}
         </aside>
       </div>
