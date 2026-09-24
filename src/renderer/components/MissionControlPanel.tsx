@@ -33,6 +33,7 @@ import { StandupReportViewer } from "./StandupReportViewer";
 import { AgentTeamsPanel } from "./AgentTeamsPanel";
 import { GrillTabPanel } from "./GrillTabPanel";
 import { TaskDAGViewer } from "./TaskDAGViewer";
+import { MissionControlRightPanel } from "./MissionControlRightPanel";
 import { AgentPerformanceReviewViewer } from "./AgentPerformanceReviewViewer";
 import { useAgentContext } from "../hooks/useAgentContext";
 import type { UiCopyKey } from "../utils/agentMessages";
@@ -1488,642 +1489,47 @@ export function MissionControlPanel({
           </div>
         </main>
 
-        {/* Right Panel - Live Feed */}
-        <aside className="mc-feed-panel">
-          <div className="mc-panel-header mc-feed-header">
-            <div className="mc-tabs">
-              <button
-                className={`mc-tab-btn ${rightTab === "feed" ? "active" : ""}`}
-                onClick={() => setRightTab("feed")}
-              >
-                {agentContext.getUiCopy("mcLiveFeedTitle")}
-              </button>
-              <button
-                className={`mc-tab-btn ${rightTab === "task" ? "active" : ""}`}
-                onClick={() => setRightTab("task")}
-              >
-                {agentContext.getUiCopy("mcTaskTab")}
-              </button>
-              <button
-                className={`mc-tab-btn ${rightTab === "ops" ? "active" : ""}`}
-                onClick={() => setRightTab("ops")}
-              >
-                Ops
-              </button>
-              <button
-                className={`mc-tab-btn ${rightTab === "grill" ? "active" : ""}`}
-                onClick={() => setRightTab("grill")}
-                title="Grill-Tab task breakdown"
-              >
-                🎯 Grill-Tab
-              </button>
-              <button
-                className={`mc-tab-btn ${rightTab === "dag" ? "active" : ""}`}
-                onClick={() => setRightTab("dag")}
-                title="TaskDAG Gantt viewer"
-              >
-                📊 DAG
-              </button>
-            </div>
-            {rightTab === "task" && selectedTask && (
-              <button className="mc-clear-task" onClick={() => setSelectedTaskId(null)}>
-                {agentContext.getUiCopy("mcClearTask")}
-              </button>
-            )}
-          </div>
-
-          {rightTab === "feed" ? (
-            <>
-              <div className="mc-feed-filters">
-                {(["all", "tasks", "comments", "status"] as const).map((filter) => (
-                  <button
-                    key={filter}
-                    className={`mc-filter-btn ${feedFilter === filter ? "active" : ""}`}
-                    onClick={() => setFeedFilter(filter)}
-                  >
-                    {agentContext.getUiCopy(filterLabels[filter])}
-                  </button>
-                ))}
-              </div>
-              <div className="mc-feed-agents">
-                <span className="mc-feed-agents-label">
-                  {agentContext.getUiCopy("mcAllAgentsLabel")}
-                </span>
-                <div className="mc-feed-agent-chips">
-                  {agents
-                    .filter((a) => a.isActive)
-                    .map((agent) => (
-                      <button
-                        key={agent.id}
-                        className={`mc-agent-chip ${selectedAgent === agent.id ? "active" : ""}`}
-                        style={{ borderColor: agent.color }}
-                        onClick={() =>
-                          setSelectedAgent(selectedAgent === agent.id ? null : agent.id)
-                        }
-                      >
-                        {(() => {
-                          const Icon = getEmojiIcon(agent.icon || "🤖");
-                          return <Icon size={14} strokeWidth={2} />;
-                        })()}{" "}
-                        {agent.displayName.split(" ")[0]}
-                      </button>
-                    ))}
-                </div>
-              </div>
-              <div className="mc-feed-list">
-                {feedItems.length === 0 ? (
-                  <div className="mc-feed-empty">{agentContext.getUiCopy("mcFeedEmpty")}</div>
-                ) : (
-                  feedItems.map((item) => {
-                    const agent = getAgent(item.agentId);
-                    return (
-                      <div key={item.id} className="mc-feed-item">
-                        <div className="mc-feed-item-header">
-                          {agent && (
-                            <span className="mc-feed-agent" style={{ color: agent.color }}>
-                              {(() => {
-                                const Icon = getEmojiIcon(agent.icon || "🤖");
-                                return (
-                                  <Icon
-                                    size={14}
-                                    strokeWidth={2}
-                                    style={{
-                                      display: "inline",
-                                      verticalAlign: "middle",
-                                      marginRight: 4,
-                                    }}
-                                  />
-                                );
-                              })()}
-                              {agent.displayName}
-                            </span>
-                          )}
-                          {!agent && item.agentName && (
-                            <span className="mc-feed-agent system">{item.agentName}</span>
-                          )}
-                          <span className="mc-feed-time">{formatRelativeTime(item.timestamp)}</span>
-                        </div>
-                        <div className="mc-feed-content">{item.content}</div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </>
-          ) : rightTab === "ops" ? (
-            <div className="mc-ops-panel">
-              <div className="mc-ops-section">
-                <h3>Company Overview</h3>
-                {selectedCompany && commandCenterSummary ? (
-                  <>
-                    <p className="mc-ops-company-name">{selectedCompany.name}</p>
-                    {selectedCompany.description && (
-                      <p className="mc-ops-company-description">{selectedCompany.description}</p>
-                    )}
-                    <div className="mc-ops-stats">
-                      <div className="mc-ops-stat-card">
-                        <span className="mc-ops-stat-value">
-                          {commandCenterSummary.overview.activeGoalCount}
-                        </span>
-                        <span className="mc-ops-stat-label">Active goals</span>
-                      </div>
-                      <div className="mc-ops-stat-card">
-                        <span className="mc-ops-stat-value">
-                          {commandCenterSummary.overview.activeProjectCount}
-                        </span>
-                        <span className="mc-ops-stat-label">Active projects</span>
-                      </div>
-                      <div className="mc-ops-stat-card">
-                        <span className="mc-ops-stat-value">
-                          {commandCenterSummary.overview.openIssueCount}
-                        </span>
-                        <span className="mc-ops-stat-label">Open issues</span>
-                      </div>
-                      <div className="mc-ops-stat-card">
-                        <span className="mc-ops-stat-value">
-                          {commandCenterSummary.overview.pendingReviewCount}
-                        </span>
-                        <span className="mc-ops-stat-label">Pending review</span>
-                      </div>
-                      <div className="mc-ops-stat-card">
-                        <span className="mc-ops-stat-value">
-                          {commandCenterSummary.overview.valuableOutputCount}
-                        </span>
-                        <span className="mc-ops-stat-label">Valuable outputs</span>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="mc-feed-empty">No company selected.</div>
-                )}
-              </div>
-
-              <div className="mc-ops-section">
-                <h3>Operator Panel</h3>
-                <div className="mc-ops-list">
-                  {commandCenterOperators.length === 0 ? (
-                    <div className="mc-feed-empty">No operators linked to this company yet.</div>
-                  ) : (
-                    commandCenterOperators.map((operator) => (
-                      <div key={operator.agentRoleId} className="mc-ops-row">
-                        <div>
-                          <div className="mc-ops-row-title">
-                            <span style={{ color: operator.color }}>
-                              {operator.icon} {operator.displayName}
-                            </span>
-                          </div>
-                          <div className="mc-ops-row-subtitle">
-                            {(operator.operatorMandate || "No mandate set") +
-                              (operator.currentBottleneck
-                                ? ` · Bottleneck: ${operator.currentBottleneck}`
-                                : "")}
-                          </div>
-                          <div className="mc-ops-row-subtitle">
-                            {`Last useful output ${operator.lastUsefulOutputAt ? formatRelativeTime(operator.lastUsefulOutputAt) : "never"} · heartbeat ${operator.heartbeatStatus || "idle"}`}
-                          </div>
-                        </div>
-                        <span className="mc-ops-pill">
-                          {typeof operator.operatorHealthScore === "number"
-                            ? `${Math.round(operator.operatorHealthScore * 100)} health`
-                            : operator.activeLoop || "idle"}
-                        </span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              <div className="mc-ops-section">
-                <h3>Operations Feed</h3>
-                <div className="mc-ops-list">
-                  {commandCenterOutputs.length === 0 ? (
-                    <div className="mc-feed-empty">No valuable outputs yet.</div>
-                  ) : (
-                    commandCenterOutputs.map((output) => (
-                      <button
-                        key={output.id}
-                        type="button"
-                        className={`mc-ops-row mc-ops-row-button ${selectedIssueId === output.issueId ? "selected" : ""}`}
-                        onClick={() => {
-                          if (output.issueId) setSelectedIssueId(output.issueId);
-                        }}
-                      >
-                        <div>
-                          <div className="mc-ops-row-title">{output.title}</div>
-                          <div className="mc-ops-row-subtitle">
-                            {`${output.outputType} · ${output.valueReason}`}
-                          </div>
-                          {(output.whatChanged || output.nextStep) && (
-                            <div className="mc-ops-row-subtitle">
-                              {[output.whatChanged, output.nextStep].filter(Boolean).join(" · ")}
-                            </div>
-                          )}
-                        </div>
-                        <span className={`mc-ops-pill status-${output.status || "idle"}`}>
-                          {output.reviewRequired ? "review" : output.outputType}
-                        </span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              <div className="mc-ops-section">
-                <h3>Review Queue</h3>
-                <div className="mc-ops-list">
-                  {commandCenterReviewQueue.length === 0 ? (
-                    <div className="mc-feed-empty">No human review gates queued.</div>
-                  ) : (
-                    commandCenterReviewQueue.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className={`mc-ops-row mc-ops-row-button ${selectedIssueId === item.issueId ? "selected" : ""}`}
-                        onClick={() => {
-                          if (item.issueId) setSelectedIssueId(item.issueId);
-                        }}
-                      >
-                        <div>
-                          <div className="mc-ops-row-title">{item.title}</div>
-                          <div className="mc-ops-row-subtitle">
-                            {`${item.reviewReason} · ${item.outputType || item.sourceType}`}
-                          </div>
-                          {item.summary && (
-                            <div className="mc-ops-row-subtitle">{item.summary}</div>
-                          )}
-                        </div>
-                        <span className="mc-ops-pill">{formatRelativeTime(item.createdAt)}</span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              <div className="mc-ops-section">
-                <h3>Execution Map</h3>
-                <div className="mc-ops-list">
-                  {commandCenterExecutionMap.length === 0 ? (
-                    <div className="mc-feed-empty">No execution lineage yet.</div>
-                  ) : (
-                    commandCenterExecutionMap.slice(0, 12).map((entry) => (
-                      <button
-                        key={entry.issueId}
-                        type="button"
-                        className={`mc-ops-row mc-ops-row-button ${selectedIssueId === entry.issueId ? "selected" : ""}`}
-                        onClick={() => setSelectedIssueId(entry.issueId)}
-                      >
-                        <div>
-                          <div className="mc-ops-row-title">{entry.issueTitle}</div>
-                          <div className="mc-ops-row-subtitle">
-                            {[
-                              entry.goalTitle,
-                              entry.projectName,
-                              entry.outputType,
-                              entry.taskStatus ? `task:${entry.taskStatus}` : undefined,
-                            ]
-                              .filter(Boolean)
-                              .join(" · ")}
-                          </div>
-                        </div>
-                        <span className={`mc-ops-pill status-${entry.issueStatus}`}>
-                          {entry.stale ? "stale" : entry.issueStatus}
-                        </span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              <div className="mc-ops-section">
-                <h3>Planner Runs</h3>
-                {selectedPlannerRun ? (
-                  <div className="mc-ops-run-card">
-                    <div className="mc-ops-row">
-                      <div>
-                        <div className="mc-ops-row-title">
-                          {selectedPlannerRun.summary || "Planner cycle"}
-                        </div>
-                        <div className="mc-ops-row-subtitle">
-                          {selectedPlannerRun.trigger} ·{" "}
-                          {formatRelativeTime(selectedPlannerRun.createdAt)}
-                        </div>
-                      </div>
-                      <span className={`mc-ops-pill status-${selectedPlannerRun.status}`}>
-                        {selectedPlannerRun.status}
-                      </span>
-                    </div>
-                    <div className="mc-ops-run-metrics">
-                      <span>{selectedPlannerRun.createdIssueCount} created</span>
-                      <span>{selectedPlannerRun.updatedIssueCount} updated</span>
-                      <span>{selectedPlannerRun.dispatchedTaskCount} dispatched</span>
-                    </div>
-                    <div className="mc-ops-list">
-                      {plannerRunIssues.length === 0 ? (
-                        <div className="mc-feed-empty">
-                          No issue details for this planner cycle.
-                        </div>
-                      ) : (
-                        plannerRunIssues.map((issue) => (
-                          <button
-                            key={issue.id}
-                            type="button"
-                            className={`mc-ops-row mc-ops-row-button ${selectedIssueId === issue.id ? "selected" : ""}`}
-                            onClick={() => setSelectedIssueId(issue.id)}
-                          >
-                            <div>
-                              <div className="mc-ops-row-title">{issue.title}</div>
-                              <div className="mc-ops-row-subtitle">
-                                {issue.projectId ? "Project-linked" : "Goal-linked"}
-                              </div>
-                            </div>
-                            <span className={`mc-ops-pill status-${issue.status}`}>
-                              {issue.status}
-                            </span>
-                          </button>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mc-feed-empty">Select a planner run above to inspect it.</div>
-                )}
-              </div>
-
-              <div className="mc-ops-section">
-                <h3>Selected issue</h3>
-                {selectedIssue ? (
-                  <div className="mc-ops-run-card">
-                    <div className="mc-ops-row">
-                      <div>
-                        <div className="mc-ops-row-title">{selectedIssue.title}</div>
-                        <div className="mc-ops-row-subtitle">
-                          {(selectedIssue.goalId
-                            ? goals.find((goal) => goal.id === selectedIssue.goalId)?.title
-                            : "No goal") || "No goal"}
-                          {" · "}
-                          {(selectedIssue.projectId
-                            ? projects.find((project) => project.id === selectedIssue.projectId)
-                                ?.name
-                            : "No project") || "No project"}
-                        </div>
-                      </div>
-                      <span className={`mc-ops-pill status-${selectedIssue.status}`}>
-                        {selectedIssue.status}
-                      </span>
-                    </div>
-                    {selectedIssue.description && (
-                      <div className="mc-ops-company-description">{selectedIssue.description}</div>
-                    )}
-                    <div className="mc-ops-actions">
-                      <button
-                        className="mc-refresh-btn"
-                        disabled={!selectedIssue.taskId}
-                        onClick={async () => {
-                          if (!selectedIssue.taskId) return;
-                          const task = await window.electronAPI.getTask(selectedIssue.taskId);
-                          if (!task) return;
-                          setSelectedTaskId(task.id);
-                          setRightTab("task");
-                        }}
-                      >
-                        Open linked task
-                      </button>
-                    </div>
-                    <div className="mc-ops-split">
-                      <div className="mc-ops-subsection">
-                        <h4>Comments</h4>
-                        <div className="mc-ops-list">
-                          {issueComments.length === 0 ? (
-                            <div className="mc-feed-empty">No issue comments yet.</div>
-                          ) : (
-                            issueComments.slice(-6).map((comment) => (
-                              <div key={comment.id} className="mc-ops-row">
-                                <div>
-                                  <div className="mc-ops-row-title">
-                                    {comment.authorType === "agent"
-                                      ? getAgent(comment.authorAgentRoleId)?.displayName || "Agent"
-                                      : comment.authorType}
-                                  </div>
-                                  <div className="mc-ops-row-subtitle">{comment.body}</div>
-                                </div>
-                                <span className="mc-ops-pill">
-                                  {formatRelativeTime(comment.createdAt)}
-                                </span>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                      <div className="mc-ops-subsection">
-                        <h4>Recent runs</h4>
-                        <div className="mc-ops-list">
-                          {issueRuns.length === 0 ? (
-                            <div className="mc-feed-empty">No runs for this issue yet.</div>
-                          ) : (
-                            issueRuns.slice(0, 6).map((run) => (
-                              <button
-                                key={run.id}
-                                type="button"
-                                className={`mc-ops-row mc-ops-row-button ${selectedIssueRunId === run.id ? "selected" : ""}`}
-                                onClick={() => setSelectedIssueRunId(run.id)}
-                              >
-                                <div>
-                                  <div className="mc-ops-row-title">
-                                    {run.summary || `Run ${run.id.slice(0, 8)}`}
-                                  </div>
-                                  <div className="mc-ops-row-subtitle">
-                                    {formatRelativeTime(run.updatedAt)}
-                                    {run.taskId ? " · task linked" : ""}
-                                  </div>
-                                </div>
-                                <span className={`mc-ops-pill status-${run.status}`}>
-                                  {run.status}
-                                </span>
-                              </button>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mc-feed-empty">Select an issue to inspect it.</div>
-                )}
-              </div>
-
-              <div className="mc-ops-section">
-                <h3>Selected run</h3>
-                {selectedIssueRun ? (
-                  <div className="mc-ops-run-card">
-                    <div className="mc-ops-row">
-                      <div>
-                        <div className="mc-ops-row-title">
-                          {selectedIssueRun.summary || `Run ${selectedIssueRun.id.slice(0, 8)}`}
-                        </div>
-                        <div className="mc-ops-row-subtitle">
-                          {selectedIssueRun.status} ·{" "}
-                          {formatRelativeTime(selectedIssueRun.createdAt)}
-                        </div>
-                      </div>
-                      <span className={`mc-ops-pill status-${selectedIssueRun.status}`}>
-                        {selectedIssueRun.status}
-                      </span>
-                    </div>
-                    <div className="mc-ops-run-metrics">
-                      <span>{selectedIssueRun.taskId ? "Task linked" : "No task linked"}</span>
-                      <span>{selectedIssueRun.agentRoleId ? "Agent assigned" : "Unassigned"}</span>
-                      <span>{selectedIssueRun.error ? "Has error" : "No error"}</span>
-                    </div>
-                    <div className="mc-ops-subsection">
-                      <h4>Timeline</h4>
-                      <div className="mc-ops-list">
-                        {runEvents.length === 0 ? (
-                          <div className="mc-feed-empty">No run events captured.</div>
-                        ) : (
-                          runEvents.slice(-8).map((event) => (
-                            <div key={event.id} className="mc-ops-row">
-                              <div>
-                                <div className="mc-ops-row-title">{event.type}</div>
-                                <div className="mc-ops-row-subtitle">
-                                  {Object.entries(event.payload || {})
-                                    .slice(0, 2)
-                                    .map(([key, value]) => `${key}: ${String(value)}`)
-                                    .join(" · ")}
-                                </div>
-                              </div>
-                              <span className="mc-ops-pill">
-                                {formatRelativeTime(event.timestamp)}
-                              </span>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
-                    {selectedIssueRun.error && (
-                      <div className="mc-ops-row">
-                        <div>
-                          <div className="mc-ops-row-title">Latest error</div>
-                          <div className="mc-ops-row-subtitle">{selectedIssueRun.error}</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="mc-feed-empty">Select an issue run to inspect it.</div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="mc-task-detail">
-              {selectedTask ? (
-                <>
-                  <div className="mc-task-detail-header">
-                    <div className="mc-task-detail-title">
-                      <h3>{selectedTask.title}</h3>
-                      <span className={`mc-task-detail-status status-${selectedTask.status}`}>
-                        {selectedTask.status.replace("_", " ")}
-                      </span>
-                    </div>
-                    <div className="mc-task-detail-updated">
-                      {agentContext.getUiCopy("mcTaskUpdatedAt", {
-                        time: formatRelativeTime(selectedTask.updatedAt),
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="mc-task-detail-meta">
-                    <label>
-                      {agentContext.getUiCopy("mcTaskAssigneeLabel")}
-                      <select
-                        value={selectedTask.assignedAgentRoleId || ""}
-                        onChange={(e) => handleAssignTask(selectedTask.id, e.target.value || null)}
-                      >
-                        <option value="">{agentContext.getUiCopy("mcTaskUnassigned")}</option>
-                        {agents
-                          .filter((a) => a.isActive)
-                          .map((agent) => (
-                            <option key={agent.id} value={agent.id}>
-                              {agent.displayName}
-                            </option>
-                          ))}
-                      </select>
-                    </label>
-                    <label>
-                      {agentContext.getUiCopy("mcTaskStageLabel")}
-                      <select
-                        value={getMissionColumnForTask(selectedTask)}
-                        onChange={(e) => handleMoveTask(selectedTask.id, e.target.value)}
-                      >
-                        {BOARD_COLUMNS.map((column) => (
-                          <option key={column.id} value={column.id}>
-                            {column.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-
-                  <div className="mc-task-detail-section mc-task-detail-section-brief">
-                    <h4 className="mc-task-detail-brief-title">
-                      {agentContext.getUiCopy("mcTaskBriefTitle")}
-                    </h4>
-                    <div className="mc-task-detail-brief-scroll">
-                      <p className="mc-task-detail-brief">{selectedTask.prompt}</p>
-                    </div>
-                  </div>
-
-                  <div className="mc-task-detail-section">
-                    <h4>{agentContext.getUiCopy("mcTaskUpdatesTitle")}</h4>
-                    {selectedWorkspaceId && (
-                      <ActivityFeed
-                        workspaceId={selectedWorkspaceId}
-                        taskId={selectedTask.id}
-                        compact
-                        maxItems={20}
-                        showFilters={false}
-                      />
-                    )}
-                    <div className="mc-comment-box">
-                      <textarea
-                        placeholder={agentContext.getUiCopy("mcTaskUpdatePlaceholder")}
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        rows={3}
-                      />
-                      <button
-                        className="mc-comment-submit"
-                        onClick={handlePostComment}
-                        disabled={postingComment || commentText.trim().length === 0}
-                      >
-                        {postingComment
-                          ? agentContext.getUiCopy("mcTaskPosting")
-                          : agentContext.getUiCopy("mcTaskPostUpdate")}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mc-task-detail-section">
-                    <h4>{agentContext.getUiCopy("mcTaskMentionsTitle")}</h4>
-                    {selectedWorkspaceId && (
-                      <>
-                        <MentionInput
-                          workspaceId={selectedWorkspaceId}
-                          taskId={selectedTask.id}
-                          placeholder={agentContext.getUiCopy("mcTaskMentionPlaceholder")}
-                        />
-                        <MentionList workspaceId={selectedWorkspaceId} taskId={selectedTask.id} />
-                      </>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <div className="mc-task-empty">{agentContext.getUiCopy("mcTaskEmpty")}</div>
-              )}
-            </div>
-          ) : rightTab === "grill" ? (
-            <GrillTabPanel />
-          ) : rightTab === "dag" ? (
-            <TaskDAGViewer />
+      {/* Right Panel - Floating Modal */}
+      {rightTab && rightTab !== "feed" && rightTab !== "task" && rightTab !== "ops" && rightTab !== "grill" && rightTab !== "dag" ? null : (
+        rightTab ? (
+          <MissionControlRightPanel
+            rightTab={rightTab as "feed" | "task" | "ops" | "grill" | "dag"}
+            setRightTab={setRightTab}
+            onClose={() => setRightTab(null as any)}
+            selectedTask={selectedTask}
+            setSelectedTaskId={setSelectedTaskId}
+            activities={activities}
+            events={events}
+            agents={agents}
+            goals={goals}
+            projects={projects}
+            issues={issues}
+            issueComments={issueComments}
+            issueRuns={issueRuns}
+            runEvents={runEvents}
+            selectedIssueId={selectedIssueId}
+            setSelectedIssueId={setSelectedIssueId}
+            selectedIssueRunId={selectedIssueRunId}
+            setSelectedIssueRunId={setSelectedIssueRunId}
+            selectedPlannerRunId={selectedPlannerRunId}
+            setSelectedPlannerRunId={setSelectedPlannerRunId}
+            plannerRuns={plannerRuns}
+            commandCenterSummary={commandCenterSummary}
+            selectedCompanyId={selectedCompanyId}
+            selectedWorkspaceId={selectedWorkspaceId}
+            feedFilter={feedFilter}
+            setFeedFilter={setFeedFilter}
+            selectedAgent={selectedAgent}
+            setSelectedAgent={setSelectedAgent}
+            commentText={commentText}
+            setCommentText={setCommentText}
+            postingComment={postingComment}
+            onPostComment={handlePostComment}
+            formatRelativeTime={formatRelativeTime}
+            getAgent={getAgent}
+          />
+        ) : null
+      )}
           ) : null}
         </aside>
       </div>
@@ -2186,6 +1592,52 @@ const styles = `
     flex-direction: column;
     background: var(--color-bg-primary);
     font-family: var(--font-ui);
+  }
+
+
+  .mc-right-panel-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    z-index: 1000;
+  }
+
+  .mc-right-panel-modal {
+    width: 45%;
+    height: 100%;
+    background: var(--color-bg-primary);
+    border-left: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .mc-right-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  .mc-close-panel {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mc-close-panel:hover {
+    color: var(--color-text-primary);
   }
 
   .mc-loading {
