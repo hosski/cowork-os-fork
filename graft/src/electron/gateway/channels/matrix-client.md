@@ -1,0 +1,33 @@
+# src/electron/gateway/channels/matrix-client.ts
+
+- MatrixRoomEvent · interface · L29-L58 — interface MatrixRoomEvent
+- MatrixSyncResponse · interface · L60-L92 — interface MatrixSyncResponse
+- MatrixUser · interface · L94-L98 — interface MatrixUser
+- MatrixRoom · interface · L100-L108 — interface MatrixRoom
+- MatrixUploadResponse · interface · L110-L112 — interface MatrixUploadResponse
+- MatrixClientOptions · interface · L117-L130 — interface MatrixClientOptions
+- MatrixClientEvents · interface · L135-L141 — interface MatrixClientEvents
+- MatrixClient · class · L146-L650 — class MatrixClient extends EventEmitter
+- constructor · method · L153-L156 — constructor(options: MatrixClientOptions)
+- checkConnection · method · L161-L174 — async checkConnection(): Promise<{ success: boolean; userId?: string; error?: string }>
+- getUserProfile · method · L179-L190 — async getUserProfile(userId?: string): Promise<MatrixUser>
+- getJoinedRooms · method · L195-L201 — async getJoinedRooms(): Promise<string[]>
+- getDirectRooms · method · L206-L218 — async getDirectRooms(): Promise<string[]>
+- startReceiving · method · L223-L234 — async startReceiving(): Promise<void>
+- syncLoop · method · L239-L312 — private async syncLoop(): Promise<void>
+- stopReceiving · method · L317-L321 — async stopReceiving(): Promise<void>
+- sendMessage · method · L326-L364 — async sendMessage( roomId: string, body: string, options?: { msgtype?: string; format?: string; formattedBody?: string; replyTo?: string; }, ): Promise<string>
+- sendImage · method · L369-L390 — async sendImage( roomId: string, mxcUrl: string, body: string, info?: { mimetype?: string; size?: number; w?: number; h?: number }, ): Promise<string>
+- sendFile · method · L395-L416 — async sendFile( roomId: string, mxcUrl: string, body: string, info?: { mimetype?: string; size?: number }, ): Promise<string>
+- uploadMedia · method · L421-L462 — async uploadMedia(filePath: string, contentType?: string): Promise<MatrixUploadResponse>
+- getMediaUrl · method · L467-L474 — getMediaUrl(mxcUrl: string): string
+- redactMessage · method · L479-L487 — async redactMessage(roomId: string, eventId: string, reason?: string): Promise<string>
+- sendReaction · method · L492-L509 — async sendReaction(roomId: string, eventId: string, emoji: string): Promise<string>
+- sendTyping · method · L514-L520 — async sendTyping(roomId: string, typing: boolean, timeout = 30000): Promise<void>
+- sendReadReceipt · method · L525-L531 — async sendReadReceipt(roomId: string, eventId: string): Promise<void>
+- joinRoom · method · L536-L543 — async joinRoom(roomIdOrAlias: string): Promise<string>
+- leaveRoom · method · L548-L554 — async leaveRoom(roomId: string): Promise<void>
+- apiRequest · method · L559-L612 — private apiRequest<T>(method: string, path: string, body?: unknown, timeout = 30000): Promise<T>
+- getMimeType · method · L617-L635 — private getMimeType(fileName: string): string
+- isConnected · method · L640-L642 — isConnected(): boolean
+- getUserId · method · L647-L649 — getUserId(): string

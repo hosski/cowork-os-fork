@@ -1,0 +1,43 @@
+# src/renderer/components/MCPSettings.tsx
+
+- MCPTransportType · type · L8-L8 — type MCPTransportType = "stdio" | "sse" | "websocket" | "streamable-http";
+- MCPConnectionStatus · type · L9-L9 — type MCPConnectionStatus = "disconnected" | "connecting" | "connected" | "reconnecting" | "error";
+- MCPServerConfig · interface · L11-L39 — interface MCPServerConfig
+- MCPTool · interface · L41-L49 — interface MCPTool
+- MCPServerStatus · interface · L51-L58 — interface MCPServerStatus
+- MCPSettingsData · interface · L60-L70 — interface MCPSettingsData
+- MCPUpdateInfo · interface · L72-L76 — interface MCPUpdateInfo
+- SecureMcpTunnelTargetType · type · L78-L78 — type SecureMcpTunnelTargetType = "cowork-host" | "http";
+- SecureMcpTunnelState · type · L79-L79 — type SecureMcpTunnelState = "stopped" | "connecting" | "connected" | "reconnecting" | "error";
+- SecureMcpTunnelPolicy · interface · L81-L87 — interface SecureMcpTunnelPolicy
+- SecureMcpTunnelConfig · interface · L89-L102 — interface SecureMcpTunnelConfig
+- SecureMcpTunnelStatus · interface · L104-L115 — interface SecureMcpTunnelStatus
+- SecureMcpTunnelAuditEvent · interface · L117-L128 — interface SecureMcpTunnelAuditEvent
+- MCPSettings · function · L130-L1469 — function MCPSettings()
+- loadData · function · L215-L236 — loadData = async ()
+- handleAddServer · function · L238-L279 — handleAddServer = async ()
+- handleAddTunnel · function · L281-L312 — handleAddTunnel = async ()
+- handleStartTunnel · function · L314-L324 — handleStartTunnel = async (tunnelId: string)
+- handleStopTunnel · function · L326-L336 — handleStopTunnel = async (tunnelId: string)
+- handleRemoveTunnel · function · L338-L346 — handleRemoveTunnel = async (tunnelId: string)
+- handleRemoveServer · function · L348-L358 — handleRemoveServer = async (serverId: string)
+- handleConnectServer · function · L360-L379 — handleConnectServer = async (serverId: string)
+- handleDisconnectServer · function · L381-L399 — handleDisconnectServer = async (serverId: string)
+- handleTestServer · function · L401-L412 — handleTestServer = async (serverId: string)
+- handleViewTools · function · L414-L422 — handleViewTools = async (serverId: string)
+- handleToggleEnabled · function · L424-L431 — handleToggleEnabled = async (serverId: string, enabled: boolean)
+- isFilesystemServer · function · L433-L441 — isFilesystemServer = (config: MCPServerConfig | undefined): boolean
+- handleOpenEditServer · function · L443-L487 — handleOpenEditServer = (serverId: string)
+- handleSaveEditServer · function · L489-L530 — handleSaveEditServer = async ()
+- handleAddPath · function · L532-L541 — handleAddPath = async ()
+- handleRemovePath · function · L543-L545 — handleRemovePath = (pathToRemove: string)
+- handleSaveSettings · function · L547-L559 — handleSaveSettings = async ()
+- getConnectorProvider · function · L561-L569 — getConnectorProvider = (name?: string): ConnectorProvider | null
+- handleOpenConnectorSetup · function · L571-L578 — handleOpenConnectorSetup = ( provider: ConnectorProvider, serverId: string, serverName: string, env?: Record<string, string>, )
+- handleCheckUpdates · function · L580-L594 — handleCheckUpdates = async ()
+- handleUpdateServer · function · L596-L611 — handleUpdateServer = async (serverId: string)
+- getUpdateInfo · function · L613-L615 — getUpdateInfo = (serverId: string): MCPUpdateInfo | undefined
+- getStatusColor · function · L617-L629 — getStatusColor = (status: MCPConnectionStatus): string
+- getStatusText · function · L631-L644 — getStatusText = (status: MCPConnectionStatus): string
+- getTunnelStatus · function · L646-L648 — getTunnelStatus = (tunnelId: string): SecureMcpTunnelStatus | undefined
+- getTunnelStatusColor · function · L650-L662 — getTunnelStatusColor = (state: SecureMcpTunnelState): string

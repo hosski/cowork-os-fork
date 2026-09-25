@@ -1,0 +1,32 @@
+# src/electron/gateway/channels/mattermost-client.ts
+
+- MattermostPost · interface · L27-L47 — interface MattermostPost
+- MattermostFile · interface · L49-L59 — interface MattermostFile
+- MattermostUser · interface · L61-L69 — interface MattermostUser
+- MattermostChannel · interface · L71-L79 — interface MattermostChannel
+- MattermostWebSocketEvent · interface · L81-L98 — interface MattermostWebSocketEvent
+- MattermostClientOptions · interface · L103-L112 — interface MattermostClientOptions
+- MattermostClientEvents · interface · L117-L122 — interface MattermostClientEvents
+- MattermostClient · class · L127-L522 — class MattermostClient extends EventEmitter
+- constructor · method · L137-L146 — constructor(options: MattermostClientOptions)
+- checkConnection · method · L151-L161 — async checkConnection(): Promise<{ success: boolean; userId?: string; error?: string }>
+- getCurrentUser · method · L166-L168 — async getCurrentUser(): Promise<MattermostUser>
+- getUser · method · L173-L175 — async getUser(userId: string): Promise<MattermostUser>
+- startReceiving · method · L180-L228 — async startReceiving(): Promise<void>
+- handleWebSocketMessage · method · L233-L253 — private handleWebSocketMessage(data: string): void
+- startPing · method · L258-L264 — private startPing(): void
+- stopPing · method · L269-L274 — private stopPing(): void
+- scheduleReconnect · method · L279-L293 — private scheduleReconnect(): void
+- stopReceiving · method · L298-L313 — async stopReceiving(): Promise<void>
+- sendMessage · method · L318-L340 — async sendMessage( channelId: string, message: string, options?: { rootId?: string; fileIds?: string[]; }, ): Promise<MattermostPost>
+- updateMessage · method · L345-L350 — async updateMessage(postId: string, message: string): Promise<MattermostPost>
+- deleteMessage · method · L355-L357 — async deleteMessage(postId: string): Promise<void>
+- addReaction · method · L362-L368 — async addReaction(postId: string, emojiName: string): Promise<void>
+- removeReaction · method · L373-L378 — async removeReaction(postId: string, emojiName: string): Promise<void>
+- getChannel · method · L383-L385 — async getChannel(channelId: string): Promise<MattermostChannel>
+- getDirectChannel · method · L390-L395 — async getDirectChannel(userId: string): Promise<MattermostChannel>
+- uploadFile · method · L400-L447 — async uploadFile( channelId: string, filePath: string, fileName: string, ): Promise<{ file_infos: MattermostFile[] }>
+- getFileUrl · method · L452-L454 — getFileUrl(fileId: string): string
+- apiRequest · method · L459-L507 — private apiRequest<T>(method: string, path: string, body?: unknown): Promise<T>
+- isConnected · method · L512-L514 — isConnected(): boolean
+- getCurrentUserId · method · L519-L521 — getCurrentUserId(): string | undefined

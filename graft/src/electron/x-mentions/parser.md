@@ -1,0 +1,21 @@
+# src/electron/x-mentions/parser.ts
+
+- BirdMentionRecord · interface · L3-L11 — interface BirdMentionRecord
+- ParsedMentionCommand · interface · L13-L15 — interface ParsedMentionCommand extends BirdMentionRecord
+- MentionParseResult · interface · L17-L21 — interface MentionParseResult
+- asRecord · function · L25-L30 — function asRecord(value: unknown): Record<string, unknown> | null
+- readString · function · L32-L38 — function readString(record: Record<string, unknown> | null, key: string): string | undefined
+- readNestedString · function · L40-L47 — function readNestedString( record: Record<string, unknown> | null, key: string, nestedKey: string, ): string | undefined
+- readTimestamp · function · L49-L72 — function readTimestamp(record: Record<string, unknown> | null): number
+- normalizeAuthor · function · L74-L79 — function normalizeAuthor(author?: string): string
+- normalizeAllowedAuthors · function · L81-L86 — function normalizeAllowedAuthors(authors: string[]): Set<string>
+- extractMentionsArray · function · L88-L106 — function extractMentionsArray(data: unknown): unknown[]
+- resolveTweetId · function · L108-L120 — function resolveTweetId(record: Record<string, unknown> | null): string | undefined
+- resolveConversationId · function · L122-L129 — function resolveConversationId(record: Record<string, unknown> | null): string | undefined
+- resolveAuthor · function · L131-L141 — function resolveAuthor(record: Record<string, unknown> | undefined): string | undefined
+- resolveText · function · L143-L154 — function resolveText(record: Record<string, unknown> | undefined): string
+- extractCommand · function · L156-L176 — function extractCommand(text: string, prefix: string): { matched: boolean; command: string }
+- parseBirdMentions · function · L178-L211 — function parseBirdMentions(data: unknown): BirdMentionRecord[]
+- sortMentionsOldestFirst · function · L213-L220 — function sortMentionsOldestFirst(mentions: BirdMentionRecord[]): BirdMentionRecord[]
+- parseMentionTriggerCommand · function · L222-L254 — function parseMentionTriggerCommand( mention: BirdMentionRecord, trigger: XMentionTriggerSettings, ): MentionParseResult
+- buildMentionTaskPrompt · function · L256-L276 — function buildMentionTaskPrompt(mention: ParsedMentionCommand): string

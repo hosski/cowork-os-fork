@@ -1,0 +1,31 @@
+# mobile/ios/CoWorkCompanion/Sources/CoWorkConnection.swift
+
+- ConnectionState · enum · L8-L14 — enum ConnectionState: String
+- CoWorkConnection · class · L18-L470 — class CoWorkConnection: NSObject, ObservableObject, URLSessionWebSocketDelegate, CLLocationManagerDelegate
+- CoWorkConnection · method · L55-L75 — override init()
+- connect · method · L79-L97 — func connect()
+- disconnect · method · L99-L110 — func disconnect(cleanly: Bool = true)
+- scheduleReconnect · method · L114-L126 — private func scheduleReconnect()
+- appDidEnterBackground · method · L130-L133 — @objc private func appDidEnterBackground()
+- appWillEnterForeground · method · L135-L138 — @objc private func appWillEnterForeground()
+- sendForegroundState · method · L140-L152 — private func sendForegroundState(_ foreground: Bool)
+- authenticate · method · L156-L199 — private func authenticate()
+- receiveMessage · method · L203-L228 — private func receiveMessage()
+- handleMessage · method · L230-L248 — private func handleMessage(_ text: String)
+- handleResponse · method · L250-L264 — private func handleResponse(_ json: [String: Any])
+- handleEvent · method · L266-L268 — private func handleEvent(_ json: [String: Any])
+- handleRequest · method · L272-L297 — private func handleRequest(_ json: [String: Any])
+- handleCameraSnap · method · L301-L349 — private func handleCameraSnap(requestId: String, params: [String: Any]?)
+- sendCameraResult · method · L351-L364 — func sendCameraResult(requestId: String, imageData: Data, width: Int, height: Int)
+- handleLocationGet · method · L368-L381 — private func handleLocationGet(requestId: String, params: [String: Any]?)
+- locationManager · method · L383-L400 — func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
+- locationManager · method · L402-L406 — func locationManager(_ manager: CLLocationManager, didFailWithError error: Error)
+- handleSystemNotify · method · L410-L436 — private func handleSystemNotify(requestId: String, params: [String: Any]?)
+- sendJSON · method · L440-L448 — func sendJSON(_ dict: [String: Any])
+- sendError · method · L450-L457 — func sendError(requestId: String, code: String, message: String)
+- urlSession · method · L461-L463 — func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol proto: String?)
+- urlSession · method · L465-L469 — func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?)
+- PhotoCaptureDelegate · class · L476-L523 — class PhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
+- PhotoCaptureDelegate · method · L482-L487 — init(requestId: String, maxWidth: Int, quality: Double, connection: CoWorkConnection)
+- photoOutput · method · L489-L522 — func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?)
+- Int · module · L527-L529 — private extension Int

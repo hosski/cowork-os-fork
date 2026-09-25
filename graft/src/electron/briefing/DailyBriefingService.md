@@ -1,0 +1,49 @@
+# src/electron/briefing/DailyBriefingService.ts
+
+- DailyBriefingService · class · L22-L1003 — class DailyBriefingService
+- constructor · method · L63-L67 — constructor(deps: DailyBriefingServiceDeps, db?: Any)
+- generateBriefing · method · L71-L140 — async generateBriefing( workspaceId: string, configOverride?: Partial<BriefingConfig>, ): Promise<Briefing>
+- renderBriefingAsText · method · L142-L144 — renderBriefingAsText(briefing: Briefing): string
+- getLatestBriefing · method · L146-L148 — getLatestBriefing(workspaceId: string): Briefing | undefined
+- formatWorkspaceLabel · method · L152-L160 — private formatWorkspaceLabel(item: Any): string | null
+- prefixWorkspace · method · L162-L165 — private prefixWorkspace(item: Any, text: string): string
+- stripWorkspacePrefix · method · L167-L172 — private stripWorkspacePrefix(text: string): string
+- joinWorkspaceLabels · method · L174-L181 — private joinWorkspaceLabels(...items: Any[]): string | undefined
+- cleanLabel · method · L183-L188 — private cleanLabel(text: string | undefined): string
+- stripMarkdownFormatting · method · L190-L195 — private stripMarkdownFormatting(text: string | undefined): string
+- normalizeSemanticText · method · L197-L202 — private normalizeSemanticText(text: string | undefined): string
+- isLowSignalText · method · L204-L208 — private isLowSignalText(text: string | undefined): boolean
+- isBackgroundTask · method · L210-L216 — private isBackgroundTask(title: string | undefined): boolean
+- isGenericFocus · method · L218-L223 — private isGenericFocus(text: string | undefined): boolean
+- isMetaActionText · method · L225-L229 — private isMetaActionText(text: string | undefined): boolean
+- parsePriorityLines · method · L231-L248 — private parsePriorityLines(raw: string): string[]
+- priorityScore · method · L250-L277 — private priorityScore(text: string, originalIndex: number): number
+- isUsefulAwarenessItem · method · L279-L299 — private isUsefulAwarenessItem(item: Any): boolean
+- isUsefulSuggestion · method · L301-L312 — private isUsefulSuggestion(item: Any): boolean
+- decisionScore · method · L314-L333 — private decisionScore(decision: Any): number
+- outcomeScore · method · L335-L349 — private outcomeScore(task: Any): number
+- goalScore · method · L351-L361 — private goalScore(goal: Any): number
+- evolutionHasEnoughSignal · method · L363-L376 — private evolutionHasEnoughSignal(snapshot: Any): boolean
+- dedupeBriefingItems · method · L378-L407 — private dedupeBriefingItems(items: Any[], keyFn: (item: Any) => string, limit?: number): Any[]
+- buildTaskSummary · method · L409-L470 — private buildTaskSummary(workspaceId: string): BriefingSection
+- buildMemoryHighlights · method · L472-L515 — private buildMemoryHighlights(workspaceId: string): BriefingSection
+- buildSuggestions · method · L517-L554 — private buildSuggestions(workspaceId: string): BriefingSection
+- urgencyScore · function · L519-L520 — urgencyScore = (value: string | undefined)
+- deliveryScore · function · L521-L522 — deliveryScore = (value: string | undefined)
+- describeMemoryType · method · L556-L571 — private describeMemoryType(type: string | undefined): string
+- memoryTypeDetail · method · L573-L588 — private memoryTypeDetail(type: string | undefined): string | undefined
+- buildPriorities · method · L590-L621 — private buildPriorities(workspaceId: string): BriefingSection
+- buildUpcomingJobs · method · L623-L636 — private async buildUpcomingJobs(workspaceId: string): Promise<BriefingSection>
+- buildOpenLoops · method · L638-L652 — private buildOpenLoops(workspaceId: string): BriefingSection
+- buildMailboxSummary · method · L654-L699 — private async buildMailboxSummary(workspaceId: string): Promise<BriefingSection>
+- buildAwarenessDigest · method · L701-L795 — private async buildAwarenessDigest(workspaceId: string): Promise<BriefingSection>
+- buildEvolutionMetrics · method · L800-L838 — private async buildEvolutionMetrics(workspaceId: string): Promise<BriefingSection>
+- getConfig · method · L842-L851 — getConfig(workspaceId: string): BriefingConfig
+- saveConfig · method · L853-L856 — saveConfig(workspaceId: string, config: BriefingConfig): void
+- formatBriefingAsText · method · L860-L884 — private formatBriefingAsText(briefing: Briefing): string
+- ensureSchema · method · L888-L914 — private ensureSchema(): void
+- saveBriefingToDB · method · L916-L934 — private saveBriefingToDB(briefing: Briefing): void
+- loadLatestFromDB · method · L936-L955 — private loadLatestFromDB(workspaceId: string): Briefing | undefined
+- saveConfigToDB · method · L957-L978 — private saveConfigToDB(workspaceId: string, config: BriefingConfig): void
+- loadConfigFromDB · method · L980-L997 — private loadConfigFromDB(workspaceId: string): BriefingConfig | null
+- log · method · L999-L1002 — private log(...args: unknown[]): void

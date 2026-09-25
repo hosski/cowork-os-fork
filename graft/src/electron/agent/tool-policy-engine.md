@@ -1,0 +1,29 @@
+# src/electron/agent/tool-policy-engine.ts
+
+- ToolLane · type · L16-L26 — type ToolLane = | "core" | "code" | "research" | "browser" | "integration" | "artifact" | "memory" | "system" | "admin" | "orchestration";
+- ToolExposure · type · L28-L28 — type ToolExposure = "always" | "conditional" | "explicit_only";
+- ToolExposureMetadata · interface · L30-L34 — interface ToolExposureMetadata
+- ToolAvailabilityContext · interface · L36-L40 — interface ToolAvailabilityContext extends ToolPolicyContext
+- ToolAvailabilityResult · interface · L42-L46 — interface ToolAvailabilityResult
+- ToolPolicyContext · interface · L48-L55 — interface ToolPolicyContext
+- ToolPolicyResult · interface · L57-L62 — interface ToolPolicyResult
+- BlockedTool · interface · L64-L68 — interface BlockedTool
+- normalizeTaskText · function · L244-L248 — function normalizeTaskText(taskText?: string): string
+- hasBrowserSurfaceIntent · function · L250-L252 — function hasBrowserSurfaceIntent(taskText: string): boolean
+- hasPdfVisualIntent · function · L254-L256 — function hasPdfVisualIntent(taskText: string): boolean
+- hasNativeDesktopGuiIntent · function · L258-L272 — function hasNativeDesktopGuiIntent(taskText: string): boolean
+- hasToolAffinity · function · L274-L286 — function hasToolAffinity(toolName: string, tools?: Iterable<string>): boolean
+- inferToolExposureMetadata · function · L288-L386 — function inferToolExposureMetadata( toolName: string, runtime?: RuntimeToolMetadata, ): ToolExposureMetadata
+- getToolExposureMetadata · function · L388-L390 — function getToolExposureMetadata(toolName: string): ToolExposureMetadata
+- evaluateToolAvailability · function · L392-L515 — function evaluateToolAvailability( toolName: string, ctx: ToolAvailabilityContext, runtime?: RuntimeToolMetadata, ): ToolAvailabilityResult
+- isReadOnlyByPrefix · function · L605-L607 — function isReadOnlyByPrefix(toolName: string): boolean
+- isMutatingGitTool · function · L609-L611 — function isMutatingGitTool(toolName: string): boolean
+- isMutatingTool · function · L613-L626 — function isMutatingTool(toolName: string): boolean
+- inferModeFromConversationMode · function · L628-L631 — function inferModeFromConversationMode(conversationMode?: ConversationMode): ExecutionMode | null
+- normalizeExecutionMode · function · L633-L639 — function normalizeExecutionMode( executionMode: ExecutionMode | undefined, conversationMode?: ConversationMode, ): ExecutionMode
+- normalizeTaskDomain · function · L641-L643 — function normalizeTaskDomain(taskDomain: TaskDomain | undefined): TaskDomain
+- applyModeGate · function · L645-L666 — function applyModeGate(toolName: string, mode: ExecutionMode): string | null
+- applyHumanInputGate · function · L668-L677 — function applyHumanInputGate( toolName: string, mode: ExecutionMode, policy?: HumanInputPolicy, ): string | null
+- applyDomainGate · function · L679-L705 — function applyDomainGate( toolName: string, domain: TaskDomain, shellEnabled?: boolean, ): string | null
+- evaluateToolPolicy · function · L707-L727 — function evaluateToolPolicy(toolName: string, ctx: ToolPolicyContext): ToolPolicyResult
+- filterToolsByPolicy · function · L729-L751 — function filterToolsByPolicy<T extends { name: string }>( tools: T[], ctx: ToolPolicyContext, ): { tools: T[]; blocked: BlockedTool[] }

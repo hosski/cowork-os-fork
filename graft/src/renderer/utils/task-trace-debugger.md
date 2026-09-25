@@ -1,0 +1,24 @@
+# src/renderer/utils/task-trace-debugger.ts
+
+- asObject · function · L12-L15 — function asObject(value: unknown): Record<string, unknown>
+- normalizeText · function · L17-L19 — function normalizeText(value: unknown): string
+- truncate · function · L21-L25 — function truncate(value: string, length = 240): string
+- humanizeToken · function · L27-L29 — function humanizeToken(token: string): string
+- getEffectiveEventType · function · L31-L35 — function getEffectiveEventType(event: TaskEvent): string
+- inferRowActorFromEvent · function · L37-L64 — function inferRowActorFromEvent(event: TaskEvent): TaskTraceRowActor
+- toRowLabel · function · L66-L81 — function toRowLabel(actor: TaskTraceRowActor): string
+- extractEventMessage · function · L83-L103 — function extractEventMessage(payload: Record<string, unknown>): string
+- extractDurationMs · function · L105-L113 — function extractDurationMs(payload: Record<string, unknown>): number | undefined
+- toStatusTone · function · L115-L133 — function toStatusTone(status: string | undefined): TaskTraceBadge["tone"]
+- formatBadge · function · L135-L137 — function formatBadge(label: string, tone?: TaskTraceBadge["tone"]): TaskTraceBadge
+- buildInspectorFields · function · L139-L147 — function buildInspectorFields( entries: Array<[string, string | undefined]>, ): TaskTraceInspectorField[]
+- getSemanticEventDuration · function · L149-L153 — function getSemanticEventDuration(event: UiTimelineEvent): number | undefined
+- getSemanticEventActionKind · function · L155-L157 — function getSemanticEventActionKind(event: UiTimelineEvent): string | undefined
+- normalizeTaskTraceMarkdownDisplay · function · L159-L164 — function normalizeTaskTraceMarkdownDisplay(text: string): string
+- inferTranscriptRowActor · function · L166-L206 — function inferTranscriptRowActor( event: UiTimelineEvent, matchedRawEvents: TaskEvent[], ): TaskTraceRowActor
+- buildTaskTraceTranscriptRows · function · L208-L297 — function buildTaskTraceTranscriptRows( semanticTimeline: UiTimelineEvent[], rawEvents: TaskEvent[], ): TaskTraceRow[]
+- buildDebugRowTitle · function · L299-L324 — function buildDebugRowTitle(event: TaskEvent, payload: Record<string, unknown>): string
+- buildDebugRowBody · function · L326-L335 — function buildDebugRowBody(payload: Record<string, unknown>): string | undefined
+- buildTaskTraceDebugRows · function · L337-L409 — function buildTaskTraceDebugRows(rawEvents: TaskEvent[]): TaskTraceRow[]
+- filterTaskTraceRows · function · L411-L434 — function filterTaskTraceRows( rows: TaskTraceRow[], actorFilter: TaskTraceRowActor | "all", query: string, ): TaskTraceRow[]
+- serializeTaskTraceRows · function · L436-L462 — function serializeTaskTraceRows(rows: TaskTraceRow[], tab: TaskTraceTab): string

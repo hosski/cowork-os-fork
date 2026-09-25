@@ -1,0 +1,29 @@
+# src/electron/cron/types.ts
+
+- CronSchedule · type · L15-L18 — type CronSchedule = | { kind: "at"; atMs: number } | { kind: "every"; everyMs: number; anchorMs?: number } | { kind: "cron"; expr: string; tz?: string };
+- CronJobStatus · type · L23-L29 — type CronJobStatus = | "ok" | "partial_success" | "needs_user_action" | "error" | "skipped" | "timeout";
+- CronDeliveryMode · type · L31-L31 — type CronDeliveryMode = "direct" | "outbox";
+- CronDeliverableStatus · type · L32-L32 — type CronDeliverableStatus = "none" | "queued" | "sent" | "dead_letter";
+- CronRunHistoryEntry · interface · L37-L52 — interface CronRunHistoryEntry
+- CronWorkspaceContext · interface · L54-L59 — interface CronWorkspaceContext
+- CronJobRunMode · type · L61-L61 — type CronJobRunMode = "new_task" | "thread_follow_up" | "workflow";
+- CronThreadAutomationConfig · interface · L63-L69 — interface CronThreadAutomationConfig
+- CronJobState · interface · L74-L88 — interface CronJobState
+- CronDeliveryConfig · interface · L93-L102 — interface CronDeliveryConfig
+- CronJob · interface · L107-L153 — interface CronJob
+- CronStoreFile · interface · L158-L162 — interface CronStoreFile
+- CronOutboxEntry · interface · L164-L184 — interface CronOutboxEntry
+- CronJobCreate · type · L189-L191 — type CronJobCreate = Omit<CronJob, "id" | "createdAtMs" | "updatedAtMs" | "state"> & { state?: Partial<CronJobState>; };
+- CronJobPatch · type · L196-L198 — type CronJobPatch = Partial<Omit<CronJob, "id" | "createdAtMs" | "state">> & { state?: Partial<CronJobState>; };
+- CronEvent · interface · L203-L213 — interface CronEvent
+- CronServiceDeps · interface · L218-L333 — interface CronServiceDeps
+- CronWebhookConfig · interface · L338-L343 — interface CronWebhookConfig
+- CronStatusSummary · interface · L348-L361 — interface CronStatusSummary
+- CronRunHistoryResult · interface · L366-L373 — interface CronRunHistoryResult
+- CronRunResult · type · L378-L381 — type CronRunResult = | { ok: true; ran: true; taskId: string } | { ok: true; ran: false; reason: "not-due" | "disabled" | "not-found" | "already-running" } | { ok: false; error: string };
+- CronRemoveResult · type · L383-L385 — type CronRemoveResult = | { ok: true; removed: boolean } | { ok: false; removed: false; error: string };
+- CronAddResult · type · L387-L387 — type CronAddResult = { ok: true; job: CronJob } | { ok: false; error: string };
+- CronUpdateResult · type · L388-L388 — type CronUpdateResult = { ok: true; job: CronJob } | { ok: false; error: string };
+- CronListResult · type · L389-L389 — type CronListResult = CronJob[];
+- describeSchedule · function · L394-L434 — function describeSchedule(schedule: CronSchedule): string
+- parseIntervalToMs · function · L440-L474 — function parseIntervalToMs(interval: string): number | null

@@ -1,0 +1,38 @@
+# src/electron/preview/LocalPreviewProcessService.ts
+
+- PreviewRuntime · type · L82-L89 — type PreviewRuntime = { key: string; info: LocalPreviewProcessInfo; request: LocalPreviewStartRequest; child: ChildProcess; stopRequested: boolean; logListeners: Map<string, (event: LocalPreviewLogEvent) => void>; };
+- LocalPreviewProcessServiceDeps · interface · L91-L97 — interface LocalPreviewProcessServiceDeps
+- cloneTemplate · function · L99-L101 — function cloneTemplate(template: LocalPreviewCommandTemplate): LocalPreviewCommandTemplate
+- normalizeHealthPath · function · L103-L112 — function normalizeHealthPath(rawPath?: string): string
+- normalizePort · function · L114-L120 — function normalizePort(port?: number): number
+- isTemplateId · function · L122-L124 — function isTemplateId(value: unknown): value is LocalPreviewTemplateId
+- substituteTemplate · function · L126-L130 — function substituteTemplate(template: LocalPreviewCommandTemplate, port: number): string[]
+- formatCommand · function · L132-L136 — function formatCommand(template: LocalPreviewCommandTemplate, args: string[]): string
+- redactLogOutput · function · L138-L140 — function redactLogOutput(output: string): string
+- appendLogLines · function · L142-L150 — function appendLogLines(existing: string[], output: string): string[]
+- buildPreviewEnvironment · function · L152-L166 — function buildPreviewEnvironment(port: number): NodeJS.ProcessEnv
+- killProcessTree · function · L168-L187 — function killProcessTree(child: ChildProcess): void
+- waitForProcessExit · function · L189-L216 — async function waitForProcessExit(child: ChildProcess): Promise<void>
+- resolveDirectory · function · L218-L223 — async function resolveDirectory(rawPath: string): Promise<string>
+- allocateLoopbackPort · function · L225-L245 — async function allocateLoopbackPort(requestedPort: number): Promise<number>
+- onError · function · L228-L231 — onError = (error: Error)
+- onListening · function · L232-L240 — onListening = ()
+- checkUrl · function · L247-L280 — async function checkUrl( url: string, timeoutMs = HEALTH_TIMEOUT_MS, ): Promise<{ ok: boolean; statusCode?: number; latencyMs: number; error?: string; }>
+- finish · function · L259-L263 — finish = (result: { ok: boolean; statusCode?: number; error?: string })
+- LocalPreviewProcessService · class · L282-L544 — class LocalPreviewProcessService
+- constructor · method · L292-L298 — constructor(deps: LocalPreviewProcessServiceDeps = {})
+- listTemplates · method · L300-L302 — listTemplates(): LocalPreviewCommandTemplate[]
+- start · method · L304-L337 — async start( request: LocalPreviewStartRequest & { workspacePath: string }, ): Promise<LocalPreviewProcessInfo>
+- restart · method · L339-L344 — async restart(previewId: string): Promise<LocalPreviewProcessInfo>
+- stop · method · L346-L361 — async stop(previewId: string): Promise<LocalPreviewProcessInfo>
+- get · method · L363-L366 — get(previewId: string): LocalPreviewProcessInfo | null
+- list · method · L368-L372 — list(workspaceId?: string): LocalPreviewProcessInfo[]
+- health · method · L374-L386 — async health(previewId: string): Promise<LocalPreviewHealthResult>
+- subscribeLogs · method · L388-L393 — subscribeLogs(previewId: string, listener: (event: LocalPreviewLogEvent) => void): () => void
+- stopAll · method · L395-L400 — async stopAll(): Promise<void>
+- startInternal · method · L402-L488 — private async startInternal( request: LocalPreviewStartRequest & { workspacePath: string; workingDirectory: string }, ): Promise<LocalPreviewProcessInfo>
+- attachOutput · method · L490-L510 — private attachOutput( runtime: PreviewRuntime, stream: "stdout" | "stderr", output: NodeJS.ReadableStream | null, ): void
+- updateAfterExit · method · L512-L533 — private updateAfterExit(runtime: PreviewRuntime, exitCode: number | null, error?: string): void
+- getRuntime · method · L535-L539 — private getRuntime(previewId: string): PreviewRuntime
+- cloneInfo · method · L541-L543 — private cloneInfo(info: LocalPreviewProcessInfo): LocalPreviewProcessInfo
+- getLocalPreviewProcessService · function · L548-L560 — function getLocalPreviewProcessService(): LocalPreviewProcessService

@@ -1,0 +1,34 @@
+# src/electron/memory/SupermemoryService.ts
+
+- SupermemoryFailureState · interface · L18-L23 — interface SupermemoryFailureState
+- SupermemoryWorkspaceRef · type · L25-L25 — type SupermemoryWorkspaceRef = Pick<Workspace, "id" | "name">;
+- SupermemoryProfileResponse · interface · L27-L44 — interface SupermemoryProfileResponse
+- SupermemorySearchResponse · interface · L46-L57 — interface SupermemorySearchResponse
+- SupermemoryRememberResponse · interface · L59-L65 — interface SupermemoryRememberResponse
+- SupermemoryForgetResponse · interface · L67-L70 — interface SupermemoryForgetResponse
+- SupermemoryService · class · L88-L717 — class SupermemoryService
+- loadSettings · method · L97-L117 — static loadSettings(): SupermemorySettings
+- getSettingsView · method · L119-L133 — static getSettingsView(): Omit<SupermemorySettings, "apiKey"> & { apiKeyConfigured: boolean }
+- saveSettings · method · L135-L157 — static saveSettings(settings: SupermemorySettings): void
+- clearCache · method · L159-L161 — static clearCache(): void
+- getConfigStatus · method · L163-L180 — static getConfigStatus(): SupermemoryConfigStatus
+- isConfigured · method · L182-L189 — static isConfigured(): boolean
+- testConnection · method · L191-L209 — static async testConnection(): Promise<{ success: boolean; error?: string }>
+- getProfile · method · L211-L268 — static async getProfile(args: { workspace: SupermemoryWorkspaceRef; query?: string; containerTag?: string; threshold?: number; }): Promise<{ containerTag: string; staticFacts: string[]; dynamicFacts: string[]; results: Array<{ id?: string; text: string; similarity?: number; updatedAt?: string; metadata?: Record<string, unknown>; }>; total: number; }>
+- search · method · L270-L325 — static async search(args: { workspace: SupermemoryWorkspaceRef; query: string; containerTag?: string; limit?: number; threshold?: number; rerank?: boolean; searchMode?: SupermemorySearchMode; }): Promise<{ containerTag: string; results: Array<{ id?: string; text: string; similarity?: number; updatedAt?: string; metadata?: Record<string, unknown>; }>; total: number; timingMs?: number; }>
+- remember · method · L327-L390 — static async remember(args: { workspace: SupermemoryWorkspaceRef; content: string; containerTag?: string; metadata?: Record<string, unknown>; taskId?: string; origin?: MemoryWriteOrigin; skipMemoryWriteGate?: boolean; }): Promise<{ containerTag: string; memoryIds: string[]; staged?: boolean; pendingId?: string; blocked?: boolean; error?: string; }>
+- forget · method · L392-L415 — static async forget(args: { workspace: SupermemoryWorkspaceRef; containerTag?: string; memoryId?: string; content?: string; reason?: string; }): Promise<{ containerTag: string; id?: string; forgotten: boolean }>
+- mirrorMemory · method · L417-L470 — static async mirrorMemory(args: { workspace: SupermemoryWorkspaceRef; taskId?: string; memoryType: string; content: string; createdAt?: number; origin?: MemoryWriteOrigin; skipMemoryWriteGate?: boolean; }): Promise<void>
+- buildPromptContext · method · L472-L518 — static async buildPromptContext(args: { workspace: SupermemoryWorkspaceRef; query: string; containerTag?: string; }): Promise<string>
+- resolveContainerTag · method · L520-L536 — static resolveContainerTag(workspace: SupermemoryWorkspaceRef, override?: string): string
+- normalizeSettings · method · L538-L555 — private static normalizeSettings(settings?: SupermemorySettings | null): SupermemorySettings
+- normalizeBaseUrl · method · L557-L573 — private static normalizeBaseUrl(baseUrl?: string): string
+- normalizeThreshold · method · L575-L578 — private static normalizeThreshold(value?: number): number
+- normalizeCustomContainers · method · L580-L597 — private static normalizeCustomContainers( containers?: SupermemoryCustomContainer[], ): SupermemoryCustomContainer[]
+- sanitizeContainerTag · method · L599-L608 — private static sanitizeContainerTag(input: string): string
+- isAllowedContainerTagOverride · method · L610-L626 — private static isAllowedContainerTagOverride( workspace: SupermemoryWorkspaceRef, explicitTag: string, ): boolean
+- pickResultText · method · L628-L630 — private static pickResultText(item: { memory?: string; chunk?: string }): string
+- getCircuitBreakerUntil · method · L632-L642 — private static getCircuitBreakerUntil(): number | null
+- recordSuccess · method · L644-L651 — private static recordSuccess(): void
+- recordFailure · method · L653-L667 — private static recordFailure(error: unknown): void
+- request · method · L669-L716 — private static async request<T>( endpoint: string, init: RequestInit, options?: { timeoutMs?: number; ignoreCircuitBreaker?: boolean }, ): Promise<T>

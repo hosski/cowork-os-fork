@@ -1,0 +1,37 @@
+# src/renderer/components/MemoryHubSettings.tsx
+
+- BadgeTone · type · L49-L49 — type BadgeTone = "neutral" | "success" | "warning" | "error";
+- badgeClass · function · L52-L54 — function badgeClass(tone: BadgeTone)
+- formatTimestamp · function · L56-L63 — function formatTimestamp(timestamp?: number): string | null
+- formatBytes · function · L65-L70 — function formatBytes(bytes?: number): string | null
+- formatConfidence · function · L72-L75 — function formatConfidence(confidence?: number): string
+- MemoryHubSettings · function · L77-L2453 — function MemoryHubSettings(props?: { initialWorkspaceId?: string; onSettingsChanged?: () => void; })
+- loadAll · function · L184-L240 — loadAll = async ()
+- refreshKit · function · L242-L254 — refreshKit = async ()
+- refreshLayerPreview · function · L256-L265 — refreshLayerPreview = async ()
+- refreshObservationBackfillStatus · function · L267-L274 — refreshObservationBackfillStatus = async ()
+- refreshMemoryApprovals · function · L276-L291 — refreshMemoryApprovals = async ()
+- approveMemoryWrite · function · L293-L310 — approveMemoryWrite = async (id: string)
+- rejectMemoryWrite · function · L312-L332 — rejectMemoryWrite = async (id: string)
+- searchObservations · function · L334-L358 — searchObservations = async ()
+- loadObservation · function · L360-L382 — loadObservation = async (memoryId: string)
+- updateObservationPrivacy · function · L384-L400 — updateObservationPrivacy = async (privacyState: MemoryObservationPrivacyState)
+- saveObservationMetadata · function · L402-L421 — saveObservationMetadata = async ()
+- redactObservation · function · L423-L438 — redactObservation = async ()
+- deleteObservation · function · L440-L461 — deleteObservation = async ()
+- promoteObservation · function · L463-L479 — promoteObservation = async ()
+- rebuildObservationMetadata · function · L481-L492 — rebuildObservationMetadata = async ()
+- refreshAwareness · function · L494-L510 — refreshAwareness = async ()
+- refreshAutonomy · function · L512-L532 — refreshAutonomy = async ()
+- initKit · function · L534-L549 — initKit = async ()
+- createProject · function · L551-L568 — createProject = async ()
+- saveFeatures · function · L570-L581 — saveFeatures = async (updates: Partial<MemoryFeaturesSettings>)
+- renderPendingPayload · function · L583-L592 — renderPendingPayload = (item: MemoryWriteApprovalItem): string
+- saveAwarenessConfig · function · L594-L605 — saveAwarenessConfig = async (nextConfig: AwarenessConfig)
+- updateAwarenessSource · function · L607-L622 — updateAwarenessSource = async ( source: AwarenessSource, updates: Partial<AwarenessConfig["sources"][AwarenessSource]>, )
+- updateBelief · function · L624-L631 — updateBelief = async (belief: AwarenessBelief, patch: Record<string, unknown>)
+- deleteBelief · function · L633-L640 — deleteBelief = async (beliefId: string)
+- saveAutonomyConfig · function · L642-L653 — saveAutonomyConfig = async (nextConfig: AutonomyConfig)
+- updateDecision · function · L655-L662 — updateDecision = async (decisionId: string, patch: Record<string, unknown>)
+- saveSupermemorySettings · function · L664-L698 — saveSupermemorySettings = async ()
+- testSupermemoryConnection · function · L700-L718 — testSupermemoryConnection = async ()

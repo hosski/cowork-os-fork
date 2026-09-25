@@ -1,0 +1,27 @@
+# connectors/templates/mcp-connector/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L35 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L37-L46 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L48-L55 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- ToolProvider · type · L78-L81 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L85-L267 — class StdioMCPServer
+- constructor · method · L89-L92 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L94-L106 — start(): void
+- stop · method · L108-L114 — stop(): void
+- handleLine · method · L116-L126 — private handleLine(line: string): void
+- handleMessage · method · L128-L137 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L139-L172 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L174-L180 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L182-L196 — private handleInitialize(_params: any): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsList · method · L198-L200 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L202-L229 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L231-L234 — private handleShutdown(): Record<string, never>
+- sendResult · method · L236-L239 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L241-L248 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L250-L252 — private sendMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- requireInitialized · method · L254-L258 — private requireInitialized(): void
+- createError · method · L260-L266 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }

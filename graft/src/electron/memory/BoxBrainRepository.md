@@ -1,0 +1,29 @@
+# src/electron/memory/BoxBrainRepository.ts
+
+- BoxBrainRunState · type · L5-L5 — type BoxBrainRunState = BoxBrainRunStatus | "running";
+- BoxBrainSourceRecord · interface · L7-L30 — interface BoxBrainSourceRecord
+- BoxBrainItemRecord · interface · L32-L54 — interface BoxBrainItemRecord
+- BoxBrainRunRecord · interface · L56-L70 — interface BoxBrainRunRecord
+- BoxBrainSourcePatch · type · L72-L86 — type BoxBrainSourcePatch = Partial< Pick< BoxBrainSourceRecord, | "lastRunAt" | "lastSuccessAt" | "lastImprovementRunAt" | "lastDiscoveredCount" | "lastIndexedCount" | "lastUnchangedCount" | "lastSkippedCount" | "lastDeletedCount" > > & { lastError?: string | null; };
+- BoxBrainItemInput · type · L88-L92 — type BoxBrainItemInput = Omit<BoxBrainItemRecord, "id" | "firstSeenAt" | "lastSeenAt"> & { id?: string; firstSeenAt?: number; lastSeenAt?: number; };
+- optionalNumber · function · L94-L96 — function optionalNumber(value: unknown): number | undefined
+- optionalString · function · L98-L100 — function optionalString(value: unknown): string | undefined
+- BoxBrainRepository · class · L102-L515 — class BoxBrainRepository
+- constructor · method · L103-L103 — constructor(private readonly db: Database.Database)
+- ensureSource · method · L105-L186 — ensureSource( workspaceId: string, serverId: string, settings: BoxBrainSettings, ): BoxBrainSourceRecord
+- findSource · method · L188-L200 — findSource( workspaceId: string, serverId: string, rootFolderId: string, ): BoxBrainSourceRecord | null
+- findSourceById · method · L202-L207 — findSourceById(id: string): BoxBrainSourceRecord | null
+- listSources · method · L209-L214 — listSources(): BoxBrainSourceRecord[]
+- listDueSources · method · L216-L222 — listDueSources(now = Date.now()): BoxBrainSourceRecord[]
+- updateSource · method · L224-L250 — updateSource(id: string, patch: BoxBrainSourcePatch): BoxBrainSourceRecord | null
+- createRun · method · L252-L289 — createRun(sourceId: string, workspaceId: string, startedAt = Date.now()): BoxBrainRunRecord
+- updateRun · method · L291-L331 — updateRun( id: string, patch: Partial< Pick< BoxBrainRunRecord, | "status" | "discoveredCount" | "indexedCount" | "unchangedCount" | "skippedCount" | "deletedCount" | "improvementRunId" | "error" | "completedAt" > >, ): BoxBrainRunRecord | null
+- findRunById · method · L333-L338 — findRunById(id: string): BoxBrainRunRecord | null
+- listRuns · method · L340-L348 — listRuns(sourceId: string, limit = 20): BoxBrainRunRecord[]
+- findItem · method · L350-L355 — findItem(sourceId: string, boxId: string): BoxBrainItemRecord | null
+- listItems · method · L357-L365 — listItems(sourceId: string): BoxBrainItemRecord[]
+- upsertItem · method · L367-L426 — upsertItem(input: BoxBrainItemInput): BoxBrainItemRecord
+- updateItemStatus · method · L428-L443 — updateItemStatus( sourceId: string, boxId: string, status: BoxBrainItemStatus, patch: { error?: string; deletedAt?: number; lastSeenAt?: number } = {}, ): BoxBrainItemRecord | null
+- mapSource · method · L445-L470 — private mapSource(row: Record<string, unknown>): BoxBrainSourceRecord
+- mapItem · method · L472-L496 — private mapItem(row: Record<string, unknown>): BoxBrainItemRecord
+- mapRun · method · L498-L514 — private mapRun(row: Record<string, unknown>): BoxBrainRunRecord

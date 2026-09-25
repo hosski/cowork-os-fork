@@ -1,0 +1,32 @@
+# src/renderer/components/markdown-components.tsx
+
+- CodeBlockProps · type · L27-L31 — type CodeBlockProps = HTMLAttributes<HTMLElement> & { children?: ReactNode; className?: string; node?: unknown; };
+- MarkdownComponentsOptions · type · L33-L46 — type MarkdownComponentsOptions = { workspacePath?: string; onOpenViewer?: (path: string) => void; onOpenWebLinkInSidebar?: (url: string) => void; citations?: Array<{ index: number; url: string; title: string; snippet: string; domain: string; accessedAt: number; sourceTool: string; }>; };
+- MarkdownAnchorProps · type · L48-L52 — type MarkdownAnchorProps = AnchorHTMLAttributes<HTMLAnchorElement> & { href?: string; children?: ReactNode; node?: unknown; };
+- MarkdownImageProps · type · L54-L59 — type MarkdownImageProps = ImgHTMLAttributes<HTMLImageElement> & { src?: string; alt?: string; title?: string; node?: unknown; };
+- loadMermaid · function · L64-L67 — function loadMermaid()
+- initMermaid · function · L82-L111 — function initMermaid(mermaid: typeof import("mermaid").default)
+- sanitizeMermaidSvg · function · L113-L141 — function sanitizeMermaidSvg(svgMarkup: string): SVGSVGElement | null
+- MermaidDiagram · function · L143-L216 — function MermaidDiagram({ chart }: { chart: string })
+- getTextContent · function · L218-L225 — function getTextContent(node: ReactNode): string
+- normalizeCodeBlockTextForDisplay · function · L227-L233 — function normalizeCodeBlockTextForDisplay(codeText: string, language?: string): string
+- CodeBlock · function · L235-L317 — function CodeBlock({ children, className, ...props }: CodeBlockProps)
+- handleCopy · function · L243-L251 — handleCopy = async ()
+- getHeadingIcon · function · L321-L324 — function getHeadingIcon(emoji: string): ReactNode
+- renderHeading · function · L326-L345 — function renderHeading(Tag: "h1" | "h2" | "h3")
+- isExternalHttpLink · function · L347-L348 — isExternalHttpLink = (href: string): boolean
+- stripHttpScheme · function · L420-L420 — stripHttpScheme = (value: string): string
+- stripHtmlTags · function · L425-L431 — function stripHtmlTags(value: string): string
+- extractDomainFromUrl · function · L433-L448 — function extractDomainFromUrl(raw: string): string
+- isXComLink · function · L450-L465 — function isXComLink(raw: string): boolean
+- isUrlLikeLabel · function · L467-L468 — isUrlLikeLabel = (value: string): boolean
+- looksLikeLocalFilePath · function · L470-L491 — function looksLikeLocalFilePath(value: string): boolean
+- isFileLink · function · L493-L501 — function isFileLink(href: string): boolean
+- normalizeFileHref · function · L503-L517 — function normalizeFileHref(href: string): string
+- resolveFileLinkTarget · function · L519-L535 — function resolveFileLinkTarget(href: string, linkText: string): string | null
+- buildMarkdownComponents · function · L539-L811 — function buildMarkdownComponents(options: MarkdownComponentsOptions)
+- MarkdownLink · function · L546-L744 — MarkdownLink = ({ href, children, ...props }: MarkdownAnchorProps)
+- handleClick · function · L562-L581 — handleClick = async (event: ReactMouseEvent)
+- handleContextMenu · function · L583-L592 — handleContextMenu = async (event: ReactMouseEvent)
+- handleClick · function · L609-L621 — handleClick = async (event: ReactMouseEvent)
+- replaceCitationsInChildren · function · L746-L783 — replaceCitationsInChildren = (children: ReactNode): ReactNode

@@ -1,0 +1,22 @@
+# src/electron/agent/tools/x-search-tools.ts
+
+- XCredentialSource · type · L17-L17 — type XCredentialSource = "xai-oauth" | "xai";
+- XSearchInput · interface · L19-L27 — interface XSearchInput
+- XSearchCredential · interface · L29-L33 — interface XSearchCredential
+- normalizeBaseUrl · function · L35-L37 — function normalizeBaseUrl(value?: string): string
+- normalizeApiKey · function · L39-L42 — function normalizeApiKey(value?: string): string | undefined
+- normalizeHandles · function · L44-L57 — function normalizeHandles(handles: unknown, fieldName: string): string[]
+- extractResponseText · function · L59-L74 — function extractResponseText(payload: Any): string
+- extractInlineCitations · function · L76-L93 — function extractInlineCitations(payload: Any): Any[]
+- parseHttpError · function · L95-L112 — async function parseHttpError(response: Response): Promise<string>
+- isRetryableFetchError · function · L114-L122 — function isRetryableFetchError(error: Any): boolean
+- XSearchTools · class · L124-L372 — class XSearchTools
+- constructor · method · L125-L129 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L131-L133 — setWorkspace(workspace: Workspace): void
+- hasCredentials · method · L135-L141 — static hasCredentials(settings: LLMSettings = LLMProviderFactory.loadSettings()): boolean
+- resolveXaiCredential · method · L143-L186 — private async resolveXaiCredential(): Promise<XSearchCredential>
+- getModel · method · L188-L190 — private getModel(): string
+- getTimeoutSeconds · method · L192-L197 — private getTimeoutSeconds(): number
+- getRetries · method · L199-L202 — private getRetries(): number
+- pause · method · L204-L206 — private async pause(attempt: number): Promise<void>
+- search · method · L208-L371 — async search(input: XSearchInput): Promise<Any>

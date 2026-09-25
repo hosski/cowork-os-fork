@@ -1,0 +1,26 @@
+# src/electron/gateway/channels/imessage-client.ts
+
+- ImessageRpcError · interface · L18-L22 — interface ImessageRpcError
+- ImessageRpcResponse · interface · L27-L34 — interface ImessageRpcResponse<T = unknown>
+- ImessageRpcNotification · interface · L39-L42 — interface ImessageRpcNotification
+- ImessageAttachment · interface · L47-L51 — interface ImessageAttachment
+- ImessagePayload · interface · L56-L72 — interface ImessagePayload
+- ImessageRpcClientOptions · interface · L77-L86 — interface ImessageRpcClientOptions
+- PendingRequest · interface · L91-L95 — interface PendingRequest
+- ImessageSendOptions · interface · L100-L113 — interface ImessageSendOptions
+- ImessageSendResult · interface · L118-L121 — interface ImessageSendResult
+- resolveUserPath · function · L126-L131 — function resolveUserPath(inputPath: string): string
+- ImessageRpcClient · class · L138-L379 — class ImessageRpcClient
+- constructor · method · L150-L158 — constructor(opts: ImessageRpcClientOptions = {})
+- start · method · L163-L205 — async start(): Promise<void>
+- stop · method · L210-L228 — async stop(): Promise<void>
+- waitForClose · method · L233-L235 — async waitForClose(): Promise<void>
+- isRunning · method · L240-L242 — get isRunning(): boolean
+- request · method · L247-L284 — async request<T = unknown>( method: string, params?: Record<string, unknown>, opts?: { timeoutMs?: number }, ): Promise<T>
+- handleLine · method · L289-L350 — private handleLine(line: string): void
+- parseImsgError · method · L355-L367 — private parseImsgError(line: string): string
+- failAll · method · L372-L378 — private failAll(err: Error): void
+- createImessageRpcClient · function · L384-L390 — async function createImessageRpcClient( opts: ImessageRpcClientOptions = {}, ): Promise<ImessageRpcClient>
+- probeImsg · function · L395-L438 — async function probeImsg( timeoutMs: number = 2000, opts: { cliPath?: string; dbPath?: string } = {}, ): Promise<{ ok: boolean; error?: string; fatal?: boolean }>
+- normalizeImessageHandle · function · L443-L465 — function normalizeImessageHandle(handle: string): string
+- formatImessageChatTarget · function · L470-L473 — function formatImessageChatTarget(chatId: number | undefined): string | undefined

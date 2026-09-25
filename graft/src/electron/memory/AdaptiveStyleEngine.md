@@ -1,0 +1,24 @@
+# src/electron/memory/AdaptiveStyleEngine.ts
+
+- StyleSignal · interface · L32-L38 — interface StyleSignal
+- AdaptationRecord · interface · L40-L46 — interface AdaptationRecord
+- AdaptiveStyleState · interface · L48-L67 — interface AdaptiveStyleState
+- getDefaultState · function · L98-L110 — function getDefaultState(): AdaptiveStyleState
+- getWeekStart · function · L112-L117 — function getWeekStart(): number
+- countEmojiInText · function · L119-L122 — function countEmojiInText(text: string): number
+- technicalDensity · function · L124-L131 — function technicalDensity(text: string): number
+- shiftOnScale · function · L133-L139 — function shiftOnScale<T>(scale: T[], current: T, direction: "increase" | "decrease"): T | null
+- AdaptiveStyleEngine · class · L143-L539 — class AdaptiveStyleEngine
+- observe · method · L148-L183 — static observe(message: string): void
+- observeFeedback · method · L189-L257 — static observeFeedback(decision?: string, reason?: string): void
+- maybeAdapt · method · L263-L337 — static maybeAdapt(): void
+- getAdaptationHistory · method · L342-L344 — static getAdaptationHistory(): AdaptationRecord[]
+- getObservationStats · method · L349-L365 — static getObservationStats(): { totalMessages: number; weeklyAdaptations: number; maxWeeklyDrift: number; enabled: boolean; lastAdaptationAt: number; }
+- reset · method · L370-L372 — static reset(): void
+- isEnabled · method · L376-L383 — private static isEnabled(): boolean
+- getCurrentStyle · method · L385-L398 — private static getCurrentStyle(): ResponseStylePreferences
+- applySignalToStyle · method · L400-L441 — private static applySignalToStyle( current: ResponseStylePreferences, signal: StyleSignal, ): { dimension: keyof ResponseStylePreferences; newValue: string; reason: string } | null
+- derivePatternSignal · method · L443-L511 — private static derivePatternSignal( state: AdaptiveStyleState, currentStyle: ResponseStylePreferences, ): { dimension: keyof ResponseStylePreferences; newValue: string; reason: string } | null
+- resetWeekIfNeeded · method · L513-L519 — private static resetWeekIfNeeded(state: AdaptiveStyleState): void
+- loadState · method · L521-L530 — private static loadState(): AdaptiveStyleState
+- saveState · method · L532-L538 — private static saveState(state: AdaptiveStyleState): void

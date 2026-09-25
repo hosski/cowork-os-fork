@@ -1,0 +1,26 @@
+# src/electron/agent/skills/grill-engine.ts
+
+- InterrogateResponse · interface · L17-L29 — interface InterrogateResponse
+- BriefResponse · interface · L31-L36 — interface BriefResponse
+- GrillPayload · interface · L38-L46 — interface GrillPayload
+- cleanText · function · L94-L96 — function cleanText(value: any): string
+- stripThinking · function · L98-L101 — function stripThinking(text: string): string
+- normalizeCategory · function · L103-L136 — function normalizeCategory(cat: any): string
+- jsonObject · function · L138-L177 — function jsonObject(text: string): Record<string, any> | null
+- emptyInterrogate · function · L179-L190 — function emptyInterrogate(reason: string = "engine unavailable"): InterrogateResponse
+- forcedQuestion · function · L192-L203 — function forcedQuestion(): InterrogateResponse
+- parseInterrogateResponse · function · L205-L267 — function parseInterrogateResponse(text: string): InterrogateResponse
+- parseBriefResponse · function · L269-L289 — function parseBriefResponse(text: string): string
+- renderRungs · function · L291-L309 — function renderRungs(ladder: any): Array<{ question: string; answer: string; category: string; recommended: string }>
+- renderAnswer · function · L311-L320 — function renderAnswer(rung: any): string
+- isDeferral · function · L322-L324 — function isDeferral(rungs: Array<any>): boolean
+- renderSessionHistory · function · L326-L342 — function renderSessionHistory(sessionHistory: any): string | null
+- renderAttachmentDescription · function · L344-L367 — function renderAttachmentDescription(attachment: any): string | null
+- renderAttachments · function · L369-L380 — function renderAttachments(attachments: any): string | null
+- contextMessage · function · L382-L435 — function contextMessage( text: string, ladder: any, cwd: any, profile: any, attachments?: any, sessionHistory?: any, ): string
+- buildInterrogateMessages · function · L441-L468 — function buildInterrogateMessages( text: string, ladder?: any, cwd?: any, profile?: string, force: boolean = false, attachments?: any, sessionHistory?: any, ): Array<{ role: string; content: string }>
+- buildBriefMessages · function · L470-L482 — function buildBriefMessages( text: string, ladder?: any, cwd?: any, profile?: string, attachments?: any, sessionHistory?: any, ): Array<{ role: string; content: string }>
+- localTemplateBrief · function · L484-L533 — function localTemplateBrief( text: string, ladder?: any, attachments?: any, sessionHistory?: any, ): string
+- LLMInvoker · type · L535-L541 — type LLMInvoker = (options: { messages: Array<{ role: string; content: string }>; temperature: number; max_tokens: number; timeout: number; is_json?: boolean; }) => Promise<string | { content?: string; text?: string; model?: string }>;
+- interrogate · function · L550-L601 — async function interrogate(payload: GrillPayload | any, llm?: LLMInvoker | null): Promise<InterrogateResponse>
+- brief · function · L611-L657 — async function brief(payload: GrillPayload | any, llm?: LLMInvoker | null): Promise<BriefResponse>

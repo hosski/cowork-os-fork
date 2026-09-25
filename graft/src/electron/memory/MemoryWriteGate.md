@@ -1,0 +1,45 @@
+# src/electron/memory/MemoryWriteGate.ts
+
+- MemoryWriteTarget · type · L21-L21 — type MemoryWriteTarget = "archive" | "curated" | "external";
+- MemoryWriteOrigin · type · L22-L29 — type MemoryWriteOrigin = | "agent_tool" | "auto_capture" | "background" | "dreaming" | "distill" | "external_mirror" | "system";
+- MemoryWriteDecision · type · L31-L34 — type MemoryWriteDecision = | { allowed: true } | { allowed: false; staged: true; pendingId: string; summary: string } | { allowed: false; blocked: true; error: string };
+- MemoryWriteRequest · interface · L36-L49 — interface MemoryWriteRequest
+- MemoryWriteGate · class · L51-L634 — class MemoryWriteGate
+- initialize · method · L56-L60 — static initialize(dbManager: DatabaseManager): void
+- evaluate · method · L62-L98 — static evaluate(request: MemoryWriteRequest): MemoryWriteDecision
+- listPending · method · L100-L103 — static listPending(workspaceId?: string, limit = 100): PendingMemoryWrite[]
+- listPendingForDisplay · method · L105-L107 — static listPendingForDisplay(workspaceId?: string, limit = 100): MemoryWriteApprovalItem[]
+- findPending · method · L109-L112 — static findPending(id: string): PendingMemoryWrite | undefined
+- findPendingForDisplay · method · L114-L117 — static findPendingForDisplay(id: string): MemoryWriteApprovalItem | undefined
+- pendingCount · method · L119-L122 — static pendingCount(workspaceId?: string): number
+- applyPending · method · L124-L170 — static async applyPending( id: string, opts: { workspaceId?: string; reviewedBy?: string } = {}, ): Promise<MemoryWriteApprovalItem>
+- markApplied · method · L172-L178 — static markApplied( id: string, resolution = "Applied approved memory write.", ): PendingMemoryWrite | undefined
+- reject · method · L180-L183 — static reject(id: string, resolution = "Rejected memory write."): PendingMemoryWrite | undefined
+- rejectForDisplay · method · L185-L209 — static rejectForDisplay( id: string, opts: { workspaceId?: string; reviewedBy?: string; resolution?: string } = {}, ): MemoryWriteApprovalItem
+- rejectAllPending · method · L220-L242 — static rejectAllPending( opts: { workspaceId?: string; reviewedBy?: string; resolution?: string; } = {}, ): number
+- markFailed · method · L244-L250 — static markFailed(id: string, resolution: string): PendingMemoryWrite | undefined
+- shouldStage · method · L252-L281 — private static shouldStage(request: MemoryWriteRequest): boolean
+- shouldBlock · method · L283-L285 — private static shouldBlock(request: MemoryWriteRequest): boolean
+- replay · method · L287-L301 — private static async replay(pending: PendingMemoryWrite): Promise<void>
+- replayArchive · method · L303-L328 — private static async replayArchive(pending: PendingMemoryWrite): Promise<void>
+- replayCurated · method · L330-L390 — private static async replayCurated(pending: PendingMemoryWrite): Promise<void>
+- replayExternal · method · L392-L435 — private static async replayExternal(pending: PendingMemoryWrite): Promise<void>
+- getWorkspaceRef · method · L437-L449 — private static getWorkspaceRef(workspaceId: string): { id: string; name: string }
+- getStoredWorkspace · method · L451-L458 — private static getStoredWorkspace(workspaceId: string): Workspace | undefined
+- getCuratedFilesystemGuards · method · L460-L471 — private static getCuratedFilesystemGuards(workspace: Workspace | undefined): { filesystemReadGuard?: (candidatePath: string) => boolean; filesystemWriteGuard?: (candidatePath: string) => boolean; }
+- isExternalMemoryReplayAllowed · method · L473-L481 — private static isExternalMemoryReplayAllowed(workspace: Workspace | undefined): boolean
+- normalizeMode · method · L483-L493 — private static normalizeMode(value: unknown)
+- normalizeSummary · method · L495-L500 — private static normalizeSummary(summary: string): string
+- extractProposedValue · method · L502-L505 — private static extractProposedValue(payload: Record<string, unknown>): string | undefined
+- estimateRisk · method · L507-L513 — private static estimateRisk(request: MemoryWriteRequest): number
+- toDisplayItem · method · L515-L536 — private static toDisplayItem(item: PendingMemoryWrite): MemoryWriteApprovalItem
+- redactValue · method · L538-L551 — private static redactValue(value: unknown): unknown
+- redactText · method · L553-L564 — private static redactText(value: string | undefined): string | undefined
+- isSensitiveKey · method · L566-L568 — private static isSensitiveKey(key: string): boolean
+- containsSensitiveDisplayContent · method · L570-L586 — private static containsSensitiveDisplayContent(value: unknown): boolean
+- asString · method · L588-L590 — private static asString(value: unknown): string | undefined
+- asPlainObject · method · L592-L596 — private static asPlainObject(value: unknown): Record<string, unknown> | undefined
+- asCuratedTarget · method · L598-L600 — private static asCuratedTarget(value: unknown): CuratedMemoryTarget | undefined
+- asCuratedKind · method · L602-L611 — private static asCuratedKind(value: unknown): CuratedMemoryKind | undefined
+- asMemoryType · method · L613-L627 — private static asMemoryType(value: unknown): MemoryType | undefined
+- ensureInitialized · method · L629-L633 — private static ensureInitialized(): void

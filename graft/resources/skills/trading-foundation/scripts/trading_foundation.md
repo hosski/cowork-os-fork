@@ -1,0 +1,48 @@
+# resources/skills/trading-foundation/scripts/trading_foundation.py
+
+- _bootstrap_progress · function · L53-L54 — def _bootstrap_progress(message: str) -> None
+- _venv_python · function · L57-L60 — def _venv_python() -> str
+- _is_module_available · function · L63-L68 — def _is_module_available(module_name: str) -> bool
+- _ensure_dependency_venv · function · L71-L155 — def _ensure_dependency_venv() -> None
+- _load_runtime_deps · function · L158-L189 — def _load_runtime_deps() -> None
+- _looks_like_known_mode · function · L192-L196 — def _looks_like_known_mode(candidate: str) -> bool
+- _normalize_mode_from_prompt · function · L199-L205 — def _normalize_mode_from_prompt(prompt: str) -> Optional[str]
+- _extract_float · function · L208-L216 — def _extract_float(prompt: str, keys: List[str]) -> Optional[float]
+- _extract_int · function · L219-L223 — def _extract_int(prompt: str, keys: List[str]) -> Optional[int]
+- _extract_csv_paths · function · L226-L228 — def _extract_csv_paths(prompt: str) -> List[str]
+- _extract_side · function · L231-L237 — def _extract_side(prompt: str) -> Optional[str]
+- _extract_order_type · function · L240-L246 — def _extract_order_type(prompt: str) -> Optional[str]
+- _infer_mode_from_prompt · function · L249-L264 — def _infer_mode_from_prompt(prompt: str, csv_paths: List[str]) -> Optional[str]
+- _extract_symbol · function · L267-L271 — def _extract_symbol(prompt: str) -> Optional[str]
+- _build_human_mode_args · function · L274-L363 — def _build_human_mode_args(prompt: str) -> Optional[List[str]]
+- build_parser · function · L370-L572 — def build_parser() -> argparse.ArgumentParser
+- require_exchange · function · L575-L581 — def require_exchange(exchange_id: str)
+- create_exchange · function · L584-L599 — def create_exchange(args: argparse.Namespace) -> Any
+- _to_float · function · L602-L606 — def _to_float(value: Any, default: float) -> float
+- _safe_position_size · function · L609-L614 — def _safe_position_size(value: float) -> float
+- _safe_correlation · function · L617-L627 — def _safe_correlation(left: List[float], right: List[float]) -> Optional[float]
+- _build_stat_arb_df · function · L630-L695 — def _build_stat_arb_df( primary: pd.DataFrame, secondary: pd.DataFrame, pair_symbol: str, hedge_window: int, ) -> pd.DataFrame
+- _median_step_ns · function · L643-L652 — def _median_step_ns(ts: pd.Series) -> Optional[int]
+- _annualization_factor · function · L698-L709 — def _annualization_factor(timeframe: str) -> float
+- fetch_ohlcv · function · L712-L760 — def fetch_ohlcv(args: argparse.Namespace) -> Dict[str, Any]
+- _load_ohlcv_csv · function · L763-L773 — def _load_ohlcv_csv(path: Path) -> pd.DataFrame
+- _map_stock_timeframe · function · L776-L791 — def _map_stock_timeframe(timeframe: str) -> str
+- fetch_stock_ohlcv · function · L794-L896 — def fetch_stock_ohlcv(args: argparse.Namespace) -> Dict[str, Any]
+- _score_text_sentiment · function · L899-L957 — def _score_text_sentiment(text: Any) -> float
+- _load_sentiment_series · function · L960-L1016 — def _load_sentiment_series( df: pd.DataFrame, sentiment_csv: Optional[str], *, sentiment_weight: float = 1.0, ) -> pd.Series
+- run_execute · function · L1019-L1480 — def run_execute(args: argparse.Namespace) -> Dict[str, Any]
+- _add_risk_block · function · L1026-L1034 — def _add_risk_block(name: str, status: str, message: Optional[str] = None, details: Optional[Dict[str, Any]] = None) -> None
+- _normalize_fills · function · L1036-L1054 — def _normalize_fills(raw_fills: Any) -> List[Dict[str, Any]]
+- _normalize_fill · function · L1056-L1080 — def _normalize_fill(response: Dict[str, Any]) -> Dict[str, Any]
+- _market_price_from_exchange · function · L1082-L1091 — def _market_price_from_exchange(exchange: Any) -> Optional[float]
+- _build_execution_report · function · L1093-L1109 — def _build_execution_report(fill: Optional[Dict[str, Any]] = None) -> Dict[str, Any]
+- _build_ml_features · function · L1483-L1502 — def _build_ml_features( df: pd.DataFrame, sentiment: pd.Series, ) -> pd.DataFrame
+- _build_ml_probabilities · function · L1505-L1637 — def _build_ml_probabilities( df: pd.DataFrame, sentiment: pd.Series, args: argparse.Namespace, ) -> Dict[str, Any]
+- _rsi · function · L1640-L1647 — def _rsi(series: pd.Series, period: int) -> pd.Series
+- _add_indicators · function · L1650-L1681 — def _add_indicators(df: pd.DataFrame, params: Dict[str, float]) -> pd.DataFrame
+- _calc_max_drawdown · function · L1684-L1692 — def _calc_max_drawdown(equity: List[float]) -> float
+- run_backtest · function · L1695-L2197 — def run_backtest(args: argparse.Namespace, *, mode: str) -> Dict[str, Any]
+- _open_trade · function · L1847-L1866 — def _open_trade(ts: pd.Timestamp, price: float, qty: float, fee: float, reason: str = "entry_signal") -> None
+- _close_trade · function · L1868-L1896 — def _close_trade(ts: pd.Timestamp, price: float, reason: str) -> None
+- write_json · function · L2200-L2201 — def write_json(result: Dict[str, Any]) -> None
+- main · function · L2204-L2239 — def main() -> int

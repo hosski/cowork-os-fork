@@ -1,0 +1,32 @@
+# src/electron/control-plane/remote-client.ts
+
+- createRequest · function · L29-L36 — function createRequest(id: number, method: string, params?: unknown): RequestFrame
+- RemoteGatewayClientOptions · interface · L41-L48 — interface RemoteGatewayClientOptions extends RemoteGatewayConfig
+- pinnedServerIdentity · function · L62-L84 — function pinnedServerIdentity( expectedFingerprint: string, ): (hostname: string, cert: tls.PeerCertificate) => Error | undefined
+- asWsCheckServerIdentity · function · L97-L101 — function asWsCheckServerIdentity( callback: (hostname: string, cert: tls.PeerCertificate) => Error | undefined, ): NonNullable<WebSocket.ClientOptions["checkServerIdentity"]>
+- RemoteGatewayClient · class · L107-L628 — class RemoteGatewayClient
+- constructor · method · L129-L137 — constructor(options: RemoteGatewayClientOptions)
+- getStatus · method · L142-L153 — getStatus(): RemoteGatewayStatus
+- connect · method · L158-L173 — async connect(): Promise<void>
+- disconnect · method · L178-L197 — disconnect(): void
+- request · method · L202-L224 — async request<T = unknown>(method: string, params?: unknown, timeoutMs = 30000): Promise<T>
+- testConnection · method · L229-L314 — async testConnection(): Promise<{ success: boolean; error?: string; latencyMs?: number }>
+- normalizeErrorMessage · method · L318-L330 — private normalizeErrorMessage(error: unknown): string
+- isReachabilityError · method · L332-L336 — private isReachabilityError(error: unknown): boolean
+- logConnectionError · method · L338-L345 — private logConnectionError(prefix: string, error: unknown): void
+- doConnect · method · L347-L415 — private async doConnect(): Promise<void>
+- authenticate · method · L417-L466 — private async authenticate(): Promise<void>
+- handleAuthResponse · function · L429-L459 — handleAuthResponse = (data: WebSocket.Data)
+- sendAuthRequest · method · L468-L474 — private sendAuthRequest(): void
+- handleMessage · method · L476-L518 — private handleMessage(message: string): void
+- handleDisconnect · method · L520-L540 — private handleDisconnect(code: number, _reason: string): void
+- scheduleReconnect · method · L542-L570 — private scheduleReconnect(): void
+- startHeartbeat · method · L572-L580 — private startHeartbeat(): void
+- send · method · L582-L586 — private send(frame: Any): void
+- setState · method · L588-L605 — private setState(state: RemoteGatewayConnectionState, error?: string): void
+- clearReconnectTimer · method · L607-L612 — private clearReconnectTimer(): void
+- clearHeartbeatTimer · method · L614-L619 — private clearHeartbeatTimer(): void
+- clearPendingRequests · method · L621-L627 — private clearPendingRequests(): void
+- getRemoteGatewayClient · function · L636-L638 — function getRemoteGatewayClient(): RemoteGatewayClient | null
+- initRemoteGatewayClient · function · L643-L649 — function initRemoteGatewayClient(options: RemoteGatewayClientOptions): RemoteGatewayClient
+- shutdownRemoteGatewayClient · function · L654-L659 — function shutdownRemoteGatewayClient(): void

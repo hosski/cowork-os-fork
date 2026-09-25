@@ -1,0 +1,28 @@
+# src/electron/supervisor/DiscordSupervisorService.ts
+
+- PendingTaskContext · type · L27-L34 — type PendingTaskContext = { exchangeId: string; adapter: DiscordAdapter; channel: Channel; peerUserId: string; responseMode: "worker" | "supervisor"; replyToMessageId: string; };
+- truncate · function · L39-L42 — function truncate(value: string, max = 700): string
+- buildTaskCompletionSummary · function · L44-L59 — function buildTaskCompletionSummary(data: { resultSummary?: string; verificationVerdict?: string; verificationReport?: string; message?: string; }): string
+- stripProtocolEnvelope · function · L61-L67 — function stripProtocolEnvelope(text: string): string
+- buildWorkerPrompt · function · L69-L86 — function buildWorkerPrompt(peerUserId: string, incomingText: string, exchangeId: string): string
+- buildSupervisorPrompt · function · L88-L117 — function buildSupervisorPrompt( peerUserId: string, incomingText: string, exchange: SupervisorExchange, ): string
+- DiscordSupervisorService · class · L119-L885 — class DiscordSupervisorService
+- constructor · method · L129-L163 — constructor( private db: import("better-sqlite3").Database, private agentDaemon: AgentDaemon, private getMainWindow: () => BrowserWindow | null, private getDiscordAdapter?: () => DiscordAdapter | undefined, )
+- listExchanges · method · L165-L167 — listExchanges(query: SupervisorExchangeListQuery)
+- resolveExchange · method · L169-L202 — async resolveExchange(request: ResolveSupervisorExchangeRequest): Promise<SupervisorExchange>
+- handleIncomingDiscordMessage · method · L204-L238 — async handleIncomingDiscordMessage( adapter: DiscordAdapter, message: IncomingMessage, ): Promise<void>
+- getSupervisorConfig · method · L240-L249 — private getSupervisorConfig(channel: Channel): DiscordSupervisorConfig | null
+- resolveWorkspaceId · method · L251-L260 — private resolveWorkspaceId(channel: Channel): string | null
+- handleWatchedOutput · method · L262-L331 — private async handleWatchedOutput( adapter: DiscordAdapter, channel: Channel, config: DiscordSupervisorConfig, message: IncomingMessage, peerUserId: string, sourceChannelId: string, ): Promise<void>
+- handleCoordinationMessage · method · L333-L505 — private async handleCoordinationMessage( adapter: DiscordAdapter, channel: Channel, config: DiscordSupervisorConfig, message: IncomingMessage, peerUserId: string, channelId: string, ): Promise<void>
+- startProtocolTask · method · L507-L571 — private async startProtocolTask( adapter: DiscordAdapter, channel: Channel, exchange: SupervisorExchange, peerUserId: string, responseMode: "worker" | "supervisor", replyToMessageId: string, ): Promise<void>
+- handleTaskCompleted · method · L573-L689 — private async handleTaskCompleted(data: { taskId: string; resultSummary?: string; verificationVerdict?: string; verificationReport?: string; message?: string; }): Promise<void>
+- handleTaskFailed · method · L691-L709 — private async handleTaskFailed( taskId: string, error: string, existingExchange?: SupervisorExchange, existingAdapter?: DiscordAdapter, ): Promise<void>
+- sendHumanEscalation · method · L711-L786 — private async sendHumanEscalation( adapter: DiscordAdapter, channel: Channel, exchange: SupervisorExchange, body: string, ): Promise<void>
+- requireDiscordMirrorAdapter · method · L788-L796 — private requireDiscordMirrorAdapter(): DiscordAdapter
+- getDiscordMirrorTarget · method · L798-L821 — private getDiscordMirrorTarget(exchange: SupervisorExchange): { adapter: DiscordAdapter; targetChannelId: string; directUserId?: string; }
+- mirrorResolutionToDiscord · method · L823-L837 — private async mirrorResolutionToDiscord( exchange: SupervisorExchange, target = this.getDiscordMirrorTarget(exchange), ): Promise<void>
+- createActivity · method · L839-L856 — private createActivity( exchange: SupervisorExchange, title: string, description: string, metadata: Record<string, unknown>, ): void
+- emitActivityEvent · method · L858-L862 — private emitActivityEvent(activity: import("../../shared/types").Activity): void
+- emitSupervisorEvent · method · L864-L871 — private emitSupervisorEvent( type: SupervisorExchangeEvent["type"], exchange: SupervisorExchange, ): void
+- recordMalformedMessage · method · L873-L884 — private recordMalformedMessage(peerUserId: string, channelId: string, text: string): void

@@ -1,0 +1,33 @@
+# src/electron/agents/AgentTeamOrchestrator.ts
+
+- AgentTeamRepositoryLike · type · L35-L37 — type AgentTeamRepositoryLike = | Pick<AgentTeamRepository, "findById"> | { findById: (id: string) => AgentTeam | undefined };
+- AgentTeamRunRepositoryLike · type · L38-L52 — type AgentTeamRunRepositoryLike = | Pick<AgentTeamRunRepository, "findById" | "update"> | { findById: (id: string) => AgentTeamRun | undefined; update: ( id: string, updates: { status?: AgentTeamRunStatus; completedAt?: number | null; error?: string | null; summary?: string | null; phase?: AgentTeamRunPhase; }, ) => AgentTeamRun | undefined; };
+- AgentTeamItemRepositoryLike · type · L53-L60 — type AgentTeamItemRepositoryLike = | Pick<AgentTeamItemRepository, "listByRun" | "listBySourceTaskId" | "update" | "create"> | { listByRun: (teamRunId: string) => AgentTeamItem[]; listBySourceTaskId: (sourceTaskId: string) => AgentTeamItem[]; update: (request: UpdateAgentTeamItemRequest) => AgentTeamItem | undefined; create: (request: import("../../shared/types").CreateAgentTeamItemRequest) => AgentTeamItem; };
+- AgentTeamOrchestratorDeps · type · L62-L101 — type AgentTeamOrchestratorDeps = { getDatabase: () => import("better-sqlite3").Database; getTaskById: (taskId: string) => Promise<Task | undefined>; createChildTask: (params: { title: string; prompt: string; workspaceId: string; parentTaskId: string; agentType: "sub" | "parallel"; agentConfig?: AgentConfig; depth?: number; assignedAgentRoleId?: string; workerRole?: WorkerRoleKind; teamRunId?: string; teamItemId?: string; }) => Promise<Task>; cancelTask: (taskId: string) => Promise<void>; wrapUpTask?: (taskId: string) => Promise<void>; completeRootTask?: (taskId: string, status: "completed" | "failed", summary: string) => void; createOrchestrationGraphRun?: (params: { rootTaskId: string; workspaceId: string; kind: "team"; maxParallel: number; metadata?: Record<string, unknown>; nodes: OrchestrationGraphNodeInput[]; edges?: Array<{ fromNodeKey: string; toNodeKey: string }>; }) => Promise<OrchestrationGraphSnapshot | undefined>; appendOrchestrationGraphNodes?: (params: { runId: string; nodes: OrchestrationGraphNodeInput[]; edges?: Array<{ fromNodeId?: string; fromNodeKey?: string; toNodeId?: string; toNodeKey?: string; }>; }) => Promise<OrchestrationGraphSnapshot | undefined>; findOrchestrationGraphByTeamRunId?: (teamRunId: string) => OrchestrationGraphSnapshot | undefined; };
+- getAllElectronWindows · function · L103-L115 — function getAllElectronWindows(): Any[]
+- emitTeamEvent · function · L117-L128 — function emitTeamEvent(event: Any): void
+- compactTextForSynthesis · function · L136-L145 — function compactTextForSynthesis(text: string, maxChars: number): string
+- groupAndCompactThoughts · function · L147-L179 — function groupAndCompactThoughts(thoughts: AgentThought[], maxChars: number): string
+- isTerminalItemStatus · function · L181-L183 — function isTerminalItemStatus(status: AgentTeamItemStatus): boolean
+- isTerminalTaskStatus · function · L185-L187 — function isTerminalTaskStatus(status: Task["status"]): boolean
+- deriveTeamItemProfile · function · L189-L199 — function deriveTeamItemProfile(itemTitle: string, itemDescription?: string): LlmProfile
+- AgentTeamOrchestrator · class · L201-L1298 — class AgentTeamOrchestrator
+- constructor · method · L213-L234 — constructor( private deps: AgentTeamOrchestratorDeps, repos?: { teamRepo?: AgentTeamRepositoryLike; runRepo?: AgentTeamRunRepositoryLike; itemRepo?: AgentTeamItemRepositoryLike; }, )
+- dispose · method · L236-L241 — dispose(): void
+- getThoughtRepo · method · L246-L248 — getThoughtRepo(): AgentTeamThoughtRepository
+- shouldUseProfileRouting · method · L250-L259 — private shouldUseProfileRouting(rootTask: Task): boolean
+- isChildAgentCollaborativeRun · method · L261-L263 — private isChildAgentCollaborativeRun(rootTask: Task): boolean
+- tickRun · method · L265-L573 — async tickRun(runId: string, reason: string = "tick"): Promise<void>
+- onTaskTerminal · method · L575-L640 — async onTaskTerminal(taskId: string): Promise<void>
+- cancelRun · method · L642-L678 — async cancelRun(runId: string): Promise<void>
+- wrapUpRun · method · L684-L772 — async wrapUpRun(runId: string): Promise<void>
+- buildItemPrompt · method · L774-L839 — private buildItemPrompt( teamName: string, rootTask: Task, itemTitle: string, itemDescription?: string, collaborativeMode?: boolean, ): string
+- buildRunSummary · method · L841-L848 — private buildRunSummary(items: Array<{ status: AgentTeamItemStatus; title: string }>): string
+- completeRootTaskBestEffort · method · L850-L861 — private completeRootTaskBestEffort( taskId: string, status: "completed" | "failed", summary: string, ): void
+- scheduleSynthesisWatchdog · method · L863-L908 — private scheduleSynthesisWatchdog( runId: string, rootTaskId: string, synthesisItemId: string, ): void
+- transitionToSynthesizePhase · method · L914-L1040 — private async transitionToSynthesizePhase( run: AgentTeamRun, team: AgentTeam, rootTask: Task, items: AgentTeamItem[], ): Promise<void>
+- transitionToSynthesizePhaseCompact · method · L1045-L1101 — private async transitionToSynthesizePhaseCompact( run: AgentTeamRun, team: AgentTeam, rootTask: Task, _items: AgentTeamItem[], ): Promise<void>
+- buildSynthesisPrompt · method · L1107-L1168 — private buildSynthesisPrompt( teamName: string, rootTask: Task, thoughts: AgentThought[], items: AgentTeamItem[], ): string
+- buildMultiLlmItemPrompt · method · L1174-L1199 — private buildMultiLlmItemPrompt(participant: MultiLlmParticipant, rootTask: Task): string
+- buildMultiLlmSynthesisPrompt · method · L1205-L1252 — private buildMultiLlmSynthesisPrompt( rootTask: Task, thoughts: AgentThought[], _items: AgentTeamItem[], ): string
+- buildCouncilSynthesisPrompt · method · L1254-L1297 — private buildCouncilSynthesisPrompt(rootTask: Task, thoughts: AgentThought[]): string

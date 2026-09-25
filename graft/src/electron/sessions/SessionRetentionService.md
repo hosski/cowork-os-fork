@@ -1,0 +1,36 @@
+# src/electron/sessions/SessionRetentionService.ts
+
+- Any · type · L16-L16 — type Any = Record<string, any>;
+- TaskSessionSummary · interface · L20-L39 — interface TaskSessionSummary
+- SessionRetentionFilters · interface · L41-L59 — interface SessionRetentionFilters
+- SessionPruneResult · interface · L61-L70 — interface SessionPruneResult
+- SessionRetentionService · class · L72-L417 — class SessionRetentionService
+- constructor · method · L73-L79 — constructor( private readonly taskRepo: TaskRepository, private readonly eventRepo: TaskEventRepository, private readonly metadataRepo: TaskSessionMetadataRepository, private readonly workspaceRepo?: WorkspaceRepository, private queuedAttachmentStore?: QueuedAttachmentStore, )
+- listSessions · method · L81-L88 — listSessions(filters: SessionRetentionFilters = {}): TaskSessionSummary[]
+- tasksForSession · method · L90-L97 — tasksForSession(sessionId: string, limit = 10000): Task[]
+- archiveSession · method · L99-L108 — archiveSession(sessionId: string): { metadata: TaskSessionMetadata; taskCount: number }
+- renameSession · method · L110-L116 — renameSession(sessionId: string, name: string): TaskSessionMetadata
+- pruneSessions · method · L118-L170 — async pruneSessions( filters: SessionRetentionFilters, options: { dryRun?: boolean; deleteTask?: (task: Task) => Promise<void> | void; } = {}, ): Promise<SessionPruneResult>
+- cleanupOrphanedQueuedAttachments · method · L176-L201 — cleanupOrphanedQueuedAttachments(now = Date.now()): number
+- getQueuedAttachmentStore · method · L203-L205 — private getQueuedAttachmentStore(): QueuedAttachmentStore
+- captureQueuedAttachmentRefs · method · L207-L235 — private captureQueuedAttachmentRefs(taskId: string): Array<{ messageId: string; refs: QueuedAttachmentRef[]; }>
+- releaseQueuedAttachmentRefs · method · L237-L248 — private releaseQueuedAttachmentRefs( taskId: string, captured: Array<{ messageId: string; refs: QueuedAttachmentRef[] }>, ): void
+- hasAuthoritativeReceiptReference · method · L250-L266 — private hasAuthoritativeReceiptReference(record: QueuedAttachmentRecord): boolean
+- collectAuthoritativeAttachmentKeys · method · L274-L298 — private collectAuthoritativeAttachmentKeys(): Set<string> | undefined
+- buildSessionSummaries · method · L300-L330 — private buildSessionSummaries(tasks: Task[]): TaskSessionSummary[]
+- buildSessionSummary · method · L332-L385 — private buildSessionSummary(params: { id: string; rows: Task[]; metadata?: TaskSessionMetadata; workspacesById: Map<string, Workspace>; eventsByTaskId: Map<string, TaskEvent[]>; }): TaskSessionSummary
+- applyFilters · method · L387-L405 — private applyFilters( summaries: TaskSessionSummary[], filters: SessionRetentionFilters, ): TaskSessionSummary[]
+- isPruneCandidate · method · L407-L416 — private isPruneCandidate(session: TaskSessionSummary, filters: SessionRetentionFilters): boolean
+- getTaskSessionId · function · L419-L421 — function getTaskSessionId(task: Pick<Task, "id" | "sessionId">): string
+- summarizeEvents · function · L423-L485 — function summarizeEvents( tasks: Task[], eventsByTaskId: Map<string, TaskEvent[]>, ): { providers: string[]; models: string[]; toolCallCount: number; totalTokens: number; totalCost: number; }
+- groupEventsByTaskId · function · L487-L495 — function groupEventsByTaskId(events: TaskEvent[]): Map<string, TaskEvent[]>
+- normalizePayload · function · L497-L507 — function normalizePayload(payload: unknown): Any
+- stringValue · function · L509-L511 — function stringValue(value: unknown): string | undefined
+- numberValue · function · L513-L516 — function numberValue(value: unknown): number | undefined
+- uniqueSorted · function · L518-L524 — function uniqueSorted(values: Array<string | undefined | null>): string[]
+- normalizeLimit · function · L526-L530 — function normalizeLimit(value: unknown, fallback: number): number
+- matchesStringFilter · function · L532-L535 — function matchesStringFilter(value: string, filter: string | undefined): boolean
+- matchesSetFilter · function · L537-L541 — function matchesSetFilter(values: string[], filter: string | undefined): boolean
+- matchesNumberMinMax · function · L543-L547 — function matchesNumberMinMax(value: number, min?: number, max?: number): boolean
+- matchesTimeWindow · function · L549-L560 — function matchesTimeWindow(value: number, filters: SessionRetentionFilters): boolean
+- hasExplicitSelectionFilter · function · L562-L578 — function hasExplicitSelectionFilter(filters: SessionRetentionFilters): boolean

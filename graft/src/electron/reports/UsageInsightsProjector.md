@@ -1,0 +1,47 @@
+# src/electron/reports/UsageInsightsProjector.ts
+
+- parseJsonObject · function · L26-L34 — function parseJsonObject(value?: string | null): Record<string, unknown> | null
+- getProviderTypeFromRoutingPayload · function · L36-L46 — function getProviderTypeFromRoutingPayload(routingPayload?: string | null): string | null
+- getProviderTypeFromAgentConfig · function · L48-L53 — function getProviderTypeFromAgentConfig(agentConfig?: string | null): string | null
+- getProviderTypeFromLogPayload · function · L55-L62 — function getProviderTypeFromLogPayload(logPayload?: string | null): string | null
+- resolveProviderType · function · L64-L83 — function resolveProviderType(entry: { providerType?: string | null; routingPayload?: string | null; providerLogPayload?: string | null; agentConfig?: string | null; }): string
+- getEffectiveEventType · function · L85-L94 — function getEffectiveEventType(event: { type?: string | null; legacyType?: string | null; legacy_type?: string | null; }): string
+- dayBoundsForDateKey · function · L96-L101 — function dayBoundsForDateKey(dateKey: string): { start: number; endExclusive: number }
+- CacheEntry · type · L103-L106 — type CacheEntry<T> = { version: number; value: T; };
+- UsageInsightsProjector · class · L108-L1174 — class UsageInsightsProjector
+- initialize · method · L111-L116 — static initialize(db: Database.Database): UsageInsightsProjector
+- getIfInitialized · method · L118-L120 — static getIfInitialized(): UsageInsightsProjector | null
+- shutdown · method · L122-L133 — static async shutdown(): Promise<void>
+- isForDatabase · method · L140-L142 — isForDatabase(db: unknown): boolean
+- constructor · method · L153-L153 — private constructor(private db: Database.Database)
+- warm · method · L155-L158 — warm(): void
+- isBackfillComplete · method · L160-L166 — isBackfillComplete(): boolean
+- getVersion · method · L168-L171 — getVersion(): number
+- getWatermarks · method · L173-L190 — getWatermarks(): { schemaVersion: string | null; taskWatermarkMs: number; eventWatermarkMs: number; llmWatermarkMs: number; }
+- toMs · function · L179-L182 — toMs = (value: string | null): number
+- getCachedReport · method · L192-L197 — getCachedReport<T>(key: string): T | null
+- setCachedReport · method · L199-L201 — setCachedReport<T>(key: string, value: T): void
+- invalidate · method · L203-L207 — invalidate(): void
+- scheduleBackfill · method · L209-L223 — scheduleBackfill(): void
+- enqueueTaskCreate · method · L225-L236 — enqueueTaskCreate(task: Task): void
+- enqueueTaskUpdate · method · L238-L262 — enqueueTaskUpdate(before: Task | undefined, after: Task | undefined): void
+- enqueueTaskEvent · method · L264-L276 — enqueueTaskEvent(workspaceId: string | null | undefined, event: TaskEvent): void
+- enqueueLlmTelemetry · method · L278-L287 — enqueueLlmTelemetry(workspaceId: string | null | undefined, timestampMs: number): void
+- flushPendingRefreshes · method · L289-L316 — flushPendingRefreshes(): void
+- enqueueRefresh · method · L318-L321 — private enqueueRefresh(workspaceId: string, dateKey: string): void
+- scheduleFlush · method · L323-L329 — private scheduleFlush(): void
+- stop · method · L331-L340 — private async stop(): Promise<void>
+- getState · method · L342-L351 — private getState(key: string): string | null
+- setState · method · L353-L365 — private setState(key: string, value: string): void
+- backfillAll · method · L367-L401 — private async backfillAll(): Promise<void>
+- backfillLegacyLlmTelemetry · method · L403-L624 — private backfillLegacyLlmTelemetry(): void
+- SuccessRow · type · L404-L413 — type SuccessRow = { id: string; task_id: string; workspace_id: string; timestamp: number; payload: string; agent_config: string | null; routing_payload: string | null; provider_log_payload: string | null; };
+- ErrorRow · type · L414-L423 — type ErrorRow = { id: string; task_id: string; workspace_id: string; timestamp: number; payload: string; agent_config: string | null; routing_payload: string | null; provider_log_payload: string | null; };
+- resetRollups · method · L626-L633 — private resetRollups(): void
+- rebuildAllRollupsIncremental · method · L635-L668 — private async rebuildAllRollupsIncremental(resumeAfterDateKey: string | null): Promise<void>
+- collectWorkspaceDatePairs · method · L670-L732 — private collectWorkspaceDatePairs(): Array<{ workspaceId: string; dateKey: string }>
+- addPair · function · L673-L679 — addPair = ( workspaceId: string | null | undefined, timestamp: number | null | undefined, )
+- setDateWatermarks · method · L734-L739 — private setDateWatermarks(dateKey: string): void
+- getMaxTimestamp · method · L741-L750 — private getMaxTimestamp(tableName: "llm_call_events"): number
+- rebuildWorkspaceDate · method · L752-L1145 — private rebuildWorkspaceDate(workspaceId: string, dateKey: string): void
+- updateWatermarks · method · L1147-L1173 — private updateWatermarks(): void

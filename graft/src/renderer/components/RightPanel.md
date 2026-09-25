@@ -1,0 +1,45 @@
+# src/renderer/components/RightPanel.tsx
+
+- resolveConnectorLucideIcon · function · L141-L147 — function resolveConnectorLucideIcon(name: string, emoji: string): ComponentType<LucideProps>
+- ArtifactOpeners · type · L222-L222 — type ArtifactOpeners = Partial<Record<GeneratedInlinePreviewKind, (path: string) => void>>;
+- getFileExtension · function · L224-L229 — function getFileExtension(path: string): string
+- getFileTypeIcon · function · L231-L246 — function getFileTypeIcon(path: string): { Icon: ComponentType<LucideProps>; label: string }
+- humanizeStepDescription · function · L253-L293 — function humanizeStepDescription(description: string): string
+- capitalize · function · L295-L297 — function capitalize(str: string): string
+- stripInlineMarkdownFormatting · function · L299-L310 — function stripInlineMarkdownFormatting(text: string): string
+- CollaborativeAgentStatusKind · type · L312-L312 — type CollaborativeAgentStatusKind = "completed" | "warning" | "failed" | "running" | "pending";
+- CollaborativeAgentUsage · type · L314-L318 — type CollaborativeAgentUsage = { inputTokens: number; outputTokens: number; cost: number; };
+- CollaborativeAgentRow · type · L320-L329 — type CollaborativeAgentRow = { task: Task; statusKind: CollaborativeAgentStatusKind; statusLabel: string; eventCount: number; toolCallCount: number; llmCallCount: number; usage: CollaborativeAgentUsage; durationMs: number; };
+- CollaborativeAgentTotals · type · L331-L346 — type CollaborativeAgentTotals = { total: number; completed: number; warning: number; failed: number; running: number; pending: number; eventCount: number; toolCallCount: number; llmCallCount: number; inputTokens: number; outputTokens: number; cost: number; wallDurationMs: number; rows: CollaborativeAgentRow[]; };
+- toFiniteNumber · function · L348-L350 — function toFiniteNumber(value: unknown): number
+- formatCompactNumber · function · L352-L356 — function formatCompactNumber(value: number): string
+- formatRightPanelDuration · function · L358-L368 — function formatRightPanelDuration(ms: number): string
+- formatCost · function · L370-L375 — function formatCost(value: number): string
+- getCollaborativeAgentStatusKind · function · L377-L395 — function getCollaborativeAgentStatusKind(task: Task): CollaborativeAgentStatusKind
+- getCollaborativeAgentStatusLabel · function · L397-L403 — function getCollaborativeAgentStatusLabel(kind: CollaborativeAgentStatusKind, task: Task): string
+- getLatestUsageTotals · function · L405-L422 — function getLatestUsageTotals(events: TaskEvent[]): CollaborativeAgentUsage
+- getCollaborativeAgentTotals · function · L424-L495 — function getCollaborativeAgentTotals( childTasks: Task[], childEvents: TaskEvent[], ): CollaborativeAgentTotals | null
+- areTaskEventListsEqual · function · L497-L503 — function areTaskEventListsEqual(a: TaskEvent[], b: TaskEvent[]): boolean
+- areChildTaskStatsEqual · function · L505-L513 — function areChildTaskStatsEqual(a: Task[], b: Task[]): boolean
+- getTaskEventActivityText · function · L515-L590 — function getTaskEventActivityText(event: TaskEvent | null): string | null
+- ClickableFilePath · function · L593-L647 — function ClickableFilePath({ path, workspacePath, className = "", onOpenViewer, }: { path: string; workspacePath?: string; className?: string; onOpenViewer?: (path: string) => void; })
+- handleClick · function · L604-L623 — handleClick = async (e: React.MouseEvent)
+- handleContextMenu · function · L625-L633 — handleContextMenu = async (e: React.MouseEvent)
+- RightPanelProps · interface · L649-L669 — interface RightPanelProps
+- openPreviewableFileInSidebar · function · L671-L704 — function openPreviewableFileInSidebar( filePath: string, openers: ArtifactOpeners, fallback: (path: string) => void, ): void
+- getRightPanelTaskSignature · function · L706-L716 — function getRightPanelTaskSignature(task: Task | undefined): string
+- getChecklistSignature · function · L718-L728 — function getChecklistSignature(checklistState: SessionChecklistState | null): string
+- getFilesSignature · function · L730-L732 — function getFilesSignature(files: FileInfo[]): string
+- getConnectorsSignature · function · L734-L743 — function getConnectorsSignature( connectors: { id: string; name: string; icon: string; status: string; tools: string[] }[], ): string
+- getActiveContextSignature · function · L745-L759 — function getActiveContextSignature( activeContext: | { connectors: { id: string; name: string; icon: string; status: string; tools: string[] }[]; skills: { id: string; name: string; icon: string }[]; } | null | undefined, ): string
+- getToolUsageSignature · function · L761-L763 — function getToolUsageSignature(toolUsage: ToolUsage[]): string
+- getStringListSignature · function · L765-L767 — function getStringListSignature(values: string[]): string
+- useStableSnapshotBySignature · function · L769-L775 — function useStableSnapshotBySignature<T>(value: T, signature: string): T
+- RightPanelComponent · function · L1668-L2489 — function RightPanelComponent({ task, workspace, events: rawEvents, sharedTaskEventUi = null, hasActiveChildren = false, childTasks = [], childEvents = [], runningTasks = [], queuedTasks = [], queueStatus, onSelectTask, onCancelTask, onOpenSpreadsheetArtifact, onOpenDocumentArtifact, onOpenPresentationArtifact, onOpenWebArtifact, rendererPerfLoggingEnabled = false, highlightOutputPath = null, onHighlightConsumed, }: RightPanelProps)
+- loadContext · function · L1755-L1766 — async function loadContext()
+- normalizeChecklistState · function · L1832-L1864 — normalizeChecklistState = (payload: Any): SessionChecklistState | null
+- normalizePathKey · function · L1890-L1897 — normalizePathKey = (p: string): string
+- getStatusIndicator · function · L2217-L2322 — getStatusIndicator = (status: string)
+- getFileActionSymbol · function · L2324-L2333 — getFileActionSymbol = (action: FileInfo["action"])
+- getChecklistStatusLabel · function · L2335-L2346 — getChecklistStatusLabel = (status: string)
+- areRightPanelPropsEqual · function · L2491-L2518 — function areRightPanelPropsEqual(prev: RightPanelProps, next: RightPanelProps): boolean

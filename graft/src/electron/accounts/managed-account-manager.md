@@ -1,0 +1,28 @@
+# src/electron/accounts/managed-account-manager.ts
+
+- ManagedAccountStatus · type · L13-L20 — type ManagedAccountStatus = | "draft" | "pending_signup" | "pending_verification" | "active" | "blocked" | "disabled" | "error";
+- ManagedAccountRecord · interface · L22-L37 — interface ManagedAccountRecord
+- ManagedAccountState · interface · L39-L42 — interface ManagedAccountState
+- ManagedAccountListOptions · interface · L44-L47 — interface ManagedAccountListOptions
+- UpsertManagedAccountInput · interface · L49-L63 — interface UpsertManagedAccountInput
+- ManagedAccountPublicView · type · L65-L69 — type ManagedAccountPublicView = Omit<ManagedAccountRecord, "secrets"> & { secrets?: Record<string, string>; secretKeys?: string[]; secretCount?: number; };
+- isRecord · function · L76-L78 — function isRecord(value: unknown): value is Record<string, unknown>
+- sanitizeIdentifier · function · L80-L89 — function sanitizeIdentifier(value: unknown, maxLength = 120): string
+- sanitizeOptionalString · function · L91-L96 — function sanitizeOptionalString(value: unknown, maxLength = 512): string | undefined
+- sanitizeOptionalUrl · function · L98-L110 — function sanitizeOptionalUrl(value: unknown): string | undefined
+- sanitizeStatus · function · L112-L127 — function sanitizeStatus(value: unknown): ManagedAccountStatus | undefined
+- sanitizeSecrets · function · L129-L141 — function sanitizeSecrets(value: unknown): Record<string, string> | undefined
+- sanitizeMetadata · function · L143-L155 — function sanitizeMetadata(value: unknown): Record<string, unknown> | undefined
+- sanitizeTimestamp · function · L157-L162 — function sanitizeTimestamp(value: unknown): number | undefined
+- sanitizeStoredRecord · function · L164-L194 — function sanitizeStoredRecord(input: unknown): ManagedAccountRecord | undefined
+- normalizeState · function · L196-L219 — function normalizeState(raw: unknown): ManagedAccountState
+- getRepository · function · L221-L226 — function getRepository(): SecureSettingsRepository
+- ManagedAccountManager · class · L228-L415 — class ManagedAccountManager
+- loadAll · method · L229-L238 — static loadAll(): ManagedAccountRecord[]
+- list · method · L240-L249 — static list(options?: ManagedAccountListOptions): ManagedAccountRecord[]
+- getById · method · L251-L255 — static getById(id: string): ManagedAccountRecord | undefined
+- upsert · method · L257-L358 — static upsert(input: UpsertManagedAccountInput): ManagedAccountRecord
+- remove · method · L360-L372 — static remove(id: string): boolean
+- toPublicView · method · L374-L397 — static toPublicView( account: ManagedAccountRecord, includeSecrets = false, ): ManagedAccountPublicView
+- readState · method · L399-L408 — private static readState(): ManagedAccountState
+- saveState · method · L410-L414 — private static saveState(state: ManagedAccountState): void

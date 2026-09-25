@@ -1,0 +1,27 @@
+# src/electron/memory/CuratedMemoryService.ts
+
+- SyncFileParams · type · L24-L30 — type SyncFileParams = { filePath: string; title: string; startMarker: string; endMarker: string; body: string; };
+- FileSnapshot · type · L32-L35 — type FileSnapshot = { content: string; mtimeMs: number; };
+- CuratedMemoryFilesystemGuard · type · L37-L37 — type CuratedMemoryFilesystemGuard = (candidatePath: string) => boolean;
+- SyncWorkspaceFilesOptions · interface · L39-L42 — interface SyncWorkspaceFilesOptions
+- normalizeMemoryKey · function · L44-L49 — function normalizeMemoryKey(value: string): string
+- normalizeCuratedContent · function · L51-L56 — function normalizeCuratedContent(value: string): string
+- normalizeMatch · function · L58-L63 — function normalizeMatch(value: string): string
+- kindLabel · function · L65-L82 — function kindLabel(kind: CuratedMemoryKind): string
+- replaceOrAppendBlock · function · L84-L99 — function replaceOrAppendBlock( input: string, startMarker: string, endMarker: string, blockBody: string, ): string
+- renderUserBlock · function · L101-L111 — function renderUserBlock(entries: CuratedMemoryEntryRecord[]): string
+- renderWorkspaceBlock · function · L113-L123 — function renderWorkspaceBlock(entries: CuratedMemoryEntryRecord[]): string
+- CuratedMemoryService · class · L125-L587 — class CuratedMemoryService
+- initialize · method · L131-L138 — static initialize(dbManager: DatabaseManager): void
+- list · method · L140-L151 — static list( workspaceId: string, params: { target?: CuratedMemoryTarget; kind?: CuratedMemoryKind; status?: "active" | "archived"; limit?: number; } = {}, ): CuratedMemoryEntry[]
+- getPromptEntries · method · L153-L160 — static getPromptEntries(workspaceId: string, limit = 8): CuratedMemoryEntry[]
+- curate · method · L162-L334 — static async curate(params: { workspaceId: string; taskId?: string; action: "add" | "replace" | "remove"; target: CuratedMemoryTarget; id?: string; kind?: CuratedMemoryKind; content?: string; match?: string; reason?: string; origin?: MemoryWriteOrigin; skipMemoryWriteGate?: boolean; filesystemReadGuard?: CuratedMemoryFilesystemGuard; filesystemWriteGuard?: CuratedMemoryFilesystemGuard; }): Promise<{ success: boolean; entry?: CuratedMemoryEntry; updatedFile?: ".cowork/USER.md" | ".cowork/MEMORY.md"; staged?: boolean; pendingId?: string; error?: string; }>
+- upsertDistilledEntry · method · L336-L413 — static async upsertDistilledEntry(params: { workspaceId: string; taskId?: string; target: CuratedMemoryTarget; kind: CuratedMemoryKind; content: string; confidence: number; source?: CuratedMemoryEntry["source"]; skipMemoryWriteGate?: boolean; filesystemReadGuard?: CuratedMemoryFilesystemGuard; filesystemWriteGuard?: CuratedMemoryFilesystemGuard; }): Promise<CuratedMemoryEntry | null>
+- syncWorkspaceFiles · method · L415-L478 — static async syncWorkspaceFiles( workspaceId: string, options: SyncWorkspaceFilesOptions = {}, ): Promise<void>
+- canRead · function · L430-L431 — canRead = (candidatePath: string): boolean
+- canWrite · function · L432-L433 — canWrite = (candidatePath: string): boolean
+- validateSyncAccess · method · L480-L498 — private static validateSyncAccess( workspaceId: string, readGuard?: CuratedMemoryFilesystemGuard, writeGuard?: CuratedMemoryFilesystemGuard, ): string | undefined
+- findMatchCandidate · method · L500-L549 — private static findMatchCandidate( workspaceId: string, target: CuratedMemoryTarget, match: string, kind?: CuratedMemoryKind, ): { entry?: CuratedMemoryEntryRecord; error?: string; }
+- readFileSnapshot · method · L551-L558 — private static async readFileSnapshot(filePath: string, title: string): Promise<FileSnapshot>
+- syncFile · method · L560-L580 — private static async syncFile(params: SyncFileParams): Promise<void>
+- ensureInitialized · method · L582-L586 — private static ensureInitialized(): void

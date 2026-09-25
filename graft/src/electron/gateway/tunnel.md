@@ -1,0 +1,33 @@
+# src/electron/gateway/tunnel.ts
+
+- TunnelProvider · type · L26-L26 — type TunnelProvider = "ngrok" | "tailscale" | "cloudflare" | "localtunnel";
+- TunnelStatus · type · L31-L31 — type TunnelStatus = "stopped" | "starting" | "running" | "error";
+- TunnelConfig · interface · L36-L78 — interface TunnelConfig
+- TunnelInfo · interface · L83-L104 — interface TunnelInfo
+- TunnelManager · class · L109-L586 — class TunnelManager extends EventEmitter
+- constructor · method · L118-L131 — constructor(config: TunnelConfig)
+- status · method · L136-L138 — get status(): TunnelStatus
+- url · method · L143-L145 — get url(): string | undefined
+- getInfo · method · L150-L159 — getInfo(): TunnelInfo
+- start · method · L164-L226 — async start(): Promise<string>
+- onRunning · function · L172-L175 — onRunning = ()
+- onError · function · L176-L179 — onError = (error: Error)
+- stop · method · L231-L250 — async stop(): Promise<void>
+- restart · method · L255-L258 — async restart(): Promise<string>
+- checkProviderInstalled · method · L263-L287 — private async checkProviderInstalled(): Promise<void>
+- startNgrok · method · L292-L324 — private async startNgrok(): Promise<string>
+- waitForNgrokUrl · method · L329-L351 — private async waitForNgrokUrl(): Promise<string>
+- startTailscale · method · L356-L383 — private async startTailscale(): Promise<string>
+- getTailscaleFunnelUrl · method · L388-L403 — private async getTailscaleFunnelUrl(): Promise<string>
+- startCloudflare · method · L408-L430 — private async startCloudflare(): Promise<string>
+- waitForCloudflareUrl · method · L435-L457 — private async waitForCloudflareUrl(): Promise<string>
+- handleData · function · L443-L452 — handleData = (data: Buffer)
+- startLocaltunnel · method · L462-L477 — private async startLocaltunnel(): Promise<string>
+- waitForLocaltunnelUrl · method · L482-L502 — private async waitForLocaltunnelUrl(): Promise<string>
+- handleData · function · L490-L498 — handleData = (data: Buffer)
+- setupProcessHandlers · method · L507-L534 — private setupProcessHandlers(): void
+- scheduleRestart · method · L539-L553 — private scheduleRestart(): void
+- httpGet · method · L558-L578 — private httpGet(url: string): Promise<string>
+- sleep · method · L583-L585 — private sleep(ms: number): Promise<void>
+- getAvailableTunnelProviders · function · L591-L610 — async function getAvailableTunnelProviders(): Promise<TunnelProvider[]>
+- createAutoTunnel · function · L615-L635 — async function createAutoTunnel( port: number, preferredProvider?: TunnelProvider, ): Promise<TunnelManager>

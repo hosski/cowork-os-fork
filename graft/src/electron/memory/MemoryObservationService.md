@@ -1,0 +1,35 @@
+# src/electron/memory/MemoryObservationService.ts
+
+- MemoryCaptureOrigin · type · L19-L28 — type MemoryCaptureOrigin = | "task" | "heartbeat" | "tool" | "chronicle" | "playbook" | "proactive" | "import" | "system" | "unknown";
+- CreateOptions · interface · L30-L38 — interface CreateOptions
+- parseJsonArray · function · L63-L71 — function parseJsonArray(value: unknown): string[]
+- stringifyArray · function · L73-L80 — function stringifyArray(value: string[] | undefined): string
+- normalizeWhitespace · function · L82-L84 — function normalizeWhitespace(value: string): string
+- truncate · function · L86-L89 — function truncate(value: string, max: number): string
+- contentHash · function · L91-L96 — function contentHash(content: string): string
+- sourceLabel · function · L98-L115 — function sourceLabel(origin: string): string
+- extractConcepts · function · L117-L134 — function extractConcepts(text: string): string[]
+- extractFiles · function · L136-L156 — function extractFiles(text: string): { read: string[]; modified: string[] }
+- deriveTitle · function · L158-L164 — function deriveTitle(type: MemoryType | string, content: string, summary?: string): string
+- deriveFacts · function · L166-L173 — function deriveFacts(content: string, summary?: string): string[]
+- buildMetadata · function · L175-L211 — function buildMetadata( memory: Memory, options: CreateOptions = {}, ): Omit<MemoryObservationMetadata, "content" | "estimatedDetailTokens">
+- MemoryObservationService · class · L213-L719 — class MemoryObservationService
+- initialize · method · L223-L225 — static initialize(db: Database.Database): void
+- createForMemory · method · L227-L285 — static createForMemory( memory: Memory, options: CreateOptions = {}, ): MemoryObservationMetadata | null
+- startBackfill · method · L287-L341 — static startBackfill(force = false): MemoryObservationBackfillStatus
+- getBackfillStatus · method · L343-L346 — static getBackfillStatus(): MemoryObservationBackfillStatus
+- search · method · L348-L418 — static search(query: MemoryObservationSearchQuery): MemoryObservationSearchResult[]
+- timeline · method · L420-L453 — static timeline(input: { workspaceId: string; memoryId?: string; query?: string; windowSize?: number; }): MemoryObservationTimelineEntry[]
+- details · method · L455-L459 — static details(memoryIds: string[], workspaceId?: string): MemoryObservationMetadata[]
+- update · method · L461-L511 — static update( workspaceId: string, memoryId: string, patch: Partial< Pick< MemoryObservationMetadata, | "title" | "subtitle" | "narrative" | "facts" | "concepts" | "filesRead" | "filesModified" | "tools" | "sourceEventIds" | "privacyState" > >, ): MemoryObservationMetadata | null
+- redact · method · L513-L536 — static redact( workspaceId: string, memoryId: string, replacement = "[redacted]", ): MemoryObservationMetadata | null
+- delete · method · L538-L558 — static delete(workspaceId: string, memoryId: string): boolean
+- isPromptSuppressed · method · L560-L567 — static isPromptSuppressed(memoryId: string): boolean
+- getRow · method · L569-L583 — private static getRow(memoryId: string, workspaceId?: string): MemoryObservationMetadata | null
+- refreshBackfillStatus · method · L585-L614 — private static refreshBackfillStatus(): void
+- mapSearchRow · method · L616-L644 — private static mapSearchRow( row: Record<string, unknown>, rank: number, ): MemoryObservationSearchResult
+- mapDetailRow · method · L646-L675 — private static mapDetailRow(row: Record<string, unknown>): MemoryObservationMetadata
+- mapMemory · method · L677-L691 — private static mapMemory(row: Record<string, unknown>): Memory
+- inferOrigin · method · L693-L700 — private static inferOrigin(row: Record<string, unknown>): MemoryCaptureOrigin
+- buildFtsQuery · method · L702-L713 — private static buildFtsQuery(raw: string): string
+- requireDb · method · L715-L718 — private static requireDb(): Database.Database

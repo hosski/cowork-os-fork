@@ -1,0 +1,26 @@
+# src/electron/agent/queue-manager.ts
+
+- DaemonCallbacks · type · L42-L48 — type DaemonCallbacks = { startTaskImmediate: (task: Task) => Promise<void>; emitQueueUpdate: (status: QueueStatus) => void; getTaskById: (taskId: string) => Task | undefined; updateTaskStatus: (taskId: string, status: TaskStatus) => void; onTaskTimeout: (taskId: string) => Promise<void>; // Called when a task times out };
+- TaskQueueManager · class · L50-L520 — class TaskQueueManager
+- constructor · method · L61-L73 — constructor(callbacks: DaemonCallbacks)
+- migrateFromLegacyFile · method · L78-L127 — private migrateFromLegacyFile(): void
+- upgradeLegacyQueueDefaults · method · L134-L153 — private upgradeLegacyQueueDefaults(settings: QueueSettings): QueueSettings
+- upgradeStoredQueueDefaults · method · L155-L165 — private upgradeStoredQueueDefaults(settings: QueueSettings): QueueSettings
+- destroy · method · L170-L175 — destroy(): void
+- initialize · method · L181-L205 — async initialize(queuedTasks: Task[], runningTasks: Task[]): Promise<void>
+- enqueue · method · L213-L248 — async enqueue(task: Task): Promise<void>
+- registerResumedTask · method · L257-L271 — registerResumedTask(taskId: string): boolean
+- onTaskFinished · method · L276-L288 — async onTaskFinished(taskId: string): Promise<void>
+- cancelQueuedTask · method · L294-L303 — cancelQueuedTask(taskId: string): boolean
+- isQueued · method · L308-L310 — isQueued(taskId: string): boolean
+- isRunning · method · L315-L317 — isRunning(taskId: string): boolean
+- clearStuckTasks · method · L324-L343 — clearStuckTasks(): { clearedRunning: number; clearedQueued: number }
+- getStatus · method · L348-L356 — getStatus(): QueueStatus
+- getSettings · method · L361-L363 — getSettings(): QueueSettings
+- saveSettings · method · L368-L401 — saveSettings(newSettings: Partial<QueueSettings>): void
+- processQueue · method · L408-L420 — private async processQueue(): Promise<void>
+- canStartImmediately · method · L425-L427 — private canStartImmediately(): boolean
+- startTask · method · L432-L445 — private async startTask(task: Task): Promise<void>
+- emitQueueUpdate · method · L450-L452 — private emitQueueUpdate(): void
+- checkForTimedOutTasks · method · L457-L496 — private async checkForTimedOutTasks(): Promise<void>
+- loadSettings · method · L501-L519 — private loadSettings(): QueueSettings

@@ -1,0 +1,21 @@
+# src/electron/agents/AutomationProfileRepository.ts
+
+- Any · type · L15-L15 — type Any = any;
+- safeJsonParse · function · L18-L25 — function safeJsonParse<T>(jsonString: string | null, fallback: T): T
+- normalizeInput · function · L27-L54 — function normalizeInput( input?: Partial< CreateAutomationProfileRequest & UpdateAutomationProfileRequest & HeartbeatConfig >, ): Omit< AutomationProfile, | "id" | "agentRoleId" | "heartbeatStatus" | "lastHeartbeatAt" | "lastPulseAt" | "lastDispatchAt" | "lastPulseResult" | "lastDispatchKind" | "createdAt" | "updatedAt" >
+- AutomationProfileRepository · class · L56-L285 — class AutomationProfileRepository
+- constructor · method · L57-L57 — constructor(private readonly db: Database.Database)
+- profileHasHistoricalDependencies · method · L59-L83 — private profileHasHistoricalDependencies(profileId: string): boolean
+- disableInsteadOfDelete · method · L85-L89 — private disableInsteadOfDelete(profileId: string): void
+- mapRow · method · L91-L113 — private mapRow(row: Any): AutomationProfile
+- listAll · method · L115-L120 — listAll(): AutomationProfile[]
+- listEnabled · method · L122-L127 — listEnabled(): AutomationProfile[]
+- findById · method · L129-L132 — findById(id: string): AutomationProfile | undefined
+- findByAgentRoleId · method · L134-L139 — findByAgentRoleId(agentRoleId: string): AutomationProfile | undefined
+- create · method · L141-L176 — create(request: CreateAutomationProfileRequest): AutomationProfile
+- createOrReplace · method · L178-L187 — createOrReplace(request: CreateAutomationProfileRequest): AutomationProfile
+- update · method · L189-L216 — update( request: UpdateAutomationProfileRequest & { agentRoleId?: string }, ): AutomationProfile | undefined
+- updateByAgentRoleId · method · L218-L222 — updateByAgentRoleId(agentRoleId: string, config: HeartbeatConfig): AutomationProfile | undefined
+- updateRuntimeState · method · L224-L265 — updateRuntimeState( agentRoleId: string, updates: { heartbeatStatus?: HeartbeatStatus; lastHeartbeatAt?: number; lastPulseAt?: number; lastDispatchAt?: number; lastPulseResult?: HeartbeatPulseResultKind; lastDispatchKind?: HeartbeatDispatchKind; }, ): void
+- deleteById · method · L267-L276 — deleteById(id: string): void
+- deleteByAgentRoleId · method · L278-L284 — deleteByAgentRoleId(agentRoleId: string): void

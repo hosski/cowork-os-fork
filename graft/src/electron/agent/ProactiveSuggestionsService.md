@@ -1,0 +1,48 @@
+# src/electron/agent/ProactiveSuggestionsService.ts
+
+- SuggestionTelemetryEventType · type · L21-L28 — type SuggestionTelemetryEventType = | "created" | "surfaced" | "dismissed" | "snoozed" | "edited" | "ignored" | "acted_on";
+- SuggestionFeedbackStats · interface · L30-L38 — interface SuggestionFeedbackStats
+- SuggestionTelemetryEvent · interface · L40-L46 — interface SuggestionTelemetryEvent
+- PersistedSuggestionState · interface · L48-L55 — interface PersistedSuggestionState
+- FollowUpTemplate · interface · L59-L63 — interface FollowUpTemplate
+- GoalTemplate · interface · L108-L112 — interface GoalTemplate
+- ReversePromptTemplate · interface · L145-L151 — interface ReversePromptTemplate
+- ReversePromptContext · interface · L153-L158 — interface ReversePromptContext
+- ProactiveSuggestionsService · class · L203-L1187 — class ProactiveSuggestionsService
+- beginSuggestionCycle · method · L218-L227 — private static beginSuggestionCycle(workspaceId: string): Set<string>
+- endSuggestionCycle · method · L229-L236 — private static endSuggestionCycle(workspaceId: string): void
+- getPendingTitles · method · L238-L240 — private static getPendingTitles(workspaceId: string): Set<string> | undefined
+- loadDismissed · method · L244-L263 — private static loadDismissed(): void
+- saveDismissed · method · L265-L280 — private static saveDismissed(): void
+- listActive · method · L287-L347 — static listActive( workspaceId: string, opts?: { includeDeferred?: boolean; recordSurface?: boolean }, workspaceIds?: string[], ): ProactiveSuggestion[]
+- dismiss · method · L352-L363 — static dismiss(workspaceId: string, suggestionId: string): boolean
+- snooze · method · L365-L377 — static snooze(workspaceId: string, suggestionId: string, snoozedUntil: number): boolean
+- recordEditedAction · method · L379-L392 — static recordEditedAction( workspaceId: string, suggestionId: string, editedPrompt: string, ): boolean
+- actOn · method · L397-L419 — static actOn(workspaceId: string, suggestionId: string): string | null
+- getTopForBriefing · method · L424-L429 — static getTopForBriefing(workspaceId: string, limit = 3): ProactiveSuggestion[]
+- getTopForBriefingForWorkspaces · method · L431-L444 — static getTopForBriefingForWorkspaces( workspaceId: string, workspaceIds: string[], limit = 3, ): ProactiveSuggestion[]
+- generateAll · method · L451-L490 — static async generateAll(workspaceId: string): Promise<void>
+- generateFollowUpSuggestions · method · L495-L523 — static async generateFollowUpSuggestions( workspaceId: string, taskId: string, taskTitle: string, taskPrompt: string, _toolsUsed: string[], _resultSummary: string, ): Promise<void>
+- createCompanionSuggestion · method · L525-L568 — static async createCompanionSuggestion( workspaceId: string, suggestion: { type?: SuggestionType; title: string; description: string; actionPrompt?: string; sourceTaskId?: string; sourceEntity?: string; confidence: number; suggestionClass?: ProactiveSuggestion["suggestionClass"]; urgency?: ProactiveSuggestion["urgency"]; learningSignalIds?: string[]; workspaceScope?: HeartbeatWorkspaceScope; sourceSignals?: string[]; recommendedDelivery?: ProactiveSuggestion["recommendedDelivery"]; companionStyle?: ProactiveSuggestion["companionStyle"]; }, ): Promise<ProactiveSuggestion | null>
+- generateAwarenessSuggestions · method · L570-L605 — static async generateAwarenessSuggestions(workspaceId: string): Promise<void>
+- generateChiefOfStaffSuggestions · method · L607-L632 — static async generateChiefOfStaffSuggestions(workspaceId: string): Promise<void>
+- detectRecurringPatterns · method · L637-L678 — static async detectRecurringPatterns(workspaceId: string): Promise<void>
+- generateGoalAlignedSuggestions · method · L683-L704 — static async generateGoalAlignedSuggestions(workspaceId: string): Promise<void>
+- generateKnowledgeInsights · method · L710-L746 — static async generateKnowledgeInsights(workspaceId: string): Promise<void>
+- generateReversePrompts · method · L751-L782 — static async generateReversePrompts(workspaceId: string): Promise<void>
+- storeSuggestion · method · L786-L878 — private static async storeSuggestion( workspaceId: string, suggestion: { type: SuggestionType; title: string; description: string; actionPrompt?: string; sourceTaskId?: string; sourceEntity?: string; confidence: number; suggestionClass?: ProactiveSuggestion["suggestionClass"]; urgency?: ProactiveSuggestion["urgency"]; learningSignalIds?: string[]; workspaceScope?: HeartbeatWorkspaceScope; sourceSignals?: string[]; recommendedDelivery?: ProactiveSuggestion["recommendedDelivery"]; companionStyle?: ProactiveSuggestion["companionStyle"]; }, ): Promise<ProactiveSuggestion | null>
+- parseSuggestion · method · L880-L936 — private static parseSuggestion( snippet: string, memoryId: string, createdAt: number, workspaceId?: string, ): ProactiveSuggestion | null
+- isDuplicate · method · L938-L948 — private static isDuplicate(workspaceId: string, title: string): boolean
+- pruneExpired · method · L950-L953 — private static pruneExpired(_workspaceId: string): void
+- normalizeTitle · method · L955-L965 — private static normalizeTitle(title: string): string
+- detectTaskCategory · method · L967-L974 — private static detectTaskCategory(title: string, prompt: string): string | null
+- recordSurface · method · L976-L985 — private static recordSurface(workspaceId: string, suggestionId: string): void
+- recordTelemetry · method · L987-L1008 — private static recordTelemetry( workspaceId: string, suggestionId: string, type: SuggestionTelemetryEventType, at = Date.now(), save = true, ): void
+- findSuggestionById · method · L1010-L1025 — private static findSuggestionById( workspaceId: string, suggestionId: string, ): ProactiveSuggestion | null
+- getSuggestionFeedbackKey · method · L1027-L1040 — private static getSuggestionFeedbackKey( workspaceId: string, suggestion: ProactiveSuggestion, ): string
+- recordSuggestionFeedback · method · L1042-L1070 — private static recordSuggestionFeedback( workspaceId: string, suggestion: ProactiveSuggestion, action: "acted_on" | "dismissed" | "snoozed" | "edited" | "ignored", ): void
+- captureSuggestionFeedbackMemory · method · L1072-L1120 — private static captureSuggestionFeedbackMemory( workspaceId: string, suggestion: ProactiveSuggestion, action: "acted_on" | "dismissed" | "snoozed" | "edited" | "ignored", editedPrompt?: string, ): void
+- getFeedbackAdjustment · method · L1122-L1134 — private static getFeedbackAdjustment( workspaceId: string, suggestion: ProactiveSuggestion, ): number
+- maybeRecordIgnoredSuggestion · method · L1136-L1151 — private static maybeRecordIgnoredSuggestion( workspaceId: string, suggestion: ProactiveSuggestion, at: number, ): void
+- getTimingAdjustment · method · L1153-L1175 — private static getTimingAdjustment( workspaceId: string, suggestion: ProactiveSuggestion, now = new Date(), ): number
+- shouldDefer · method · L1177-L1186 — private static shouldDefer(workspaceId: string, suggestion: ProactiveSuggestion): boolean

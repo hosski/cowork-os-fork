@@ -1,0 +1,47 @@
+# src/electron/location/DesktopLocationService.ts
+
+- DesktopLocationRequest · interface · L9-L13 — interface DesktopLocationRequest
+- DesktopLocationSource · type · L15-L19 — type DesktopLocationSource = | "macos_core_location" | "windows_location" | "linux_geoclue" | "ip_geolocation";
+- DesktopLocationSnapshot · interface · L21-L27 — interface DesktopLocationSnapshot
+- DesktopLocationErrorCode · type · L29-L34 — type DesktopLocationErrorCode = | "LOCATION_DENIED" | "LOCATION_UNAVAILABLE" | "LOCATION_TIMEOUT" | "LOCATION_NOT_CONFIGURED" | "LOCATION_UNSUPPORTED_PLATFORM";
+- DesktopLocationError · class · L36-L45 — class DesktopLocationError extends Error
+- constructor · method · L37-L44 — constructor( readonly code: DesktopLocationErrorCode, message: string, readonly provider?: string, )
+- NativeLocationProvider · interface · L47-L51 — interface NativeLocationProvider
+- LocationHelperEnvelope · interface · L53-L60 — interface LocationHelperEnvelope
+- LocationProviderOptions · interface · L62-L70 — interface LocationProviderOptions
+- MacOSCoreLocationProviderOptions · type · L72-L72 — type MacOSCoreLocationProviderOptions = LocationProviderOptions;
+- registerLocationProbeScheme · function · L85-L88 — function registerLocationProbeScheme(): void
+- MacOSCoreLocationProvider · class · L90-L191 — class MacOSCoreLocationProvider implements NativeLocationProvider
+- constructor · method · L100-L108 — constructor(options: MacOSCoreLocationProviderOptions = {})
+- isAvailable · method · L110-L112 — async isAvailable(): Promise<boolean>
+- getCurrentLocation · method · L114-L180 — async getCurrentLocation(request: DesktopLocationRequest = {}): Promise<DesktopLocationSnapshot>
+- resolveHelperTarget · method · L182-L190 — private resolveHelperTarget(): { kind: "app" | "executable"; path: string } | null
+- WindowsLocationProvider · class · L193-L290 — class WindowsLocationProvider implements NativeLocationProvider
+- constructor · method · L203-L211 — constructor(options: LocationProviderOptions = {})
+- isAvailable · method · L213-L215 — async isAvailable(): Promise<boolean>
+- getCurrentLocation · method · L217-L281 — async getCurrentLocation(request: DesktopLocationRequest = {}): Promise<DesktopLocationSnapshot>
+- resolveHelperScript · method · L283-L289 — private resolveHelperScript(): string | null
+- LinuxGeoClueProvider · class · L292-L384 — class LinuxGeoClueProvider implements NativeLocationProvider
+- constructor · method · L302-L310 — constructor(options: LocationProviderOptions = {})
+- isAvailable · method · L312-L314 — async isAvailable(): Promise<boolean>
+- getCurrentLocation · method · L316-L375 — async getCurrentLocation(request: DesktopLocationRequest = {}): Promise<DesktopLocationSnapshot>
+- resolveHelperScript · method · L377-L383 — private resolveHelperScript(): string | null
+- DesktopLocationService · class · L386-L418 — class DesktopLocationService
+- constructor · method · L389-L391 — constructor( private readonly providers: NativeLocationProvider[] = createNativeLocationProviders(), )
+- getInstance · method · L393-L398 — static getInstance(): DesktopLocationService
+- installPermissionHandlers · method · L400-L403 — installPermissionHandlers(): void
+- getCurrentLocation · method · L405-L417 — async getCurrentLocation(request: DesktopLocationRequest = {}): Promise<DesktopLocationSnapshot>
+- createNativeLocationProviders · function · L420-L426 — function createNativeLocationProviders(): NativeLocationProvider[]
+- getNoProviderMessage · function · L428-L439 — function getNoProviderMessage(platform: NodeJS.Platform): string
+- getMacOSLocationHelperCandidates · function · L441-L480 — function getMacOSLocationHelperCandidates(): Array<{ kind: "app" | "executable"; path: string }>
+- getWindowsLocationHelperCandidates · function · L482-L493 — function getWindowsLocationHelperCandidates(): string[]
+- getLinuxLocationHelperCandidates · function · L495-L506 — function getLinuxLocationHelperCandidates(): string[]
+- resolveWindowsPowerShell · function · L508-L511 — function resolveWindowsPowerShell(): string
+- parseHelperSuccess · function · L513-L541 — function parseHelperSuccess(stdout: string, provider: string): DesktopLocationSnapshot
+- parseHelperError · function · L543-L572 — function parseHelperError(error: unknown, provider: string): DesktopLocationError
+- parseHelperEnvelope · function · L574-L593 — function parseHelperEnvelope(stdout: string, provider: string): LocationHelperEnvelope
+- helperEnvelopeError · function · L595-L605 — function helperEnvelopeError( envelope: LocationHelperEnvelope, provider: string, ): DesktopLocationError
+- normalizeLocationErrorCode · function · L607-L618 — function normalizeLocationErrorCode(code: unknown): DesktopLocationErrorCode
+- locationErrorMessage · function · L620-L634 — function locationErrorMessage(code: DesktopLocationErrorCode): string
+- clampPositiveInteger · function · L636-L644 — function clampPositiveInteger( value: unknown, fallback: number, minimum: number, maximum: number, ): number
+- getDesktopLocationService · function · L646-L648 — function getDesktopLocationService(): DesktopLocationService

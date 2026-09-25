@@ -1,0 +1,22 @@
+# src/electron/agent/agent-policy.ts
+
+- AgentPolicyHookName · type · L8-L8 — type AgentPolicyHookName = "on_pre_tool_use" | "on_stop_attempt" | "on_recovery_plan";
+- AgentPolicyHookAction · type · L9-L9 — type AgentPolicyHookAction = "allow" | "block_with_feedback" | "force_action";
+- AgentPolicyHookRule · interface · L11-L20 — interface AgentPolicyHookRule
+- AgentPolicyHookDecision · interface · L22-L27 — interface AgentPolicyHookDecision
+- LoopThresholdOverrides · type · L29-L29 — type LoopThresholdOverrides = Partial<LoopGuardrailConfig>;
+- AgentPolicyConfig · interface · L31-L42 — interface AgentPolicyConfig
+- AgentPolicyLoadResult · interface · L44-L48 — interface AgentPolicyLoadResult
+- normalizeToolName · function · L102-L106 — function normalizeToolName(name: string): string
+- parseTomlScalar · function · L108-L163 — function parseTomlScalar(raw: string): unknown
+- stripInlineComment · function · L165-L185 — function stripInlineComment(line: string): string
+- toStringArray · function · L187-L198 — function toStringArray(value: unknown): string[]
+- maybeParseForceInputTemplate · function · L200-L214 — function maybeParseForceInputTemplate(value: unknown): Record<string, unknown> | undefined
+- parseAgentPolicyToml · function · L216-L389 — function parseAgentPolicyToml(rawToml: string): AgentPolicyConfig
+- loadAgentPolicyFromWorkspace · function · L391-L417 — function loadAgentPolicyFromWorkspace( workspacePath: string, readGuard?: (candidatePath: string) => boolean, ): AgentPolicyLoadResult
+- getPolicyRequiredToolsForMode · function · L419-L427 — function getPolicyRequiredToolsForMode( policy: AgentPolicyConfig | null | undefined, mode: StepContractMode, ): string[]
+- filterToolsByAgentPolicy · function · L429-L454 — function filterToolsByAgentPolicy<T extends { name: string }>(opts: { tools: T[]; policy: AgentPolicyConfig | null | undefined; }): { tools: T[]; blocked: Array<{ name: string; reason: string }> }
+- mergeLoopThresholdOverride · function · L456-L469 — function mergeLoopThresholdOverride( base: LoopGuardrailConfig, override: LoopThresholdOverrides | undefined, ): LoopGuardrailConfig
+- applyAgentPolicyLoopThresholds · function · L471-L488 — function applyAgentPolicyLoopThresholds(opts: { base: LoopGuardrailConfig; policy: AgentPolicyConfig | null | undefined; mode?: StepContractMode; domain?: TaskDomain; }): LoopGuardrailConfig
+- sanitizeFallbackTextWithPolicy · function · L490-L515 — function sanitizeFallbackTextWithPolicy(opts: { text: string; policy: AgentPolicyConfig | null | undefined; }): { text: string; sanitized: boolean }
+- evaluateAgentPolicyHook · function · L517-L562 — function evaluateAgentPolicyHook(opts: { policy: AgentPolicyConfig | null | undefined; hook: AgentPolicyHookName; toolName?: string; mode?: StepContractMode; domain?: TaskDomain; reasonText?: string; }): AgentPolicyHookDecision | null

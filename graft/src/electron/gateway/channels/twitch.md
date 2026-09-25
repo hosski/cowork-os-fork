@@ -1,0 +1,30 @@
+# src/electron/gateway/channels/twitch.ts
+
+- TwitchAdapter · class · L38-L454 — class TwitchAdapter implements ChannelAdapter
+- constructor · method · L55-L61 — constructor(config: TwitchConfig)
+- status · method · L63-L65 — get status(): ChannelStatus
+- botUsername · method · L67-L69 — get botUsername(): string | undefined
+- connect · method · L74-L143 — async connect(): Promise<void>
+- disconnect · method · L148-L166 — async disconnect(): Promise<void>
+- sendMessage · method · L171-L194 — async sendMessage(message: OutgoingMessage): Promise<string>
+- splitMessage · method · L199-L224 — private splitMessage(text: string, maxLength: number): string[]
+- editMessage · method · L229-L231 — async editMessage(_chatId: string, _messageId: string, _text: string): Promise<void>
+- deleteMessage · method · L236-L240 — async deleteMessage(_chatId: string, _messageId: string): Promise<void>
+- sendDocument · method · L245-L247 — async sendDocument(_chatId: string, _filePath: string, _caption?: string): Promise<string>
+- sendPhoto · method · L252-L254 — async sendPhoto(_chatId: string, _filePath: string, _caption?: string): Promise<string>
+- onMessage · method · L259-L261 — onMessage(handler: MessageHandler): void
+- onError · method · L266-L268 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L273-L275 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L280-L292 — async getInfo(): Promise<ChannelInfo>
+- joinChannel · method · L301-L305 — joinChannel(channel: string): void
+- leaveChannel · method · L310-L314 — leaveChannel(channel: string): void
+- sendWhisper · method · L319-L325 — async sendWhisper(username: string, message: string): Promise<void>
+- getJoinedChannels · method · L330-L332 — getJoinedChannels(): string[]
+- handleIncomingMessage · method · L341-L386 — private async handleIncomingMessage(twitchMessage: TwitchMessage): Promise<void>
+- isMessageProcessed · method · L391-L393 — private isMessageProcessed(messageId: string): boolean
+- markMessageProcessed · method · L398-L405 — private markMessageProcessed(messageId: string): void
+- startDedupCleanup · method · L410-L414 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L419-L426 — private cleanupDedupCache(): void
+- handleError · method · L431-L439 — private handleError(error: Error, context?: string): void
+- setStatus · method · L444-L453 — private setStatus(status: ChannelStatus, error?: Error): void
+- createTwitchAdapter · function · L459-L470 — function createTwitchAdapter(config: TwitchConfig): TwitchAdapter

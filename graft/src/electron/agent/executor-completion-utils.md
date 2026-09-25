@@ -1,0 +1,31 @@
+# src/electron/agent/executor-completion-utils.ts
+
+- normalizePromptForContracts · function · L33-L57 — function normalizePromptForContracts(taskPrompt: string): string
+- shouldRequireExecutionEvidence · function · L59-L64 — function shouldRequireExecutionEvidence(taskTitle: string, taskPrompt: string): boolean
+- promptRequestsArtifactOutput · function · L66-L93 — function promptRequestsArtifactOutput(taskTitle: string, taskPrompt: string): boolean
+- promptRequestsVideoArtifactOutput · function · L95-L101 — function promptRequestsVideoArtifactOutput(taskTitle: string, taskPrompt: string): boolean
+- promptRequestsPresentationArtifactOutput · function · L103-L129 — function promptRequestsPresentationArtifactOutput( taskTitle: string, taskPrompt: string, ): boolean
+- promptAllowsOperationalStatus · function · L137-L149 — function promptAllowsOperationalStatus(taskTitle: string, taskPrompt: string): boolean
+- hasUnrecoveredToolFailureForAssistantOutput · function · L159-L180 — function hasUnrecoveredToolFailureForAssistantOutput(opts: { hadAnyToolSuccess: boolean; hadToolError: boolean; hadToolSuccessAfterError: boolean; allToolErrorsInputDependent: boolean; toolErrors: Iterable<string>; visionFallbackRecovered?: boolean; }): boolean
+- hasUnrecoveredBlockingPlanFailureForAssistantOutput · function · L188-L203 — function hasUnrecoveredBlockingPlanFailureForAssistantOutput(opts: { currentStepIndex: number; planSteps: ReadonlyArray<{ status?: string; recovered?: boolean; optional?: boolean; }>; }): boolean
+- promptRequestsCanvasArtifactOutput · function · L205-L224 — function promptRequestsCanvasArtifactOutput(taskTitle: string, taskPrompt: string): boolean
+- promptIsMultiFileWebAppCreation · function · L231-L251 — function promptIsMultiFileWebAppCreation(prompt: string): boolean
+- inferRequiredArtifactExtensions · function · L253-L267 — function inferRequiredArtifactExtensions(taskTitle: string, taskPrompt: string): string[]
+- extractExplicitOutputExtensions · function · L292-L395 — function extractExplicitOutputExtensions(taskTitle: string, taskPrompt: string): string[]
+- buildCompletionGuidancePrompt · function · L402-L434 — function buildCompletionGuidancePrompt(opts: { hasReadOnlyConstraint: boolean; explicitOutputExtensions: string[]; likelyRequiresExecution: boolean; }): string
+- detectReadOnlyConstraint · function · L446-L470 — function detectReadOnlyConstraint(prompt: string): boolean
+- buildCompletionContract · function · L472-L550 — function buildCompletionContract(opts: { taskTitle: string; taskPrompt: string; requiresDirectAnswer: boolean; requiresDecisionSignal: boolean; isWatchSkipRecommendationTask: boolean; }): CompletionContract
+- responseHasDecisionSignal · function · L552-L571 — function responseHasDecisionSignal(text: string): boolean
+- responseHasVerificationSignal · function · L573-L588 — function responseHasVerificationSignal(text: string): boolean
+- responseHasExecutionReportEvidenceSignal · function · L590-L615 — function responseHasExecutionReportEvidenceSignal(text: string): boolean
+- responseHasReasonedConclusionSignal · function · L617-L630 — function responseHasReasonedConclusionSignal(text: string): boolean
+- responseHasReviewReportEvidenceSignal · function · L632-L670 — function responseHasReviewReportEvidenceSignal(text: string): boolean
+- hasVerificationToolEvidence · function · L672-L683 — function hasVerificationToolEvidence( toolResultMemory: Array<{ tool: string }> | undefined, ): boolean
+- responseLooksOperationalOnly · function · L685-L717 — function responseLooksOperationalOnly(text: string): boolean
+- getBestFinalResponseCandidate · function · L719-L740 — function getBestFinalResponseCandidate(opts: { buildResultSummary: () => string | undefined; lastAssistantText: string | null; lastNonVerificationOutput: string | null; lastAssistantOutput: string | null; }): string
+- shouldPreserveExistingDeliverableForRecovery · function · L742-L794 — function shouldPreserveExistingDeliverableForRecovery(opts: { existingDeliverable: string | null; recoveryText: string; minResultSummaryLength: number; contract?: CompletionContract; }): boolean
+- responseDirectlyAddressesPrompt · function · L796-L813 — function responseDirectlyAddressesPrompt(opts: { text: string; contract: CompletionContract; minResultSummaryLength: number; }): boolean
+- fallbackContainsDirectAnswer · function · L815-L837 — function fallbackContainsDirectAnswer(opts: { contract: CompletionContract; lastAssistantText: string | null; lastNonVerificationOutput: string | null; lastAssistantOutput: string | null; buildResultSummary?: () => string | undefined; minResultSummaryLength: number; }): boolean
+- hasArtifactEvidence · function · L839-L857 — function hasArtifactEvidence(opts: { contract: CompletionContract; createdFiles: string[]; /** When createdFiles is empty, modified files can satisfy artifact evidence (e.g. task edited existing file). */ modifiedFiles?: string[]; }): boolean
+- hasVerificationEvidence · function · L859-L883 — function hasVerificationEvidence(opts: { bestCandidate: string; planSteps?: Array<{ status?: string; description?: string }>; toolResultMemory?: Array<{ tool: string }>; }): boolean
+- getFinalOutcomeGuardError · function · L885-L938 — function getFinalOutcomeGuardError(opts: { contract: CompletionContract; preferBestEffortCompletion: boolean; softDeadlineTriggered: boolean; cancelReason: string | null; bestCandidate: string; hasExecutionEvidence: boolean; hasArtifactEvidence: boolean; createdFiles: string[]; responseDirectlyAddressesPrompt: (text: string, contract: CompletionContract) => boolean; fallbackContainsDirectAnswer: (contract: CompletionContract) => boolean; hasVerificationEvidence: (bestCandidate: string) => boolean; }): string | null

@@ -1,0 +1,39 @@
+# src/electron/agent/runtime/queued-attachment-store.ts
+
+- QueuedAttachmentRef · interface · L40-L45 — interface QueuedAttachmentRef
+- QueuedAttachmentPersistence · interface · L47-L50 — interface QueuedAttachmentPersistence
+- QueuedAttachmentRecord · interface · L52-L59 — interface QueuedAttachmentRecord
+- QueuedAttachmentManifest · interface · L61-L68 — interface QueuedAttachmentManifest extends QueuedAttachmentRef
+- QueuedAttachmentRecoveryError · class · L70-L83 — class QueuedAttachmentRecoveryError extends Error
+- constructor · method · L76-L82 — constructor(taskId: string, messageId: string, message: string, key?: string)
+- isRecord · function · L85-L87 — function isRecord(value: unknown): value is Record<string, unknown>
+- normalizedId · function · L89-L95 — function normalizedId(value: string, label: string): string
+- normalizedFilename · function · L97-L105 — function normalizedFilename(value: unknown): string | undefined
+- validateMime · function · L107-L112 — function validateMime(value: unknown): ImageAttachment["mimeType"]
+- validateSize · function · L114-L125 — function validateSize( value: unknown, mimeType: ImageAttachment["mimeType"], label: string, ): number
+- decodeBase64 · function · L127-L147 — function decodeBase64(value: string, expectedMimeType: ImageAttachment["mimeType"]): Buffer
+- ensureRegularSourceFile · function · L149-L173 — function ensureRegularSourceFile(filePath: string, maxBytes: number): Buffer
+- fsyncDirectory · function · L175-L187 — function fsyncDirectory(directory: string): void
+- QueuedAttachmentStore · class · L189-L791 — class QueuedAttachmentStore
+- constructor · method · L192-L194 — constructor(rootDir = path.join(getUserDataDir(), "runtime", "queued-attachments"))
+- persist · method · L196-L274 — persist( taskId: string, messageId: string, images?: ImageAttachment[], ): QueuedAttachmentPersistence
+- hydrate · method · L276-L368 — hydrate(taskId: string, messageId: string, value: unknown): ImageAttachment[]
+- validateRefs · method · L375-L382 — validateRefs(taskId: string, messageId: string, value: unknown): QueuedAttachmentRef[]
+- listRecords · method · L389-L455 — listRecords(): QueuedAttachmentRecord[]
+- cleanupStaleTemporaryFiles · method · L458-L471 — cleanupStaleTemporaryFiles(cutoffMs: number): number
+- cleanupOrphanedContentFiles · method · L478-L503 — cleanupOrphanedContentFiles(cutoffMs: number, isReferenced: (key: string) => boolean): number
+- hydrateStoredImages · method · L511-L549 — hydrateStoredImages( taskId: string, messageId: string, images: ImageAttachment[] | undefined, ): ImageAttachment[] | null
+- release · method · L556-L583 — release(taskId: string, messageId: string, value: unknown): void
+- readSource · method · L585-L616 — private readSource(image: ImageAttachment): { bytes: Buffer; mimeType: ImageAttachment["mimeType"]; filename?: string; }
+- requireAbsoluteSourcePath · method · L618-L623 — private requireAbsoluteSourcePath(filePath: string): string
+- ensureRoot · method · L625-L632 — private ensureRoot(): void
+- isStorePath · method · L634-L639 — private isStorePath(filePath: string): boolean
+- getStoreUsageBytes · method · L641-L652 — private getStoreUsageBytes(): number
+- validateKey · method · L654-L659 — private validateKey(value: unknown): string
+- validateRef · method · L661-L679 — private validateRef(value: unknown, taskId: string, messageId: string): QueuedAttachmentRef
+- readManifest · method · L681-L731 — private readManifest(key: string, taskId: string, messageId: string): QueuedAttachmentManifest
+- writeAtomically · method · L733-L758 — private writeAtomically(targetPath: string, bytes: Buffer): void
+- contentPath · method · L760-L763 — private contentPath(key: string, mimeType: ImageAttachment["mimeType"]): string
+- manifestPath · method · L765-L768 — private manifestPath(key: string): string
+- removeKey · method · L770-L781 — private removeKey(key: string): void
+- recoveryError · method · L783-L790 — private recoveryError(taskId: string, messageId: string, reason: string, key?: string)

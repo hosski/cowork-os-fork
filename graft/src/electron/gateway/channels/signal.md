@@ -1,0 +1,39 @@
+# src/electron/gateway/channels/signal.ts
+
+- SignalAdapterConfig · interface · L47-L50 — interface SignalAdapterConfig extends SignalConfig
+- SignalAdapter · class · L52-L669 — class SignalAdapter implements ChannelAdapter
+- constructor · method · L73-L89 — constructor(config: SignalAdapterConfig)
+- status · method · L91-L93 — get status(): ChannelStatus
+- botUsername · method · L95-L97 — get botUsername(): string | undefined
+- connect · method · L102-L171 — async connect(): Promise<void>
+- disconnect · method · L176-L194 — async disconnect(): Promise<void>
+- sendMessage · method · L199-L233 — async sendMessage(message: OutgoingMessage): Promise<string>
+- prepareAttachment · method · L238-L251 — private async prepareAttachment(attachment: MessageAttachment): Promise<string | null>
+- editMessage · method · L256-L258 — async editMessage(_chatId: string, _messageId: string, _text: string): Promise<void>
+- deleteMessage · method · L263-L267 — async deleteMessage(_chatId: string, _messageId: string): Promise<void>
+- sendDocument · method · L272-L283 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- sendPhoto · method · L288-L290 — async sendPhoto(chatId: string, filePath: string, caption?: string): Promise<string>
+- onMessage · method · L295-L297 — onMessage(handler: MessageHandler): void
+- onCallbackQuery · method · L302-L304 — onCallbackQuery(handler: CallbackQueryHandler): void
+- answerCallbackQuery · method · L309-L312 — async answerCallbackQuery(_queryId: string, _text?: string, _showAlert?: boolean): Promise<void>
+- onError · method · L317-L319 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L324-L326 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L331-L343 — async getInfo(): Promise<ChannelInfo>
+- sendTyping · method · L352-L362 — async sendTyping(chatId: string): Promise<void>
+- stopTyping · method · L367-L377 — async stopTyping(chatId: string): Promise<void>
+- addReaction · method · L382-L393 — async addReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- removeReaction · method · L398-L410 — async removeReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- sendReadReceipt · method · L415-L425 — async sendReadReceipt(sender: string, messageTimestamp: number): Promise<void>
+- getContacts · method · L430-L436 — async getContacts(): Promise<Array<{ number: string; name?: string }>>
+- getGroups · method · L441-L447 — async getGroups(): Promise<Array<{ id: string; name: string; members: string[] }>>
+- trustIdentity · method · L452-L458 — async trustIdentity(phoneNumber: string): Promise<void>
+- handleIncomingMessage · method · L467-L529 — private async handleIncomingMessage(signalMessage: SignalMessage): Promise<void>
+- convertAttachments · method · L534-L558 — private convertAttachments(attachments?: SignalAttachment[]): MessageAttachment[] | undefined
+- isAllowedSender · method · L563-L601 — private isAllowedSender(sender: string, isGroup: boolean): boolean
+- isMessageProcessed · method · L606-L608 — private isMessageProcessed(messageId: string): boolean
+- markMessageProcessed · method · L613-L620 — private markMessageProcessed(messageId: string): void
+- startDedupCleanup · method · L625-L629 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L634-L641 — private cleanupDedupCache(): void
+- handleError · method · L646-L654 — private handleError(error: Error, context?: string): void
+- setStatus · method · L659-L668 — private setStatus(status: ChannelStatus, error?: Error): void
+- createSignalAdapter · function · L674-L679 — function createSignalAdapter(config: SignalConfig): SignalAdapter

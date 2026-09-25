@@ -1,0 +1,23 @@
+# src/shared/composer-drafts.ts
+
+- ComposerDraftSurface · type · L16-L16 — type ComposerDraftSurface = "main" | "side-chat";
+- ComposerDraftScope · type · L17-L17 — type ComposerDraftScope = "local" | "remote";
+- ComposerDraftMentionSpan · interface · L20-L25 — interface ComposerDraftMentionSpan
+- DraftAttachmentRef · interface · L31-L38 — interface DraftAttachmentRef
+- ComposerDraftKeyInput · interface · L40-L46 — interface ComposerDraftKeyInput
+- ComposerDraft · interface · L48-L62 — interface ComposerDraft
+- ComposerDraftGetRequest · interface · L64-L71 — interface ComposerDraftGetRequest
+- ComposerDraftClearRequest · interface · L73-L75 — interface ComposerDraftClearRequest extends ComposerDraftGetRequest
+- ComposerDraftRekeyRequest · interface · L77-L87 — interface ComposerDraftRekeyRequest
+- ComposerDraftAttachmentPutRequest · interface · L89-L101 — interface ComposerDraftAttachmentPutRequest
+- ComposerDraftAttachmentReleaseRequest · interface · L103-L111 — interface ComposerDraftAttachmentReleaseRequest
+- ComposerDraftAttachmentResolveRequest · interface · L113-L121 — interface ComposerDraftAttachmentResolveRequest
+- normalizeComposerDraftKeyPart · function · L123-L126 — function normalizeComposerDraftKeyPart(value: unknown, fallback: string): string
+- buildComposerDraftKey · function · L133-L156 — function buildComposerDraftKey(input: ComposerDraftKeyInput): string
+- encodeComposerDraftKeyPart · function · L158-L162 — function encodeComposerDraftKeyPart(value: string): string
+- createEmptyComposerDraft · function · L164-L184 — function createEmptyComposerDraft( input: ComposerDraftKeyInput, now = Date.now(), ): ComposerDraft
+- normalizeComposerDraft · function · L186-L301 — function normalizeComposerDraft(value: unknown): ComposerDraft | null
+- utf8ByteLength · function · L303-L306 — function utf8ByteLength(value: string): number
+- isBoundedMention · function · L308-L327 — function isBoundedMention(value: unknown): value is IntegrationMentionSelection
+- normalizeQuotedAssistantMessage · function · L329-L349 — function normalizeQuotedAssistantMessage(value: unknown): QuotedAssistantMessage | null
+- composerDraftMatchesOwner · function · L351-L362 — function composerDraftMatchesOwner( draft: Pick<ComposerDraft, "draftKey" | "workspaceId" | "taskId" | "surface" | "remoteDeviceId">, owner: ComposerDraftGetRequest, ): boolean

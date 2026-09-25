@@ -1,0 +1,59 @@
+# src/electron/subconscious/SubconsciousRepositories.ts
+
+- Any · type · L16-L16 — type Any = any;
+- safeJsonParse · function · L18-L25 — function safeJsonParse<T>(value: string | null | undefined, fallback: T): T
+- normalizeOutcome · function · L27-L43 — function normalizeOutcome(value: unknown): SubconsciousRunOutcome | undefined
+- SubconsciousTargetRepository · class · L45-L197 — class SubconsciousTargetRepository
+- constructor · method · L46-L46 — constructor(private readonly db: Database.Database)
+- upsert · method · L48-L107 — upsert(summary: SubconsciousTargetSummary): SubconsciousTargetSummary
+- update · method · L109-L140 — update( key: string, updates: Partial< Pick< SubconsciousTargetSummary, | "health" | "state" | "persistence" | "missedRunPolicy" | "nextEligibleAt" | "lastObservedAt" | "lastActionAt" | "expiresAt" | "jitterMs" | "lastMeaningfulOutcome" | "lastWinner" | "lastRunAt" | "lastEvidenceAt" | "backlogCount" | "evidenceFingerprint" | "lastDispatchKind" | "lastDispatchStatus" > >, ): void
+- findByKey · method · L142-L147 — findByKey(key: string): SubconsciousTargetSummary | undefined
+- list · method · L149-L168 — list(params?: { workspaceId?: string; kinds?: string[] }): SubconsciousTargetSummary[]
+- mapRow · method · L170-L196 — private mapRow(row: Any): SubconsciousTargetSummary
+- SubconsciousRunRepository · class · L199-L370 — class SubconsciousRunRepository
+- constructor · method · L200-L200 — constructor(private readonly db: Database.Database)
+- create · method · L202-L245 — create( input: Omit<SubconsciousRun, "id" | "createdAt"> & { id?: string; createdAt?: number }, ): SubconsciousRun
+- update · method · L247-L284 — update(id: string, updates: Partial<SubconsciousRun>): void
+- findById · method · L286-L289 — findById(id: string): SubconsciousRun | undefined
+- findLatestByFingerprint · method · L291-L304 — findLatestByFingerprint( targetKey: string, evidenceFingerprint: string, ): SubconsciousRun | undefined
+- list · method · L306-L336 — list(params?: { targetKey?: string; workspaceId?: string; activeOnly?: boolean; limit?: number; }): SubconsciousRun[]
+- mapRow · method · L338-L369 — private mapRow(row: Any): SubconsciousRun
+- JsonListRepository · class · L372-L393 — class JsonListRepository<T extends { id: string }>
+- constructor · method · L373-L377 — constructor( private readonly db: Database.Database, private readonly table: string, private readonly mapper: (row: Any) => T, )
+- insertMany · method · L379-L387 — insertMany(rows: Array<Record<string, unknown>>, sql: string): void
+- list · method · L389-L392 — list(whereSql: string, values: unknown[] = []): T[]
+- SubconsciousHypothesisRepository · class · L395-L441 — class SubconsciousHypothesisRepository
+- constructor · method · L396-L396 — constructor(private readonly db: Database.Database)
+- replaceForRun · method · L398-L422 — replaceForRun(runId: string, hypotheses: SubconsciousHypothesis[]): void
+- listByRun · method · L424-L440 — listByRun(runId: string): SubconsciousHypothesis[]
+- SubconsciousCritiqueRepository · class · L443-L487 — class SubconsciousCritiqueRepository
+- constructor · method · L444-L444 — constructor(private readonly db: Database.Database)
+- replaceForRun · method · L446-L469 — replaceForRun(runId: string, critiques: SubconsciousCritique[]): void
+- listByRun · method · L471-L486 — listByRun(runId: string): SubconsciousCritique[]
+- SubconsciousDecisionRepository · class · L489-L561 — class SubconsciousDecisionRepository
+- constructor · method · L490-L490 — constructor(private readonly db: Database.Database)
+- upsert · method · L492-L525 — upsert(decision: SubconsciousDecision): SubconsciousDecision
+- findByRun · method · L527-L532 — findByRun(runId: string): SubconsciousDecision | undefined
+- findLatestByTarget · method · L534-L544 — findLatestByTarget(targetKey: string): SubconsciousDecision | undefined
+- mapRow · method · L546-L560 — private mapRow(row: Any): SubconsciousDecision
+- SubconsciousBacklogRepository · class · L563-L777 — class SubconsciousBacklogRepository
+- constructor · method · L564-L564 — constructor(private readonly db: Database.Database)
+- normalizeDuplicateKeyPart · method · L566-L571 — private static normalizeDuplicateKeyPart(value: string | undefined): string
+- create · method · L573-L605 — create( input: Omit<SubconsciousBacklogItem, "id" | "createdAt" | "updatedAt"> & { id?: string; createdAt?: number; updatedAt?: number; }, ): SubconsciousBacklogItem
+- createOrRefreshOpen · method · L607-L635 — createOrRefreshOpen( input: Omit<SubconsciousBacklogItem, "id" | "createdAt" | "updatedAt"> & { id?: string; createdAt?: number; updatedAt?: number; }, ): SubconsciousBacklogItem
+- listByTarget · method · L637-L647 — listByTarget(targetKey: string, limit?: number): SubconsciousBacklogItem[]
+- countOpenByTarget · method · L649-L657 — countOpenByTarget(targetKey: string): number
+- deleteLegacyNoiseByTarget · method · L659-L667 — deleteLegacyNoiseByTarget(targetKey: string): number
+- dedupeOpenByTarget · method · L669-L695 — dedupeOpenByTarget(targetKey: string): number
+- update · method · L697-L723 — update(id: string, updates: Partial<SubconsciousBacklogItem>): void
+- mapRow · method · L725-L738 — private mapRow(row: Any): SubconsciousBacklogItem
+- findOpenDuplicate · method · L740-L762 — private findOpenDuplicate( targetKey: string, title: string, summary: string, executorKind?: SubconsciousBacklogItem["executorKind"], ): SubconsciousBacklogItem | undefined
+- toDuplicateKey · method · L764-L776 — private toDuplicateKey( targetKey: string, title: string, summary: string, executorKind?: SubconsciousBacklogItem["executorKind"], ): string
+- SubconsciousDispatchRepository · class · L779-L845 — class SubconsciousDispatchRepository
+- constructor · method · L780-L780 — constructor(private readonly db: Database.Database)
+- create · method · L782-L815 — create( input: Omit<SubconsciousDispatchRecord, "id" | "createdAt"> & { id?: string; createdAt?: number; }, ): SubconsciousDispatchRecord
+- listByTarget · method · L817-L827 — listByTarget(targetKey: string, limit = 20): SubconsciousDispatchRecord[]
+- mapRow · method · L829-L844 — private mapRow(row: Any): SubconsciousDispatchRecord
+- clearSubconsciousHistoryData · function · L847-L877 — function clearSubconsciousHistoryData(db: Database.Database): { targets: number; runs: number; hypotheses: number; critiques: number; decisions: number; backlogItems: number; dispatchRecords: number; }
+- count · function · L856-L857 — count = (table: string)
+- clearSubconsciousTargetData · function · L879-L900 — function clearSubconsciousTargetData(db: Database.Database, targetKeys: string[]): void

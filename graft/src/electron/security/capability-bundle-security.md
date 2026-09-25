@@ -1,0 +1,70 @@
+# src/electron/security/capability-bundle-security.ts
+
+- PackageEcosystem · type · L65-L65 — type PackageEcosystem = "npm" | "PyPI";
+- PackageCandidate · interface · L67-L70 — interface PackageCandidate
+- QuarantineMetadata · interface · L72-L84 — interface QuarantineMetadata
+- SkillScanContext · interface · L86-L92 — interface SkillScanContext
+- PackScanContext · interface · L94-L101 — interface PackScanContext
+- ensureDir · function · L103-L107 — function ensureDir(dirPath: string): void
+- normalizeForHash · function · L109-L111 — function normalizeForHash(value: string): string
+- isLikelyTextFile · function · L113-L140 — function isLikelyTextFile(filePath: string): boolean
+- pathInside · function · L142-L146 — function pathInside(parentDir: string, candidatePath: string): boolean
+- uniqueFindings · function · L148-L158 — function uniqueFindings(findings: CapabilitySecurityFinding[]): CapabilitySecurityFinding[]
+- buildSummary · function · L160-L194 — function buildSummary( verdict: CapabilitySecurityReport["verdict"], findings: CapabilitySecurityFinding[], intelligenceUnavailable: boolean, ): string
+- addFinding · function · L196-L201 — function addFinding( findings: CapabilitySecurityFinding[], finding: CapabilitySecurityFinding, ): void
+- readJsonFile · function · L203-L214 — function readJsonFile<T>(filePath: string): T | null
+- writeJsonFile · function · L216-L219 — function writeJsonFile(filePath: string, value: unknown): void
+- removeIfExists · function · L221-L226 — function removeIfExists(targetPath: string): void
+- movePath · function · L228-L236 — function movePath(sourcePath: string, targetPath: string): void
+- copyPath · function · L238-L251 — function copyPath(sourcePath: string, targetPath: string): void
+- hashEntries · function · L253-L265 — function hashEntries(entries: Array<{ relativePath: string; content: Buffer | string }>): string
+- collectDirectoryEntries · function · L267-L305 — function collectDirectoryEntries( rootDir: string, prefix: string, entries: Array<{ relativePath: string; content: Buffer | string }>, ): void
+- collectTextFiles · function · L307-L381 — function collectTextFiles( rootDir: string, prefix: string, findings: CapabilitySecurityFinding[], texts: Array<{ path: string; content: string }>, skillMode: boolean, ): void
+- collectPackagesFromText · function · L383-L414 — function collectPackagesFromText(text: string): PackageCandidate[]
+- addPackage · function · L387-L401 — addPackage = (ecosystem: PackageEcosystem, rawName: string)
+- scanTextContent · function · L416-L510 — function scanTextContent( filePath: string, text: string, findings: CapabilitySecurityFinding[], packages: Map<string, PackageCandidate>, ): void
+- registerPackage · function · L424-L426 — registerPackage = (candidate: PackageCandidate)
+- isPlaceholderSecret · function · L512-L522 — function isPlaceholderSecret(value: string): boolean
+- luhnValid · function · L524-L539 — function luhnValid(value: string): boolean
+- scanSensitiveContent · function · L541-L647 — function scanSensitiveContent( filePath: string, text: string, findings: CapabilitySecurityFinding[], ): void
+- scanUnicodeSafety · function · L649-L681 — function scanUnicodeSafety( filePath: string, text: string, findings: CapabilitySecurityFinding[], ): void
+- scanSkillLicensing · function · L683-L747 — function scanSkillLicensing( bundleDir: string, texts: Array<{ path: string; content: string }>, findings: CapabilitySecurityFinding[], ): void
+- runNvidiaSkillEvaluator · function · L749-L826 — async function runNvidiaSkillEvaluator(bundleDir: string): Promise<{ status: "passed" | "failed" | "unavailable" | "skipped"; detail?: string; findings: CapabilitySecurityFinding[]; reportAvailable: boolean; incomplete: boolean; }>
+- NvidiaFinding · interface · L828-L836 — interface NvidiaFinding
+- NvidiaReport · interface · L838-L841 — interface NvidiaReport
+- findJsonFiles · function · L843-L852 — function findJsonFiles(rootDir: string): string[]
+- readNvidiaFindings · function · L854-L884 — function readNvidiaFindings(outputDir: string, bundleDir: string): CapabilitySecurityFinding[]
+- hasIncompleteNvidiaScans · function · L886-L891 — function hasIncompleteNvidiaScans(outputDir: string): boolean
+- assessUrl · function · L893-L931 — function assessUrl( urlValue: string, findings: CapabilitySecurityFinding[], filePath: string, ): void
+- buildSkillDigest · function · L933-L943 — function buildSkillDigest(stageDir: string): string
+- buildActiveSkillDigest · function · L945-L955 — function buildActiveSkillDigest(manifestPath: string, bundleDir?: string | null): string
+- buildPackDigest · function · L957-L961 — function buildPackDigest(rootDir: string): string
+- CapabilityBundleSecurityService · class · L963-L1821 — class CapabilityBundleSecurityService
+- getSkillReportPath · method · L966-L968 — getSkillReportPath(managedSkillsDir: string, skillId: string): string
+- getPackReportPath · method · L970-L972 — getPackReportPath(packDir: string): string
+- scanSkillStage · method · L974-L1084 — async scanSkillStage(context: SkillScanContext): Promise<CapabilitySecurityReport>
+- scanPluginPack · method · L1086-L1155 — async scanPluginPack(context: PackScanContext): Promise<CapabilitySecurityReport>
+- scanConnector · method · L1157-L1202 — private scanConnector( connector: DeclarativeConnector, findings: CapabilitySecurityFinding[], packages: Map<string, PackageCandidate>, rootDir: string, ): void
+- checkPackages · method · L1204-L1261 — private async checkPackages(candidates: PackageCandidate[]): Promise<{ results: CapabilitySecurityReport["packagesChecked"]; intelligenceUnavailable: boolean; }>
+- persistActiveSkillReport · method · L1263-L1269 — persistActiveSkillReport( managedSkillsDir: string, skillId: string, report: CapabilitySecurityReport, ): void
+- readActiveSkillReport · method · L1271-L1278 — readActiveSkillReport( managedSkillsDir: string, skillId: string, ): CapabilitySecurityReport | null
+- persistActivePackReport · method · L1280-L1282 — persistActivePackReport(packDir: string, report: CapabilitySecurityReport): void
+- readActivePackReport · method · L1284-L1286 — readActivePackReport(packDir: string): CapabilitySecurityReport | null
+- activateSkillStage · method · L1288-L1304 — activateSkillStage( stageDir: string, managedSkillsDir: string, skillId: string, report: CapabilitySecurityReport, ): void
+- activatePluginPack · method · L1306-L1310 — activatePluginPack(stageDir: string, targetDir: string, report: CapabilitySecurityReport): void
+- quarantineSkillStage · method · L1312-L1339 — quarantineSkillStage( stageDir: string, managedSkillsDir: string, skillId: string, displayName: string | undefined, source: CapabilitySecurityImportSource, report: CapabilitySecurityReport, ): QuarantinedImportRecord
+- quarantineManagedSkill · method · L1341-L1376 — quarantineManagedSkill( managedSkillsDir: string, skillId: string, displayName: string | undefined, source: CapabilitySecurityImportSource, report: CapabilitySecurityReport, ): QuarantinedImportRecord
+- quarantinePluginPackStage · method · L1378-L1403 — quarantinePluginPackStage( stageDir: string, packId: string, displayName: string | undefined, source: CapabilitySecurityImportSource, activePackDir: string, report: CapabilitySecurityReport, ): QuarantinedImportRecord
+- quarantineManagedPluginPack · method · L1405-L1428 — quarantineManagedPluginPack( packDir: string, packId: string, displayName: string | undefined, report: CapabilitySecurityReport, ): QuarantinedImportRecord
+- verifyManagedSkillIntegrity · method · L1430-L1495 — async verifyManagedSkillIntegrity( managedSkillsDir: string, skillId: string, displayName?: string, ): Promise<{ allowed: boolean; report: CapabilitySecurityReport | null }>
+- inspectUnmanagedSkill · method · L1497-L1522 — async inspectUnmanagedSkill(skill: CustomSkill): Promise<CapabilitySecurityReport | null>
+- inspectPluginPackForDiscovery · method · L1524-L1576 — async inspectPluginPackForDiscovery( pluginDir: string, manifest: PluginManifest, managed: boolean, source: CapabilitySecurityImportSource, ): Promise<{ allowed: boolean; report: CapabilitySecurityReport | null }>
+- listQuarantinedImports · method · L1578-L1602 — listQuarantinedImports(): QuarantinedImportRecord[]
+- getImportSecurityReport · method · L1604-L1623 — getImportSecurityReport( request: ImportSecurityReportRequest, managedSkillsDir?: string, activePackDir?: string, ): CapabilitySecurityReport | null
+- retryQuarantinedImport · method · L1625-L1749 — async retryQuarantinedImport(recordId: string): Promise<RetryQuarantinedImportResult>
+- removeQuarantinedImport · method · L1751-L1758 — removeQuarantinedImport(recordId: string): { success: boolean; error?: string }
+- createQuarantineDir · method · L1760-L1768 — private createQuarantineDir(bundleKind: CapabilityBundleKind, bundleId: string): string
+- writeQuarantineRecord · method · L1770-L1786 — private writeQuarantineRecord( targetDir: string, metadata: QuarantineMetadata, report: CapabilitySecurityReport, ): QuarantinedImportRecord
+- readQuarantineRecord · method · L1788-L1810 — private readQuarantineRecord(targetDir: string | null): QuarantinedImportRecord | null
+- findQuarantineRecordDir · method · L1812-L1820 — private findQuarantineRecordDir(recordId: string): string | null
+- getCapabilityBundleSecurityService · function · L1825-L1830 — function getCapabilityBundleSecurityService(): CapabilityBundleSecurityService

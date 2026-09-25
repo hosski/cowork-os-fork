@@ -1,0 +1,105 @@
+# src/electron/agent/llm/provider-factory.ts
+
+- OpenRouterImageModel · interface · L88-L93 — interface OpenRouterImageModel
+- safeContentLength · function · L114-L122 — function safeContentLength(value: unknown): number
+- normalizeOpenAIModelForAuth · function · L124-L132 — function normalizeOpenAIModelForAuth( model: string | undefined, authMethod?: "api_key" | "oauth", ): string | undefined
+- OpenAIAuthSettings · type · L134-L139 — type OpenAIAuthSettings = { apiKey?: string; accessToken?: string; refreshToken?: string; authMethod?: "api_key" | "oauth"; };
+- resolveOpenAIAuthMethod · function · L141-L150 — function resolveOpenAIAuthMethod(settings?: OpenAIAuthSettings): "api_key" | "oauth"
+- summarizeLLMRequest · function · L152-L211 — function summarizeLLMRequest(request: LLMRequest): Record<string, unknown>
+- summarizeLLMResponse · function · L213-L244 — function summarizeLLMResponse(response: LLMResponse): Record<string, unknown>
+- parseMaxTokensLimitFromError · function · L246-L271 — function parseMaxTokensLimitFromError(error: Any): number | null
+- clampRequestToObservedModelLimit · function · L273-L296 — function clampRequestToObservedModelLimit(request: LLMRequest): { request: LLMRequest; adjusted: boolean; observedLimit: number | null; }
+- wrapProviderWithDetailedLogging · function · L298-L410 — function wrapProviderWithDetailedLogging(provider: LLMProvider): LLMProvider
+- createMessage · method · L304-L402 — async createMessage(request: LLMRequest): Promise<LLMResponse>
+- testConnection · method · L403-L405 — async testConnection(): Promise<{ success: boolean; error?: string }>
+- resolveCustomProviderId · function · L412-L414 — function resolveCustomProviderId(providerType: LLMProviderType): LLMProviderType
+- getCustomProviderEntry · function · L416-L418 — function getCustomProviderEntry(providerType: LLMProviderType): ProviderCatalogEntry | undefined
+- resolveLocalInferenceResourceKey · function · L420-L436 — function resolveLocalInferenceResourceKey( config: LLMProviderConfig, providerType: LLMProviderType, ): string | undefined
+- getKnownCustomProviderModels · function · L438-L444 — function getKnownCustomProviderModels(entry: ProviderCatalogEntry): CachedModelInfo[]
+- mergeCustomProviderModels · function · L446-L467 — function mergeCustomProviderModels( entry: ProviderCatalogEntry, ...modelGroups: Array<CachedModelInfo[] | undefined> ): CachedModelInfo[]
+- getCustomProviderConfig · function · L469-L486 — function getCustomProviderConfig( customProviders: Record<string, CustomProviderConfig> | undefined, providerType: LLMProviderType, ): CustomProviderConfig | undefined
+- normalizeModelKey · function · L488-L492 — function normalizeModelKey(value: unknown): string | undefined
+- isCustomProviderConfigured · function · L494-L510 — function isCustomProviderConfigured( entry: ProviderCatalogEntry, config?: CustomProviderConfig, ): boolean
+- createCustomProvider · function · L512-L575 — function createCustomProvider( config: LLMProviderConfig, entry: ProviderCatalogEntry, resolvedType: LLMProviderType, ): LLMProvider
+- _encryptSecret · function · L586-L602 — function _encryptSecret(value?: string): string | undefined
+- decryptSecret · function · L608-L644 — function decryptSecret(value?: string): string | undefined
+- normalizeSecret · function · L649-L655 — function normalizeSecret(value?: string): string | undefined
+- normalizeOptionalString · function · L657-L661 — function normalizeOptionalString(value?: string): string | undefined
+- normalizeOptionalUnitInterval · function · L663-L667 — function normalizeOptionalUnitInterval(value?: number): number | undefined
+- normalizeProviderConfig · function · L669-L718 — function normalizeProviderConfig(config: LLMProviderConfig): LLMProviderConfig
+- resolveAnthropicCredential · function · L720-L738 — function resolveAnthropicCredential( anthropic?: | LLMSettings["anthropic"] | { apiKey?: string; subscriptionToken?: string; authMethod?: string }, ): string | undefined
+- sanitizeSettings · function · L744-L888 — function sanitizeSettings(settings: LLMSettings): LLMSettings
+- CachedModelInfo · interface · L893-L901 — interface CachedModelInfo
+- ProviderRoutingSettings · interface · L903-L912 — interface ProviderRoutingSettings
+- LLMSettings · interface · L917-L1114 — interface LLMSettings
+- ResolvedTaskModelSelection · interface · L1121-L1131 — interface ResolvedTaskModelSelection
+- LLMProviderFactory · class · L1136-L4737 — class LLMProviderFactory
+- normalizeCustomProviders · method · L1141-L1182 — private static normalizeCustomProviders(settings: LLMSettings): void
+- normalizeProviderFailoverSettings · method · L1184-L1239 — private static normalizeProviderFailoverSettings(settings: LLMSettings): void
+- normalizeNode · function · L1185-L1215 — normalizeNode = (node: ProviderRoutingSettings | undefined): void
+- getEnabledMoaPresets · method · L1241-L1249 — private static getEnabledMoaPresets(settings: LLMSettings): MoaPreset[]
+- resolveMoaPreset · method · L1251-L1261 — private static resolveMoaPreset(settings: LLMSettings, presetId?: string): MoaPreset | undefined
+- isMoaSlotConfigured · method · L1263-L1267 — private static isMoaSlotConfigured(settings: LLMSettings, slot?: MoaModelSlot): boolean
+- isMoaPresetConfigured · method · L1269-L1273 — private static isMoaPresetConfigured(settings: LLMSettings, preset?: MoaPreset): boolean
+- resolveMoaSlotModelId · method · L1275-L1282 — private static resolveMoaSlotModelId(settings: LLMSettings, slot: MoaModelSlot): string
+- resolveMoaSlotCandidates · method · L1284-L1330 — private static resolveMoaSlotCandidates( settings: LLMSettings, slot: MoaModelSlot, ): ResolvedMoaSlot[]
+- addCandidate · function · L1294-L1321 — addCandidate = (providerType: LLMProviderType, modelKey: string): void
+- resolveMoaContextModel · method · L1332-L1348 — private static resolveMoaContextModel( settings: LLMSettings, presetId?: string, ): { contextModelKey?: string; contextModelId?: string }
+- isProviderConfigured · method · L1350-L1414 — private static isProviderConfigured( settings: LLMSettings, providerType: LLMProviderType, ): boolean
+- getProviderRoutingSettingsNode · method · L1416-L1493 — private static getProviderRoutingSettingsNode( settings: LLMSettings, providerType: LLMProviderType, createIfMissing = false, ): ProviderRoutingSettings | undefined
+- getProviderDefaultModelKey · method · L1495-L1506 — private static getProviderDefaultModelKey( settings: LLMSettings, providerType: LLMProviderType, ): string
+- normalizeProviderModelKey · method · L1508-L1515 — private static normalizeProviderModelKey( providerType: LLMProviderType, modelKey: unknown, ): string | undefined
+- applyProfileRoutingDefaults · method · L1517-L1567 — private static applyProfileRoutingDefaults(settings: LLMSettings): LLMSettings
+- applyDefaults · function · L1521-L1541 — applyDefaults = (providerType: LLMProviderType, createIfMissing = false): void
+- getProviderRoutingSettings · method · L1569-L1597 — static getProviderRoutingSettings( settings: LLMSettings, providerType: LLMProviderType, ): Required< Pick<ProviderRoutingSettings, "profileRoutingEnabled" | "preferStrongForVerification"> > & Pick< ProviderRoutingSettings, "strongModelKey" | "cheapModelKey" | "automatedTaskModelKey" | "reasoningEffort" >
+- getProviderFailoverSettings · method · L1599-L1617 — static getProviderFailoverSettings( settings: LLMSettings, providerType: LLMProviderType, ): Required< Pick<ProviderRoutingSettings, "fallbackProviders" | "failoverPrimaryRetryCooldownSeconds"> >
+- resolveModelIdForProvider · method · L1619-L1688 — private static resolveModelIdForProvider( settings: LLMSettings, providerType: LLMProviderType, modelKey: string, source: ResolvedTaskModelSelection["modelSource"], ): string
+- resolveTaskModelSelection · method · L1690-L1819 — static resolveTaskModelSelection( taskAgentConfig?: Pick< AgentConfig, | "providerType" | "modelKey" | "llmProfile" | "llmProfileHint" | "llmProfileForced" | "capabilityHint" | "verificationAgent" >, options?: { forceProfile?: LlmProfile; isVerificationTask?: boolean; allowProviderOverride?: boolean; allowModelOverride?: boolean; allowCapabilityRouting?: boolean; allowProfileRouting?: boolean; }, ): ResolvedTaskModelSelection
+- resolveProviderFailoverChain · method · L1821-L1887 — static resolveProviderFailoverChain( primarySelection: ResolvedTaskModelSelection, taskAgentConfig?: Pick< AgentConfig, | "providerType" | "modelKey" | "llmProfile" | "llmProfileHint" | "llmProfileForced" | "capabilityHint" | "verificationAgent" >, options?: { forceProfile?: LlmProfile; isVerificationTask?: boolean; requiresImageInput?: boolean; }, ): ResolvedTaskModelSelection[]
+- selectionSupportsImageInput · method · L1889-L1896 — private static selectionSupportsImageInput( selection: Pick<ResolvedTaskModelSelection, "providerType" | "modelId">, ): boolean
+- initialize · method · L1901-L1907 — static initialize(): void
+- migrateFromLegacyFile · method · L1912-L1970 — private static migrateFromLegacyFile(): void
+- getSettingsPath · method · L1975-L1977 — static getSettingsPath(): string
+- loadSettings · method · L1982-L2017 — static loadSettings(): LLMSettings
+- detectProviderFromSettings · method · L2024-L2087 — private static detectProviderFromSettings(settings: LLMSettings): LLMProviderType | null
+- saveSettings · method · L2092-L2111 — static saveSettings(settings: LLMSettings): void
+- clearCache · method · L2116-L2118 — static clearCache(): void
+- createProvider · method · L2125-L2285 — static createProvider(overrideConfig?: Partial<LLMProviderConfig>): LLMProvider
+- createProviderFromConfig · method · L2290-L2379 — static createProviderFromConfig(config: LLMProviderConfig): LLMProvider
+- getModelId · method · L2384-L2514 — static getModelId( modelKey: ModelKey | string, providerType: LLMProviderType, ollamaModel?: string, geminiModel?: string, openrouterModel?: string, deepseekModel?: string, openaiModel?: string, azureDeployment?: string, azureAnthropicDeployment?: string, groqModel?: string, xaiModel?: string, kimiModel?: string, customProviders?: Record<string, CustomProviderConfig>, bedrockModel?: string, ): string
+- getModelDisplayName · method · L2519-L2521 — static getModelDisplayName(modelKey: ModelKey): string
+- getAvailableModels · method · L2526-L2531 — static getAvailableModels(): Array<{ key: ModelKey; displayName: string }>
+- getAvailableProviders · method · L2537-L2650 — static getAvailableProviders(): Array<{ type: LLMProviderType; name: string; configured: boolean; }>
+- getConfigStatus · method · L2655-L2722 — static getConfigStatus(): { currentProvider: LLMProviderType; currentModel: string; currentReasoningEffort?: LLMReasoningEffort; providers: Array<{ type: LLMProviderType; name: string; configured: boolean; }>; models: Array<{ key: string; displayName: string; description: string; reasoningEfforts?: LLMReasoningEffort[]; }>; routing?: { currentProvider: LLMProviderType; currentModel: string; activeProvider: LLMProviderType; activeModel: string; routeReason: | "manual_override" | "profile_routing" | "automatic_execution" | "verification" | "fallback" | "provider_outage" | "quota" | "model_capability" | "unknown"; fallbackChain: Array<{ providerType: LLMProviderType; modelKey: string; reason: string; attemptedAt: number; success: boolean; error?: string; }>; fallbackOccurred: boolean; manualOverride: boolean; profileHint?: LlmProfile; updatedAt: number; }; }
+- getSelectedProvider · method · L2727-L2730 — static getSelectedProvider(): LLMProviderType
+- getSelectedModel · method · L2735-L2738 — static getSelectedModel(): string
+- getProviderModelStatus · method · L2744-L3216 — static getProviderModelStatus(settings: LLMSettings): { currentModel: string; models: CachedModelInfo[]; }
+- attachMetadata · function · L2749-L2758 — attachMetadata = (models: CachedModelInfo[])
+- ensureCurrentModel · function · L2760-L2779 — ensureCurrentModel = ( modelList: CachedModelInfo[], modelKey: string, description = "Selected model", )
+- applyModelSelection · method · L3221-L3337 — static applyModelSelection( settings: LLMSettings, modelKey: string, providerTypeOverride?: LLMProviderType, ): LLMSettings
+- applyReasoningEffortSelection · method · L3339-L3414 — static applyReasoningEffortSelection( settings: LLMSettings, providerType: LLMProviderType, reasoningEffort?: LLMReasoningEffort, ): LLMSettings
+- patchProviderRouting · function · L3375-L3381 — patchProviderRouting = <K extends keyof LLMSettings>(key: K): LLMSettings
+- getSettings · method · L3419-L3421 — static getSettings(): LLMSettings
+- testProvider · method · L3426-L3438 — static async testProvider( config: LLMProviderConfig, ): Promise<{ success: boolean; error?: string }>
+- formatBedrockProfileName · method · L3453-L3507 — private static formatBedrockProfileName(rawName: string): string
+- formatBedrockModelId · method · L3520-L3556 — private static formatBedrockModelId(raw: string): string | null
+- getBedrockModels · method · L3561-L3708 — static async getBedrockModels(config?: { region?: string; accessKeyId?: string; secretAccessKey?: string; profile?: string; }): Promise<Array<{ id: string; name: string; provider: string; description: string }>>
+- getOllamaModels · method · L3713-L3734 — static async getOllamaModels( baseUrl?: string, ): Promise<Array<{ name: string; size: number; modified: string }>>
+- getGeminiModels · method · L3739-L3798 — static async getGeminiModels( apiKey?: string, ): Promise<Array<{ name: string; displayName: string; description: string }>>
+- getAnthropicModels · method · L3803-L3896 — static async getAnthropicModels(credentials?: { apiKey?: string; subscriptionToken?: string; authMethod?: "api_key" | "subscription"; }): Promise<Array<{ id: string; displayName: string; description: string }>>
+- getOpenRouterModels · method · L3901-L3967 — static async getOpenRouterModels( apiKey?: string, baseUrl?: string, ): Promise<Array<{ id: string; name: string; context_length: number }>>
+- getOpenRouterImageModels · method · L3974-L4044 — static async getOpenRouterImageModels( apiKey?: string, baseUrl?: string, ): Promise<OpenRouterImageModel[]>
+- getOpenAIModels · method · L4051-L4202 — static async getOpenAIModels( apiKey?: string, ): Promise<Array<{ id: string; name: string; description: string }>>
+- getGroqModels · method · L4207-L4238 — static async getGroqModels( apiKey?: string, baseUrl?: string, ): Promise<Array<{ id: string; name: string }>>
+- getXAIModels · method · L4243-L4276 — static async getXAIModels( apiKey?: string, baseUrl?: string, ): Promise<Array<{ id: string; name: string }>>
+- getKimiModels · method · L4281-L4315 — static async getKimiModels( apiKey?: string, baseUrl?: string, ): Promise<Array<{ id: string; name: string }>>
+- getDeepSeekModels · method · L4323-L4354 — static async getDeepSeekModels( apiKey?: string, baseUrl?: string, ): Promise<Array<{ id: string; name: string }>>
+- getPiModels · method · L4359-L4363 — static async getPiModels( piProvider?: string, ): Promise<Array<{ id: string; name: string; description: string }>>
+- getPiProviders · method · L4368-L4370 — static async getPiProviders(): Promise<Array<{ id: string; name: string }>>
+- formatOpenAIModelName · method · L4375-L4395 — private static formatOpenAIModelName(modelId: string): string
+- getOpenAIModelDescription · method · L4400-L4419 — private static getOpenAIModelDescription(modelId: string): string
+- saveCachedModels · method · L4424-L4482 — static saveCachedModels( providerType: | "anthropic" | "gemini" | "openrouter" | "ollama" | "bedrock" | "openai" | "groq" | "xai" | "kimi" | "deepseek" | "pi" | "openai-compatible", models: CachedModelInfo[], ): void
+- getCachedModels · method · L4487-L4532 — static getCachedModels( providerType: | "anthropic" | "gemini" | "openrouter" | "ollama" | "bedrock" | "openai" | "groq" | "xai" | "kimi" | "deepseek" | "pi" | "openai-compatible", ): CachedModelInfo[] | undefined
+- getOpenAICompatibleModels · method · L4537-L4558 — static async getOpenAICompatibleModels( baseUrl: string, apiKey?: string, ): Promise<CachedModelInfo[]>
+- getCustomProviderModels · method · L4560-L4704 — static async getCustomProviderModels( providerType: LLMProviderType, overrides?: { apiKey?: string; baseUrl?: string; }, ): Promise<CachedModelInfo[]>
+- getAtomicChatModelsDetailed · method · L4711-L4736 — static async getAtomicChatModelsDetailed(overrides?: { apiKey?: string; baseUrl?: string; }): Promise<AtomicChatModelDiscoveryResult>

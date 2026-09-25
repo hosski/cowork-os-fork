@@ -1,0 +1,24 @@
+# src/shared/onboarding.ts
+
+- OnboardingAssistantTraitId · type · L9-L9 — type OnboardingAssistantTraitId = "sharp" | "friendly" | "witty" | "adaptive";
+- OnboardingTimeDrainId · type · L10-L17 — type OnboardingTimeDrainId = | "planning" | "research" | "writing" | "busywork" | "email" | "meetings" | "other";
+- OnboardingPriorityId · type · L18-L25 — type OnboardingPriorityId = | "email" | "research" | "writing" | "automation" | "planning" | "focus" | "other";
+- OnboardingResponseStyleId · type · L26-L26 — type OnboardingResponseStyleId = "short" | "detailed" | "depends" | "custom";
+- OnboardingOption · interface · L28-L32 — interface OnboardingOption<T extends string>
+- OnboardingProfileData · interface · L34-L52 — interface OnboardingProfileData
+- ApplyOnboardingProfileRequest · interface · L54-L57 — interface ApplyOnboardingProfileRequest
+- ApplyOnboardingProfileResult · interface · L59-L62 — interface ApplyOnboardingProfileResult
+- getOnboardingOptionTitle · function · L203-L208 — function getOnboardingOptionTitle<T extends string>( options: OnboardingOption<T>[], value: T, ): string
+- uniqueOnboardingIds · function · L210-L212 — function uniqueOnboardingIds<T extends string>(values: T[]): T[]
+- parseOnboardingSlashCommand · function · L214-L223 — function parseOnboardingSlashCommand(value: string): { matched: boolean; command?: string }
+- getResolvedResponseStyleLabel · function · L225-L238 — function getResolvedResponseStyleLabel(data: OnboardingProfileData): string
+- getAssistantTraitsSummary · function · L240-L254 — function getAssistantTraitsSummary(data: OnboardingProfileData): string
+- deriveOnboardingPersonalityPreset · function · L256-L265 — function deriveOnboardingPersonalityPreset(data: OnboardingProfileData): PersonalityId
+- deriveOnboardingPersona · function · L267-L269 — function deriveOnboardingPersona(data: OnboardingProfileData): PersonaId
+- deriveResponseStylePreferences · function · L271-L305 — function deriveResponseStylePreferences( data: OnboardingProfileData, ): ResponseStylePreferences
+- listSelectedTitles · function · L307-L324 — function listSelectedTitles<T extends string>( options: OnboardingOption<T>[], selected: T[], otherId?: T, otherText?: string, ): string[]
+- getTimeDrainTitles · function · L326-L328 — function getTimeDrainTitles(data: OnboardingProfileData): string[]
+- getPriorityTitles · function · L330-L332 — function getPriorityTitles(data: OnboardingProfileData): string[]
+- buildOnboardingUserSummary · function · L334-L353 — function buildOnboardingUserSummary(data: OnboardingProfileData): string
+- buildOnboardingProfileFacts · function · L355-L441 — function buildOnboardingProfileFacts(data: OnboardingProfileData): AddUserFactRequest[]
+- buildOnboardingWorkspaceSummary · function · L443-L457 — function buildOnboardingWorkspaceSummary(data: OnboardingProfileData): { assistantStyle: string; userSummary: string; priorities: string[]; timeDrains: string[]; responseStyle: string; }

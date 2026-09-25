@@ -1,0 +1,48 @@
+# src/electron/gateway/channels/google-chat.ts
+
+- GoogleChatEvent · interface · L34-L43 — interface GoogleChatEvent
+- GoogleChatMessage · interface · L45-L56 — interface GoogleChatMessage
+- GoogleChatUser · interface · L58-L65 — interface GoogleChatUser
+- GoogleChatSpace · interface · L67-L73 — interface GoogleChatSpace
+- GoogleChatAttachment · interface · L75-L82 — interface GoogleChatAttachment
+- GoogleChatAction · interface · L84-L87 — interface GoogleChatAction
+- MessageDeduplicationCache · class · L92-L129 — class MessageDeduplicationCache
+- constructor · method · L97-L100 — constructor(ttlMs: number = 60000)
+- has · method · L102-L110 — has(messageId: string): boolean
+- add · method · L112-L114 — add(messageId: string): void
+- cleanup · method · L116-L123 — private cleanup(): void
+- destroy · method · L125-L128 — destroy(): void
+- GoogleAuthManager · class · L134-L231 — class GoogleAuthManager
+- constructor · method · L143-L145 — constructor(credentials: { client_email: string; private_key: string; project_id: string })
+- getAccessToken · method · L147-L157 — async getAccessToken(): Promise<string>
+- createJWT · method · L159-L183 — private createJWT(): string
+- exchangeJWTForToken · method · L185-L230 — private async exchangeJWTForToken( jwt: string, ): Promise<{ access_token: string; expires_in: number }>
+- GoogleChatAdapter · class · L233-L906 — class GoogleChatAdapter implements ChannelAdapter
+- constructor · method · L248-L251 — constructor(config: GoogleChatConfig)
+- status · method · L253-L255 — get status(): ChannelStatus
+- botUsername · method · L257-L259 — get botUsername(): string | undefined
+- connect · method · L264-L296 — async connect(): Promise<void>
+- loadCredentials · method · L301-L341 — private async loadCredentials(): Promise<{ client_email: string; private_key: string; project_id: string; }>
+- startWebhookServer · method · L346-L393 — private async startWebhookServer(): Promise<void>
+- processIncomingEvent · method · L398-L453 — private async processIncomingEvent( req: http.IncomingMessage, res: http.ServerResponse, body: string, ): Promise<void>
+- verifyWebhookRequest · method · L455-L463 — private verifyWebhookRequest(req: http.IncomingMessage, event: GoogleChatEvent): boolean
+- handleMessage · method · L468-L527 — private async handleMessage(event: GoogleChatEvent): Promise<void>
+- getAttachmentTypeFromMime · method · L529-L536 — private getAttachmentTypeFromMime(mimeType?: string): MessageAttachment["type"]
+- getAttachmentTypeFromFilename · method · L538-L545 — private getAttachmentTypeFromFilename(fileName?: string): MessageAttachment["type"]
+- downloadToBuffer · method · L547-L581 — private async downloadToBuffer( url: string, accessToken: string, maxBytes = 25 * 1024 * 1024, ): Promise<{ data: Buffer; mimeType?: string } | null>
+- extractAttachments · method · L583-L634 — private async extractAttachments(message: GoogleChatMessage): Promise<MessageAttachment[]>
+- scheduleReconnect · method · L639-L666 — private scheduleReconnect(): void
+- disconnect · method · L671-L688 — async disconnect(): Promise<void>
+- sendMessage · method · L693-L722 — async sendMessage(message: OutgoingMessage): Promise<string>
+- makeApiRequest · method · L727-L782 — private async makeApiRequest( method: string, url: string, accessToken: string, body?: Record<string, unknown>, ): Promise<Record<string, unknown>>
+- editMessage · method · L787-L801 — async editMessage(chatId: string, messageId: string, text: string): Promise<void>
+- deleteMessage · method · L806-L818 — async deleteMessage(chatId: string, messageId: string): Promise<void>
+- sendDocument · method · L824-L835 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- onMessage · method · L840-L842 — onMessage(handler: MessageHandler): void
+- onError · method · L847-L849 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L854-L856 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L861-L868 — async getInfo(): Promise<ChannelInfo>
+- handleIncomingMessage · method · L872-L884 — private async handleIncomingMessage(message: IncomingMessage): Promise<void>
+- handleError · method · L886-L894 — private handleError(error: Error, context?: string): void
+- setStatus · method · L896-L905 — private setStatus(status: ChannelStatus, error?: Error): void
+- createGoogleChatAdapter · function · L911-L923 — function createGoogleChatAdapter(config: GoogleChatConfig): GoogleChatAdapter

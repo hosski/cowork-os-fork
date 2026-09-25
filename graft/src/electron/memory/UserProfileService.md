@@ -1,0 +1,27 @@
+# src/electron/memory/UserProfileService.ts
+
+- UserProfileService · class · L25-L680 — class UserProfileService
+- getProfile · method · L28-L30 — static getProfile(): UserProfile
+- addFact · method · L32-L91 — static addFact(request: AddUserFactRequest): UserFact
+- updateFact · method · L93-L137 — static updateFact(request: UpdateUserFactRequest): UserFact | null
+- deleteFact · method · L139-L153 — static deleteFact(id: string): boolean
+- ingestUserMessage · method · L155-L171 — static ingestUserMessage(message: string, taskId?: string): void
+- ingestUserFeedback · method · L173-L232 — static ingestUserFeedback(decision?: string, reason?: string, taskId?: string): void
+- buildPromptContext · method · L234-L264 — static buildPromptContext(maxFacts = 8): string
+- extractFactsFromMessage · method · L266-L345 — private static extractFactsFromMessage(message: string, taskId?: string): AddUserFactRequest[]
+- extractOperatingFact · method · L347-L407 — private static extractOperatingFact(text: string, taskId?: string): AddUserFactRequest | null
+- extractVoiceFact · method · L409-L452 — private static extractVoiceFact( text: string, _lowered: string, taskId?: string, ): AddUserFactRequest | null
+- extractAccountabilityFact · method · L454-L480 — private static extractAccountabilityFact( text: string, _lowered: string, taskId?: string, ): AddUserFactRequest | null
+- isDirectPreferenceStatement · method · L482-L486 — private static isDirectPreferenceStatement(text: string): boolean
+- stripQuotedSegments · method · L488-L493 — private static stripQuotedSegments(text: string): string
+- prioritizeFactCandidates · method · L495-L514 — private static prioritizeFactCandidates(facts: AddUserFactRequest[]): AddUserFactRequest[]
+- normalizeCategory · method · L516-L518 — private static normalizeCategory(category: UserFactCategory): UserFactCategory
+- normalizeFactValue · method · L520-L525 — private static normalizeFactValue(value: string): string
+- normalizeForMatch · method · L527-L529 — private static normalizeForMatch(value: string): string
+- extractPreferredNameFromFactValue · method · L531-L543 — private static extractPreferredNameFromFactValue( category: UserFactCategory, value: string, ): string | null
+- syncPreferredNameFromProfile · method · L545-L555 — private static syncPreferredNameFromProfile(profile: UserProfile): void
+- clampConfidence · method · L557-L560 — private static clampConfidence(confidence: number): number
+- categoryLabel · method · L562-L585 — private static categoryLabel(category: UserFactCategory): string
+- sortFacts · method · L587-L594 — private static sortFacts(facts: UserFact[]): UserFact[]
+- load · method · L596-L658 — private static load(): UserProfile
+- save · method · L660-L679 — private static save(profile: UserProfile): void

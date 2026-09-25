@@ -1,0 +1,49 @@
+# src/electron/agent/browser/browser-service.ts
+
+- BrowserOptions · interface · L12-L37 — interface BrowserOptions
+- NavigateResult · interface · L39-L45 — interface NavigateResult
+- ScreenshotResult · interface · L47-L51 — interface ScreenshotResult
+- ElementInfo · interface · L53-L60 — interface ElementInfo
+- PageContent · interface · L62-L68 — interface PageContent
+- ClickResult · interface · L70-L77 — interface ClickResult
+- FillResult · interface · L79-L87 — interface FillResult
+- EvaluateResult · interface · L89-L92 — interface EvaluateResult
+- normalizeEvaluateScript · function · L94-L107 — function normalizeEvaluateScript(script: string): string
+- BrowserService · class · L112-L1151 — class BrowserService
+- constructor · method · L122-L132 — constructor(workspace: Workspace, options: BrowserOptions = {})
+- getActionTimeout · method · L134-L139 — private getActionTimeout(timeoutMs?: number): number
+- assertNetworkUrlAllowed · method · L141-L165 — private assertNetworkUrlAllowed(rawUrl: string, toolName = "browser_navigate"): void
+- assertPageUrlAllowed · method · L167-L181 — private assertPageUrlAllowed(url: string): void
+- configurePage · method · L183-L218 — private async configurePage(page: Page): Promise<void>
+- configureContext · method · L220-L228 — private configureContext(context: BrowserContext): void
+- isRetryableBrowserError · method · L230-L247 — private isRetryableBrowserError(error: unknown): boolean
+- runLocatorActionWithRetry · method · L249-L277 — private async runLocatorActionWithRetry<T>( selector: string, timeoutMs: number | undefined, operation: (locator: Locator, timeout: number) => Promise<T>, ): Promise<T>
+- captureFailureContext · method · L279-L318 — private async captureFailureContext( action: string, selector?: string, ): Promise<{ screenshot?: string; url?: string; content?: string; selector?: string; }>
+- resolveBraveExecutablePath · method · L320-L357 — private async resolveBraveExecutablePath(): Promise<string | undefined>
+- init · method · L363-L459 — async init(): Promise<void>
+- navigate · method · L464-L494 — async navigate( url: string, waitUntil: "load" | "domcontentloaded" | "networkidle" = "load", ): Promise<NavigateResult>
+- dismissConsentPopups · method · L500-L646 — private async dismissConsentPopups(): Promise<void>
+- screenshot · method · L651-L683 — async screenshot( filename?: string, fullPage: boolean = false, accessOptions: WorkspaceFilesystemAccessOptions = {}, ): Promise<ScreenshotResult>
+- getCurrentUrl · method · L688-L691 — async getCurrentUrl(): Promise<string>
+- getContent · method · L696-L739 — async getContent(): Promise<PageContent>
+- click · method · L744-L773 — async click(selector: string, timeoutMs?: number): Promise<ClickResult>
+- fill · method · L778-L807 — async fill(selector: string, value: string, timeoutMs?: number): Promise<FillResult>
+- type · method · L812-L847 — async type( selector: string, text: string, delay: number = 50, timeoutMs?: number, ): Promise<FillResult>
+- press · method · L852-L861 — async press(key: string): Promise<{ success: boolean; key: string }>
+- waitForSelector · method · L866-L879 — async waitForSelector( selector: string, timeout?: number, ): Promise<{ success: boolean; selector: string }>
+- waitForNavigation · method · L884-L894 — async waitForNavigation(timeout?: number): Promise<{ success: boolean; url: string }>
+- getText · method · L899-L912 — async getText(selector: string): Promise<{ success: boolean; text: string }>
+- getAttribute · method · L917-L929 — async getAttribute( selector: string, attribute: string, ): Promise<{ success: boolean; value: string | null }>
+- evaluate · method · L934-L948 — async evaluate(script: string): Promise<EvaluateResult>
+- select · method · L953-L962 — async select(selector: string, value: string): Promise<FillResult>
+- check · method · L967-L983 — async check( selector: string, checked: boolean = true, ): Promise<{ success: boolean; selector: string; checked: boolean }>
+- scroll · method · L988-L1018 — async scroll( direction: "up" | "down" | "top" | "bottom", amount?: number, ): Promise<{ success: boolean }>
+- goBack · method · L1023-L1034 — async goBack(): Promise<NavigateResult>
+- goForward · method · L1039-L1050 — async goForward(): Promise<NavigateResult>
+- reload · method · L1055-L1066 — async reload(): Promise<NavigateResult>
+- getHtml · method · L1071-L1074 — async getHtml(): Promise<string>
+- savePdf · method · L1079-L1097 — async savePdf( filename?: string, accessOptions: WorkspaceFilesystemAccessOptions = {}, ): Promise<{ path: string }>
+- getUrl · method · L1102-L1104 — getUrl(): string
+- isOpen · method · L1109-L1111 — isOpen(): boolean
+- close · method · L1116-L1140 — async close(): Promise<void>
+- ensurePage · method · L1145-L1150 — private async ensurePage(): Promise<void>

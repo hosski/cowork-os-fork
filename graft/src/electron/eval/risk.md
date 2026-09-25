@@ -1,0 +1,23 @@
+# src/electron/eval/risk.ts
+
+- TaskRiskSignals · interface · L11-L20 — interface TaskRiskSignals
+- TaskRiskComputation · interface · L22-L27 — interface TaskRiskComputation
+- ReviewGateDecision · interface · L29-L36 — interface ReviewGateDecision
+- getEffectiveEventType · function · L43-L47 — function getEffectiveEventType(event: TaskEvent): string
+- toTaskPrompt · function · L49-L51 — function toTaskPrompt(task: Pick<Task, "title" | "prompt">): string
+- getEventToolName · function · L53-L57 — function getEventToolName(event: TaskEvent): string
+- getRunCommandFromEvent · function · L59-L64 — function getRunCommandFromEvent(event: TaskEvent): string
+- collectChangedPaths · function · L66-L97 — function collectChangedPaths( events: TaskEvent[], outputSummary?: TaskOutputSummary, ): Set<string>
+- add · function · L71-L76 — add = (raw: unknown)
+- hasTestEvidence · function · L99-L111 — function hasTestEvidence(events: TaskEvent[]): boolean
+- countToolFailures · function · L113-L122 — function countToolFailures(events: TaskEvent[]): { repeated: boolean; maxCount: number }
+- detectReliabilityFailureDomains · function · L124-L165 — function detectReliabilityFailureDomains(events: TaskEvent[]): { requiredContractFailure: boolean; requiredVerificationFailure: boolean; dependencyUnavailable: boolean; }
+- hasShellOrGitMutation · function · L167-L178 — function hasShellOrGitMutation(events: TaskEvent[]): boolean
+- scoreTaskRisk · function · L180-L245 — function scoreTaskRisk( task: Pick<Task, "title" | "prompt">, events: TaskEvent[], outputSummary?: TaskOutputSummary, ): TaskRiskComputation
+- resolveReviewPolicy · function · L247-L258 — function resolveReviewPolicy(requestedPolicy: unknown): ReviewPolicy
+- deriveReviewGateDecision · function · L260-L297 — function deriveReviewGateDecision(params: { policy: ReviewPolicy; riskLevel: TaskRiskLevel; isMutatingTask: boolean; }): ReviewGateDecision
+- inferMutationFromSummary · function · L299-L302 — function inferMutationFromSummary(summary?: TaskOutputSummary): boolean
+- listChangedPathsForTask · function · L305-L311 — function listChangedPathsForTask( events: TaskEvent[], outputSummary?: TaskOutputSummary, maxPaths = 80, ): string[]
+- EntropySweepDecision · interface · L313-L316 — interface EntropySweepDecision
+- resolveEntropySweepPolicy · function · L318-L330 — function resolveEntropySweepPolicy( requested: unknown, reviewPolicy: ReviewPolicy, ): EntropySweepPolicy
+- deriveEntropySweepDecision · function · L332-L354 — function deriveEntropySweepDecision(params: { policy: EntropySweepPolicy; riskLevel: TaskRiskLevel; isMutatingTask: boolean; deepWorkMode?: boolean; }): EntropySweepDecision

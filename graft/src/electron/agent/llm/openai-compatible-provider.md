@@ -1,0 +1,35 @@
+# src/electron/agent/llm/openai-compatible-provider.ts
+
+- AtomicChatErrorCode · type · L19-L29 — type AtomicChatErrorCode = | "cancelled" | "timeout" | "unreachable" | "authentication" | "model_unavailable" | "context_limit" | "unsupported_parameter" | "invalid_response" | "invalid_tool_call" | "temporarily_busy";
+- AtomicChatDiscoveryStatus · type · L31-L38 — type AtomicChatDiscoveryStatus = | "success" | "valid_empty" | "unreachable" | "authentication_rejected" | "invalid_response" | "cancelled" | "timeout";
+- AtomicChatModelDiscoveryResult · interface · L40-L45 — interface AtomicChatModelDiscoveryResult
+- AtomicChatProviderError · class · L47-L71 — class AtomicChatProviderError extends Error implements LLMProviderError
+- constructor · method · L53-L70 — constructor( code: AtomicChatErrorCode, message: string, options?: { status?: number; providerMessage?: string; cause?: unknown }, )
+- RequestDeadline · interface · L76-L80 — interface RequestDeadline
+- createRequestDeadline · function · L82-L118 — function createRequestDeadline( parent: AbortSignal | undefined, timeoutMs?: number, ): RequestDeadline
+- abortFromParent · function · L97-L97 — abortFromParent = ()
+- joinUrl · function · L120-L124 — function joinUrl(baseUrl: string, path: string): string
+- normalizeBaseUrl · function · L126-L146 — function normalizeBaseUrl(baseUrl: string, providerType?: LLMProviderType): string
+- resolveChatCompletionsUrl · function · L148-L150 — function resolveChatCompletionsUrl(baseUrl: string, providerType?: LLMProviderType): string
+- resolveModelsUrl · function · L152-L154 — function resolveModelsUrl(baseUrl: string, providerType?: LLMProviderType): string
+- OpenAICompatibleProviderOptions · interface · L156-L167 — interface OpenAICompatibleProviderOptions
+- OpenAICompatibleProvider · class · L169-L743 — class OpenAICompatibleProvider implements LLMProvider
+- constructor · method · L181-L192 — constructor(options: OpenAICompatibleProviderOptions)
+- isAtomicChatProvider · method · L194-L196 — private isAtomicChatProvider(): boolean
+- buildAtomicError · method · L198-L204 — private buildAtomicError( code: AtomicChatErrorCode, message: string, options?: { status?: number; providerMessage?: string; cause?: unknown }, ): AtomicChatProviderError
+- addAuthHeaders · method · L206-L215 — private addAuthHeaders(headers: Record<string, string>): void
+- classifyAtomicHttpError · method · L217-L248 — private classifyAtomicHttpError( status: number, message: string | undefined, cause?: unknown, ): AtomicChatProviderError
+- resolveModelForRequest · method · L250-L274 — private async resolveModelForRequest(model: string, signal?: AbortSignal): Promise<string>
+- normalizeModelForEndpoint · method · L276-L292 — private normalizeModelForEndpoint(model: string): string
+- isKimiK2Model · method · L294-L309 — private isKimiK2Model(model: string): boolean
+- isOpenCodeGoEndpoint · method · L311-L313 — private isOpenCodeGoEndpoint(): boolean
+- getOutputTokenField · method · L315-L317 — private getOutputTokenField(model: string): "max_tokens" | "max_completion_tokens"
+- getMaxOutputTokens · method · L319-L330 — private getMaxOutputTokens(model: string, requestedMaxTokens: number): number
+- getToolOptions · method · L332-L335 — private getToolOptions(model: string): OpenAICompatibleToolOptions | undefined
+- getToolRequestExtras · method · L337-L344 — private getToolRequestExtras(model: string, tools?: Any[]): Record<string, Any>
+- observeResponse · method · L350-L353 — protected observeResponse(_model: string, _request: LLMRequest, _data: Any): void
+- getErrorMessage · method · L355-L361 — private getErrorMessage(errorData: Any): string | undefined
+- createMessage · method · L363-L543 — async createMessage(request: LLMRequest): Promise<LLMResponse>
+- testConnection · method · L545-L622 — async testConnection(): Promise<{ success: boolean; error?: string }>
+- getAvailableModels · method · L624-L627 — async getAvailableModels(): Promise<Array<{ id: string; name: string }>>
+- getAvailableModelsDetailed · method · L629-L742 — async getAvailableModelsDetailed(options?: { signal?: AbortSignal; timeoutMs?: number; }): Promise<AtomicChatModelDiscoveryResult>

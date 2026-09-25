@@ -1,0 +1,62 @@
+# src/electron/agent/jev/browser-action-decision.ts
+
+- BrowserActionPayload · type · L47-L47 — type BrowserActionPayload = Record<string, unknown>;
+- BrowserSnapshotIdentity · interface · L49-L52 — interface BrowserSnapshotIdentity
+- BrowserActionRisk · type · L54-L54 — type BrowserActionRisk = "safe" | "sensitive" | "destructive";
+- BrowserActionCandidate · interface · L65-L84 — interface BrowserActionCandidate<TAction extends object = object>
+- BrowserActionDecisionCallback · type · L86-L89 — type BrowserActionDecisionCallback = ( request: JevRequest, options?: DecisionRequestOptions, ) => Promise<JevResponse>;
+- BrowserActionDecisionProvider · type · L91-L93 — type BrowserActionDecisionProvider = | Pick<DecisionProvider, "decide"> | BrowserActionDecisionCallback;
+- BrowserActionDecisionService · interface · L96-L101 — interface BrowserActionDecisionService
+- BrowserActionDecisionServiceResult · interface · L103-L108 — interface BrowserActionDecisionServiceResult
+- BrowserActionSelectorOptions · interface · L110-L123 — interface BrowserActionSelectorOptions
+- BrowserActionSelectorInput · interface · L125-L134 — interface BrowserActionSelectorInput<TAction extends object = object>
+- BrowserActionDecisionInput · interface · L137-L150 — interface BrowserActionDecisionInput
+- BrowserActionSelectionReason · type · L152-L171 — type BrowserActionSelectionReason = | "cancelled" | "timeout" | "missing_snapshot" | "stale_snapshot" | "no_candidates" | "candidate_limit_exceeded" | "invalid_candidates" | "state_bound_exceeded" | "sensitive_action" | "destructive_action" | "provider_failure" | "provider_abstain" | "invalid_decision" | "low_confidence" | "low_probability" | "snapshot_uncertain" | "state_uncertain" | "selection_limit_exceeded" | "invalid_options";
+- BrowserActionSelectionSuccess · interface · L173-L176 — interface BrowserActionSelectionSuccess
+- BrowserActionSelectionAbstention · interface · L178-L182 — interface BrowserActionSelectionAbstention
+- BrowserActionSelectionResult · type · L184-L186 — type BrowserActionSelectionResult = | BrowserActionSelectionSuccess | BrowserActionSelectionAbstention;
+- BrowserActionDecisionResult · interface · L189-L196 — interface BrowserActionDecisionResult
+- ResolvedOptions · interface · L198-L211 — interface ResolvedOptions
+- NormalizedSnapshot · interface · L213-L216 — interface NormalizedSnapshot
+- PreparedCandidate · interface · L218-L223 — interface PreparedCandidate
+- SelectionTimeoutError · class · L225-L230 — class SelectionTimeoutError extends Error
+- constructor · method · L226-L229 — constructor()
+- SelectionCancelledError · class · L232-L237 — class SelectionCancelledError extends Error
+- constructor · method · L233-L236 — constructor()
+- SelectionProviderError · class · L239-L244 — class SelectionProviderError extends Error
+- constructor · method · L240-L243 — constructor()
+- abstain · function · L246-L252 — function abstain(reason: BrowserActionSelectionReason): BrowserActionSelectionAbstention
+- selected · function · L254-L259 — function selected(indexes: readonly number[]): BrowserActionSelectionSuccess
+- isRecord · function · L261-L263 — function isRecord(value: unknown): value is Record<string, unknown>
+- isFiniteUnitInterval · function · L265-L267 — function isFiniteUnitInterval(value: unknown): value is number
+- cloneJsonValue · function · L269-L279 — function cloneJsonValue(value: JevJsonValue): JevJsonValue
+- normalizeSnapshot · function · L281-L286 — function normalizeSnapshot(value: unknown): NormalizedSnapshot | null
+- resolveOptions · function · L288-L374 — function resolveOptions( options: BrowserActionSelectorOptions | undefined, fallbackSignal?: AbortSignal, fallbackTimeoutMs?: number, ): ResolvedOptions | null
+- boundedInteger · function · L294-L303 — boundedInteger = ( value: number | undefined, fallback: number, hardMaximum: number, minimum: number, ): number | null
+- boundedThreshold · function · L304-L307 — boundedThreshold = (value: number | undefined, fallback: number): number | null
+- riskOf · function · L376-L386 — function riskOf(candidate: BrowserActionCandidate): BrowserActionRisk
+- legacyActionPayload · function · L388-L405 — function legacyActionPayload(candidate: BrowserActionCandidate): Record<string, unknown>
+- candidatePayload · function · L407-L414 — function candidatePayload(candidate: BrowserActionCandidate): JevJsonValue | null
+- candidateSnapshot · function · L416-L423 — function candidateSnapshot(candidate: BrowserActionCandidate): NormalizedSnapshot | null
+- prepareCandidates · function · L425-L485 — function prepareCandidates( candidates: readonly BrowserActionCandidate[] | undefined, snapshot: NormalizedSnapshot, options: ResolvedOptions, ): { candidates: PreparedCandidate[]; reason?: BrowserActionSelectionReason }
+- candidateKey · function · L487-L489 — function candidateKey(index: number): string
+- includeKey · function · L491-L493 — function includeKey(index: number): string
+- buildQuestions · function · L495-L558 — function buildQuestions(candidateIndexes: readonly number[]): JevQuestions
+- buildRequest · function · L560-L592 — function buildRequest<TAction extends object>( input: Pick<BrowserActionSelectorInput<TAction>, "model" | "state">, snapshot: NormalizedSnapshot, candidates: readonly PreparedCandidate[], ): JevRequest
+- serializedSize · function · L594-L602 — function serializedSize(value: unknown): number | null
+- responseAnswer · function · L604-L608 — function responseAnswer(response: JevResponse, id: string): JevAnswer | undefined
+- readChoiceAnswer · function · L610-L624 — function readChoiceAnswer(response: JevResponse): JevChoiceAnswer | undefined
+- readNoulAnswer · function · L626-L630 — function readNoulAnswer(response: JevResponse, id: string): JevNoulAnswer | undefined
+- providerCallback · function · L632-L635 — function providerCallback(provider: BrowserActionDecisionProvider): BrowserActionDecisionCallback
+- runCancellable · function · L637-L669 — async function runCancellable<T>( externalSignal: AbortSignal | undefined, timeoutMs: number, operation: (signal: AbortSignal) => Promise<T>, ): Promise<T>
+- onAbort · function · L648-L651 — onAbort = (): void
+- requestDecision · function · L671-L699 — async function requestDecision( input: BrowserActionSelectorInput, request: JevRequest, options: ResolvedOptions, ): Promise<JevResponse>
+- firstRisk · function · L701-L707 — function firstRisk(candidates: readonly PreparedCandidate[]): BrowserActionSelectionReason | null
+- selectedRisk · function · L709-L720 — function selectedRisk( candidates: readonly PreparedCandidate[], indexes: readonly number[], ): BrowserActionSelectionReason | null
+- responseHasUnknownIncludeAnswer · function · L722-L731 — function responseHasUnknownIncludeAnswer( response: JevResponse, candidates: readonly PreparedCandidate[], ): boolean
+- selectBrowserActions · function · L741-L852 — async function selectBrowserActions<TAction extends object = object>( input: BrowserActionSelectorInput<TAction>, ): Promise<BrowserActionSelectionResult>
+- legacySnapshot · function · L854-L860 — function legacySnapshot(input: BrowserActionDecisionInput): NormalizedSnapshot | null
+- legacyCandidates · function · L862-L882 — function legacyCandidates( input: BrowserActionDecisionInput, snapshot: NormalizedSnapshot, ): readonly BrowserActionCandidate[]
+- buildBrowserActionDecisionRequest · function · L885-L897 — function buildBrowserActionDecisionRequest(input: BrowserActionSelectorInput): JevRequest
+- buildJevBrowserActionRequest · function · L900-L913 — function buildJevBrowserActionRequest(input: BrowserActionDecisionInput): JevRequest
+- selectBrowserActionsWithJev · function · L916-L951 — async function selectBrowserActionsWithJev( input: BrowserActionDecisionInput, ): Promise<BrowserActionDecisionResult>

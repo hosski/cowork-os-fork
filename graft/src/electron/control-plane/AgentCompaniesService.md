@@ -1,0 +1,50 @@
+# src/electron/control-plane/AgentCompaniesService.ts
+
+- ParsedFrontmatterResult · interface · L34-L37 — interface ParsedFrontmatterResult
+- ExistingSourceRuntimeLink · interface · L39-L44 — interface ExistingSourceRuntimeLink
+- ExistingSourceRuntimeIndex · interface · L46-L49 — interface ExistingSourceRuntimeIndex
+- normalizeSlashPath · function · L51-L53 — function normalizeSlashPath(value: string): string
+- normalizeSlug · function · L55-L63 — function normalizeSlug(value: string): string
+- stripQuotes · function · L65-L74 — function stripQuotes(value: string): string
+- parseScalar · function · L76-L82 — function parseScalar(value: string): unknown
+- parseFrontmatter · function · L84-L128 — function parseFrontmatter(raw: string): ParsedFrontmatterResult
+- arrayValue · function · L130-L140 — function arrayValue(value: unknown): string[]
+- stringValue · function · L142-L144 — function stringValue(value: unknown): string | undefined
+- manifestSortWeight · function · L146-L163 — function manifestSortWeight(kind: CompanyPackageManifestKind): number
+- nodeSortWeight · function · L165-L182 — function nodeSortWeight(kind: CompanyPackageManifestKind): number
+- inferSourceName · function · L184-L191 — function inferSourceName(input: CompanyPackageSourceInput): string
+- AgentCompaniesService · class · L193-L1519 — class AgentCompaniesService
+- constructor · method · L194-L198 — constructor( private readonly db: Database.Database, private readonly core: ControlPlaneCoreService, private readonly agentRoleRepo: AgentRoleRepository, )
+- listSources · method · L200-L217 — listSources(companyId?: string): CompanyPackageSource[]
+- listManifests · method · L219-L230 — listManifests(sourceId: string): CompanyPackageManifest[]
+- listGraphNodes · method · L232-L243 — listGraphNodes(companyId: string): CompanyGraphNode[]
+- listGraphEdges · method · L245-L256 — listGraphEdges(companyId: string): CompanyGraphEdge[]
+- listSyncStates · method · L258-L269 — listSyncStates(companyId: string): CompanySyncState[]
+- getResolvedGraph · method · L271-L287 — getResolvedGraph(companyId: string): ResolvedCompanyGraph
+- previewImport · method · L289-L418 — previewImport(request: CompanyPackageImportRequest): CompanyImportPreview
+- importPackage · method · L420-L720 — importPackage(request: CompanyPackageImportRequest): CompanyPackageImportResult
+- linkOrgNodeToAgentRole · method · L722-L794 — linkOrgNodeToAgentRole(input: { companyId: string; orgNodeId: string; agentRoleId: string | null; }): CompanySyncState | null
+- normalizeSourceInput · method · L796-L811 — private normalizeSourceInput(input: CompanyPackageSourceInput): CompanyPackageSourceInput
+- findSourceByCompanyAndRootUri · method · L813-L827 — private findSourceByCompanyAndRootUri( companyId: string, rootUri: string, ): CompanyPackageSource | undefined
+- findSourceByRootUri · method · L829-L841 — private findSourceByRootUri(rootUri: string): CompanyPackageSource | undefined
+- resolveLocalGraph · method · L843-L876 — private resolveLocalGraph(source: CompanyPackageSourceInput): ResolvedCompanyGraph
+- scanManifests · method · L878-L929 — private scanManifests( absDir: string, rootDir: string, source: CompanyPackageSourceInput, ): CompanyPackageManifest[]
+- buildGraph · method · L931-L1092 — private buildGraph( manifests: CompanyPackageManifest[], source: CompanyPackageSourceInput, warnings: string[], ): { nodes: CompanyGraphNode[]; edges: CompanyGraphEdge[] }
+- resolveReferencedNode · method · L1094-L1128 — private resolveReferencedNode( fromRelativePath: string | undefined, reference: string, manifestByPath: Map<string, CompanyPackageManifest>, nodeBySlugAndKind: Map<string, CompanyGraphNode>, preferredKind?: CompanyPackageManifestKind, ): CompanyGraphNode | undefined
+- previewEdge · method · L1130-L1144 — private previewEdge( kind: CompanyGraphEdgeKind, fromNodeId: string, toNodeId: string, ): CompanyGraphEdge
+- upsertCompanyForPreview · method · L1146-L1161 — private upsertCompanyForPreview(preview: CompanyImportPreview): Company
+- buildExistingRuntimeIndex · method · L1163-L1195 — private buildExistingRuntimeIndex(source: CompanyPackageSource): ExistingSourceRuntimeIndex
+- relativePathIdentityKey · method · L1197-L1203 — private relativePathIdentityKey( kind: CompanyGraphNode["kind"], relativePath?: string, ): string | null
+- slugIdentityKey · method · L1205-L1207 — private slugIdentityKey(kind: CompanyGraphNode["kind"], slug: string): string
+- findExistingRuntimeLink · method · L1209-L1233 — private findExistingRuntimeLink( index: ExistingSourceRuntimeIndex | undefined, node: CompanyGraphNode, runtimeEntityKind: CompanyRuntimeEntityKind, ): CompanySyncState | undefined
+- reconcileRemovedRuntimeEntities · method · L1235-L1288 — private reconcileRemovedRuntimeEntities( index: ExistingSourceRuntimeIndex | undefined, currentNodes: CompanyGraphNode[], now: number, ): void
+- upsertSource · method · L1290-L1387 — private upsertSource( companyId: string, source: CompanyPackageSourceInput, now: number, ): CompanyPackageSource
+- clearSourceGraph · method · L1389-L1394 — private clearSourceGraph(sourceId: string): void
+- insertSyncState · method · L1396-L1421 — private insertSyncState(state: Omit<CompanySyncState, "id" | "createdAt" | "updatedAt">): void
+- getManifestBody · method · L1423-L1428 — private getManifestBody( manifests: CompanyPackageManifest[], manifestId?: string, ): string | undefined
+- agentRoleName · method · L1430-L1432 — private agentRoleName(companySlug: string, agentSlug: string): string
+- mapSource · method · L1434-L1451 — private mapSource(row: Any): CompanyPackageSource
+- mapManifest · method · L1453-L1469 — private mapManifest(row: Any): CompanyPackageManifest
+- mapNode · method · L1471-L1487 — private mapNode(row: Any): CompanyGraphNode
+- mapEdge · method · L1489-L1501 — private mapEdge(row: Any): CompanyGraphEdge
+- mapSyncState · method · L1503-L1518 — private mapSyncState(row: Any): CompanySyncState

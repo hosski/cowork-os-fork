@@ -1,0 +1,29 @@
+# src/electron/agent/tools/vision-tools.ts
+
+- VisionProvider · type · L26-L26 — type VisionProvider = "azure" | "openai" | "anthropic" | "bedrock";
+- isAnthropicSubscriptionToken · function · L36-L38 — function isAnthropicSubscriptionToken(value?: string | null): boolean
+- resolveAnthropicCredential · function · L40-L50 — function resolveAnthropicCredential(settings: LLMSettings): string | undefined
+- normalizeAzureBaseEndpoint · function · L52-L57 — function normalizeAzureBaseEndpoint(endpoint: string): string
+- guessImageMimeType · function · L59-L76 — function guessImageMimeType(filePath: string): string
+- buildSetupHint · function · L78-L109 — function buildSetupHint(provider: VisionProvider): { type: string; label: string; target: string; }
+- VisionTools · class · L111-L1346 — class VisionTools
+- constructor · method · L119-L123 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L125-L127 — setWorkspace(workspace: Workspace): void
+- assertNetworkAccess · method · L135-L146 — private assertNetworkAccess(url: string, toolName = "analyze_image"): void
+- resolveReadablePath · method · L148-L192 — private async resolveReadablePath(inputPath: string): Promise<string | null>
+- buildCacheKey · method · L194-L198 — private buildCacheKey(parts: Record<string, unknown>): string
+- getCachedResult · method · L200-L203 — private getCachedResult(cacheKey: string): Any | null
+- setCachedResult · method · L205-L216 — private setCachedResult(cacheKey: string, result: Any): void
+- shouldRetryVisionError · method · L218-L307 — private shouldRetryVisionError(error: unknown): boolean
+- logReadPdfVisualFailure · method · L309-L321 — private logReadPdfVisualFailure(error: string, details: Record<string, unknown> = {}): void
+- getToolDefinitions · method · L323-L395 — static getToolDefinitions(): LLMTool[]
+- analyzeImage · method · L397-L537 — async analyzeImage(input: { path: unknown; prompt?: unknown; provider?: unknown; model?: unknown; max_tokens?: unknown; }): Promise< | { success: true; provider: VisionProvider; model: string; text: string; source_path: string; provenance: SensitiveSourceRef; } | { success: false; error: string; actionHint?: { type: string; label: string; target: string }; } >
+- analyzeBuffer · method · L543-L800 — private async analyzeBuffer(args: { base64: string; mimeType: string; prompt: string; maxTokens: number; providerOverride?: string; modelOverride?: string; toolName: string; emitToolError?: boolean; }): Promise< | { success: true; provider: VisionProvider; model: string; text: string } | { success: false; error: string; retryable: boolean; nonBlocking?: boolean; recoverableFallback?: boolean; fallbackHint?: string; actionHint?: { type: string; label: string; target: string }; } >
+- readPdfVisual · method · L802-L1035 — async readPdfVisual(input: { path: unknown; prompt?: unknown; pages?: unknown; provider?: unknown; }): Promise< | { success: true; pages: Array<{ page: number; analysis: string }>; pageCount: number; source_path: string; provenance: SensitiveSourceRef; } | { success: false; error: string } >
+- parsePageRange · method · L1037-L1063 — private parsePageRange(spec: string): { firstPage: number; lastPage: number; }
+- analyzeWithOpenAI · method · L1065-L1103 — private async analyzeWithOpenAI(args: { apiKey: string; model: string; prompt: string; base64: string; mimeType: string; maxTokens: number; }): Promise<string>
+- analyzeWithOpenAIOAuth · method · L1105-L1149 — private async analyzeWithOpenAIOAuth(args: { accessToken: string; refreshToken: string; tokenExpiresAt?: number; model: string; prompt: string; base64: string; mimeType: string; maxTokens: number; }): Promise<string>
+- persistOpenAIOAuthTokens · method · L1151-L1164 — private persistOpenAIOAuthTokens(tokens: OpenAIOAuthTokens): void
+- analyzeWithAzureOpenAI · method · L1166-L1236 — private async analyzeWithAzureOpenAI(args: { apiKey: string; endpoint: string; deployment: string; apiVersion?: string; model: string; prompt: string; base64: string; mimeType: string; maxTokens: number; }): Promise<string>
+- analyzeWithAnthropic · method · L1238-L1287 — private async analyzeWithAnthropic(args: { apiKey: string; model: string; prompt: string; base64: string; mimeType: string; maxTokens: number; }): Promise<string>
+- analyzeWithBedrock · method · L1289-L1345 — private async analyzeWithBedrock(args: { settings: LLMSettings; model: string; prompt: string; base64: string; mimeType: string; maxTokens: number; }): Promise<string>

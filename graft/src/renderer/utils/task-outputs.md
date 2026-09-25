@@ -1,0 +1,23 @@
+# src/renderer/utils/task-outputs.ts
+
+- normalizePath · function · L5-L7 — function normalizePath(raw: string): string
+- isNonEmptyString · function · L9-L11 — function isNonEmptyString(value: unknown): value is string
+- toUniqueNormalizedPaths · function · L13-L24 — function toUniqueNormalizedPaths(values: unknown[]): string[]
+- getParentFolder · function · L26-L31 — function getParentFolder(filePath: string): string
+- deriveFolders · function · L33-L43 — function deriveFolders(paths: string[]): string[]
+- mapToSortedPaths · function · L45-L49 — function mapToSortedPaths(map: Map<string, number>): string[]
+- outputPathIdentity · function · L51-L62 — function outputPathIdentity(value: string): { normalized: string; basename: string; absolute: boolean; }
+- dedupeOutputPaths · function · L64-L83 — function dedupeOutputPaths(paths: string[]): string[]
+- collectDirectoryPaths · function · L85-L97 — function collectDirectoryPaths(events: TaskEvent[] | undefined): Set<string>
+- stripDirectoriesFromSummary · function · L99-L127 — function stripDirectoriesFromSummary( summary: TaskOutputSummary | null, directoryPaths: Set<string>, ): TaskOutputSummary | null
+- buildSummary · function · L129-L140 — function buildSummary(created: string[], modifiedFallback: string[]): TaskOutputSummary | null
+- sanitizeTaskOutputSummary · function · L142-L185 — function sanitizeTaskOutputSummary(raw: unknown): TaskOutputSummary | null
+- deriveTaskOutputSummaryFromEvents · function · L187-L250 — function deriveTaskOutputSummaryFromEvents(events: TaskEvent[]): TaskOutputSummary | null
+- resolveTaskOutputSummaryFromCompletionEvent · function · L252-L276 — function resolveTaskOutputSummaryFromCompletionEvent( event: TaskEvent, fallbackEvents?: TaskEvent[], ): TaskOutputSummary | null
+- hasTaskOutputs · function · L278-L282 — function hasTaskOutputs( summary: TaskOutputSummary | null | undefined, ): summary is TaskOutputSummary
+- resolveTaskOutputSummaryFromTask · function · L284-L292 — function resolveTaskOutputSummaryFromTask( task?: Pick<Task, "bestKnownOutcome"> | null, fallbackEvents?: TaskEvent[], ): TaskOutputSummary | null
+- resolvePreferredTaskOutputSummary · function · L294-L307 — function resolvePreferredTaskOutputSummary(params: { task?: Pick<Task, "bestKnownOutcome"> | null; latestCompletionEvent?: TaskEvent | null; fallbackEvents?: TaskEvent[]; }): TaskOutputSummary | null
+- getFileName · function · L309-L313 — function getFileName(filePath: string): string
+- getPrimaryOutputFileName · function · L315-L318 — function getPrimaryOutputFileName(summary: TaskOutputSummary | null | undefined): string
+- getPrimaryOutputFolder · function · L320-L323 — function getPrimaryOutputFolder(summary: TaskOutputSummary | null | undefined): string
+- formatOutputLocationLabel · function · L325-L328 — function formatOutputLocationLabel(summary: TaskOutputSummary | null | undefined): string

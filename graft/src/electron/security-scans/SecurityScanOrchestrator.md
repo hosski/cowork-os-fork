@@ -1,0 +1,27 @@
+# src/electron/security-scans/SecurityScanOrchestrator.ts
+
+- SecurityScanMode · type · L5-L5 — type SecurityScanMode = "repository" | "scoped_path" | "diff" | "deep_repository";
+- SecurityScanPrepareInput · interface · L7-L18 — interface SecurityScanPrepareInput
+- SecurityScanPaths · interface · L20-L37 — interface SecurityScanPaths
+- SecurityScanPrepareResult · interface · L39-L52 — interface SecurityScanPrepareResult
+- WorkerArtifactStatus · interface · L54-L61 — interface WorkerArtifactStatus
+- RoundMergeResult · interface · L63-L74 — interface RoundMergeResult
+- ReportValidationResult · interface · L76-L82 — interface ReportValidationResult
+- getPackagedPluginDir · function · L108-L116 — function getPackagedPluginDir(): string
+- runCommand · function · L118-L129 — function runCommand(command: string, args: string[], cwd: string): string
+- safeTimestamp · function · L131-L136 — function safeTimestamp(): string
+- countCsvDataRows · function · L138-L143 — function countCsvDataRows(filePath: string): number
+- ensureDir · function · L145-L147 — function ensureDir(dir: string): void
+- isPathWithin · function · L149-L153 — function isPathWithin(parent: string, child: string): boolean
+- readJsonlWithErrors · function · L155-L174 — function readJsonlWithErrors(filePath: string): { rows: unknown[]; errors: string[] }
+- readJsonlStrict · function · L176-L182 — function readJsonlStrict(filePath: string): unknown[]
+- stableCandidateKey · function · L184-L203 — function stableCandidateKey(candidate: unknown): string
+- buildPaths · function · L205-L252 — function buildPaths(input: SecurityScanPrepareInput, pluginDir: string): SecurityScanPaths
+- canonicalBrief · function · L254-L264 — function canonicalBrief(paths: SecurityScanPaths): string
+- SecurityScanOrchestrator · class · L266-L577 — class SecurityScanOrchestrator
+- prepareScan · method · L267-L386 — prepareScan(input: SecurityScanPrepareInput): SecurityScanPrepareResult
+- createDeepWorkerDirs · method · L388-L408 — createDeepWorkerDirs(scanDir: string, round: number, workerCount = 6): string[]
+- checkWorkerArtifacts · method · L410-L437 — checkWorkerArtifacts(workerDir: string): WorkerArtifactStatus
+- mergeDeepRound · method · L439-L536 — mergeDeepRound(scanDir: string, round: number): RoundMergeResult
+- validateAndRenderReport · method · L538-L576 — validateAndRenderReport(scanDir: string, title?: string): ReportValidationResult
+- getSecurityScanOrchestrator · function · L581-L586 — function getSecurityScanOrchestrator(): SecurityScanOrchestrator

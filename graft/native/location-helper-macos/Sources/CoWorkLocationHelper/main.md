@@ -1,0 +1,23 @@
+# native/location-helper-macos/Sources/CoWorkLocationHelper/main.swift
+
+- LocationPayload · struct · L5-L11 — private struct LocationPayload: Codable
+- SuccessEnvelope · struct · L13-L16 — private struct SuccessEnvelope: Codable
+- ErrorPayload · struct · L18-L21 — private struct ErrorPayload: Codable
+- ErrorEnvelope · struct · L23-L26 — private struct ErrorEnvelope: Codable
+- OneShotLocationDelegate · class · L28-L145 — private final class OneShotLocationDelegate: NSObject, CLLocationManagerDelegate
+- OneShotLocationDelegate · method · L34-L41 — init(accuracy: String, timeoutMs: Int)
+- start · method · L43-L76 — func start()
+- locationManagerDidChangeAuthorization · method · L78-L95 — func locationManagerDidChangeAuthorization(_ manager: CLLocationManager)
+- locationManager · method · L97-L114 — func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
+- locationManager · method · L116-L130 — func locationManager(_ manager: CLLocationManager, didFailWithError error: Error)
+- finishSuccess · method · L132-L137 — private func finishSuccess(_ location: LocationPayload)
+- finishError · method · L139-L144 — private func finishError(code: String, message: String)
+- LocationAppDelegate · class · L147-L164 — private final class LocationAppDelegate: NSObject, NSApplicationDelegate
+- LocationAppDelegate · method · L152-L156 — init(accuracy: String, timeoutMs: Int)
+- applicationDidFinishLaunching · method · L158-L163 — func applicationDidFinishLaunching(_ notification: Notification)
+- argumentValue · function · L166-L172 — private func argumentValue(_ name: String) -> String?
+- responseOutputPath · function · L174-L176 — private func responseOutputPath() -> String?
+- emit · function · L178-L189 — private func emit<T: Codable>(_ value: T, exitCode: Int32) -> Never
+- emitError · function · L191-L199 — private func emitError(_ code: String, _ message: String) -> Never
+- CoWorkLocationHelperMain · struct · L201-L213 — @main struct CoWorkLocationHelperMain
+- main · method · L203-L212 — static func main()

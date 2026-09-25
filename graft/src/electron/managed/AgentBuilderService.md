@@ -1,0 +1,45 @@
+# src/electron/managed/AgentBuilderService.ts
+
+- AgentBuilderChannelInventoryEntry · type · L25-L31 — type AgentBuilderChannelInventoryEntry = { id: string; type: string; name: string; enabled: boolean; status: string; };
+- IntegrationKey · type · L60-L60 — type IntegrationKey = "slack" | "gmail" | "calendar" | "github" | "linear" | "notion" | "drive";
+- IntegrationDescriptor · type · L62-L70 — type IntegrationDescriptor = { key: IntegrationKey; label: string; explicitKeywords: string[]; genericKeywords: string[]; genericLabel: string; serverAliases: string[]; toolFamilies: ManagedAgentToolFamily[]; };
+- AgentBuilderInventory · interface · L138-L148 — interface AgentBuilderInventory
+- CompressedAgentBuilderInventory · interface · L150-L186 — interface CompressedAgentBuilderInventory
+- AgentBuilderServiceOptions · type · L188-L193 — type AgentBuilderServiceOptions = { createProvider?: () => LLMProvider; getSelectedModel?: () => string; now?: () => number; randomId?: () => string; };
+- normalizeText · function · L195-L197 — function normalizeText(value: unknown): string
+- lowercaseWords · function · L199-L205 — function lowercaseWords(value: string): string[]
+- uniqueStrings · function · L207-L218 — function uniqueStrings(values: Array<string | undefined | null>, limit = 40): string[]
+- uniqueToolFamilies · function · L220-L228 — function uniqueToolFamilies(values: Array<string | undefined | null>): ManagedAgentToolFamily[]
+- truncate · function · L230-L234 — function truncate(value: string, maxLength: number): string
+- titleizeAgentName · function · L236-L247 — function titleizeAgentName(prompt: string, fallback = "Personal Agent"): string
+- keywordMatches · function · L249-L253 — function keywordMatches(prompt: string, keyword: string): boolean
+- explicitIntegrationPromptMatches · function · L255-L260 — function explicitIntegrationPromptMatches( prompt: string, descriptor: IntegrationDescriptor, ): boolean
+- genericIntegrationPromptMatches · function · L262-L272 — function genericIntegrationPromptMatches( prompt: string, descriptor: IntegrationDescriptor, ): boolean
+- serverMatchesAliases · function · L274-L277 — function serverMatchesAliases(server: MCPServerConfig, aliases: string[]): boolean
+- findConnectedServers · function · L279-L286 — function findConnectedServers( inventory: AgentBuilderInventory, descriptor: IntegrationDescriptor, ): MCPServerConfig[]
+- makeMissingConnection · function · L288-L307 — function makeMissingConnection( id: string, label: string, reason: string, kind: AgentBuilderConnectionRequirement["kind"] = "connector", status: AgentBuilderConnectionRequirement["status"] = "needs_auth", ): AgentBuilderConnectionRequirement
+- dedupeConnections · function · L309-L321 — function dedupeConnections( values: AgentBuilderConnectionRequirement[], ): AgentBuilderConnectionRequirement[]
+- dedupeSelectionRequirements · function · L323-L334 — function dedupeSelectionRequirements( values: AgentBuilderSelectionRequirement[], ): AgentBuilderSelectionRequirement[]
+- connectionOptionFromServer · function · L336-L349 — function connectionOptionFromServer( server: MCPServerConfig, descriptor: IntegrationDescriptor, ): AgentBuilderSelectionOption
+- inferIntegrations · function · L351-L425 — function inferIntegrations( prompt: string, inventory: AgentBuilderInventory, ): { selectedMcpServers: string[]; missingConnections: AgentBuilderConnectionRequirement[]; toolFamilies: ManagedAgentToolFamily[]; selectionRequirements: AgentBuilderSelectionRequirement[]; }
+- templateScore · function · L427-L442 — function templateScore(prompt: string, template: AgentTemplate): number
+- suggestTemplate · function · L444-L455 — function suggestTemplate(prompt: string, templates: AgentTemplate[]): AgentTemplate | undefined
+- inferExplicitSchedule · function · L457-L508 — function inferExplicitSchedule(prompt: string): ManagedAgentScheduleConfig
+- skillPromptMatchesExact · function · L510-L516 — function skillPromptMatchesExact(prompt: string, skill: CustomSkill): boolean
+- inferSkills · function · L518-L584 — function inferSkills( prompt: string, inventory: AgentBuilderInventory, template?: AgentTemplate, ): { selectedSkills: string[]; selectionRequirements: AgentBuilderSelectionRequirement[]; }
+- defaultStarterPrompts · function · L586-L610 — function defaultStarterPrompts(planName: string, prompt: string): AgentStarterPrompt[]
+- buildInstructions · function · L612-L630 — function buildInstructions(planName: string, prompt: string, missingCount: number): string
+- buildFallbackAgentPlan · function · L632-L771 — function buildFallbackAgentPlan( request: AgentBuilderPlanRequest, inventory: AgentBuilderInventory, options: Pick<AgentBuilderServiceOptions, "now" | "randomId"> = {}, ): AgentBuilderPlan
+- extractFirstJsonObject · function · L773-L806 — function extractFirstJsonObject(text: string): unknown
+- compressAgentBuilderInventory · function · L808-L877 — function compressAgentBuilderInventory( inventory: AgentBuilderInventory, ): CompressedAgentBuilderInventory
+- readPlanObject · function · L879-L889 — function readPlanObject(value: unknown): Record<string, unknown>
+- normalizeStringArray · function · L891-L897 — function normalizeStringArray(value: unknown, limit = 20): string[]
+- normalizeConnections · function · L899-L942 — function normalizeConnections(value: unknown): AgentBuilderConnectionRequirement[]
+- normalizeSelectionRequirements · function · L944-L1005 — function normalizeSelectionRequirements(value: unknown): AgentBuilderSelectionRequirement[]
+- unresolvedOptionServerIds · function · L1007-L1016 — function unresolvedOptionServerIds(requirements: AgentBuilderSelectionRequirement[]): Set<string>
+- unresolvedOptionSkillIds · function · L1018-L1027 — function unresolvedOptionSkillIds(requirements: AgentBuilderSelectionRequirement[]): Set<string>
+- normalizePlanFromJson · function · L1029-L1170 — function normalizePlanFromJson( parsed: unknown, request: AgentBuilderPlanRequest, inventory: AgentBuilderInventory, fallback: AgentBuilderPlan, options: Pick<AgentBuilderServiceOptions, "now" | "randomId">, ): AgentBuilderPlan
+- responseTextFromContent · function · L1172-L1179 — function responseTextFromContent( content: Awaited<ReturnType<LLMProvider["createMessage"]>>["content"], ): string
+- AgentBuilderService · class · L1181-L1245 — class AgentBuilderService
+- constructor · method · L1182-L1182 — constructor(private readonly options: AgentBuilderServiceOptions = {})
+- generatePlan · method · L1184-L1244 — async generatePlan( request: AgentBuilderPlanRequest, inventory: AgentBuilderInventory, ): Promise<AgentBuilderPlan>

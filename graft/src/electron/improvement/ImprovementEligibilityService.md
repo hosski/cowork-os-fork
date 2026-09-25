@@ -1,0 +1,25 @@
+# src/electron/improvement/ImprovementEligibilityService.ts
+
+- ImprovementOwnerEnrollment · interface · L19-L25 — interface ImprovementOwnerEnrollment
+- getImprovementEligibility · function · L27-L79 — function getImprovementEligibility(): ImprovementEligibility
+- saveOwnerEnrollmentSignature · function · L81-L106 — function saveOwnerEnrollmentSignature(signature: string): ImprovementEligibility
+- clearOwnerEnrollment · function · L108-L117 — function clearOwnerEnrollment(): ImprovementEligibility
+- resolveRepoPath · function · L119-L122 — function resolveRepoPath(): string
+- buildReason · function · L124-L138 — function buildReason(checks: ImprovementEligibility["checks"]): string
+- getPreferredRepoPath · function · L140-L146 — function getPreferredRepoPath(): string
+- getOwnerSignatureFromEnv · function · L148-L151 — function getOwnerSignatureFromEnv(): string | undefined
+- normalizeOwnerSignature · function · L153-L157 — function normalizeOwnerSignature(signature: unknown): string | undefined
+- loadEnrollment · function · L159-L168 — function loadEnrollment(): ImprovementOwnerEnrollment | undefined
+- autoEnrollOwner · function · L170-L192 — function autoEnrollOwner( repoPath: string, machineFingerprint: string, ownerEnrollmentChallenge: string, signature: string, ): ImprovementOwnerEnrollment | undefined
+- verifyEnrollment · function · L194-L203 — function verifyEnrollment( enrollment: ImprovementOwnerEnrollment | undefined, machineFingerprint: string | undefined, ownerEnrollmentChallenge: string | undefined, ): boolean
+- verifyOwnerSignature · function · L205-L216 — function verifyOwnerSignature(challenge: string, signature: string): boolean
+- buildOwnerEnrollmentChallenge · function · L218-L226 — function buildOwnerEnrollmentChallenge(machineFingerprint: string | undefined): string | undefined
+- getMachineFingerprint · function · L228-L232 — function getMachineFingerprint(): string | undefined
+- getOrCreateMachineId · function · L234-L250 — function getOrCreateMachineId(): string | undefined
+- saveEnrollment · function · L252-L262 — function saveEnrollment(enrollment: ImprovementOwnerEnrollment): ImprovementOwnerEnrollment
+- isCanonicalCoworkRepo · function · L264-L269 — function isCanonicalCoworkRepo(repoPath: string): boolean
+- resolveGitRepoRoot · function · L271-L288 — function resolveGitRepoRoot(repoPath: string): string | undefined
+- getGitRemoteOrigin · function · L290-L292 — function getGitRemoteOrigin(repoPath: string): string | undefined
+- runGit · function · L294-L306 — function runGit(repoPath: string, args: string[]): string | undefined
+- normalizeGitRemote · function · L308-L332 — function normalizeGitRemote(remote: string | undefined): string | undefined
+- isPackagedElectronApp · function · L334-L341 — function isPackagedElectronApp(): boolean

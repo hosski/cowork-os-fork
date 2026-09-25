@@ -1,0 +1,22 @@
+# src/electron/subconscious/SubconsciousArtifactStore.ts
+
+- sanitizeKey · function · L19-L21 — function sanitizeKey(input: string): string
+- toJsonLines · function · L23-L25 — function toJsonLines(items: unknown[]): string
+- renderBacklog · function · L27-L41 — function renderBacklog(items: SubconsciousBacklogItem[]): string
+- renderWinner · function · L43-L65 — function renderWinner( target: SubconsciousTargetRef, run: SubconsciousRun, decision: SubconsciousDecision, ): string
+- SubconsciousArtifactStore · class · L67-L326 — class SubconsciousArtifactStore
+- constructor · method · L68-L71 — constructor( private readonly resolveWorkspacePath: (workspaceId?: string) => string | undefined, private readonly resolveGlobalRoot: () => string, )
+- getBrainRoot · method · L73-L75 — getBrainRoot(): string
+- getJournalRoot · method · L77-L79 — getJournalRoot(): string
+- getTargetRoot · method · L81-L87 — getTargetRoot(target: SubconsciousTargetRef): string
+- getRunRoot · method · L89-L91 — getRunRoot(target: SubconsciousTargetRef, runId: string): string
+- canWriteTargetArtifacts · method · L93-L102 — private async canWriteTargetArtifacts(target: SubconsciousTargetRef | null): Promise<boolean>
+- writeBrainState · method · L104-L125 — async writeBrainState( summary: SubconsciousBrainSummary, targets: SubconsciousTargetSummary[], ): Promise<void>
+- writeTargetState · method · L127-L154 — async writeTargetState( target: SubconsciousTargetSummary, evidence: SubconsciousEvidence[], backlog: SubconsciousBacklogItem[], ): Promise<void>
+- writeRunArtifacts · method · L156-L205 — async writeRunArtifacts(params: { target: SubconsciousTargetRef; run: SubconsciousRun; evidence: SubconsciousEvidence[]; hypotheses: SubconsciousHypothesis[]; critiques: SubconsciousCritique[]; decision?: SubconsciousDecision; backlog: SubconsciousBacklogItem[]; dispatch?: SubconsciousDispatchRecord | null; }): Promise<string>
+- appendJournalEntry · method · L207-L216 — async appendJournalEntry(entry: SubconsciousJournalEntry): Promise<void>
+- readJournalEntries · method · L218-L250 — async readJournalEntries(targetKey?: string, limit = 50): Promise<SubconsciousJournalEntry[]>
+- writeMemoryIndex · method · L252-L266 — async writeMemoryIndex( target: SubconsciousTargetRef | null, items: SubconsciousMemoryItem[], ): Promise<void>
+- readMemoryIndex · method · L268-L281 — async readMemoryIndex( targetKey?: string, target?: SubconsciousTargetRef, ): Promise<SubconsciousMemoryItem[]>
+- writeDreamArtifact · method · L283-L300 — async writeDreamArtifact( target: SubconsciousTargetRef | null, artifact: SubconsciousDreamArtifact, ): Promise<void>
+- readDreamArtifacts · method · L302-L325 — async readDreamArtifacts( target?: SubconsciousTargetRef, limit = 5, ): Promise<SubconsciousDreamArtifact[]>

@@ -1,0 +1,21 @@
+# src/renderer/components/GoogleWorkspaceSettings.tsx
+
+- textToScopes · function · L18-L22 — textToScopes = (value: string)
+- modeLabel · function · L24-L25 — modeLabel = (mode: GoogleWorkspaceConnectionMode)
+- GoogleWorkspaceSettings · function · L27-L712 — function GoogleWorkspaceSettings()
+- loadSettings · function · L73-L89 — loadSettings = async ()
+- updateSettings · function · L91-L94 — updateSettings = (updates: Partial<GoogleWorkspaceSettingsData>)
+- setConnectionMode · function · L96-L124 — setConnectionMode = (connectionMode: GoogleWorkspaceConnectionMode)
+- buildPayload · function · L126-L135 — buildPayload = (overrides: Partial<GoogleWorkspaceSettingsData> = {})
+- handleSelectAccount · function · L137-L157 — handleSelectAccount = async (email: string)
+- handleRemoveAccount · function · L159-L165 — handleRemoveAccount = async (email: string)
+- getLegacyConnectedAccountEmail · function · L167-L169 — getLegacyConnectedAccountEmail = ()
+- materializeLegacyConnectedAccount · function · L171-L188 — materializeLegacyConnectedAccount = ( baseSettings: GoogleWorkspaceSettingsData, ): GoogleWorkspaceSettingsData
+- hasStoredOrLegacyConnection · function · L190-L191 — hasStoredOrLegacyConnection = ()
+- handleSave · function · L193-L207 — handleSave = async ()
+- refreshStatus · function · L209-L219 — refreshStatus = async ()
+- handleTestConnection · function · L221-L233 — handleTestConnection = async ()
+- hasOAuthClient · function · L235-L235 — hasOAuthClient = ()
+- ensureOAuthClient · function · L237-L243 — ensureOAuthClient = (action: string)
+- handleOAuthConnect · function · L245-L294 — handleOAuthConnect = async ()
+- handleCopyLink · function · L296-L342 — handleCopyLink = async ()

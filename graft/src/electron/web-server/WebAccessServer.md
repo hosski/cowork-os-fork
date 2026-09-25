@@ -1,0 +1,21 @@
+# src/electron/web-server/WebAccessServer.ts
+
+- WebAccessServerDeps · interface · L15-L23 — interface WebAccessServerDeps
+- WebAccessServer · class · L25-L396 — class WebAccessServer
+- constructor · method · L32-L35 — constructor(config: Partial<WebAccessConfig>, deps: WebAccessServerDeps)
+- start · method · L39-L57 — async start(): Promise<void>
+- stop · method · L59-L80 — async stop(): Promise<void>
+- getStatus · method · L82-L90 — getStatus(): WebAccessStatus
+- getConfig · method · L92-L94 — getConfig(): WebAccessConfig
+- applyConfig · method · L100-L131 — async applyConfig(updates: Partial<WebAccessConfig>): Promise<WebAccessConfig>
+- handleRequest · method · L135-L179 — private async handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+- authenticate · method · L181-L190 — private authenticate(req: http.IncomingMessage): boolean
+- handleApiRoute · method · L192-L272 — private async handleApiRoute( url: URL, req: http.IncomingMessage, res: http.ServerResponse, ): Promise<void>
+- serveStatic · method · L274-L318 — private serveStatic(pathname: string, res: http.ServerResponse): void
+- handleWebSocketUpgrade · method · L322-L341 — private handleWebSocketUpgrade(req: http.IncomingMessage, socket: Any, _head: Buffer): void
+- log · method · L343-L346 — private log(...args: unknown[]): void
+- resolveCorsOrigin · method · L348-L353 — private resolveCorsOrigin(requestOrigin: string): string | null
+- normalizeConfig · method · L355-L382 — private normalizeConfig(config: Partial<WebAccessConfig>): WebAccessConfig
+- decodePathname · method · L384-L390 — private decodePathname(pathname: string): string | null
+- isPathWithinBase · method · L392-L395 — private isPathWithinBase(targetPath: string, basePath: string): boolean
+- readBody · function · L398-L416 — function readBody(req: http.IncomingMessage): Promise<string>

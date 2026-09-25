@@ -1,0 +1,29 @@
+# src/electron/gateway/channels/slack.ts
+
+- mapSlackSlashCommandToText · function · L24-L26 — function mapSlackSlashCommandToText(commandName: string, text?: string): string
+- SlackAdapter · class · L28-L571 — class SlackAdapter implements ChannelAdapter
+- constructor · method · L40-L42 — constructor(config: SlackConfig)
+- status · method · L44-L46 — get status(): ChannelStatus
+- botUsername · method · L48-L50 — get botUsername(): string | undefined
+- connect · method · L55-L162 — async connect(): Promise<void>
+- disconnect · method · L167-L175 — async disconnect(): Promise<void>
+- sendMessage · method · L180-L219 — async sendMessage(message: OutgoingMessage): Promise<string>
+- sendMessagePlain · method · L224-L238 — private async sendMessagePlain(chatId: string, text: string, replyTo?: string): Promise<string>
+- convertMarkdownForSlack · method · L244-L266 — private convertMarkdownForSlack(text: string): string
+- splitMessage · method · L271-L299 — private splitMessage(text: string, maxLength: number): string[]
+- editMessage · method · L304-L315 — async editMessage(chatId: string, messageId: string, text: string): Promise<void>
+- deleteMessage · method · L320-L329 — async deleteMessage(chatId: string, messageId: string): Promise<void>
+- sendDocument · method · L334-L360 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- onMessage · method · L365-L367 — onMessage(handler: MessageHandler): void
+- onError · method · L372-L374 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L379-L381 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L386-L394 — async getInfo(): Promise<ChannelInfo>
+- inferAttachmentType · method · L398-L407 — private inferAttachmentType(mimeType?: string, fileName?: string): MessageAttachment["type"]
+- downloadSlackAttachment · method · L409-L467 — private async downloadSlackAttachment(file: Any): Promise<MessageAttachment | null>
+- buildAttachments · method · L469-L480 — private async buildAttachments(message: Any): Promise<MessageAttachment[] | undefined>
+- mapMessageToIncoming · method · L482-L524 — private async mapMessageToIncoming( message: Any, client: Any, isGroup?: boolean, ): Promise<IncomingMessage>
+- parseCommand · method · L529-L535 — private parseCommand(text: string): string | null
+- handleIncomingMessage · method · L537-L549 — private async handleIncomingMessage(message: IncomingMessage): Promise<void>
+- handleError · method · L551-L559 — private handleError(error: Error, context?: string): void
+- setStatus · method · L561-L570 — private setStatus(status: ChannelStatus, error?: Error): void
+- createSlackAdapter · function · L576-L584 — function createSlackAdapter(config: SlackConfig): SlackAdapter

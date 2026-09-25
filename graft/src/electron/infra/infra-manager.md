@@ -1,0 +1,36 @@
+# src/electron/infra/infra-manager.ts
+
+- InfraManager · class · L23-L408 — class InfraManager
+- constructor · method · L38-L38 — private constructor()
+- getInstance · method · L40-L45 — static getInstance(): InfraManager
+- initialize · method · L50-L69 — async initialize(): Promise<void>
+- applySettings · method · L74-L97 — async applySettings(settings: InfraSettings): Promise<void>
+- getStatus · method · L101-L124 — getStatus(): InfraStatus
+- setup · method · L131-L152 — async setup(): Promise<InfraStatus>
+- reset · method · L157-L189 — async reset(): Promise<void>
+- getWalletInfo · method · L193-L200 — getWalletInfo(): WalletInfo | null
+- getWalletInfoWithBalance · method · L202-L210 — async getWalletInfoWithBalance(): Promise<WalletInfo | null>
+- getWalletBalance · method · L212-L229 — async getWalletBalance(): Promise<string>
+- sandboxCreate · method · L233-L235 — async sandboxCreate(opts?: { name?: string; timeoutMs?: number; envs?: Record<string, string> })
+- sandboxExec · method · L237-L239 — async sandboxExec(sandboxId: string, command: string, opts?: { background?: boolean })
+- sandboxWriteFile · method · L241-L243 — async sandboxWriteFile(sandboxId: string, filePath: string, content: string)
+- sandboxReadFile · method · L245-L247 — async sandboxReadFile(sandboxId: string, filePath: string)
+- sandboxList · method · L249-L251 — sandboxList()
+- sandboxDelete · method · L253-L255 — async sandboxDelete(sandboxId: string)
+- sandboxGetUrl · method · L257-L259 — sandboxGetUrl(sandboxId: string, port: number)
+- domainSearch · method · L263-L265 — async domainSearch(query: string, tlds?: string[])
+- domainRegister · method · L267-L269 — async domainRegister(domain: string, years?: number)
+- domainList · method · L271-L273 — async domainList()
+- domainDnsList · method · L275-L277 — async domainDnsList(domain: string)
+- domainDnsAdd · method · L279-L281 — async domainDnsAdd(domain: string, record: Any)
+- domainDnsDelete · method · L283-L285 — async domainDnsDelete(domain: string, type: string, name: string)
+- x402Check · method · L289-L291 — async x402Check(url: string)
+- x402Fetch · method · L293-L311 — async x402Fetch( url: string, opts?: { method?: string; body?: string; headers?: Record<string, string>; paymentPolicy?: X402PaymentPolicyEnvelope; approvePayment?: X402PaymentApprovalHandler; }, )
+- cleanup · method · L315-L318 — async cleanup(): Promise<void>
+- startBalancePolling · method · L322-L332 — private startBalancePolling(): void
+- stopBalancePolling · method · L334-L339 — private stopBalancePolling(): void
+- configureWalletProvider · method · L341-L353 — private async configureWalletProvider(settings: InfraSettings): Promise<void>
+- createWalletProvider · method · L355-L360 — private createWalletProvider(kind: WalletProviderKind): WalletProvider
+- refreshWalletSnapshot · method · L362-L380 — private async refreshWalletSnapshot(opts?: { fetchBalance?: boolean }): Promise<void>
+- getWalletProviderStatus · method · L382-L398 — private getWalletProviderStatus( settings: InfraSettings, ): "connected" | "disconnected" | "error" | "not_configured"
+- canProvisionWalletOnSetup · method · L400-L407 — private canProvisionWalletOnSetup(settings: InfraSettings): boolean

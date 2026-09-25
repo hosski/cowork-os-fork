@@ -1,0 +1,37 @@
+# src/electron/mcp/registry/MCPRegistryManager.ts
+
+- isPackagedElectronApp · function · L241-L249 — function isPackagedElectronApp(): boolean
+- getConnectorScriptPath · function · L251-L256 — function getConnectorScriptPath(connectorName: string): string
+- getConnectorCommandArgs · function · L258-L266 — function getConnectorCommandArgs(connectorName: string): { command: string; args: string[] }
+- getManualScriptPath · function · L268-L273 — function getManualScriptPath(entry: MCPRegistryEntry): string | null
+- filterUnavailableConnectorEntries · function · L275-L285 — function filterUnavailableConnectorEntries(entries: MCPRegistryEntry[]): MCPRegistryEntry[]
+- getConnectorEntries · function · L287-L2709 — function getConnectorEntries(): MCPRegistryEntry[]
+- financeProviderCommand · function · L325-L328 — financeProviderCommand = (provider: string): { command: string; args: string[] }
+- getBuiltinRegistry · function · L2711-L2723 — function getBuiltinRegistry(): MCPRegistry
+- getBuiltinRegistryServer · function · L2725-L2727 — function getBuiltinRegistryServer(serverId: string): MCPRegistryEntry | undefined
+- ProvenanceTaggedEntry · type · L2732-L2734 — type ProvenanceTaggedEntry = MCPRegistryEntry & { [REGISTRY_ENTRY_PROVENANCE]?: "bundled" | "remote"; };
+- tagProvenance · function · L2736-L2741 — function tagProvenance( entry: MCPRegistryEntry, provenance: "bundled" | "remote", ): MCPRegistryEntry
+- isRemoteRegistryEntry · function · L2753-L2758 — function isRemoteRegistryEntry(entry: MCPRegistryEntry): boolean
+- mergeLocalConnectors · function · L2760-L2781 — function mergeLocalConnectors(registry: MCPRegistry): MCPRegistry
+- validateRemoteTransportEntry · function · L2788-L2802 — function validateRemoteTransportEntry(entry: MCPRegistryEntry): void
+- validateManualEntry · function · L2804-L2831 — function validateManualEntry(entry: MCPRegistryEntry): void
+- isValidNpmPackagePart · function · L2833-L2841 — function isValidNpmPackagePart(part: string): boolean
+- isValidNpmPackageName · function · L2843-L2863 — function isValidNpmPackageName(packageName: string): boolean
+- npmViewVersion · function · L2865-L2875 — function npmViewVersion(packageName: string): Promise<string>
+- McpInstallConfirmationRequest · interface · L2878-L2887 — interface McpInstallConfirmationRequest
+- McpInstallConfirmationHandler · type · L2889-L2891 — type McpInstallConfirmationHandler = ( request: McpInstallConfirmationRequest, ) => Promise<boolean>;
+- MCPRegistryManager · class · L2893-L3363 — class MCPRegistryManager
+- fetchRegistry · method · L2900-L2962 — static async fetchRegistry(forceRefresh: boolean = false): Promise<MCPRegistry>
+- searchServers · method · L2967-L3007 — static async searchServers(options: MCPRegistrySearchOptions = {}): Promise<MCPRegistryEntry[]>
+- getServer · method · L3012-L3015 — static async getServer(serverId: string): Promise<MCPRegistryEntry | null>
+- verifyNpmPackage · method · L3020-L3047 — static async verifyNpmPackage( packageName: string, ): Promise<{ exists: boolean; version?: string; error?: string }>
+- setInstallConfirmationHandler · method · L3059-L3061 — static setInstallConfirmationHandler(handler: McpInstallConfirmationHandler | null): void
+- confirmRemoteEntryInstall · method · L3065-L3097 — private static async confirmRemoteEntryInstall( entry: MCPRegistryEntry, command: string | undefined, args: string[], ): Promise<void>
+- installServer · method · L3102-L3178 — static async installServer(entryId: string, extraArgs?: string[]): Promise<MCPServerConfig>
+- uninstallServer · method · L3183-L3187 — static async uninstallServer(serverId: string): Promise<void>
+- checkForUpdates · method · L3194-L3247 — static async checkForUpdates(): Promise<MCPUpdateInfo[]>
+- updateServer · method · L3253-L3304 — static async updateServer(serverId: string): Promise<MCPServerConfig>
+- getCategories · method · L3309-L3320 — static async getCategories(): Promise<string[]>
+- getTags · method · L3325-L3336 — static async getTags(): Promise<string[]>
+- clearCache · method · L3341-L3344 — static clearCache(): void
+- isNewerVersion · method · L3349-L3362 — private static isNewerVersion(versionA: string, versionB: string): boolean

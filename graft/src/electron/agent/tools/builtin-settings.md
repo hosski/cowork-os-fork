@@ -1,0 +1,27 @@
+# src/electron/agent/tools/builtin-settings.ts
+
+- ToolCategoryConfig · interface · L23-L27 — interface ToolCategoryConfig
+- ToolOverride · interface · L32-L35 — interface ToolOverride
+- RunCommandApprovalMode · type · L37-L37 — type RunCommandApprovalMode = "per_command" | "single_bundle";
+- CodexRuntimeMode · type · L38-L38 — type CodexRuntimeMode = "native" | "acpx";
+- BuiltinToolsSettings · interface · L43-L72 — interface BuiltinToolsSettings
+- BuiltinToolsSettingsManager · class · L285-L604 — class BuiltinToolsSettingsManager
+- getLegacySettingsPath · method · L293-L299 — private static getLegacySettingsPath(): string
+- migrateFromLegacyFile · method · L304-L352 — private static migrateFromLegacyFile(): void
+- loadSettings · method · L357-L382 — static loadSettings(): BuiltinToolsSettings
+- saveSettings · method · L387-L401 — static saveSettings(settings: BuiltinToolsSettings): void
+- mergeWithDefaults · method · L406-L435 — private static mergeWithDefaults(settings: Partial<BuiltinToolsSettings>): BuiltinToolsSettings
+- isToolEnabled · method · L440-L456 — static isToolEnabled(toolName: string): boolean
+- getToolPriority · method · L461-L476 — static getToolPriority(toolName: string): "high" | "normal" | "low"
+- getToolCategory · method · L481-L483 — static getToolCategory(toolName: string): string | null
+- getToolTimeoutMs · method · L488-L495 — static getToolTimeoutMs(toolName: string): number | null
+- getToolAutoApprove · method · L500-L503 — static getToolAutoApprove(toolName: string): boolean
+- getRunCommandApprovalMode · method · L508-L513 — static getRunCommandApprovalMode(): RunCommandApprovalMode
+- getCodexRuntimeMode · method · L518-L521 — static getCodexRuntimeMode(): CodexRuntimeMode
+- getComputerUseAutomationSettings · method · L523-L533 — static getComputerUseAutomationSettings(): ComputerUseAutomationSettings
+- getToolsByCategory · method · L538-L547 — static getToolsByCategory(): Record<string, string[]>
+- setCategoryEnabled · method · L552-L561 — static setCategoryEnabled( category: keyof BuiltinToolsSettings["categories"], enabled: boolean, ): void
+- setCategoryPriority · method · L566-L575 — static setCategoryPriority( category: keyof BuiltinToolsSettings["categories"], priority: "high" | "normal" | "low", ): void
+- setToolOverride · method · L580-L588 — static setToolOverride(toolName: string, override: ToolOverride | null): void
+- clearCache · method · L593-L595 — static clearCache(): void
+- getDefaultSettings · method · L600-L603 — static getDefaultSettings(): BuiltinToolsSettings

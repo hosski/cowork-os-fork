@@ -1,0 +1,24 @@
+# src/electron/memory/WorkspaceKitContext.ts
+
+- ExtractedSection · type · L11-L15 — type ExtractedSection = { title: string; relPath: string; content: string; };
+- canReadPath · function · L25-L35 — function canReadPath( readGuard: MarkdownMemoryReadGuard | undefined, candidatePath: string, ): boolean
+- getLocalDateStamp · function · L50-L55 — function getLocalDateStamp(now: Date): string
+- safeResolveWithinWorkspace · function · L57-L64 — function safeResolveWithinWorkspace(workspacePath: string, relPath: string): string | null
+- readFilePrefix · function · L66-L88 — function readFilePrefix( absPath: string, maxBytes: number, readGuard?: MarkdownMemoryReadGuard, ): string | null
+- extractBulletSections · function · L90-L143 — function extractBulletSections( markdown: string, opts?: { onlyHeadings?: Set<string>; maxBulletsPerSection?: number; maxSections?: number }, ): string
+- flush · function · L104-L120 — flush = ()
+- extractFilledKvLines · function · L145-L163 — function extractFilledKvLines(markdown: string): string
+- stripMarkedBlock · function · L165-L172 — function stripMarkedBlock(markdown: string, startMarker: string, endMarker: string): string
+- formatWorkspaceKitBody · function · L174-L185 — function formatWorkspaceKitBody(body: string, contract: KitContract): string
+- sanitizeForInjection · function · L187-L190 — function sanitizeForInjection(text: string): string
+- clampSection · function · L192-L195 — function clampSection(text: string, maxChars: number): string
+- isDesignSystemRelevantTask · function · L197-L204 — function isDesignSystemRelevantTask(taskPrompt: string): boolean
+- buildWorkspaceDesignSystemContext · function · L206-L246 — function buildWorkspaceDesignSystemContext( workspacePath: string, taskPrompt: string, readGuard?: MarkdownMemoryReadGuard, ): string
+- buildMapSections · function · L248-L269 — function buildMapSections( workspacePath: string, readGuard?: MarkdownMemoryReadGuard, ): ExtractedSection[]
+- scoreTextOverlap · function · L271-L279 — function scoreTextOverlap(a: string, b: string): number
+- renderProjectDoc · function · L281-L295 — function renderProjectDoc( workspacePath: string, relPath: string, contract: KitContract, formatter?: (body: string) => string, readGuard?: MarkdownMemoryReadGuard, ): string
+- buildProjectContextSections · function · L297-L400 — function buildProjectContextSections( workspacePath: string, taskPrompt: string, agentRoleId: string | null, readGuard?: MarkdownMemoryReadGuard, ): ExtractedSection[]
+- Candidate · type · L318-L318 — type Candidate = { name: string; score: number; contextRel: string; accessRel: string };
+- buildDailyLogSection · function · L402-L430 — function buildDailyLogSection( workspacePath: string, now: Date, readGuard?: MarkdownMemoryReadGuard, ): ExtractedSection[]
+- buildScopedKitSections · function · L432-L451 — function buildScopedKitSections( workspacePath: string, scopes: KitScope[], onboardingIncomplete: boolean, includeDesignSystem: boolean, readGuard?: MarkdownMemoryReadGuard, ): ExtractedSection[]
+- buildWorkspaceKitContext · function · L453-L515 — function buildWorkspaceKitContext( workspacePath: string, taskPrompt: string, now: Date = new Date(), opts?: { agentRoleId?: string | null; readGuard?: MarkdownMemoryReadGuard }, ): string

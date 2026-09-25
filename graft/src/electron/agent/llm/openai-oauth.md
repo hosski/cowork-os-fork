@@ -1,0 +1,21 @@
+# src/electron/agent/llm/openai-oauth.ts
+
+- ensureNodeFetchProxySupport · function · L64-L77 — function ensureNodeFetchProxySupport(): void
+- getFetchUrl · function · L81-L86 — function getFetchUrl(input: Parameters<typeof fetch>[0]): string | undefined
+- shouldUseElectronOAuthFetch · function · L88-L97 — function shouldUseElectronOAuthFetch(input: Parameters<typeof fetch>[0]): boolean
+- getElectronNetFetch · function · L99-L109 — function getElectronNetFetch(): typeof fetch | null
+- installElectronOAuthFetchFallback · function · L111-L139 — function installElectronOAuthFetchFallback(): void
+- getElectronShell · function · L143-L154 — function getElectronShell(): Any | null
+- getElectronBrowserWindow · function · L156-L165 — function getElectronBrowserWindow(): Any | null
+- canBindOpenAICodexCallbackPort · function · L167-L180 — async function canBindOpenAICodexCallbackPort(): Promise<boolean>
+- promptForOpenAICodexRedirectUrl · function · L182-L242 — function promptForOpenAICodexRedirectUrl(): Promise<string>
+- settle · function · L200-L210 — settle = (value: string, isCancel = false)
+- OpenAIOAuthTokens · interface · L247-L253 — interface OpenAIOAuthTokens
+- extractChatGPTAccountId · function · L255-L266 — function extractChatGPTAccountId(token: string): string | undefined
+- credentialsToTokens · function · L271-L280 — function credentialsToTokens(credentials: OAuthCredentials): OpenAIOAuthTokens
+- tokensToCredentials · function · L285-L292 — function tokensToCredentials(tokens: OpenAIOAuthTokens): OAuthCredentials
+- OpenAIOAuth · class · L298-L406 — class OpenAIOAuth
+- authenticate · method · L303-L362 — async authenticate(): Promise<OpenAIOAuthTokens>
+- refreshTokens · method · L367-L376 — static async refreshTokens(tokens: OpenAIOAuthTokens): Promise<OpenAIOAuthTokens>
+- getApiKeyFromTokens · method · L382-L394 — static async getApiKeyFromTokens( tokens: OpenAIOAuthTokens, ): Promise<{ apiKey: string; newTokens?: OpenAIOAuthTokens }>
+- isTokenExpired · method · L399-L405 — static isTokenExpired(tokens: OpenAIOAuthTokens): boolean

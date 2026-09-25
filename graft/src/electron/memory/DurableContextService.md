@@ -1,0 +1,40 @@
+# src/electron/memory/DurableContextService.ts
+
+- DurableContextDatabase · type · L8-L11 — type DurableContextDatabase = Pick< import("better-sqlite3").Database, "exec" | "prepare" | "transaction" >;
+- DurableContextHit · interface · L13-L24 — interface DurableContextHit
+- DurableContextDescription · interface · L26-L46 — interface DurableContextDescription
+- PreparedDurableMessage · interface · L48-L62 — interface PreparedDurableMessage
+- hashText · function · L64-L66 — function hashText(text: string): string
+- normalizeText · function · L68-L70 — function normalizeText(text: string): string
+- toSqlLikePattern · function · L72-L75 — function toSqlLikePattern(query: string): string
+- toFtsQuery · function · L77-L86 — function toFtsQuery(query: string): string
+- firstTextBlock · function · L88-L103 — function firstTextBlock(message: LLMMessage): string
+- looksLikeDurableContextResult · function · L105-L131 — function looksLikeDurableContextResult(value: unknown): boolean
+- isDurableContextToolResultContent · function · L133-L140 — function isDurableContextToolResultContent(content: unknown): boolean
+- isSerializedDurableContextToolResultText · function · L142-L150 — function isSerializedDurableContextToolResultText(text: string): boolean
+- isDurableContextToolResultMessage · function · L152-L161 — function isDurableContextToolResultMessage(message: LLMMessage): boolean
+- shouldSkipInjectedMessage · function · L163-L174 — function shouldSkipInjectedMessage(message: LLMMessage): boolean
+- stripKnownSummaryTags · function · L176-L181 — function stripKnownSummaryTags(text: string): string
+- snippet · function · L183-L186 — function snippet(text: string, max = 600): string
+- durableHitPriority · function · L188-L196 — function durableHitPriority(kind: "message" | "summary", text: string, role?: string): number
+- durableSettings · function · L198-L209 — function durableSettings(): { largePayloadThreshold: number; }
+- parseLargePayloadRef · function · L211-L221 — function parseLargePayloadRef(contentJson: string): { payloadId?: string } | null
+- DurableContextService · class · L223-L984 — class DurableContextService
+- setDatabaseForTests · method · L227-L230 — static setDatabaseForTests(db: DurableContextDatabase | null): void
+- isEnabled · method · L232-L239 — static isEnabled(): boolean
+- recordHistory · method · L241-L313 — static recordHistory(params: { workspaceId: string; taskId: string; messages: LLMMessage[]; source: string; }): void
+- recordCompactionSummary · method · L315-L420 — static recordCompactionSummary(params: { workspaceId: string; taskId: string; removedMessages: LLMMessage[]; summaryBlock: string; contextLabel?: string; proactive?: boolean; }): string | null
+- clearWorkspace · method · L422-L460 — static clearWorkspace(workspaceId: string): number
+- search · method · L462-L539 — static search(params: { workspaceId: string; taskId?: string; query: string; limit?: number; }): DurableContextHit[]
+- describe · method · L541-L614 — static describe(params: { workspaceId: string; taskId?: string; id: string; sourceLimit?: number; }): DurableContextDescription | null
+- getDatabase · method · L616-L623 — private static getDatabase(): DurableContextDatabase | null
+- ensureSchema · method · L625-L721 — private static ensureSchema(db: DurableContextDatabase): boolean
+- ensureConversation · method · L723-L749 — private static ensureConversation( db: DurableContextDatabase, workspaceId: string, taskId: string, ): string
+- getNextSeq · method · L751-L760 — private static getNextSeq(db: DurableContextDatabase, conversationId: string): number
+- prepareMessage · method · L762-L807 — private static prepareMessage( conversationId: string, message: LLMMessage, ): PreparedDurableMessage | null
+- findParentSummaries · method · L809-L833 — private static findParentSummaries( db: DurableContextDatabase, conversationId: string, earliestSeq: number, latestSeq: number, summaryText: string, ): Array<{ id: string; depth: number }>
+- upsertFtsRow · method · L835-L854 — private static upsertFtsRow( db: DurableContextDatabase, row: { id: string; kind: "message" | "summary"; workspaceId: string; taskId: string; text: string; }, ): void
+- searchWithFts · method · L856-L926 — private static searchWithFts( db: DurableContextDatabase, params: { workspaceId: string; taskId?: string }, query: string, limit: number, ): DurableContextHit[]
+- describeMessageText · method · L928-L947 — private static describeMessageText( db: DurableContextDatabase, row: Record<string, unknown>, ): string
+- describeLargePayload · method · L949-L972 — private static describeLargePayload( db: DurableContextDatabase, contentJson: string, ): Pick<DurableContextDescription, "largePayload">
+- ensureColumn · method · L974-L983 — private static ensureColumn( db: DurableContextDatabase, tableName: string, columnName: string, definition: string, ): void

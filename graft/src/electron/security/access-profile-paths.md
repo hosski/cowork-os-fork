@@ -1,0 +1,40 @@
+# src/electron/security/access-profile-paths.ts
+
+- AccessFilesystemOperation · type · L7-L7 — type AccessFilesystemOperation = "read" | "write" | "delete";
+- AccessFilesystemDecision · type · L8-L8 — type AccessFilesystemDecision = "allow" | "deny" | "unmatched";
+- isAccessPathWithin · function · L10-L15 — function isAccessPathWithin(parentPath: string, candidatePath: string): boolean
+- canonicalizeAccessPath · function · L23-L40 — function canonicalizeAccessPath(inputPath: string): string
+- expandHomeShortcutPath · function · L42-L49 — function expandHomeShortcutPath(rawPath: string): string
+- resolveAccessControlledPath · function · L56-L62 — function resolveAccessControlledPath(workspacePath: string, rawPath: string): string
+- ruleAllowsOperation · function · L64-L72 — function ruleAllowsOperation( rule: AccessFilesystemRule, operation: AccessFilesystemOperation, ): boolean
+- evaluateAccessFilesystemRules · function · L78-L99 — function evaluateAccessFilesystemRules( rules: readonly AccessFilesystemRule[] | undefined, absolutePath: string, operation: AccessFilesystemOperation, ): AccessFilesystemDecision
+- isAccessFilesystemPathDenied · function · L101-L106 — function isAccessFilesystemPathDenied( rules: readonly AccessFilesystemRule[] | undefined, absolutePath: string, ): boolean
+- WorkspaceFilesystemAccessResult · interface · L108-L112 — interface WorkspaceFilesystemAccessResult
+- WorkspaceFilesystemAccessOptions · interface · L114-L117 — interface WorkspaceFilesystemAccessOptions
+- ExternalFileApprovalRequest · interface · L119-L129 — interface ExternalFileApprovalRequest
+- ExternalFileApprovalRequester · type · L131-L133 — type ExternalFileApprovalRequester = ( request: ExternalFileApprovalRequest, ) => Promise<boolean>;
+- ExternalFileApprovalConsumer · type · L135-L138 — type ExternalFileApprovalConsumer = ( path: string, operation: AccessFilesystemOperation, ) => boolean;
+- WorkspaceFilesystemApprovalHandlers · interface · L140-L143 — interface WorkspaceFilesystemApprovalHandlers
+- ToolAuthorizationRequest · interface · L151-L159 — interface ToolAuthorizationRequest
+- ToolAuthorizationDaemon · interface · L161-L183 — interface ToolAuthorizationDaemon
+- authorizeToolActionWithFallback · function · L194-L239 — async function authorizeToolActionWithFallback( daemon: unknown, taskId: string, request: ToolAuthorizationRequest, ): Promise<boolean>
+- createWorkspaceFilesystemApprovalHandlers · function · L247-L307 — function createWorkspaceFilesystemApprovalHandlers( daemon: unknown, taskId: string, toolName: string, ): WorkspaceFilesystemApprovalHandlers
+- WorkspaceFilesystemAccessWithApprovalResult · interface · L309-L311 — interface WorkspaceFilesystemAccessWithApprovalResult extends WorkspaceFilesystemAccessResult
+- WorkspaceFilesystemAccessRequest · interface · L313-L317 — interface WorkspaceFilesystemAccessRequest
+- hasSameBoundCanonicalAccessPath · function · L319-L328 — function hasSameBoundCanonicalAccessPath(boundIdentity: string, currentPath: string): boolean
+- pathChangedAfterApproval · function · L330-L339 — function pathChangedAfterApproval(item: { candidate: string; access: WorkspaceFilesystemAccessResult; }): WorkspaceFilesystemAccessResult
+- isProtectedFilesystemPath · function · L365-L374 — function isProtectedFilesystemPath(absolutePath: string): boolean
+- isProtectedWorkspacePath · function · L405-L438 — function isProtectedWorkspacePath(workspacePath: string, absolutePath: string): boolean
+- resolveWorkspacePolicyPath · function · L440-L445 — function resolveWorkspacePolicyPath(workspacePath: string, value: string): string
+- normalizeMacPathAlias · function · L447-L451 — function normalizeMacPathAlias(value: string): string
+- preserveLexicalMacAlias · function · L453-L457 — function preserveLexicalMacAlias(requestedPath: string, canonicalPath: string): string
+- operationRequiresWorkspacePermission · function · L459-L463 — function operationRequiresWorkspacePermission( operation: AccessFilesystemOperation, ): "read" | "write" | "delete"
+- hasWorkspacePermission · function · L465-L481 — function hasWorkspacePermission( permissions: Workspace["permissions"], operation: AccessFilesystemOperation, ): boolean
+- hasEffectiveFilesystemScope · function · L489-L501 — function hasEffectiveFilesystemScope( workspacePath: string, permissions: Workspace["permissions"], ): boolean
+- evaluateWorkspaceFilesystemAccess · function · L509-L611 — function evaluateWorkspaceFilesystemAccess( workspace: Pick<Workspace, "path" | "permissions"> & Partial<Pick<Workspace, "isTemp">>, rawPath: string, operation: AccessFilesystemOperation, options: WorkspaceFilesystemAccessOptions = {}, ): WorkspaceFilesystemAccessResult
+- resolveWorkspaceFilesystemAccessWithApproval · function · L619-L632 — async function resolveWorkspaceFilesystemAccessWithApproval( workspace: Pick<Workspace, "path" | "permissions"> & Partial<Pick<Workspace, "isTemp">>, rawPath: string, operation: AccessFilesystemOperation, label = "path", handlers: WorkspaceFilesystemApprovalHandlers = {}, ): Promise<WorkspaceFilesystemAccessWithApprovalResult>
+- resolveWorkspaceFilesystemAccessesWithApproval · function · L640-L751 — async function resolveWorkspaceFilesystemAccessesWithApproval( workspace: Pick<Workspace, "path" | "permissions"> & Partial<Pick<Workspace, "isTemp">>, requests: readonly WorkspaceFilesystemAccessRequest[], handlers: WorkspaceFilesystemApprovalHandlers = {}, ): Promise<WorkspaceFilesystemAccessWithApprovalResult[]>
+- assertWorkspaceFilesystemAccess · function · L753-L765 — function assertWorkspaceFilesystemAccess( workspace: Pick<Workspace, "path" | "permissions">, rawPath: string, operation: AccessFilesystemOperation, label = "path", options: WorkspaceFilesystemAccessOptions = {}, ): string
+- assertWorkspaceFilesystemAccessWithApproval · function · L767-L785 — async function assertWorkspaceFilesystemAccessWithApproval( workspace: Pick<Workspace, "path" | "permissions"> & Partial<Pick<Workspace, "isTemp">>, rawPath: string, operation: AccessFilesystemOperation, label = "path", handlers: WorkspaceFilesystemApprovalHandlers = {}, ): Promise<string>
+- assertWorkspaceReadableFileAccess · function · L788-L811 — function assertWorkspaceReadableFileAccess( workspace: Pick<Workspace, "path" | "permissions" | "isTemp">, rawPath: string, label = "file input", ): string
+- assertWorkspaceReadableFileAccessWithApproval · function · L814-L861 — async function assertWorkspaceReadableFileAccessWithApproval( workspace: Pick<Workspace, "path" | "permissions" | "isTemp">, rawPath: string, label = "file input", handlers: WorkspaceFilesystemApprovalHandlers = {}, ): Promise<string>

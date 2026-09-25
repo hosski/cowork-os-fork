@@ -1,0 +1,24 @@
+# src/renderer/components/MainContent/task-event-presentation.ts
+
+- Any · type · L15-L15 — type Any = Record<string, any>;
+- isVerificationNoiseEvent · function · L18-L40 — isVerificationNoiseEvent = (event: TaskEvent): boolean
+- getAssistantStepDescription · function · L42-L53 — getAssistantStepDescription = (event: TaskEvent): string
+- shouldRevealInternalAssistantMessageInVerbose · function · L55-L69 — shouldRevealInternalAssistantMessageInVerbose = (event: TaskEvent): boolean
+- getCompletionSummaryText · function · L71-L80 — getCompletionSummaryText = (event: TaskEvent): string
+- getAssistantBubbleStatusLabel · function · L82-L113 — getAssistantBubbleStatusLabel = ( task: Pick<Task, "status" | "terminalStatus" | "awaitingUserInputReasonCode">, blockedApprovalLabel = "Needs approval", ): string
+- isLowSignalPauseMessage · function · L115-L146 — isLowSignalPauseMessage = ( message: string | null | undefined, reasonCode?: string | null, ): boolean
+- getPayloadString · function · L148-L151 — getPayloadString = (payload: Any, key: string): string
+- getFailureEventText · function · L153-L181 — getFailureEventText = (event: TaskEvent): string
+- eventLooksFailed · function · L183-L197 — eventLooksFailed = (event: TaskEvent): boolean
+- cleanFailureTextForPause · function · L199-L205 — cleanFailureTextForPause = (text: string): string
+- buildPauseDecisionFallbackFromRecentEvents · function · L207-L229 — buildPauseDecisionFallbackFromRecentEvents = ( events: TaskEvent[], latestPauseEvent?: TaskEvent, ): string
+- getAssistantOrCompletionText · function · L231-L237 — getAssistantOrCompletionText = (event: TaskEvent | null | undefined): string
+- buildTaskTitle · function · L239-L245 — buildTaskTitle = (text: string): string
+- normalizeInitialPromptText · function · L247-L252 — function normalizeInitialPromptText(text: string): string
+- getUserEventDisplayMessage · function · L254-L258 — function getUserEventDisplayMessage(event: TaskEvent): string
+- shouldSuppressInitialPromptUserEvent · function · L260-L288 — function shouldSuppressInitialPromptUserEvent(params: { event: TaskEvent; initialPromptEventId: string | null; trimmedPrompt: string; taskCreatedAt?: number | null; }): boolean
+- deriveTaskHeaderPresentation · function · L290-L341 — function deriveTaskHeaderPresentation( task?: { title?: string | null; prompt?: string | null; rawPrompt?: string | null; userPrompt?: string | null; } | null, ): { cleanedDisplayPrompt: string; trimmedPrompt: string; promptAttachmentNames: string[]; headerTitle: string; headerTooltip: string; showHeaderTitle: boolean; }
+- shouldCreateFreshTaskForSend · function · L343-L353 — function shouldCreateFreshTaskForSend(params: { executionMode: ExecutionMode; selectedTaskId: string | null; selectedTaskExecutionMode?: ExecutionMode | null; forceFreshTask?: boolean; }): boolean
+- isChatExecutionTask · function · L355-L357 — function isChatExecutionTask(executionMode?: ExecutionMode | null): boolean
+- condenseStepText · function · L363-L380 — function condenseStepText(raw: string, maxLength: number = 72): string
+- humanizeTimelineMessage · function · L383-L504 — function humanizeTimelineMessage(message: string): string

@@ -1,0 +1,48 @@
+# src/electron/agentmail/AgentMailAdminService.ts
+
+- AgentMailRealtimeStatusProvider · type · L16-L19 — type AgentMailRealtimeStatusProvider = () => Pick< AgentMailStatus, "realtimeConnected" | "connectionState" | "lastEventAt" | "error" >;
+- asObject · function · L21-L23 — function asObject(value: unknown): Record<string, unknown> | null
+- asString · function · L25-L27 — function asString(value: unknown): string | undefined
+- asNumber · function · L29-L31 — function asNumber(value: unknown): number | undefined
+- parseTimestamp · function · L33-L42 — function parseTimestamp(value: unknown): number | undefined
+- parseJson · function · L44-L51 — function parseJson<T>(value: string | null | undefined, fallback: T): T
+- listEntryId · function · L53-L61 — function listEntryId( workspaceId: string, inboxId: string | undefined, direction: string, listType: string, entry: string, ): string
+- mapPod · function · L63-L72 — function mapPod(payload: unknown): AgentMailPod
+- mapInbox · function · L74-L86 — function mapInbox(payload: unknown, workspaceId?: string): AgentMailInbox
+- mapDomain · function · L88-L122 — function mapDomain(payload: unknown, workspaceId?: string): AgentMailDomain
+- mapListEntry · function · L124-L150 — function mapListEntry( payload: unknown, fallback: Partial<AgentMailListEntry> = {}, ): AgentMailListEntry | null
+- mapApiKey · function · L152-L163 — function mapApiKey(payload: unknown): AgentMailApiKeySummary
+- AgentMailAdminService · class · L165-L877 — class AgentMailAdminService
+- constructor · method · L166-L169 — constructor( private readonly db: Database.Database, private readonly getRealtimeStatus?: AgentMailRealtimeStatusProvider, )
+- getSettings · method · L171-L173 — getSettings(): AgentMailSettingsData
+- saveSettings · method · L175-L178 — saveSettings(settings: AgentMailSettingsData): void
+- getClient · method · L180-L182 — private getClient(): AgentMailClient
+- getWorkspaceBindingRow · method · L184-L200 — private getWorkspaceBindingRow(workspaceId: string)
+- ensureWorkspaceBinding · method · L202-L214 — private ensureWorkspaceBinding(workspaceId: string): AgentMailWorkspaceBinding
+- persistWorkspaceBinding · method · L216-L234 — private persistWorkspaceBinding(binding: AgentMailWorkspaceBinding): void
+- persistInboxes · method · L236-L277 — private persistInboxes(workspaceId: string, podId: string, inboxes: AgentMailInbox[]): void
+- persistDomains · method · L279-L323 — private persistDomains(workspaceId: string, podId: string, domains: AgentMailDomain[]): void
+- persistListEntries · method · L325-L360 — private persistListEntries(workspaceId: string, entries: AgentMailListEntry[]): void
+- deleteListEntryRecord · method · L362-L372 — private deleteListEntryRecord( workspaceId: string, inboxId: string | undefined, direction: AgentMailListEntry["direction"], listType: AgentMailListEntry["listType"], entry: string, ): void
+- persistApiKeys · method · L374-L417 — private persistApiKeys( workspaceId: string, inboxId: string, apiKeys: AgentMailApiKeySummary[], ): void
+- testConnection · method · L419-L455 — async testConnection(): Promise<AgentMailConnectionTestResult>
+- getStatus · method · L457-L519 — async getStatus(): Promise<AgentMailStatus>
+- listPods · method · L521-L526 — async listPods(): Promise<AgentMailPod[]>
+- getWorkspaceBinding · method · L528-L538 — getWorkspaceBinding(workspaceId: string): AgentMailWorkspaceBinding | null
+- bindWorkspacePod · method · L540-L553 — async bindWorkspacePod(workspaceId: string, podId: string): Promise<AgentMailWorkspaceBinding>
+- createWorkspacePod · method · L555-L575 — async createWorkspacePod( workspaceId: string, podName?: string, ): Promise<AgentMailWorkspaceBinding>
+- refreshWorkspace · method · L577-L612 — async refreshWorkspace(workspaceId: string): Promise<{ binding: AgentMailWorkspaceBinding; inboxes: AgentMailInbox[]; domains: AgentMailDomain[]; }>
+- listInboxes · method · L614-L642 — listInboxes(workspaceId: string): AgentMailInbox[]
+- createInbox · method · L644-L655 — async createInbox( workspaceId: string, input: { username?: string; domain?: string; displayName?: string; clientId?: string }, ): Promise<AgentMailInbox>
+- updateInbox · method · L657-L666 — async updateInbox( workspaceId: string, inboxId: string, input: { displayName: string }, ): Promise<AgentMailInbox>
+- deleteInbox · method · L668-L674 — async deleteInbox(workspaceId: string, inboxId: string): Promise<{ success: boolean }>
+- listDomains · method · L676-L709 — listDomains(workspaceId: string): AgentMailDomain[]
+- createDomain · method · L711-L725 — async createDomain( workspaceId: string, input: { domain: string; feedbackEnabled?: boolean }, ): Promise<AgentMailDomain>
+- verifyDomain · method · L727-L732 — async verifyDomain(workspaceId: string, domainId: string): Promise<AgentMailDomain | null>
+- deleteDomain · method · L734-L739 — async deleteDomain(workspaceId: string, domainId: string): Promise<{ success: boolean }>
+- listListEntries · method · L741-L781 — async listListEntries( workspaceId: string, options: { inboxId?: string; direction?: AgentMailListEntry["direction"]; listType?: AgentMailListEntry["listType"]; } = {}, ): Promise<AgentMailListEntry[]>
+- createListEntry · method · L783-L814 — async createListEntry( workspaceId: string, input: { inboxId?: string; direction: AgentMailListEntry["direction"]; listType: AgentMailListEntry["listType"]; entry: string; reason?: string; }, ): Promise<AgentMailListEntry>
+- deleteListEntry · method · L816-L843 — async deleteListEntry( workspaceId: string, input: { inboxId?: string; direction: AgentMailListEntry["direction"]; listType: AgentMailListEntry["listType"]; entry: string; }, ): Promise<{ success: boolean }>
+- listInboxApiKeys · method · L845-L852 — async listInboxApiKeys(workspaceId: string, inboxId: string): Promise<AgentMailApiKeySummary[]>
+- createInboxApiKey · method · L854-L866 — async createInboxApiKey( workspaceId: string, inboxId: string, input: { name?: string; permissions?: Record<string, boolean> }, ): Promise<AgentMailApiKeySummary & { apiKey?: string }>
+- deleteInboxApiKey · method · L868-L876 — async deleteInboxApiKey( _workspaceId: string, inboxId: string, apiKeyId: string, ): Promise<{ success: boolean }>

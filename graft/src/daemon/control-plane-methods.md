@@ -1,0 +1,33 @@
+# src/daemon/control-plane-methods.ts
+
+- ControlPlaneMethodDeps · interface · L58-L62 — interface ControlPlaneMethodDeps
+- requireScope · function · L64-L68 — function requireScope(client: Any, scope: "admin" | "read" | "write" | "operator"): void
+- sanitizeTaskCreateParams · function · L70-L147 — function sanitizeTaskCreateParams(params: unknown): { title: string; prompt: string; workspaceId: string; assignedAgentRoleId?: string; agentConfig?: AgentConfig; budgetTokens?: number; budgetCost?: number; shellAccess?: boolean; }
+- sanitizeTaskIdParams · function · L149-L154 — function sanitizeTaskIdParams(params: unknown): { taskId: string }
+- sanitizeApprovalRespondParams · function · L156-L164 — function sanitizeApprovalRespondParams(params: unknown): { approvalId: string; approved: boolean }
+- sanitizeInputRequestListParams · function · L166-L191 — function sanitizeInputRequestListParams(params: unknown): { limit: number; offset: number; taskId?: string; status?: "pending" | "submitted" | "dismissed"; }
+- sanitizeInputRequestRespondParams · function · L193-L288 — function sanitizeInputRequestRespondParams(params: unknown): { requestId: string; status: "submitted" | "dismissed"; answers?: Record<string, { optionLabel?: string; otherText?: string }>; }
+- sanitizeTaskListParams · function · L290-L304 — function sanitizeTaskListParams(params: unknown): { limit: number; offset: number; workspaceId?: string; }
+- sanitizeApprovalListParams · function · L306-L320 — function sanitizeApprovalListParams(params: unknown): { limit: number; offset: number; taskId?: string; }
+- sanitizeTaskEventsParams · function · L322-L329 — function sanitizeTaskEventsParams(params: unknown): { taskId: string; limit: number }
+- sanitizeWorkspaceIdParams · function · L331-L336 — function sanitizeWorkspaceIdParams(params: unknown): { workspaceId: string }
+- sanitizeWorkspaceCreateParams · function · L338-L356 — function sanitizeWorkspaceCreateParams(params: unknown): { name: string; path: string }
+- sanitizeChannelIdParams · function · L358-L363 — function sanitizeChannelIdParams(params: unknown): { channelId: string }
+- sanitizeChannelCreateParams · function · L365-L409 — function sanitizeChannelCreateParams(params: unknown): { type: string; name: string; enabled: boolean; config: Record<string, unknown>; securityConfig: Record<string, unknown>; }
+- sanitizeChannelUpdateParams · function · L411-L443 — function sanitizeChannelUpdateParams(params: unknown): { channelId: string; updates: { name?: string; config?: Record<string, unknown>; securityConfig?: Record<string, unknown>; }; }
+- sanitizeAccountListParams · function · L445-L472 — function sanitizeAccountListParams(params: unknown): { includeSecrets: boolean; provider?: string; status?: ManagedAccountStatus; }
+- sanitizeAccountGetParams · function · L474-L479 — function sanitizeAccountGetParams(params: unknown): { accountId: string; includeSecrets: boolean }
+- sanitizeAccountUpsertParams · function · L481-L568 — function sanitizeAccountUpsertParams(params: unknown): UpsertManagedAccountInput
+- sanitizeAccountRemoveParams · function · L570-L575 — function sanitizeAccountRemoveParams(params: unknown): { accountId: string }
+- maskSecretString · function · L577-L582 — function maskSecretString(value: string): string
+- redactObjectSecrets · function · L584-L602 — function redactObjectSecrets(input: unknown, depth = 0): unknown
+- truncateForBroadcastKey · function · L611-L616 — function truncateForBroadcastKey(value: string, key?: string): string
+- sanitizeForBroadcast · function · L618-L662 — function sanitizeForBroadcast(value: unknown, depth = 0, key?: string): unknown
+- getCoworkVersionFromNearestPackageJson · function · L664-L683 — function getCoworkVersionFromNearestPackageJson(): string | undefined
+- attachAgentDaemonTaskBridge · function · L685-L753 — function attachAgentDaemonTaskBridge( server: ControlPlaneServer, daemon: AgentDaemon, ): () => void
+- handler · function · L704-L744 — handler = (evt: Any)
+- registerControlPlaneMethods · function · L755-L1625 — function registerControlPlaneMethods( server: ControlPlaneServer, deps: ControlPlaneMethodDeps, ): void
+- isAdminClient · function · L768-L768 — isAdminClient = (client: Any)
+- redactWorkspaceForRead · function · L770-L775 — redactWorkspaceForRead = (workspace: Any)
+- redactTaskForRead · function · L777-L793 — redactTaskForRead = (task: Any)
+- redactChannelForRead · function · L795-L805 — redactChannelForRead = (channel: Any)

@@ -1,0 +1,56 @@
+# connectors/maps-mcp/src/index.ts
+
+- JSONRPCId · type · L3-L3 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L5-L10 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L12-L16 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L18-L23 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L25-L33 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L35-L44 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L46-L53 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- Coordinates · type · L55-L58 — type Coordinates = { latitude: number; longitude: number; };
+- NormalizedPlace · type · L60-L74 — type NormalizedPlace = { id: string; provider: "osm" | "google"; name: string; categories: string[]; address?: string; location: Coordinates; rating?: number; userRatingCount?: number; openNow?: boolean | null; openingHoursText?: string; mapsUrl?: string; sourceUrl?: string; attribution: string; };
+- NormalizedRoute · type · L76-L83 — type NormalizedRoute = { mode: "walking"; distanceMeters: number; durationSeconds: number; provider: "osm" | "google" | "estimate"; warnings: string[]; attribution: string; };
+- ProviderName · type · L85-L85 — type ProviderName = "osm" | "google";
+- StdioMCPServer · class · L112-L248 — class StdioMCPServer
+- constructor · method · L116-L122 — constructor( private readonly toolProvider: { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; }, private readonly serverInfo: MCPServerInfo, )
+- start · method · L124-L134 — start(): void
+- stop · method · L136-L142 — stop(): void
+- handleLine · method · L144-L152 — private handleLine(line: string): void
+- handleMessage · method · L154-L160 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L162-L196 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L198-L200 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L202-L215 — private handleInitialize(): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsCall · method · L217-L229 — private async handleToolsCall(params: any): Promise<any>
+- requireInitialized · method · L231-L235 — private requireInitialized(): void
+- sendResult · method · L237-L239 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L241-L243 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L245-L247 — private sendMessage(message: JSONRPCResponse): void
+- envValue · function · L333-L335 — function envValue(name: string, fallback = ""): string
+- resolveProvider · function · L337-L342 — function resolveProvider(): ProviderName
+- hasGoogleKey · function · L344-L346 — function hasGoogleKey(): boolean
+- numberOrDefault · function · L348-L352 — function numberOrDefault(value: unknown, fallback: number, min: number, max: number): number
+- requireString · function · L354-L357 — function requireString(value: unknown, label: string): string
+- requireLocation · function · L359-L370 — function requireLocation(value: unknown, label: string): Coordinates
+- rateLimitNominatim · function · L372-L377 — async function rateLimitNominatim(): Promise<void>
+- fetchJson · function · L379-L388 — async function fetchJson(url: string, init?: RequestInit): Promise<any>
+- radiusViewbox · function · L390-L399 — function radiusViewbox(location: Coordinates, radiusMeters: number): string
+- osmTypePath · function · L401-L406 — function osmTypePath(osmType: string): string
+- normalizeOsmPlace · function · L408-L435 — function normalizeOsmPlace(item: any): NormalizedPlace
+- osmSearchPlaces · function · L437-L461 — async function osmSearchPlaces(args: Record<string, any>): Promise<NormalizedPlace[]>
+- osmPlaceDetails · function · L463-L481 — async function osmPlaceDetails(placeId: string): Promise<NormalizedPlace>
+- googleSearchPlaces · function · L483-L513 — async function googleSearchPlaces(args: Record<string, any>): Promise<NormalizedPlace[]>
+- normalizeGooglePlace · function · L515-L543 — function normalizeGooglePlace(item: any): NormalizedPlace
+- googlePlaceDetails · function · L545-L562 — async function googlePlaceDetails(placeId: string): Promise<NormalizedPlace>
+- haversineMeters · function · L564-L572 — function haversineMeters(a: Coordinates, b: Coordinates): number
+- fallbackWalkingRoute · function · L574-L589 — function fallbackWalkingRoute( origin: Coordinates, destination: Coordinates, warning: string, ): NormalizedRoute
+- osmRoute · function · L591-L618 — async function osmRoute(origin: Coordinates, destination: Coordinates): Promise<NormalizedRoute>
+- googleRoute · function · L620-L651 — async function googleRoute( origin: Coordinates, destination: Coordinates, ): Promise<NormalizedRoute>
+- parseGoogleDuration · function · L653-L657 — function parseGoogleDuration(value: unknown): number
+- searchPlaces · function · L659-L666 — async function searchPlaces( args: Record<string, any>, ): Promise<{ provider: ProviderName; places: NormalizedPlace[] }>
+- placeDetails · function · L668-L674 — async function placeDetails(args: Record<string, any>): Promise<{ place: NormalizedPlace }>
+- route · function · L676-L686 — async function route(args: Record<string, any>): Promise<{ route: NormalizedRoute }>
+- rankNearbyOptions · function · L688-L737 — async function rankNearbyOptions(args: Record<string, any>): Promise<{ provider: ProviderName; query: string; deadlineMinutes?: number; options: Array<{ place: NormalizedPlace; route: NormalizedRoute; withinDeadline?: boolean }>; warnings: string[]; }>
+- listMapsToolsForTest · function · L764-L766 — function listMapsToolsForTest(): MCPTool[]
+- executeMapsToolForTest · function · L768-L773 — async function executeMapsToolForTest( name: string, args: Record<string, any>, ): Promise<any>
+- resetMapsConnectorStateForTest · function · L775-L778 — function resetMapsConnectorStateForTest(): void
+- startMapsMcpServer · function · L789-L791 — function startMapsMcpServer(): void

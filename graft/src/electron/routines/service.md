@@ -1,0 +1,117 @@
+# src/electron/routines/service.ts
+
+- RoutineRunRecord · type · L61-L64 — type RoutineRunRecord = RoutineRun & { runKey?: string; dedupeKey?: string; };
+- RoutineService · class · L66-L1952 — class RoutineService
+- constructor · method · L99-L110 — constructor(deps: RoutineServiceDeps)
+- list · method · L112-L117 — list(): Routine[]
+- get · method · L119-L124 — get(id: string): Routine | null
+- getWorkflowCapabilities · method · L126-L128 — getWorkflowCapabilities()
+- getActiveWorkflowDefinition · method · L130-L134 — getActiveWorkflowDefinition(routineId: string): RoutineWorkflowDefinition | null
+- validateWorkflow · method · L136-L141 — validateWorkflow( workflow: RoutineWorkflowDefinition, allowIncomplete = false, ): WorkflowValidationResult
+- generateWorkflowDraft · method · L143-L147 — generateWorkflowDraft(prompt: string)
+- saveWorkflowDraft · method · L149-L170 — saveWorkflowDraft(routineId: string, workflow: RoutineWorkflowDefinition)
+- activateWorkflowVersion · method · L172-L199 — async activateWorkflowVersion(routineId: string, versionId: string): Promise<Routine | null>
+- listWorkflowVersions · method · L201-L203 — listWorkflowVersions(routineId: string)
+- listWorkflowRuns · method · L205-L207 — listWorkflowRuns(routineId?: string, limit = DEFAULT_RUN_LIST_LIMIT)
+- listWorkflowRunSteps · method · L209-L211 — listWorkflowRunSteps(runId: string)
+- listWorkflowEvents · method · L213-L215 — listWorkflowEvents(routineId?: string, limit = DEFAULT_RUN_LIST_LIMIT)
+- listWorkflowEventSamples · method · L217-L219 — listWorkflowEventSamples(source?: string, limit = 20)
+- listWorkflowSecrets · method · L221-L223 — listWorkflowSecrets()
+- upsertWorkflowSecret · method · L225-L227 — upsertWorkflowSecret(input: { id?: string; name: string; value: string })
+- removeWorkflowSecret · method · L229-L248 — removeWorkflowSecret(id: string)
+- testWorkflow · method · L250-L281 — async testWorkflow(request: RoutineWorkflowTestRequest)
+- enqueueWorkflowEvent · method · L283-L292 — enqueueWorkflowEvent(envelope: RoutineWorkflowEventEnvelope)
+- respondToWorkflowApproval · method · L294-L310 — async respondToWorkflowApproval(request: RoutineWorkflowApprovalRequest)
+- cancelWorkflowRun · method · L312-L316 — cancelWorkflowRun(runId: string)
+- retryWorkflowRun · method · L318-L336 — async retryWorkflowRun(runId: string)
+- startWorkflowRuntime · method · L338-L353 — startWorkflowRuntime(): void
+- stopWorkflowRuntime · method · L355-L361 — stopWorkflowRuntime(): void
+- listRuns · method · L363-L384 — async listRuns(routineId?: string, limit = DEFAULT_RUN_LIST_LIMIT): Promise<RoutineRun[]>
+- refreshRunsForTask · method · L386-L403 — async refreshRunsForTask(taskId: string): Promise<void>
+- reconcileStaleTimeoutRuns · method · L405-L419 — async reconcileStaleTimeoutRuns(): Promise<void>
+- create · method · L421-L478 — async create(input: RoutineCreate): Promise<Routine>
+- update · method · L480-L565 — async update(id: string, patch: RoutinePatch): Promise<Routine | null>
+- remove · method · L567-L589 — async remove(id: string): Promise<boolean>
+- regenerateApiToken · method · L591-L613 — async regenerateApiToken( routineId: string, triggerId: string, ): Promise<RoutineApiTrigger | null>
+- runNow · method · L615-L675 — async runNow(routineId: string): Promise<RoutineRun | null>
+- recordScheduledEvent · method · L677-L721 — recordScheduledEvent(event: CronEvent): void
+- runScheduledWorkflow · method · L723-L757 — async runScheduledWorkflow( routineId: string, jobId: string, runAtMs: number, agentConfig?: AgentConfig, )
+- runWebhookWorkflow · method · L759-L790 — async runWebhookWorkflow( routineId: string, payload: Record<string, unknown>, metadata?: Record<string, string>, )
+- recordEventTriggerFire · method · L792-L819 — recordEventTriggerFire(payload: { trigger: EventTrigger; event: TriggerEvent; historyEntry: TriggerHistoryEntry; }): void
+- interceptManagedEventTrigger · method · L821-L841 — async interceptManagedEventTrigger(trigger: EventTrigger, event: TriggerEvent)
+- recordApiTriggerDispatch · method · L843-L869 — recordApiTriggerDispatch(payload: { mappingId?: string; path?: string; workspaceId?: string; taskId?: string; metadata?: Record<string, string>; response?: { statusCode?: number; message?: string; includeTaskId?: boolean }; }): void
+- ensureSchema · method · L871-L937 — private ensureSchema(): void
+- mapRow · method · L939-L979 — private mapRow(row: Any): Routine
+- mapRunRow · method · L981-L1002 — private mapRunRow(row: Any): RoutineRun
+- persist · method · L1004-L1024 — private persist(routine: Routine): void
+- syncRoutine · method · L1026-L1075 — private async syncRoutine(routine: Routine, previous: Routine | null): Promise<Routine>
+- syncScheduleTrigger · method · L1077-L1138 — private async syncScheduleTrigger( routine: Routine, trigger: RoutineScheduleTrigger, ): Promise<RoutineScheduleTrigger>
+- syncApiTrigger · method · L1140-L1199 — private async syncApiTrigger( routine: Routine, trigger: RoutineApiTrigger, ): Promise<RoutineApiTrigger>
+- syncEventTrigger · method · L1201-L1270 — private async syncEventTrigger( routine: Routine, trigger: | RoutineConnectorEventTrigger | RoutineChannelEventTrigger | RoutineMailboxEventTrigger | RoutineGithubEventTrigger, _previous?: RoutineTrigger, ): Promise<RoutineTrigger>
+- teardownTrigger · method · L1272-L1300 — private async teardownTrigger(trigger: RoutineTrigger): Promise<void>
+- buildRoutineAgentConfig · method · L1302-L1339 — private buildRoutineAgentConfig(routine: Routine): AgentConfig | undefined
+- resolveActiveWorkflowVersion · method · L1341-L1347 — private resolveActiveWorkflowVersion(routine: Routine)
+- assertWorkflowAccountReady · method · L1349-L1371 — private assertWorkflowAccountReady( workflow: RoutineWorkflowDefinition, requiredScopes: string[], ): void
+- assertWorkflowSecretsReady · method · L1373-L1381 — private assertWorkflowSecretsReady(workflow: RoutineWorkflowDefinition): void
+- startDeterministicWorkflow · method · L1383-L1426 — private async startDeterministicWorkflow( routine: Routine, workflow: RoutineWorkflowDefinition, workflowVersionId: string, params: { trigger: Record<string, unknown>; eventId?: string; idempotencyKey: string; sourceSummary: string; triggerId: string; triggerType: RoutineTrigger["type"]; dryRun?: boolean; accessProfileId?: AccessProfileId; }, ): Promise<RoutineRun>
+- processWorkflowInbox · method · L1428-L1439 — private async processWorkflowInbox(): Promise<void>
+- processWorkflowEvent · method · L1441-L1480 — private async processWorkflowEvent( event: ReturnType<RoutineWorkflowRepository["enqueueEvent"]>, ): Promise<void>
+- recoverWorkflowRuns · method · L1482-L1508 — private async recoverWorkflowRuns(): Promise<void>
+- pruneExpiredWorkflowData · method · L1510-L1519 — private pruneExpiredWorkflowData(): void
+- refreshRoutineRunFromWorkflow · method · L1521-L1542 — private refreshRoutineRunFromWorkflow(workflowRunId: string): void
+- dispatchRoutineExecution · method · L1544-L1645 — private async dispatchRoutineExecution( routine: Routine, trigger: RoutineTrigger, params: { prompt: string; sourceSummary: string; source: "manual" | "cron" | "hook" | "api"; }, ): Promise<{ taskId?: string; managedSessionId?: string; status: RoutineRunStatus; outputStatus: RoutineRun["outputStatus"]; errorSummary?: string; artifactsSummary?: string; finishedAt?: number; }>
+- refreshRunStatuses · method · L1647-L1712 — private async refreshRunStatuses(routineId?: string): Promise<void>
+- refreshTaskBackedRun · method · L1714-L1736 — private async refreshTaskBackedRun(run: RoutineRunRecord): Promise<void>
+- upsertRun · method · L1738-L1811 — private upsertRun(input: { id?: string; runKey?: string; routineId: string; triggerId: string; triggerType: RoutineTrigger["type"]; status: RoutineRunStatus; startedAt: number; createdAt?: number; finishedAt?: number; sourceEventSummary?: string; backingTaskId?: string; backingManagedSessionId?: string; workflowRunId?: string; outputStatus: RoutineRun["outputStatus"]; errorSummary?: string; artifactsSummary?: string; }): RoutineRun
+- findRunByDedupeKey · method · L1813-L1818 — private findRunByDedupeKey(dedupeKey: string): RoutineRunRecord | null
+- findRunByKey · method · L1820-L1825 — private findRunByKey(runKey: string): RoutineRunRecord | null
+- findRunById · method · L1827-L1832 — private findRunById(id: string): RoutineRunRecord | null
+- computeRoutineRunDedupeKey · method · L1834-L1863 — private computeRoutineRunDedupeKey(input: { routineId: string; runKey?: string; backingTaskId?: string; backingManagedSessionId?: string; workflowRunId?: string; }): string | null
+- reconcileRoutineRunDedupeKeys · method · L1865-L1905 — private reconcileRoutineRunDedupeKeys(): void
+- mapRunRecord · method · L1907-L1913 — private mapRunRecord(row: Any): RoutineRunRecord
+- findRoutineByManagedResource · method · L1915-L1935 — private findRoutineByManagedResource( field: "managedCronJobId" | "managedHookMappingId" | "managedEventTriggerId", value: string, ): { routine: Routine; trigger: RoutineTrigger } | null
+- findRoutineByApiPath · method · L1937-L1951 — private findRoutineByApiPath( path?: string, ): { routine: Routine; trigger: RoutineApiTrigger } | null
+- columnExists · function · L1954-L1961 — function columnExists(db: Any, tableName: string, columnName: string): boolean
+- stripCompatibilityFields · function · L1963-L1966 — function stripCompatibilityFields(routine: Routine): RoutineDefinition
+- toCompatibilityRoutine · function · L1968-L1974 — function toCompatibilityRoutine(routine: RoutineDefinition): Routine
+- normalizeRoutineDefinition · function · L1976-L1990 — function normalizeRoutineDefinition(input: RoutineDefinition): RoutineDefinition
+- normalizeExecutionTarget · function · L1992-L2000 — function normalizeExecutionTarget( target?: RoutineDefinition["executionTarget"], ): RoutineDefinition["executionTarget"]
+- normalizeContextBindings · function · L2002-L2026 — function normalizeContextBindings( bindings?: RoutineDefinition["contextBindings"], ): RoutineDefinition["contextBindings"]
+- getRoutineTargetTaskId · function · L2028-L2046 — function getRoutineTargetTaskId(routine: Routine): string | undefined
+- normalizeConnectorPolicy · function · L2048-L2063 — function normalizeConnectorPolicy( policy?: Partial<RoutineDefinition["connectorPolicy"]>, compatibilityConnectors?: string[], ): RoutineDefinition["connectorPolicy"]
+- normalizeApprovalPolicy · function · L2065-L2076 — function normalizeApprovalPolicy( policy?: Partial<RoutineDefinition["approvalPolicy"]>, ): RoutineDefinition["approvalPolicy"]
+- normalizeOutputs · function · L2078-L2125 — function normalizeOutputs(outputs: RoutineOutput[]): RoutineOutput[]
+- normalizeTriggers · function · L2127-L2200 — function normalizeTriggers(triggers: RoutineTrigger[]): RoutineTrigger[]
+- deriveRoutineTriggersFromWorkflow · function · L2202-L2298 — function deriveRoutineTriggersFromWorkflow(workflow: RoutineWorkflowDefinition): RoutineTrigger[]
+- value · function · L2208-L2212 — value = (key: string): string | undefined
+- normalizeConditions · function · L2300-L2308 — function normalizeConditions(conditions?: TriggerCondition[]): TriggerCondition[]
+- cloneHooksSettings · function · L2310-L2318 — function cloneHooksSettings(settings: HooksConfig): HooksConfig
+- buildRoutinePrompt · function · L2320-L2357 — function buildRoutinePrompt( routine: Routine, triggerLabel: string, extraLines: string[] = [], ): string
+- buildTriggeredPrompt · function · L2359-L2403 — function buildTriggeredPrompt( routine: Routine, trigger: | RoutineConnectorEventTrigger | RoutineChannelEventTrigger | RoutineMailboxEventTrigger | RoutineGithubEventTrigger, ): string
+- buildTriggerConditions · function · L2405-L2484 — function buildTriggerConditions( trigger: | RoutineConnectorEventTrigger | RoutineChannelEventTrigger | RoutineMailboxEventTrigger | RoutineGithubEventTrigger, ): TriggerCondition[]
+- buildScheduleDelivery · function · L2486-L2501 — function buildScheduleDelivery(outputs: RoutineOutput[]): CronDeliveryConfig | undefined
+- getWebhookResponseOutput · function · L2503-L2509 — function getWebhookResponseOutput( outputs: RoutineOutput[], ): RoutineWebhookResponseOutput | undefined
+- routineHasWebhookResponse · function · L2511-L2513 — function routineHasWebhookResponse(routine: Routine): boolean
+- routineTriggerSource · function · L2515-L2533 — function routineTriggerSource( trigger: | RoutineConnectorEventTrigger | RoutineChannelEventTrigger | RoutineMailboxEventTrigger | RoutineGithubEventTrigger, ): EventTrigger["source"]
+- isManagedEventRoutineTrigger · function · L2535-L2548 — function isManagedEventRoutineTrigger( trigger: RoutineTrigger, ): trigger is | RoutineConnectorEventTrigger | RoutineChannelEventTrigger | RoutineMailboxEventTrigger | RoutineGithubEventTrigger
+- resolveConnectorAllowedTools · function · L2550-L2572 — function resolveConnectorAllowedTools(connectorIds: string[]): string[]
+- mapCronStatus · function · L2574-L2595 — function mapCronStatus( status?: CronEvent["status"], hasTaskId = false, taskStillRunning = false, ): RoutineRunStatus
+- mapCronOutputStatus · function · L2597-L2606 — function mapCronOutputStatus( status: CronEvent["status"] | undefined, hasTaskId: boolean, taskStillRunning = false, ): RoutineRun["outputStatus"]
+- mapTaskBackedOutputStatus · function · L2608-L2616 — function mapTaskBackedOutputStatus( current: RoutineRun["outputStatus"], status: RoutineRunStatus, routine?: Routine | null, ): RoutineRun["outputStatus"]
+- routineOutputStatusAfterTaskCompletion · function · L2618-L2624 — function routineOutputStatusAfterTaskCompletion( routine?: Routine | null, ): RoutineRun["outputStatus"]
+- isCronTimeoutSummary · function · L2626-L2628 — function isCronTimeoutSummary(value?: string): boolean
+- summarizeCronEvent · function · L2630-L2635 — function summarizeCronEvent(event: CronEvent): string
+- summarizeTriggerEvent · function · L2637-L2650 — function summarizeTriggerEvent(event: TriggerEvent): string
+- mapTaskSnapshotStatus · function · L2652-L2666 — function mapTaskSnapshotStatus(status: string, terminalStatus?: string | null): RoutineRunStatus
+- dedupeRoutineRuns · function · L2668-L2688 — function dedupeRoutineRuns(runs: RoutineRunRecord[]): RoutineRun[]
+- routineRunDedupeKey · function · L2690-L2696 — function routineRunDedupeKey(run: RoutineRunRecord): string | null
+- mapWorkflowRunStatus · function · L2698-L2714 — function mapWorkflowRunStatus(status: RoutineWorkflowRunRecord["status"]): RoutineRunStatus
+- summarizeWorkflowRun · function · L2716-L2731 — function summarizeWorkflowRun( run: RoutineWorkflowRunRecord, steps: RoutineWorkflowStepRecord[], ): string
+- isPlainRecord · function · L2733-L2735 — function isPlainRecord(value: unknown): value is Record<string, unknown>
+- flattenWorkflowNodes · function · L2737-L2741 — function flattenWorkflowNodes( nodes: RoutineWorkflowDefinition["nodes"], ): RoutineWorkflowDefinition["nodes"]
+- googleScopeIsCovered · function · L2743-L2756 — function googleScopeIsCovered(requiredScope: string, granted: Set<string>): boolean
+- preferRoutineRun · function · L2758-L2770 — function preferRoutineRun(a: RoutineRunRecord, b: RoutineRunRecord): RoutineRunRecord
+- score · function · L2759-L2765 — score = (run: RoutineRunRecord)
+- normalizeInstructions · function · L2772-L2778 — function normalizeInstructions(value: unknown): string
+- clean · function · L2780-L2784 — function clean(value: unknown): string | undefined
+- safeJsonParse · function · L2786-L2793 — function safeJsonParse<T>(value: string | null | undefined, fallback: T): T

@@ -1,0 +1,23 @@
+# src/electron/utils/pptx-extractor.ts
+
+- PptxRelationship · type · L5-L8 — type PptxRelationship = { type?: string; target: string; };
+- PptxExtractedSlide · interface · L10-L15 — interface PptxExtractedSlide
+- PptxStructuredExtract · interface · L17-L24 — interface PptxStructuredExtract
+- PptxExtractOptions · interface · L26-L31 — interface PptxExtractOptions
+- extractPptxContentFromFile · function · L37-L74 — async function extractPptxContentFromFile( filePath: string, options: PptxExtractOptions = {}, ): Promise<string>
+- extractPptxStructuredContentFromFile · function · L76-L163 — async function extractPptxStructuredContentFromFile( filePath: string, options: PptxExtractOptions = {}, ): Promise<PptxStructuredExtract>
+- decodePptxXmlText · function · L165-L176 — function decodePptxXmlText(value: string): string
+- extractPptxXmlField · function · L178-L198 — function extractPptxXmlField(xml: string, tagCandidates: string[], isDate = false): string
+- extractPptxMetadataFromZip · function · L200-L246 — async function extractPptxMetadataFromZip( zip: JSZip, ): Promise<{ title?: string; entries: string[] }>
+- derivePptxSlideTitle · function · L248-L260 — function derivePptxSlideTitle(text: string): string | undefined
+- parsePptxRelationshipsFromXml · function · L262-L286 — function parsePptxRelationshipsFromXml( xml: string, sourcePath: string, ): Record<string, PptxRelationship>
+- decodePptxRelationshipTarget · function · L288-L294 — function decodePptxRelationshipTarget(target: string): string
+- extractPptxSlideRelationships · function · L296-L306 — async function extractPptxSlideRelationships( zip: JSZip, slideEntryName: string, ): Promise<Record<string, PptxRelationship>>
+- extractPptxNotesFromZip · function · L308-L330 — async function extractPptxNotesFromZip( zip: JSZip, relationships: Record<string, PptxRelationship>, slideNumber: number, ): Promise<string | null>
+- extractTextFromPptxXml · function · L332-L351 — function extractTextFromPptxXml(xml: string): string
+- extractPptxTablesFromXml · function · L353-L385 — function extractPptxTablesFromXml(xml: string): string[]
+- extractPptxRowsFromTableXml · function · L387-L407 — function extractPptxRowsFromTableXml(tableXml: string): string[][]
+- extractPptxTableSpan · function · L409-L430 — function extractPptxTableSpan(cellXml: string, spanType: "gridSpan" | "rowSpan"): number
+- expandPptxTableRows · function · L432-L495 — function expandPptxTableRows( rows: { text: string; colSpan: number; rowSpan: number }[][], ): string[][]
+- escapePptxTableCell · function · L497-L499 — function escapePptxTableCell(value: string): string
+- extractPptxContentFromXml · function · L501-L593 — function extractPptxContentFromXml( xml: string, relationships: Record<string, PptxRelationship> = {}, ): string

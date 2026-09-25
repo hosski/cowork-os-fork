@@ -1,0 +1,21 @@
+# src/electron/reports/StandupReportService.ts
+
+- StandupListQuery · interface · L8-L13 — interface StandupListQuery
+- DeliveryConfig · interface · L18-L21 — interface DeliveryConfig
+- StandupReportService · class · L26-L349 — class StandupReportService
+- constructor · method · L27-L30 — constructor( private db: Database.Database, private deliverToChannel?: (report: StandupReport, config: DeliveryConfig) => Promise<void>, )
+- generateReport · method · L36-L73 — async generateReport(workspaceId: string, date: Date = new Date()): Promise<StandupReport>
+- deliverReport · method · L78-L91 — async deliverReport(report: StandupReport, config: DeliveryConfig): Promise<void>
+- getLatest · method · L96-L105 — getLatest(workspaceId: string): StandupReport | undefined
+- getByDate · method · L110-L117 — getByDate(workspaceId: string, reportDate: string): StandupReport | undefined
+- list · method · L122-L145 — list(query: StandupListQuery): StandupReport[]
+- findById · method · L150-L154 — findById(id: string): StandupReport | undefined
+- deleteOlderThan · method · L159-L169 — deleteOlderThan(workspaceId: string, daysToKeep: number): number
+- formatReportMessage · method · L174-L218 — formatReportMessage(report: StandupReport, tasks: Map<string, Task>): string
+- save · method · L223-L243 — private save(report: StandupReport): void
+- getTasksByColumn · method · L248-L269 — private getTasksByColumn( workspaceId: string, column: BoardColumn, updatedAfter?: number, ): Task[]
+- getBlockedTasks · method · L274-L282 — private getBlockedTasks(workspaceId: string): Task[]
+- buildSummary · method · L287-L307 — private buildSummary(completed: Task[], inProgress: Task[], blocked: Task[]): string
+- formatDate · method · L312-L314 — private formatDate(date: Date): string
+- mapRowToReport · method · L319-L331 — private mapRowToReport(row: Any): StandupReport
+- mapRowToTask · method · L336-L348 — private mapRowToTask(row: Any): Task

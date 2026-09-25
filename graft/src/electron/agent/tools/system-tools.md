@@ -1,0 +1,66 @@
+# src/electron/agent/tools/system-tools.ts
+
+- MacOSAppProcessRecord · type · L43-L48 — type MacOSAppProcessRecord = { pid: number; ppid: number | null; command: string; args: string; };
+- MacOSLaunchAgentRecord · type · L50-L57 — type MacOSLaunchAgentRecord = { path: string; label: string | null; program: string | null; programArguments: string[]; domain: "user" | "system"; matches: boolean; };
+- sessionRecallEnabled · function · L59-L61 — function sessionRecallEnabled(): boolean
+- topicMemoryEnabled · function · L63-L65 — function topicMemoryEnabled(): boolean
+- verbatimRecallEnabled · function · L67-L69 — function verbatimRecallEnabled(): boolean
+- progressiveRecallEnabled · function · L71-L73 — function progressiveRecallEnabled(): boolean
+- durableContextEnabled · function · L75-L77 — function durableContextEnabled(): boolean
+- getCurrentLocationFailureMessage · function · L79-L116 — function getCurrentLocationFailureMessage(error: unknown): string
+- buildSessionRecallTool · function · L118-L145 — function buildSessionRecallTool(description: string): LLMTool
+- buildTopicMemoryTool · function · L147-L170 — function buildTopicMemoryTool(description: string): LLMTool
+- buildQuoteRecallTool · function · L172-L208 — function buildQuoteRecallTool(description: string): LLMTool
+- buildDurableContextGrepTool · function · L210-L240 — function buildDurableContextGrepTool(description: string): LLMTool
+- buildDurableContextDescribeTool · function · L242-L272 — function buildDurableContextDescribeTool(description: string): LLMTool
+- getElectronApis · function · L274-L284 — function getElectronApis(): { clipboard?: Any; desktopCapturer?: Any; shell?: Any; app?: Any }
+- SystemTools · class · L290-L2755 — class SystemTools
+- constructor · method · L296-L300 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L305-L307 — setWorkspace(workspace: Workspace): void
+- getFileApprovalHandlers · method · L309-L342 — private getFileApprovalHandlers(): WorkspaceFilesystemApprovalHandlers
+- requireShellPermission · method · L344-L349 — private requireShellPermission(toolName: string): void
+- isProtectedPath · method · L351-L353 — private isProtectedPath(absolutePath: string): boolean
+- canReadWorkspacePath · method · L355-L364 — private canReadWorkspacePath(candidatePath: string): boolean
+- resolveAccessibleLocalPath · method · L366-L400 — private async resolveAccessibleLocalPath( inputPath: string, operation: "read" | "write" = "read", ): Promise<string>
+- enforceProjectAccess · method · L402-L419 — private async enforceProjectAccess(absolutePath: string): Promise<void>
+- getSystemInfo · method · L424-L467 — async getSystemInfo(): Promise<{ platform: string; arch: string; osVersion: string; hostname: string; cpus: number; totalMemory: string; freeMemory: string; uptime: string; homeDir: string; tempDir: string; shell: string; username: string; }>
+- getCurrentLocation · method · L469-L525 — async getCurrentLocation(options?: { accuracy?: "coarse" | "precise"; maxAgeMs?: number; }): Promise<{ latitude: number; longitude: number; accuracyMeters: number; timestamp: string; source: DesktopLocationSnapshot["source"]; mapsUrl: string; }>
+- readClipboard · method · L530-L562 — async readClipboard(): Promise<{ text: string; hasImage: boolean; formats: string[]; }>
+- writeClipboard · method · L567-L590 — async writeClipboard(text: string): Promise<{ success: boolean }>
+- takeScreenshot · method · L596-L667 — async takeScreenshot(options?: { filename?: string; fullscreen?: boolean }): Promise<{ success: boolean; path: string; width: number; height: number; }>
+- openApplication · method · L672-L718 — async openApplication(appName: string): Promise<{ success: boolean; message: string; }>
+- openUrl · method · L723-L774 — async openUrl(url: string): Promise<{ success: boolean }>
+- openPath · method · L779-L813 — async openPath(filePath: string): Promise<{ success: boolean; error?: string }>
+- showInFolder · method · L818-L844 — async showInFolder(filePath: string): Promise<{ success: boolean }>
+- getEnvVariable · method · L849-L870 — async getEnvVariable(name: string): Promise<{ value: string | null; exists: boolean }>
+- getAppPaths · method · L875-L894 — getAppPaths(): { userData: string; temp: string; home: string; downloads: string; documents: string; desktop: string; }
+- resolveAppBundleId · method · L900-L964 — async resolveAppBundleId(appName: string): Promise<{ success: boolean; appName: string; bundleId: string; resolvedBy: "app_name" | "bundle_id"; }>
+- findMacOSAppProcesses · method · L966-L999 — async findMacOSAppProcesses(input: { query: string; includeRelated?: boolean }): Promise<{ success: boolean; query: string; processes: MacOSAppProcessRecord[]; }>
+- terminateMacOSAppProcesses · method · L1001-L1089 — async terminateMacOSAppProcesses(input: { query: string; signal?: "TERM" | "KILL"; includeRelated?: boolean; }): Promise<{ success: boolean; query: string; signal: "TERM" | "KILL"; terminated: Array<MacOSAppProcessRecord & { signal: "TERM" | "KILL" }>; remaining: MacOSAppProcessRecord[]; skipped: Array<MacOSAppProcessRecord & { reason: string }>; }>
+- listMacOSLaunchAgents · method · L1091-L1119 — async listMacOSLaunchAgents(input?: { query?: string; includeSystem?: boolean }): Promise<{ success: boolean; query: string | null; agents: MacOSLaunchAgentRecord[]; }>
+- disableMacOSLaunchAgents · method · L1121-L1257 — async disableMacOSLaunchAgents(input: { query?: string; labels?: string[]; paths?: string[]; dryRun?: boolean; }): Promise<{ success: boolean; dryRun: boolean; disabledDirectory: string; disabled: Array<MacOSLaunchAgentRecord & { disabledPath: string; bootoutStatus: string }>; skipped: Array<MacOSLaunchAgentRecord & { reason: string }>; }>
+- runAppleScript · method · L1263-L1357 — async runAppleScript(script: string): Promise<{ success: boolean; result: string; }>
+- extractAppleScriptError · method · L1359-L1371 — private extractAppleScriptError(error: Any): string
+- formatAppleScriptFailure · method · L1373-L1383 — private formatAppleScriptFailure(error: Any): string
+- toAppleScriptStringLiteral · method · L1385-L1387 — private toAppleScriptStringLiteral(value: string): string
+- normalizeRequiredQuery · method · L1389-L1394 — private normalizeRequiredQuery(value: unknown, fieldName: string): string
+- buildMacOSAppSearchTerms · method · L1396-L1413 — private buildMacOSAppSearchTerms(query: string, includeRelated: boolean): string[]
+- add · function · L1398-L1401 — add = (term: string): void
+- matchesAnySearchTerm · method · L1415-L1418 — private matchesAnySearchTerm(text: string, terms: string[]): boolean
+- readMacOSProcesses · method · L1420-L1442 — private async readMacOSProcesses(): Promise<MacOSAppProcessRecord[]>
+- readMacOSLaunchAgents · method · L1444-L1492 — private readMacOSLaunchAgents(includeSystem: boolean, terms: string[]): MacOSLaunchAgentRecord[]
+- extractPlistString · method · L1494-L1500 — private extractPlistString(content: string, key: string): string | null
+- extractPlistStringArray · method · L1502-L1511 — private extractPlistStringArray(content: string, key: string): string[]
+- nextAvailablePath · method · L1513-L1524 — private nextAvailablePath(targetPath: string): string
+- stripAppleScriptTimeoutWrapper · method · L1526-L1543 — private stripAppleScriptTimeoutWrapper(script: string): string | null
+- normalizeAppleScript · method · L1548-L1574 — private normalizeAppleScript(input: string): { script: string; modified: boolean }
+- searchMemories · method · L1580-L1676 — async searchMemories(input: { query: string; limit?: number; lane?: "archive" | "kit" | "all"; types?: string[]; }): Promise<{ results: Array<{ id: string; snippet: string; type: string; source: "db" | "markdown"; date: string; path?: string; }>; totalFound: number; }>
+- searchMemoryIndex · method · L1678-L1728 — async searchMemoryIndex(input: { query: string; limit?: number; observationTypes?: string[]; privacyStates?: Array<"normal" | "private" | "redacted" | "suppressed">; }): Promise<{ results: Array<{ id: string; title: string; type: string; date: string; sourceLabel: string; files: string[]; concepts: string[]; snippet: string; estimatedDetailTokens: number; }>; totalFound: number; }>
+- memoryTimeline · method · L1730-L1771 — async memoryTimeline(input: { memoryId?: string; query?: string; windowSize?: number }): Promise<{ results: Array<{ id: string; title: string; type: string; date: string; sourceLabel: string; snippet: string; isAnchor?: boolean; }>; totalFound: number; }>
+- memoryDetails · method · L1773-L1821 — async memoryDetails(input: { ids: string[] }): Promise<{ results: Array<{ id: string; title: string; type: string; sourceLabel: string; narrative: string; facts: string[]; concepts: string[]; filesRead: string[]; filesModified: string[]; tools: string[]; privacyState: string; content: string; }>; totalFound: number; }>
+- searchSessions · method · L1823-L1885 — async searchSessions(input: { query: string; taskId?: string; limit?: number; includeCheckpoints?: boolean; }): Promise<{ results: Array<{ taskId: string; timestamp: string; type: string; snippet: string; eventId?: string; seq?: number; }>; totalFound: number; }>
+- searchQuotes · method · L1887-L1969 — async searchQuotes(input: { query: string; taskId?: string; limit?: number; sourceTypes?: VerbatimQuoteSourceType[]; includeWorkspaceNotes?: boolean; }): Promise<{ results: Array<{ id: string; sourceType: VerbatimQuoteSourceType; objectId: string; taskId?: string; timestamp: string; excerpt: string; path?: string; rankingReason: string; sourcePriority: number; eventId?: string; seq?: number; startLine?: number; endLine?: number; memoryType?: string; }>; totalFound: number; }>
+- loadMemoryTopics · method · L1971-L2056 — async loadMemoryTopics(input: { query: string; limit?: number; refresh?: boolean }): Promise<{ indexPath: string; topics: Array<{ title: string; path: string; snippet: string; source: "memory" | "markdown"; }>; totalFound: number; }>
+- contextGrep · method · L2058-L2128 — async contextGrep(input: { query: string; taskId?: string; explicitUserRequest?: boolean; limit?: number; }): Promise<{ results: Array<{ id: string; kind: "message" | "summary"; taskId: string; timestamp: string; snippet: string; depth?: number; sourceMessageCount?: number; }>; totalFound: number; }>
+- contextDescribe · method · L2130-L2215 — async contextDescribe(input: { id: string; taskId?: string; explicitUserRequest?: boolean; sourceLimit?: number; }): Promise<{ result: { id: string; kind: "message" | "summary"; taskId: string; timestamp: string; text: string; depth?: number; sourceMessages?: Array<{ id: string; seq: number; role: string; timestamp: string; text: string; }>; } | null; }>
+- getToolDefinitions · method · L2220-L2754 — static getToolDefinitions(options?: { headless?: boolean }): LLMTool[]

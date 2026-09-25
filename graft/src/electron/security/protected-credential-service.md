@@ -1,0 +1,27 @@
+# src/electron/security/protected-credential-service.ts
+
+- ProtectedCredentialRecord · interface · L16-L25 — interface ProtectedCredentialRecord
+- ProtectedCredentialVault · interface · L27-L30 — interface ProtectedCredentialVault
+- ProtectedCredentialRequestInput · interface · L32-L37 — interface ProtectedCredentialRequestInput
+- ProtectedCredentialStoreLike · interface · L39-L42 — interface ProtectedCredentialStoreLike
+- normalizeDestination · function · L44-L58 — function normalizeDestination(value: string): string
+- normalizeAllowlist · function · L60-L66 — function normalizeAllowlist(values: string[]): string[]
+- destinationHost · function · L68-L70 — function destinationHost(value: string): string
+- ProtectedCredentialService · class · L72-L318 — class ProtectedCredentialService
+- constructor · method · L75-L84 — constructor( private readonly db: Database.Database, secureStore?: ProtectedCredentialStoreLike, )
+- createRequest · method · L86-L113 — createRequest( input: ProtectedCredentialRequestInput, now = Date.now(), ): ProtectedCredentialRequestSummary
+- fulfillRequest · method · L115-L153 — fulfillRequest(requestId: string, value: string, now = Date.now()): ProtectedCredentialSummary
+- denyRequest · method · L155-L163 — denyRequest(requestId: string, now = Date.now()): boolean
+- listRequests · method · L165-L184 — listRequests( options: { taskId?: string; includeResolved?: boolean } = {}, now = Date.now(), ): ProtectedCredentialRequestSummary[]
+- listCredentials · method · L186-L188 — listCredentials(): ProtectedCredentialSummary[]
+- revokeCredential · method · L190-L199 — revokeCredential(credentialId: string, now = Date.now()): boolean
+- resolveForDestination · method · L202-L216 — resolveForDestination(credentialId: string, destination: string, now = Date.now()): string
+- loadVault · method · L218-L224 — private loadVault(): ProtectedCredentialVault
+- saveVault · method · L226-L228 — private saveVault(vault: ProtectedCredentialVault): void
+- getRequestRow · method · L230-L234 — private getRequestRow(id: string): Record<string, unknown> | undefined
+- getRequest · method · L236-L244 — private getRequest(id: string, now = Date.now()): ProtectedCredentialRequestSummary | null
+- expirePending · method · L246-L260 — private expirePending(now: number): void
+- recordAudit · method · L262-L280 — private recordAudit( input: { requestId?: string; credentialId?: string; action: string; destination?: string }, now: number, ): void
+- parseAllowlist · method · L282-L289 — private parseAllowlist(value: unknown): string[]
+- mapRequest · method · L291-L305 — private mapRequest(row: Record<string, unknown>): ProtectedCredentialRequestSummary
+- toSummary · method · L307-L317 — private toSummary(credential: ProtectedCredentialRecord): ProtectedCredentialSummary

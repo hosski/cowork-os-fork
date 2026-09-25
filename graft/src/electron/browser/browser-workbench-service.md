@@ -1,0 +1,72 @@
+# src/electron/browser/browser-workbench-service.ts
+
+- AnyRecord · type · L10-L10 — type AnyRecord = Record<string, unknown>;
+- BrowserWorkbenchOpenRequest · interface · L12-L17 — interface BrowserWorkbenchOpenRequest
+- BrowserWorkbenchSessionRegistration · interface · L19-L25 — interface BrowserWorkbenchSessionRegistration
+- BrowserWorkbenchCursorEvent · interface · L27-L46 — interface BrowserWorkbenchCursorEvent
+- BrowserWorkbenchViewportEvent · interface · L48-L57 — interface BrowserWorkbenchViewportEvent
+- BrowserWorkbenchSession · type · L59-L61 — type BrowserWorkbenchSession = BrowserWorkbenchSessionRegistration & { registeredAt: number; };
+- normalizeSessionId · function · L63-L66 — function normalizeSessionId(sessionId?: unknown): string
+- sessionKey · function · L68-L70 — function sessionKey(taskId: string, sessionId?: unknown): string
+- normalizeUrl · function · L72-L80 — function normalizeUrl(rawUrl?: unknown): string
+- compactTextScript · function · L82-L99 — function compactTextScript(selector: string): string
+- findElementActionScript · function · L101-L111 — function findElementActionScript(selector: string, action: string): string
+- BrowserWorkbenchService · class · L113-L1085 — class BrowserWorkbenchService
+- constructor · method · L119-L119 — constructor(private browserSessionManager: BrowserSessionManager = getBrowserSessionManager())
+- setAccessPolicy · method · L121-L137 — setAccessPolicy(input: { taskId: string; sessionId?: unknown; networkEnabled: boolean; accessNetworkMode?: "disabled" | "on-request" | "enabled"; profileDomainRules?: AccessDomainRule[]; }): void
+- clearAccessPolicy · method · L139-L141 — clearAccessPolicy(taskId: string, sessionId?: unknown): void
+- setMainWindow · method · L143-L145 — setMainWindow(window: Any | null): void
+- registerSession · method · L147-L162 — registerSession(registration: BrowserWorkbenchSessionRegistration): BrowserWorkbenchSession
+- unregisterSession · method · L164-L173 — unregisterSession(input: { taskId: string; sessionId?: string; webContentsId?: number }): void
+- updateSessionStatus · method · L175-L194 — updateSessionStatus(input: { taskId: string; sessionId?: string; webContentsId?: number; url?: string; title?: string; }): void
+- getSession · method · L196-L200 — getSession(taskId: string, sessionId?: unknown): BrowserWorkbenchSession | null
+- allowLocalPreviewUrl · method · L202-L208 — allowLocalPreviewUrl(rawUrl: string): void
+- revokeLocalPreviewUrl · method · L210-L215 — revokeLocalPreviewUrl(rawUrl: string): void
+- isAllowedLocalPreviewUrl · method · L217-L228 — isAllowedLocalPreviewUrl(rawUrl: string): boolean
+- requestOpen · method · L230-L251 — async requestOpen(input: { taskId: string; sessionId?: unknown; url?: unknown; }): Promise<BrowserWorkbenchSession | null>
+- navigate · method · L253-L286 — async navigate(input: { taskId: string; sessionId?: unknown; url: unknown; waitUntil?: string; }): Promise<AnyRecord | null>
+- getContent · method · L288-L304 — async getContent(taskId: string, sessionId?: unknown): Promise<AnyRecord | null>
+- snapshot · method · L306-L308 — async snapshot(taskId: string, sessionId?: unknown): Promise<AnyRecord | null>
+- clickRef · method · L310-L317 — async clickRef(taskId: string, ref: string, sessionId?: unknown): Promise<AnyRecord | null>
+- hoverRef · method · L319-L326 — async hoverRef(taskId: string, ref: string, sessionId?: unknown): Promise<AnyRecord | null>
+- dragRef · method · L328-L340 — async dragRef( taskId: string, fromRef: string, toRef: string, sessionId?: unknown, ): Promise<AnyRecord | null>
+- fillRef · method · L342-L354 — async fillRef( taskId: string, ref: string, value: string, sessionId?: unknown, ): Promise<AnyRecord | null>
+- typeRef · method · L356-L368 — async typeRef( taskId: string, ref: string, text: string, sessionId?: unknown, ): Promise<AnyRecord | null>
+- getTextRef · method · L370-L372 — async getTextRef(taskId: string, ref: string, sessionId?: unknown): Promise<AnyRecord | null>
+- uploadFile · method · L374-L382 — async uploadFile(input: { taskId: string; sessionId?: unknown; filePath: string; ref?: string; selector?: string; }): Promise<AnyRecord | null>
+- handleDialog · method · L384-L391 — async handleDialog(input: { taskId: string; sessionId?: unknown; accept?: boolean; promptText?: string; }): Promise<AnyRecord | null>
+- getTabs · method · L393-L395 — getTabs(taskId: string, sessionId?: unknown): AnyRecord[]
+- getConsole · method · L397-L399 — getConsole(taskId: string, sessionId?: unknown): AnyRecord | null
+- getNetwork · method · L401-L403 — getNetwork(taskId: string, sessionId?: unknown): AnyRecord | null
+- getDownloads · method · L405-L407 — getDownloads(taskId: string, sessionId?: unknown): AnyRecord | null
+- getStorage · method · L409-L411 — async getStorage(taskId: string, sessionId?: unknown): Promise<AnyRecord | null>
+- emulate · method · L413-L446 — async emulate(input: { taskId: string; sessionId?: unknown; width?: number; height?: number; deviceScaleFactor?: number; mobile?: boolean; }): Promise<AnyRecord | null>
+- traceStart · method · L448-L450 — async traceStart(taskId: string, sessionId?: unknown): Promise<AnyRecord | null>
+- traceStop · method · L452-L454 — async traceStop(taskId: string, sessionId?: unknown): Promise<AnyRecord | null>
+- click · method · L456-L474 — async click(taskId: string, selector: string, sessionId?: unknown): Promise<AnyRecord | null>
+- fill · method · L476-L498 — async fill( taskId: string, selector: string, value: string, sessionId?: unknown, ): Promise<AnyRecord | null>
+- type · method · L500-L522 — async type( taskId: string, selector: string, text: string, sessionId?: unknown, ): Promise<AnyRecord | null>
+- press · method · L524-L533 — async press(taskId: string, key: string, sessionId?: unknown): Promise<AnyRecord | null>
+- scroll · method · L535-L569 — async scroll( taskId: string, direction: string, amount?: number, sessionId?: unknown, ): Promise<AnyRecord | null>
+- waitForSelector · method · L571-L597 — async waitForSelector( taskId: string, selector: string, timeoutMs?: number, sessionId?: unknown, ): Promise<AnyRecord | null>
+- select · method · L599-L623 — async select( taskId: string, selector: string, value: string, sessionId?: unknown, ): Promise<AnyRecord | null>
+- getText · method · L625-L642 — async getText(taskId: string, selector: string, sessionId?: unknown): Promise<AnyRecord | null>
+- evaluate · method · L644-L649 — async evaluate(taskId: string, script: string, sessionId?: unknown): Promise<AnyRecord | null>
+- goBack · method · L651-L658 — async goBack(taskId: string, sessionId?: unknown): Promise<AnyRecord | null>
+- goForward · method · L660-L667 — async goForward(taskId: string, sessionId?: unknown): Promise<AnyRecord | null>
+- reload · method · L669-L676 — async reload(taskId: string, sessionId?: unknown): Promise<AnyRecord | null>
+- screenshot · method · L678-L725 — async screenshot(input: { taskId: string; sessionId?: unknown; workspacePath: string; workspacePermissions?: WorkspacePermissions; filename?: string; includeDataUrl?: boolean; fullPage?: boolean; }): Promise<{ path: string; fullPath: string; width: number; height: number; dataUrl?: string; } | null>
+- inspectPoint · method · L727-L824 — async inspectPoint(input: { taskId: string; sessionId?: unknown; x: number; y: number; }): Promise<AnyRecord | null>
+- resolveAnnotationTargets · method · L826-L915 — async resolveAnnotationTargets(input: { taskId: string; sessionId?: unknown; targets: AnyRecord[]; }): Promise<AnyRecord[]>
+- captureFullPage · method · L917-L939 — private async captureFullPage( contents: Any, ): Promise<{ png: Buffer; size: { width: number; height: number } }>
+- waitForSession · method · L941-L967 — private waitForSession( taskId: string, sessionId: string, timeoutMs: number, ): Promise<BrowserWorkbenchSession | null>
+- waitForLoad · method · L969-L982 — private waitForLoad(contents: Any, timeoutMs: number): Promise<void>
+- finish · function · L973-L978 — finish = ()
+- emitCursor · method · L984-L999 — private emitCursor( session: BrowserWorkbenchSession | null, event: Omit<BrowserWorkbenchCursorEvent, "taskId" | "sessionId" | "at">, ): void
+- emitViewport · method · L1001-L1016 — private emitViewport( session: BrowserWorkbenchSession | null, event: Omit<BrowserWorkbenchViewportEvent, "taskId" | "sessionId" | "at">, ): void
+- moveCursorToElement · method · L1018-L1030 — private async moveCursorToElement( session: BrowserWorkbenchSession | null, contents: Any, selector: string, kind: BrowserWorkbenchCursorEvent["kind"], label: string, ): Promise<{ x: number; y: number } | null>
+- getElementPoint · method · L1032-L1051 — private async getElementPoint( contents: Any, selector: string, ): Promise<{ x: number; y: number } | null>
+- getViewportCenter · method · L1053-L1066 — private async getViewportCenter(contents: Any): Promise<{ x: number; y: number }>
+- sleep · method · L1068-L1073 — private sleep(ms: number): Promise<void>
+- getWebContents · method · L1075-L1084 — private async getWebContents(session: BrowserWorkbenchSession | null): Promise<Any | null>
+- getBrowserWorkbenchService · function · L1089-L1091 — function getBrowserWorkbenchService(): BrowserWorkbenchService

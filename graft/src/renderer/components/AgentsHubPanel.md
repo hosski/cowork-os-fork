@@ -1,0 +1,71 @@
+# src/renderer/components/AgentsHubPanel.tsx
+
+- SkillLite · type · L75-L79 — type SkillLite = { id: string; name: string; description?: string; };
+- PluginPackLite · type · L81-L85 — type PluginPackLite = { name: string; displayName: string; recommendedConnectors?: string[]; };
+- AgentsHubAgentRole · type · L87-L102 — type AgentsHubAgentRole = { id: string; name?: string; displayName: string; description?: string; icon?: string; color?: string; isActive: boolean; soul?: string; heartbeatEnabled?: boolean; heartbeatPolicy?: { enabled?: boolean; cadenceMinutes?: number; }; pulseEveryMinutes?: number; };
+- AgentsLibraryTab · type · L104-L104 — type AgentsLibraryTab = "all" | "recent" | "mine" | "scheduled" | "templates";
+- AgentDraft · type · L106-L154 — type AgentDraft = { agentId?: string; status?: ManagedAgent["status"]; templateId?: string; workflowBrief: string; name: string; subtitle?: string; description: string; icon: string; color?: string; systemPrompt: string; operatingNotes: string; starterPrompts: AgentStarterPrompt[]; builderPlan?: AgentBuilderPlan; missingConnections: AgentBuilderConnectionRequirement[]; executionMode: ManagedAgentVersion["executionMode"]; teamTemplate?: ManagedAgentTeamTemplate; templateRequiredPackIds: string[]; templateRequiredConnectorIds: string[]; expectedArtifacts: NonNullable<AgentTemplate["expectedArtifacts"]>; teamRoleNames: string[]; selectedSkills: string[]; selectedMcpServers: string[]; selectedToolFamilies: ManagedAgentToolFamily[]; fileRefs: ManagedAgentFileRef[]; memoryConfig: ManagedAgentMemoryConfig; scheduleConfig: ManagedAgentScheduleConfig; channelTargets: ManagedAgentChannelTarget[]; audioSummaryEnabled: boolean; audioSummaryStyle: "public-radio" | "executive-briefing" | "study-guide"; imageGenProfileId?: string; sharing: ManagedAgentSharingConfig; approvalPolicy: ManagedAgentApprovalPolicy; deployment: ManagedAgentDeploymentConfig; workspaceId: string; accessProfileId?: AccessProfileId; /** @deprecated Kept only to rehydrate old drafts; the UI no longer writes it. */ enableShell: boolean; enableBrowser: boolean; enableComputerUse: boolean; defaultEnvironmentId?: string; routines: Array<{ id?: string; name: string; description?: string; enabled: boolean; trigger: ManagedAgentRoutineTriggerConfig; }>; };
+- ConversionPanel · type · L156-L156 — type ConversionPanel = "agent-role" | "automation-profile" | null;
+- PersistStudioDraftResult · type · L158-L161 — type PersistStudioDraftResult = { agentId: string; environmentId: string; };
+- AgentConnectionSettingsTab · type · L163-L163 — type AgentConnectionSettingsTab = "integrations" | "mcp" | "skills" | "morechannels" | "slack";
+- AgentsHubPanelProps · interface · L165-L171 — interface AgentsHubPanelProps
+- normalizeWorkflowText · function · L227-L232 — function normalizeWorkflowText(value: string): string
+- titleizeWorkflowName · function · L234-L241 — function titleizeWorkflowName(value: string): string
+- suggestTemplateFromWorkflowBrief · function · L243-L271 — function suggestTemplateFromWorkflowBrief( workflowBrief: string, templates: AgentTemplate[], ): AgentTemplate | undefined
+- getStudioConfig · function · L273-L279 — function getStudioConfig(version?: ManagedAgentVersion): ManagedAgentStudioConfig | undefined
+- sessionStatusLabel · function · L281-L283 — function sessionStatusLabel(session: ManagedSession): string
+- formatRelative · function · L285-L294 — function formatRelative(timestamp?: number): string
+- formatCountLabel · function · L296-L298 — function formatCountLabel(count: number, singular: string, plural = `${singular}s`): string
+- formatSharingLabel · function · L300-L304 — function formatSharingLabel(sharing?: ManagedAgentSharingConfig): string
+- formatIdentifierLabel · function · L306-L312 — function formatIdentifierLabel(value: string): string
+- parseNumberedInstructionList · function · L314-L336 — function parseNumberedInstructionList( paragraph: string, ): { lead?: string; items: string[] } | null
+- resolveConnectionSettingsTab · function · L338-L349 — function resolveConnectionSettingsTab( connection: AgentBuilderConnectionRequirement, ): AgentConnectionSettingsTab
+- uniqueValues · function · L351-L353 — function uniqueValues<T>(values: T[]): T[]
+- optionConnectionKeys · function · L355-L359 — function optionConnectionKeys(option: AgentBuilderSelectionOption): Set<string>
+- getUnresolvedBuilderSelectionRequirements · function · L361-L367 — function getUnresolvedBuilderSelectionRequirements( plan?: AgentBuilderPlan | null, ): AgentBuilderSelectionRequirement[]
+- applyBuilderSelectionRequirement · function · L369-L426 — function applyBuilderSelectionRequirement( plan: AgentBuilderPlan, requirementId: string, optionId: string, ): AgentBuilderPlan
+- isTerminalManagedSessionStatus · function · L428-L430 — function isTerminalManagedSessionStatus(status?: ManagedSession["status"]): boolean
+- parseAgentRoleSoul · function · L432-L442 — function parseAgentRoleSoul(soul?: string): Record<string, unknown> | null
+- isManagedAgentMirrorRole · function · L444-L447 — function isManagedAgentMirrorRole(role: Pick<AgentsHubAgentRole, "soul">): boolean
+- getMissionControlActiveAgentRoles · function · L449-L458 — function getMissionControlActiveAgentRoles<T extends AgentsHubAgentRole>( agentRoles: T[], ): T[]
+- extractManagedSessionContentText · function · L460-L476 — function extractManagedSessionContentText(content: unknown): string | undefined
+- getManagedSessionEventText · function · L478-L495 — function getManagedSessionEventText(event: ManagedSessionEvent): string
+- buildDraftFromTemplate · function · L497-L556 — function buildDraftFromTemplate( template: AgentTemplate, workspaces: Workspace[], ): AgentDraft
+- buildDraftFromAgent · function · L558-L623 — function buildDraftFromAgent( agent: ManagedAgent, version: ManagedAgentVersion | undefined, environments: ManagedEnvironment[], workspaces: Workspace[], routines: ManagedAgentRoutineRecord[] = [], ): AgentDraft
+- makeBlankDraft · function · L625-L670 — function makeBlankDraft(workspaces: Workspace[]): AgentDraft
+- buildDraftFromWorkflowBrief · function · L672-L693 — function buildDraftFromWorkflowBrief( workflowBrief: string, templates: AgentTemplate[], workspaces: Workspace[], ): AgentDraft
+- buildDraftFromBuilderPlan · function · L695-L749 — function buildDraftFromBuilderPlan( plan: AgentBuilderPlan, workspaces: Workspace[], ): AgentDraft
+- normalizeRoleKey · function · L751-L756 — function normalizeRoleKey(value?: string): string
+- buildTeamTemplateFromRoleNames · function · L758-L781 — function buildTeamTemplateFromRoleNames( roleNames: string[], agentRoles: AgentsHubAgentRole[], ): ManagedAgentTeamTemplate | undefined
+- buildDraftFromTemplateWithRoles · function · L783-L794 — function buildDraftFromTemplateWithRoles( template: AgentTemplate, workspaces: Workspace[], agentRoles: AgentsHubAgentRole[], ): AgentDraft
+- getEffectiveApprovalPreview · function · L796-L826 — function getEffectiveApprovalPreview( approvalPolicy?: ManagedAgentApprovalPolicy, deployment?: ManagedAgentDeploymentConfig, )
+- getApprovalRuntimeMatrix · function · L828-L861 — function getApprovalRuntimeMatrix(approvalPolicy?: ManagedAgentApprovalPolicy): Array<{ semanticAction: string; runtimeType: ApprovalType; runtimeLabel: string; behavior: "auto_approve" | "require_approval"; }>
+- sortRuntimeToolCatalogEntries · function · L863-L877 — function sortRuntimeToolCatalogEntries( entries: ManagedAgentRuntimeToolCatalogEntry[], ): ManagedAgentRuntimeToolCatalogEntry[]
+- makeBlankRoutine · function · L879-L913 — function makeBlankRoutine( type: ManagedAgentRoutineTriggerConfig["type"] = "manual", ): AgentDraft["routines"][number]
+- getSlackDeploymentHealth · function · L915-L943 — function getSlackDeploymentHealth( studio: ManagedAgentStudioConfig | undefined, slackChannels: ChannelData[], agentId = "", ): ManagedAgentSlackDeploymentHealth
+- normalizeSlackDeploymentHealth · function · L945-L965 — function normalizeSlackDeploymentHealth( health: ManagedAgentSlackDeploymentHealth | null | undefined, fallback: ManagedAgentSlackDeploymentHealth, ): ManagedAgentSlackDeploymentHealth
+- getTemplateGlyph · function · L967-L1001 — function getTemplateGlyph(template: AgentTemplate)
+- AgentsHubPanel · function · L1003-L4073 — function AgentsHubPanel({ onOpenMissionControl, onOpenAgentPersonas, onOpenSlackSettings, onOpenSettings, onOpenTask, }: AgentsHubPanelProps)
+- handleConnectionRequirementAction · function · L1078-L1094 — handleConnectionRequirementAction = (connection: AgentBuilderConnectionRequirement)
+- loadData · function · L1096-L1220 — loadData = async ()
+- refresh · function · L1337-L1373 — refresh = async ()
+- toggleSkill · function · L1484-L1492 — toggleSkill = (skillId: string)
+- toggleToolFamily · function · L1494-L1502 — toggleToolFamily = (toolFamily: ManagedAgentToolFamily)
+- handleSelectFiles · function · L1504-L1517 — handleSelectFiles = async ()
+- handleAddSlackTarget · function · L1519-L1538 — handleAddSlackTarget = ()
+- handleCreateImageProfile · function · L1540-L1555 — handleCreateImageProfile = async ()
+- handleDraftFromWorkflow · function · L1557-L1570 — handleDraftFromWorkflow = ()
+- handleGenerateBuilderPlan · function · L1572-L1592 — handleGenerateBuilderPlan = async (promptOverride?: string)
+- handleCreateFromBuilderPlan · function · L1594-L1616 — handleCreateFromBuilderPlan = async ()
+- handleEditBuilderPlan · function · L1618-L1622 — handleEditBuilderPlan = ()
+- handleOpenCreateComposer · function · L1624-L1629 — handleOpenCreateComposer = ()
+- persistStudioDraft · function · L1631-L1790 — persistStudioDraft = async (): Promise<PersistStudioDraftResult | null>
+- handleSaveDraft · function · L1792-L1803 — handleSaveDraft = async ()
+- handleTestDraft · function · L1805-L1841 — handleTestDraft = async ()
+- handleRunAgentInMainTask · function · L1843-L1889 — handleRunAgentInMainTask = async (agent: ManagedAgent, prompt: string, title: string)
+- handleConvertAgentRole · function · L1891-L1904 — handleConvertAgentRole = async (agentRoleId: string)
+- handleConvertAutomationProfile · function · L1906-L1921 — handleConvertAutomationProfile = async (automationProfileId: string)
+- handlePublishAgent · function · L1923-L1926 — handlePublishAgent = async (agentId: string)
+- handleSuspendAgent · function · L1928-L1931 — handleSuspendAgent = async (agentId: string)
+- openSelectedAgentDraft · function · L3416-L3425 — openSelectedAgentDraft = ()
+- renderAgentsStyles · function · L4075-L6382 — function renderAgentsStyles()

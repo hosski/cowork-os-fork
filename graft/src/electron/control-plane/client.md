@@ -1,0 +1,46 @@
+# src/electron/control-plane/client.ts
+
+- ClientAuthState · type · L20-L23 — type ClientAuthState = | "pending" // Initial state, awaiting handshake | "authenticated" // Successfully authenticated | "rejected";
+- ClientScope · type · L28-L32 — type ClientScope = | "admin" // Full access | "read" // Read-only access | "write" // Read + write access | "operator";
+- ClientRole · type · L37-L37 — type ClientRole = "operator" | "node";
+- NodeCapabilityType · type · L42-L49 — type NodeCapabilityType = | "camera" | "location" | "screen" | "sms" | "voice" | "canvas" | "system";
+- NodePlatform · type · L54-L54 — type NodePlatform = "ios" | "android" | "macos";
+- ClientInfo · interface · L59-L102 — interface ClientInfo
+- ControlPlaneClient · class · L107-L354 — class ControlPlaneClient
+- constructor · method · L111-L126 — constructor(socket: WebSocket, remoteAddress: string, userAgent?: string, origin?: string)
+- id · method · L131-L133 — get id(): string
+- isAuthenticated · method · L138-L140 — get isAuthenticated(): boolean
+- isConnected · method · L145-L147 — get isConnected(): boolean
+- hasScope · method · L152-L154 — hasScope(scope: ClientScope): boolean
+- isNode · method · L159-L161 — get isNode(): boolean
+- authenticate · method · L166-L171 — authenticate(scopes: ClientScope[], deviceName?: string): void
+- authenticateAsNode · method · L176-L199 — authenticateAsNode(options: { deviceName?: string; platform: NodePlatform; version: string; deviceId?: string; modelIdentifier?: string; capabilities: NodeCapabilityType[]; commands: string[]; permissions: Record<string, boolean>; }): void
+- updateCapabilities · method · L204-L214 — updateCapabilities( capabilities: NodeCapabilityType[], commands: string[], permissions: Record<string, boolean>, ): void
+- setForeground · method · L219-L223 — setForeground(isForeground: boolean): void
+- getNodeInfo · method · L228-L257 — getNodeInfo(): { id: string; displayName: string; platform: NodePlatform; version: string; deviceId?: string; modelIdentifier?: string; capabilities: NodeCapabilityType[]; commands: string[]; permissions: Record<string, boolean>; connectedAt: number; lastActivityAt: number; isForeground?: boolean; } | null
+- reject · method · L262-L264 — reject(): void
+- updateActivity · method · L269-L271 — updateActivity(): void
+- updateHeartbeat · method · L276-L279 — updateHeartbeat(): void
+- send · method · L284-L296 — send(frame: Frame): boolean
+- sendEvent · method · L301-L305 — sendEvent(event: string, payload?: unknown, stateVersion?: string): boolean
+- sendChallenge · method · L310-L315 — sendChallenge(): void
+- close · method · L320-L324 — close(code?: number, reason?: string): void
+- getSummary · method · L329-L353 — getSummary(): { id: string; remoteAddress: string; deviceName?: string; authenticated: boolean; scopes: ClientScope[]; connectedAt: number; lastActivityAt: number; role: ClientRole; platform?: NodePlatform; capabilities?: NodeCapabilityType[]; }
+- ClientRegistry · class · L359-L529 — class ClientRegistry
+- add · method · L365-L367 — add(client: ControlPlaneClient): void
+- remove · method · L372-L374 — remove(clientId: string): boolean
+- get · method · L379-L381 — get(clientId: string): ControlPlaneClient | undefined
+- getAll · method · L386-L388 — getAll(): ControlPlaneClient[]
+- getAuthenticated · method · L393-L395 — getAuthenticated(): ControlPlaneClient[]
+- count · method · L400-L402 — get count(): number
+- authenticatedCount · method · L407-L409 — get authenticatedCount(): number
+- broadcast · method · L414-L422 — broadcast(event: string, payload?: unknown, stateVersion?: string): number
+- closeAll · method · L427-L432 — closeAll(code?: number, reason?: string): void
+- cleanup · method · L437-L446 — cleanup(): number
+- getStatus · method · L451-L464 — getStatus(): { total: number; authenticated: number; pending: number; clients: ReturnType<ControlPlaneClient["getSummary"]>[]; }
+- getNodes · method · L471-L473 — getNodes(): ControlPlaneClient[]
+- nodeCount · method · L478-L480 — get nodeCount(): number
+- getNodeByIdOrName · method · L485-L493 — getNodeByIdOrName(idOrName: string): ControlPlaneClient | undefined
+- getNodeInfoList · method · L498-L502 — getNodeInfoList(): NonNullable<ReturnType<ControlPlaneClient["getNodeInfo"]>>[]
+- broadcastToNodes · method · L507-L515 — broadcastToNodes(event: string, payload?: unknown, stateVersion?: string): number
+- broadcastToOperators · method · L520-L528 — broadcastToOperators(event: string, payload?: unknown, stateVersion?: string): number

@@ -1,0 +1,63 @@
+# src/electron/settings/personality-manager.ts
+
+- isV2Config · function · L72-L79 — function isV2Config(stored: unknown): stored is PersonalityConfigV2
+- migrateV1ToV2 · function · L81-L120 — function migrateV1ToV2(v1: PersonalitySettings): PersonalityConfigV2
+- PersonalityManager · class · L122-L1372 — class PersonalityManager
+- onSettingsChanged · method · L133-L136 — static onSettingsChanged(callback: (settings: PersonalitySettings) => void): () => void
+- removeAllListeners · method · L141-L143 — static removeAllListeners(): void
+- emitSettingsChanged · method · L148-L153 — private static emitSettingsChanged(): void
+- getDefaultConfigV2 · method · L155-L160 — private static getDefaultConfigV2(): PersonalityConfigV2
+- configV2ToSettings · method · L162-L183 — private static configV2ToSettings( config: PersonalityConfigV2 | null, ): PersonalitySettings | null
+- initialize · method · L188-L199 — static initialize(): void
+- migrateFromLegacyFile · method · L204-L269 — private static migrateFromLegacyFile(): void
+- ensureInitialized · method · L274-L280 — private static ensureInitialized(): void
+- loadConfigV2 · method · L285-L323 — static loadConfigV2(): PersonalityConfigV2
+- mergeConfigWithDefaults · method · L325-L342 — private static mergeConfigWithDefaults(stored: PersonalityConfigV2): PersonalityConfigV2
+- loadSettings · method · L347-L353 — static loadSettings(): PersonalitySettings
+- saveConfigV2 · method · L358-L377 — static saveConfigV2(config: PersonalityConfigV2): void
+- saveSettings · method · L382-L395 — static saveSettings(settings: PersonalitySettings): void
+- setActivePersonality · method · L400-L408 — static setActivePersonality(personalityId: PersonalityId): void
+- setActivePersona · method · L413-L431 — static setActivePersona(personaId: PersonaId): void
+- getActivePersonality · method · L436-L439 — static getActivePersonality(): PersonalityDefinition | undefined
+- getActivePersona · method · L444-L447 — static getActivePersona(): PersonaDefinition | undefined
+- getPersonalityPromptById · method · L453-L468 — static getPersonalityPromptById(personalityId: string): string
+- getPersonalityPrompt · method · L474-L477 — static getPersonalityPrompt(contextMode?: ContextMode): string
+- renderBehavioralRules · method · L479-L491 — private static renderBehavioralRules(rules: BehavioralRule[], contextMode?: ContextMode): string
+- renderCustomInstructions · method · L493-L503 — private static renderCustomInstructions(ci: { aboutUser?: string; responseGuidance?: string; }): string
+- renderTraitsPrompt · method · L505-L521 — private static renderTraitsPrompt( traits: { id: string; label: string; intensity: number }[], ): string
+- getCommunicationStylePrompt · method · L523-L582 — private static getCommunicationStylePrompt(style: CommunicationStyle): string
+- renderExpertisePrompt · method · L584-L592 — private static renderExpertisePrompt( expertise: { domain: string; level: string; notes?: string }[], ): string
+- renderContextOverride · method · L594-L605 — private static renderContextOverride( overrides: { mode: ContextMode; styleOverrides?: Partial<CommunicationStyle> }[], mode: ContextMode, ): string
+- renderExamplesPrompt · method · L607-L616 — private static renderExamplesPrompt( examples: { userMessage: string; idealResponse: string }[], ): string
+- getResponseStylePrompt · method · L621-L686 — private static getResponseStylePrompt(style?: ResponseStylePreferences): string
+- getQuirksPrompt · method · L691-L732 — private static getQuirksPrompt(quirks?: PersonalityQuirks, personaId?: PersonaId): string
+- getIdentityPrompt · method · L737-L797 — static getIdentityPrompt(): string
+- getGreeting · method · L802-L845 — static getGreeting(): string
+- checkMilestone · method · L850-L860 — private static checkMilestone(tasksCompleted: number): number | null
+- recordTaskCompleted · method · L865-L889 — static recordTaskCompleted(workspaceName?: string): void
+- setUserName · method · L894-L902 — static setUserName(name: string): void
+- getUserName · method · L907-L909 — static getUserName(): string | undefined
+- getDefinitions · method · L914-L916 — static getDefinitions(): PersonalityDefinition[]
+- sanitizeRelationshipData · method · L918-L937 — private static sanitizeRelationshipData( relationship: RelationshipData | undefined, ): RelationshipData
+- getPersonaDefinitions · method · L942-L944 — static getPersonaDefinitions(): PersonaDefinition[]
+- getAgentName · method · L949-L951 — static getAgentName(): string
+- setAgentName · method · L956-L960 — static setAgentName(name: string): void
+- setResponseStyle · method · L965-L972 — static setResponseStyle(style: Partial<ResponseStylePreferences>): void
+- setQuirks · method · L977-L984 — static setQuirks(quirks: Partial<PersonalityQuirks>): void
+- getRelationshipStats · method · L989-L1014 — static getRelationshipStats(): { tasksCompleted: number; projectsCount: number; daysTogether: number; nextMilestone: number | null; }
+- clearCache · method · L1019-L1022 — static clearCache(): void
+- renderSoulDocument · method · L1027-L1090 — static renderSoulDocument(config: PersonalityConfigV2): string
+- parseSoulDocument · method · L1095-L1156 — static parseSoulDocument(md: string): Partial<PersonalityConfigV2>
+- exportProfile · method · L1161-L1177 — static exportProfile(format: "json" | "md" = "json"): string
+- importProfile · method · L1182-L1206 — static importProfile(data: string): PersonalityConfigV2
+- getPreviewPrompt · method · L1211-L1226 — static getPreviewPrompt(draft: Partial<PersonalityConfigV2>, contextMode?: ContextMode): string
+- buildPromptFromConfig · method · L1228-L1266 — private static buildPromptFromConfig( config: PersonalityConfigV2, contextMode?: ContextMode, ): string
+- getTraitPresets · method · L1271-L1276 — static getTraitPresets(): Record< string, { name: string; description: string; icon: string; traits: Record<string, number> } >
+- adjustTraits · method · L1281-L1290 — static adjustTraits(adjustments: Record<string, number>): void
+- addBehavioralRule · method · L1295-L1305 — static addBehavioralRule(rule: { type: BehavioralRule["type"]; rule: string }): void
+- setExpertise · method · L1310-L1325 — static setExpertise( domain: string, level: "familiar" | "proficient" | "expert", notes?: string, ): void
+- getDefaults · method · L1330-L1332 — static getDefaults(): PersonalitySettings
+- resetToDefaults · method · L1338-L1364 — static resetToDefaults(preserveRelationship = true): void
+- isInitialized · method · L1369-L1371 — static isInitialized(): boolean
+- isValidPersonalityId · function · L1374-L1385 — function isValidPersonalityId(value: unknown): value is PersonalityId
+- isValidPersonaId · function · L1387-L1402 — function isValidPersonaId(value: unknown): value is PersonaId

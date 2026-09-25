@@ -1,0 +1,31 @@
+# src/electron/mcp/types.ts
+
+- MCPTransportType · type · L9-L9 — type MCPTransportType = "stdio" | "sse" | "websocket" | "streamable-http";
+- MCPConnectionStatus · type · L12-L17 — type MCPConnectionStatus = | "disconnected" | "connecting" | "connected" | "reconnecting" | "error";
+- MCPAuthConfig · interface · L20-L35 — interface MCPAuthConfig
+- MCPServerConfig · interface · L38-L79 — interface MCPServerConfig
+- MCPTool · interface · L82-L91 — interface MCPTool
+- MCPToolProperty · interface · L94-L102 — interface MCPToolProperty
+- MCPResource · interface · L105-L110 — interface MCPResource
+- MCPPrompt · interface · L113-L121 — interface MCPPrompt
+- MCPServerCapabilities · interface · L124-L136 — interface MCPServerCapabilities
+- MCPServerInfo · interface · L139-L144 — interface MCPServerInfo
+- MCPTextContent · interface · L147-L150 — interface MCPTextContent
+- MCPImageContent · interface · L152-L156 — interface MCPImageContent
+- MCPResourceContent · interface · L158-L166 — interface MCPResourceContent
+- MCPResourceReadResult · interface · L168-L175 — interface MCPResourceReadResult
+- MCPContent · type · L177-L177 — type MCPContent = MCPTextContent | MCPImageContent | MCPResourceContent;
+- MCPCallResult · interface · L180-L183 — interface MCPCallResult
+- MCPServerStatus · interface · L186-L197 — interface MCPServerStatus
+- MCPSettings · interface · L200-L217 — interface MCPSettings
+- JSONRPCRequest · interface · L232-L237 — interface JSONRPCRequest
+- JSONRPCResponse · interface · L239-L244 — interface JSONRPCResponse
+- JSONRPCError · interface · L246-L250 — interface JSONRPCError
+- JSONRPCNotification · interface · L252-L256 — interface JSONRPCNotification
+- MCPTransport · interface · L305-L314 — interface MCPTransport
+- MCPClientEvent · type · L317-L324 — type MCPClientEvent = | { type: "server_connected"; serverId: string; serverInfo: MCPServerInfo } | { type: "server_disconnected"; serverId: string; error?: string } | { type: "server_error"; serverId: string; error: string } | { type: "server_reconnecting"; serverId: string; attempt: number } | { type: "tools_changed"; serverId: string; tools: MCPTool[] } | { type: "resources_changed"; serverId: string; resources: MCPResource[] } | { type: "prompts_changed"; serverId: string; prompts: MCPPrompt[] };
+- MCPInstallMethod · type · L329-L329 — type MCPInstallMethod = "npm" | "pip" | "binary" | "docker" | "manual";
+- MCPRegistryEntry · interface · L332-L386 — interface MCPRegistryEntry
+- MCPRegistry · interface · L389-L393 — interface MCPRegistry
+- MCPRegistrySearchOptions · interface · L396-L403 — interface MCPRegistrySearchOptions
+- MCPUpdateInfo · interface · L406-L411 — interface MCPUpdateInfo

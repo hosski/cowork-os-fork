@@ -1,0 +1,31 @@
+# src/renderer/components/BrowserWorkbenchView.tsx
+
+- BrowserWorkbenchMode · type · L44-L44 — type BrowserWorkbenchMode = "sidebar" | "fullscreen";
+- BrowserSettingsTab · type · L45-L45 — type BrowserSettingsTab = Any;
+- BrowserAnnotationDraft · type · L46-L52 — type BrowserAnnotationDraft = { dataUrl: string; sourcePath?: string; fullPath?: string; width: number; height: number; };
+- BrowserCursorState · type · L53-L60 — type BrowserCursorState = { x: number; y: number; kind: string; label?: string; pulse?: boolean; at: number; } | null;
+- BrowserWorkbenchTab · type · L61-L65 — type BrowserWorkbenchTab = { id: string; url: string; title: string; };
+- BrowserViewportOverride · type · L66-L71 — type BrowserViewportOverride = { width: number; height: number; mobile: boolean; label: string; };
+- YouTubeAskSource · type · L72-L80 — type YouTubeAskSource = { videoId: string; title?: string; channel?: string; startMs: number; endMs?: number; text: string; url: string; };
+- YouTubeAskState · type · L81-L86 — type YouTubeAskState = { answer?: string; sources?: YouTubeAskSource[]; suggestedFollowUps?: string[]; error?: string; } | null;
+- BrowserWorkbenchViewProps · type · L88-L113 — type BrowserWorkbenchViewProps = { taskId: string; sessionId: string; initialUrl?: string; workspaceId?: string; workspacePath?: string; mode: BrowserWorkbenchMode; onClose: () => void; onFullscreen: () => void; onExitFullscreen: () => void; onStatusChange?: (status: { url?: string; title?: string }) => void; onSendMessage?: (message: string, images?: ImageAttachment[]) => Promise<void>; selectedModelLabel?: string; selectedModel?: string; selectedProvider?: LLMProviderType; selectedReasoningEffort?: LLMReasoningEffort; availableModels?: LLMModelInfo[]; availableProviders?: LLMProviderInfo[]; onModelChange?: (selection: { providerType?: LLMProviderType; modelKey: string; reasoningEffort?: LLMReasoningEffort; }) => void; onOpenSettings?: (tab?: BrowserSettingsTab) => void; turnContext?: SpreadsheetTurnContext | null; };
+- normalizeUrl · function · L117-L132 — function normalizeUrl(rawUrl: string): string
+- getDomain · function · L134-L141 — function getDomain(url: string): string
+- getExternalBrowserUrl · function · L143-L155 — function getExternalBrowserUrl(rawUrl: string): string | null
+- clampNumber · function · L157-L160 — function clampNumber(value: number, min: number, max: number): number
+- getAnnotationUrlKey · function · L162-L173 — function getAnnotationUrlKey(rawUrl: string): string
+- annotationViewportMatches · function · L175-L184 — function annotationViewportMatches( target: BrowserAnnotationTargetRef, size: { width: number; height: number } | null, ): boolean
+- getYouTubeVideoId · function · L186-L207 — function getYouTubeVideoId(rawUrl: string): string | null
+- validId · function · L190-L191 — validId = (value: string | null | undefined)
+- formatYouTubeTimestamp · function · L209-L218 — function formatYouTubeTimestamp(ms: number): string
+- getPartition · function · L220-L223 — function getPartition(workspaceId?: string): string
+- BrowserCapability · type · L225-L231 — type BrowserCapability = { label: string; hint: string; prompt: string; icon: LucideIcon; accent: string; };
+- BrowserWorkbenchView · function · L316-L2147 — function BrowserWorkbenchView({ taskId, sessionId, initialUrl, workspaceId, workspacePath, mode, onClose, onFullscreen, onExitFullscreen, onStatusChange, onSendMessage, selectedModelLabel, selectedModel, selectedProvider, selectedReasoningEffort, availableModels = [], availableProviders = [], onModelChange, onOpenSettings, turnContext, }: BrowserWorkbenchViewProps)
+- measure · function · L437-L451 — measure = ()
+- handleNavigate · function · L610-L617 — handleNavigate = (event: Any)
+- handleTitle · function · L618-L624 — handleTitle = (event: Any)
+- handleLoadingStart · function · L625-L625 — handleLoadingStart = ()
+- handleLoadingStop · function · L626-L629 — handleLoadingStop = ()
+- handleDomReady · function · L630-L634 — handleDomReady = ()
+- handleNewWindow · function · L635-L639 — handleNewWindow = (event: Any)
+- handleRenderProcessGone · function · L640-L662 — handleRenderProcessGone = (event: Any)

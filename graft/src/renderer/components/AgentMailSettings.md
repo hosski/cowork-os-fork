@@ -1,0 +1,25 @@
+# src/renderer/components/AgentMailSettings.tsx
+
+- formatTimestamp · function · L16-L19 — function formatTimestamp(value?: number): string
+- errorMessage · function · L21-L23 — function errorMessage(error: unknown): string
+- AgentMailSettings · function · L25-L857 — function AgentMailSettings()
+- loadBootstrap · function · L89-L108 — loadBootstrap = async ()
+- loadWorkspace · function · L110-L130 — loadWorkspace = async (workspaceId: string)
+- loadLists · function · L132-L139 — loadLists = async (workspaceId: string, inboxId?: string)
+- loadApiKeys · function · L141-L148 — loadApiKeys = async (workspaceId: string, inboxId: string)
+- withBusy · function · L150-L160 — withBusy = async (key: string, task: () => Promise<void>)
+- saveSettings · function · L162-L168 — saveSettings = async ()
+- testConnection · function · L170-L176 — testConnection = async ()
+- refreshWorkspace · function · L178-L185 — refreshWorkspace = async ()
+- bindWorkspacePod · function · L187-L197 — bindWorkspacePod = async ()
+- createWorkspacePod · function · L199-L210 — createWorkspacePod = async ()
+- createInbox · function · L212-L224 — createInbox = async ()
+- renameInbox · function · L226-L240 — renameInbox = async (inbox: AgentMailInbox)
+- deleteInbox · function · L242-L252 — deleteInbox = async (inbox: AgentMailInbox)
+- createDomain · function · L254-L265 — createDomain = async ()
+- verifyDomain · function · L267-L276 — verifyDomain = async (domain: AgentMailDomain)
+- deleteDomain · function · L278-L288 — deleteDomain = async (domain: AgentMailDomain)
+- createListEntry · function · L290-L304 — createListEntry = async ()
+- deleteListEntry · function · L306-L318 — deleteListEntry = async (entry: AgentMailListEntry)
+- createApiKey · function · L320-L332 — createApiKey = async ()
+- deleteApiKey · function · L334-L344 — deleteApiKey = async (apiKey: AgentMailApiKeySummary)

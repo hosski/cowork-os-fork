@@ -1,0 +1,34 @@
+# src/electron/mcp/client/MCPClientManager.ts
+
+- getAllElectronWindows · function · L36-L47 — function getAllElectronWindows(): Any[]
+- MCPClientManager · class · L49-L702 — class MCPClientManager extends EventEmitter
+- constructor · method · L70-L72 — private constructor()
+- getInstance · method · L77-L82 — static getInstance(): MCPClientManager
+- initialize · method · L87-L165 — async initialize(): Promise<void>
+- acquireForExecutor · method · L171-L182 — acquireForExecutor(executorId: string, serverId: string): void
+- releaseForExecutor · method · L189-L211 — async releaseForExecutor(executorId: string): Promise<void>
+- shutdown · method · L216-L239 — async shutdown(): Promise<void>
+- connectServer · method · L244-L282 — async connectServer(serverId: string): Promise<void>
+- disconnectServer · method · L287-L300 — async disconnectServer(serverId: string): Promise<void>
+- getAllTools · method · L305-L310 — getAllTools(): MCPTool[]
+- getServerTools · method · L315-L321 — getServerTools(serverId: string): MCPTool[]
+- getServerIdForTool · method · L323-L325 — getServerIdForTool(toolName: string): string | null
+- getServerConfigForTool · method · L327-L331 — getServerConfigForTool(toolName: string): MCPServerConfig | null
+- getConnectorIdForTool · method · L333-L338 — getConnectorIdForTool(toolName: string): string | null
+- syncTriggerResourceSubscriptions · method · L340-L378 — async syncTriggerResourceSubscriptions( triggers: Array<{ serverId?: string; connectorId?: string; resourceUri?: string }>, ): Promise<void>
+- hasTool · method · L383-L385 — hasTool(toolName: string): boolean
+- callTool · method · L390-L408 — async callTool(toolName: string, args: Record<string, Any> = {}): Promise<MCPCallResult>
+- callServerTool · method · L417-L434 — async callServerTool( serverId: string, toolName: string, args: Record<string, Any> = {}, ): Promise<MCPCallResult>
+- getToolCatalogVersion · method · L436-L438 — getToolCatalogVersion(): number
+- getStatus · method · L443-L465 — getStatus(): MCPServerStatus[]
+- getServerStatus · method · L470-L490 — getServerStatus(serverId: string): MCPServerStatus | null
+- testServer · method · L495-L508 — async testServer( serverId: string, ): Promise<{ success: boolean; error?: string; tools?: number }>
+- getStartupStats · method · L510-L512 — getStartupStats(): { enabled: number; attempted: number; connected: number; failed: number }
+- setupConnectionHandlers · method · L517-L589 — private setupConnectionHandlers(serverId: string, connection: MCPServerConnection): void
+- notifyConnectorAuthIssue · method · L591-L605 — private async notifyConnectorAuthIssue( serverId: string, config: MCPServerConfig | undefined, error: unknown, ): Promise<void>
+- rebuildToolMap · method · L610-L621 — private rebuildToolMap(): void
+- rebuildToolMapImmediate · method · L626-L658 — private rebuildToolMapImmediate(): void
+- broadcastStatusChange · method · L663-L672 — private broadcastStatusChange(): void
+- shouldAutoConnect · method · L674-L688 — private shouldAutoConnect(server: MCPServerConfig): boolean
+- detectConnectorId · method · L690-L694 — private detectConnectorId(server: MCPServerConfig): string | null
+- isConnectorConfigured · method · L696-L701 — private isConnectorConfigured( connectorId: string, env: Record<string, string> | undefined, ): boolean

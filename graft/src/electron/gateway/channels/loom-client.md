@@ -1,0 +1,37 @@
+# src/electron/gateway/channels/loom-client.ts
+
+- LoomMailboxMessage · interface · L23-L39 — interface LoomMailboxMessage
+- LoomFolderMessagesResponse · interface · L41-L44 — interface LoomFolderMessagesResponse
+- LoomSmtpSubmitResponse · interface · L46-L50 — interface LoomSmtpSubmitResponse
+- LoomEmailClientOptions · interface · L52-L60 — interface LoomEmailClientOptions
+- LoomRequestOptions · interface · L62-L66 — interface LoomRequestOptions
+- LoomEmailClient · class · L68-L625 — class LoomEmailClient extends EventEmitter
+- constructor · method · L88-L104 — constructor(options: LoomEmailClientOptions)
+- checkConnection · method · L106-L116 — async checkConnection(): Promise<{ success: boolean; email?: string; error?: string }>
+- startReceiving · method · L118-L128 — async startReceiving(): Promise<void>
+- stopReceiving · method · L130-L144 — async stopReceiving(): Promise<void>
+- loadPersistedState · method · L146-L205 — private loadPersistedState(): void
+- persistState · method · L207-L228 — private persistState(): void
+- schedulePersistState · method · L230-L239 — private schedulePersistState(): void
+- pruneInMemoryState · method · L241-L246 — private pruneInMemoryState(): void
+- pruneThreadMap · method · L248-L256 — private pruneThreadMap(): void
+- fetchUnreadEmails · method · L258-L275 — async fetchUnreadEmails(limit: number): Promise<EmailMessage[]>
+- fetchRecentEmails · method · L277-L283 — async fetchRecentEmails(limit: number): Promise<EmailMessage[]>
+- sendEmail · method · L285-L319 — async sendEmail(options: { to: string; subject: string; text: string; inReplyTo?: string; references?: string[]; }): Promise<string>
+- markAsRead · method · L321-L329 — async markAsRead(uid: number): Promise<void>
+- markAsUnread · method · L331-L339 — async markAsUnread(uid: number): Promise<void>
+- getEmail · method · L341-L343 — getEmail(): string
+- pollMailbox · method · L345-L374 — private async pollMailbox(): Promise<void>
+- fetchFolderMessages · method · L376-L383 — private async fetchFolderMessages(folder: string, limit: number): Promise<LoomMailboxMessage[]>
+- toEmailMessage · method · L385-L426 — private toEmailMessage(message: LoomMailboxMessage, trackUid: boolean): EmailMessage
+- toHeadersMap · method · L428-L441 — private toHeadersMap(value: unknown): Map<string, string>
+- parseReferences · method · L443-L453 — private parseReferences(raw: string | undefined): string[] | undefined
+- parseDate · method · L455-L458 — private parseDate(raw: unknown): Date
+- resolveMessageId · method · L460-L468 — private resolveMessageId(message: LoomMailboxMessage): string
+- resolveMessageFallbackId · method · L470-L497 — private resolveMessageFallbackId(message: LoomMailboxMessage): string
+- resolveFromAddress · method · L499-L510 — private resolveFromAddress(message: LoomMailboxMessage): EmailAddress
+- resolveToAddresses · method · L512-L525 — private resolveToAddresses(to: unknown): EmailAddress[]
+- inferEmailFromIdentity · method · L527-L543 — private inferEmailFromIdentity(identity: string): string | null
+- rememberSeenMessage · method · L545-L553 — private rememberSeenMessage(messageId: string): void
+- buildIdempotencyKey · method · L555-L557 — private buildIdempotencyKey(): string
+- request · method · L559-L624 — private async request<T = unknown>(path: string, options: LoomRequestOptions = {}): Promise<T>

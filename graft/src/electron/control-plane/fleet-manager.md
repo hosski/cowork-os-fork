@@ -1,0 +1,23 @@
+# src/electron/control-plane/fleet-manager.ts
+
+- FleetObserverEntry · interface · L10-L16 — interface FleetObserverEntry
+- FleetConnectionManagerCallbacks · interface · L18-L36 — interface FleetConnectionManagerCallbacks
+- FleetConnectionEntry · interface · L38-L43 — interface FleetConnectionEntry
+- toLevelForState · function · L45-L58 — function toLevelForState(state: RemoteGatewayConnectionState): FleetObserverEntry["level"]
+- toLevelForTunnelState · function · L60-L72 — function toLevelForTunnelState(state: SSHTunnelStatus["state"]): FleetObserverEntry["level"]
+- pushObserver · function · L74-L88 — function pushObserver( entry: FleetConnectionEntry, next: Omit<FleetObserverEntry, "id" | "timestamp"> & { timestamp?: number }, ): void
+- FleetConnectionManager · class · L90-L237 — class FleetConnectionManager
+- constructor · method · L94-L98 — constructor(callbacks?: FleetConnectionManagerCallbacks)
+- setCallbacks · method · L100-L102 — setCallbacks(callbacks: FleetConnectionManagerCallbacks): void
+- listDeviceIds · method · L104-L106 — listDeviceIds(): string[]
+- getClient · method · L108-L110 — getClient(deviceId: string): RemoteGatewayClient | null
+- getObserver · method · L112-L114 — getObserver(deviceId: string): FleetObserverEntry[]
+- getTunnelStatus · method · L116-L118 — getTunnelStatus(deviceId: string): SSHTunnelStatus | undefined
+- getStatus · method · L120-L129 — getStatus(deviceId: string): RemoteGatewayStatus
+- connectDevice · method · L131-L217 — async connectDevice(device: ManagedDevice): Promise<RemoteGatewayStatus>
+- disconnectDevice · method · L219-L224 — disconnectDevice(deviceId: string): void
+- removeDevice · method · L226-L229 — removeDevice(deviceId: string): void
+- disconnectAll · method · L231-L236 — disconnectAll(): void
+- initFleetConnectionManager · function · L241-L250 — function initFleetConnectionManager( callbacks?: FleetConnectionManagerCallbacks, ): FleetConnectionManager
+- getFleetConnectionManager · function · L252-L254 — function getFleetConnectionManager(): FleetConnectionManager | null
+- shutdownFleetConnectionManager · function · L256-L260 — function shutdownFleetConnectionManager(): void

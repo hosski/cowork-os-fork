@@ -1,0 +1,15 @@
+# resources/skills/kami/scripts/render_slides.mjs
+
+- parseArgs · function · L13-L23 — function parseArgs(argv)
+- hex · function · L70-L73 — function hex(value, fallback)
+- normalizeTheme · function · L75-L88 — function normalizeTheme(deck)
+- lineArray · function · L90-L94 — function lineArray(value)
+- escapeHtml · function · L96-L102 — function escapeHtml(value)
+- slideTitle · function · L104-L106 — function slideTitle(slide)
+- addParagraphs · function · L108-L131 — function addParagraphs(slide, lines, options)
+- renderPptx · function · L133-L425 — async function renderPptx(deck, theme)
+- fontFace · function · L427-L430 — function fontFace(name, filePath, weight = 400)
+- bodyHtml · function · L432-L436 — function bodyHtml(lines)
+- renderHtml · function · L438-L647 — function renderHtml(deck, theme)
+- renderPdf · function · L649-L690 — async function renderPdf(deck, theme)
+- main · function · L692-L704 — async function main()

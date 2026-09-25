@@ -1,0 +1,30 @@
+# src/electron/gateway/channels/imessage.ts
+
+- BackoffConfig · interface · L42-L48 — interface BackoffConfig
+- ImessageAdapter · class · L50-L573 — class ImessageAdapter implements ChannelAdapter
+- constructor · method · L82-L91 — constructor(config: ImessageConfig)
+- status · method · L93-L95 — get status(): ChannelStatus
+- botUsername · method · L97-L99 — get botUsername(): string | undefined
+- connect · method · L104-L150 — async connect(): Promise<void>
+- disconnect · method · L155-L193 — async disconnect(): Promise<void>
+- sendMessage · method · L198-L249 — async sendMessage(message: OutgoingMessage): Promise<string>
+- sendTyping · method · L254-L256 — async sendTyping(_chatId: string): Promise<void>
+- onMessage · method · L261-L263 — onMessage(handler: MessageHandler): void
+- onError · method · L268-L270 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L275-L277 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L282-L293 — async getInfo(): Promise<ChannelInfo>
+- handleNotification · method · L298-L314 — private handleNotification(notification: ImessageRpcNotification): void
+- processInboundMessage · method · L319-L389 — private async processInboundMessage(payload: ImessagePayload): Promise<void>
+- getDefaultDbPath · method · L394-L396 — private getDefaultDbPath(): string
+- resolveUserPath · method · L398-L404 — private resolveUserPath(inputPath: string): string
+- inferAttachmentType · method · L406-L415 — private inferAttachmentType(mimeType?: string, fileName?: string): MessageAttachment["type"]
+- buildAttachments · method · L417-L446 — private buildAttachments(payload: ImessagePayload): MessageAttachment[] | undefined
+- setStatus · method · L451-L460 — private setStatus(status: ChannelStatus, error?: Error): void
+- handleError · method · L465-L473 — private handleError(error: Error, context?: string): void
+- resetBackoff · method · L478-L485 — private resetBackoff(): void
+- attemptReconnection · method · L490-L515 — private attemptReconnection(): void
+- calculateBackoffDelay · method · L520-L526 — private calculateBackoffDelay(): number
+- isMessageProcessed · method · L531-L539 — private isMessageProcessed(messageId: string): boolean
+- markMessageProcessed · method · L544-L556 — private markMessageProcessed(messageId: string): void
+- startDedupCleanup · method · L561-L572 — private startDedupCleanup(): void
+- createImessageAdapter · function · L578-L580 — function createImessageAdapter(config: ImessageConfig): ImessageAdapter

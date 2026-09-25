@@ -1,0 +1,42 @@
+# connectors/comfyui-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L6-L11 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L12-L12 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any> };
+- JSONRPCResponse · type · L13-L18 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L19-L27 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L28-L37 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L38-L43 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean } }; };
+- ToolProvider · type · L44-L47 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L72-L203 — class StdioMCPServer
+- constructor · method · L76-L79 — constructor( private readonly toolProvider: ToolProvider, private readonly serverInfo: MCPServerInfo, )
+- start · method · L81-L91 — start(): void
+- stop · method · L93-L99 — stop(): void
+- handleLine · method · L101-L109 — private handleLine(line: string): void
+- handleMessage · method · L111-L117 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L119-L153 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L155-L157 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L159-L171 — private handleInitialize(): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsCall · method · L173-L185 — private async handleToolsCall(params: any): Promise<any>
+- requireInitialized · method · L187-L190 — private requireInitialized(): void
+- sendResult · method · L192-L194 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L196-L198 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L200-L202 — private sendMessage(message: JSONRPCResponse): void
+- comfyBaseUrl · function · L205-L212 — function comfyBaseUrl(): string
+- safeComfyBaseUrl · function · L214-L220 — function safeComfyBaseUrl(): string
+- apiTimeoutMs · function · L222-L226 — function apiTimeoutMs(endpoint: string): number
+- projectRoot · function · L228-L236 — function projectRoot(): string
+- normalizeProjectPath · function · L238-L251 — function normalizeProjectPath(value: unknown, fieldName: string): string
+- parseResponse · function · L253-L265 — async function parseResponse(response: Response): Promise<any>
+- requestComfy · function · L267-L295 — async function requestComfy( endpoint: string, options?: { method?: string; body?: Record<string, any> }, ): Promise<any>
+- fetchComfyBinary · function · L297-L318 — async function fetchComfyBinary(url: string, label: string): Promise<Buffer>
+- objectSchema · function · L320-L322 — function objectSchema(description: string): MCPToolProperty
+- viewUrl · function · L324-L333 — function viewUrl(image: any): string | null
+- replaceWorkflowPlaceholders · function · L335-L354 — function replaceWorkflowPlaceholders( value: unknown, replacements: Record<string, string>, ): unknown
+- health · function · L438-L451 — async function health(): Promise<any>
+- listWorkflows · function · L453-L469 — async function listWorkflows(): Promise<any>
+- submitWorkflow · function · L471-L478 — async function submitWorkflow(args: Record<string, any>): Promise<any>
+- submitFluxPhotorealPass · function · L480-L509 — async function submitFluxPhotorealPass(args: Record<string, any>): Promise<any>
+- getJobStatus · function · L511-L527 — async function getJobStatus(args: Record<string, any>): Promise<any>
+- getHistory · function · L529-L532 — async function getHistory(args: Record<string, any>): Promise<any>
+- collectOutputs · function · L534-L582 — async function collectOutputs(args: Record<string, any>): Promise<any>

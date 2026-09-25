@@ -1,0 +1,41 @@
+# src/electron/mailbox/MailboxAutomationRegistry.ts
+
+- MailboxAutomationAuditEvent · type · L22-L33 — type MailboxAutomationAuditEvent = | "created" | "updated" | "deleted" | "trigger_fired" | "cron_added" | "cron_updated" | "cron_started" | "cron_finished" | "cron_removed" | "forward_run_started" | "forward_run_finished";
+- MailboxAutomationRegistryDeps · type · L35-L41 — type MailboxAutomationRegistryDeps = { db: Database.Database; triggerService?: EventTriggerService | null; resolveDefaultWorkspaceId: () => string | undefined; log?: (...args: unknown[]) => void; onMutation?: () => void; };
+- MailboxAutomationRow · type · L43-L62 — type MailboxAutomationRow = { id: string; workspace_id: string; kind: MailboxAutomationRecord["kind"]; status: MailboxAutomationStatus; name: string; description: string | null; thread_id: string | null; source: MailboxAutomationRecord["source"]; recipe_json: string; backing_trigger_id: string | null; backing_cron_job_id: string | null; latest_outcome: string | null; latest_fire_at: number | null; latest_run_at: number | null; next_run_at: number | null; latest_error: string | null; created_at: number; updated_at: number; };
+- MailboxAutomationAuditRow · type · L64-L71 — type MailboxAutomationAuditRow = { id: string; automation_id: string; workspace_id: string; event_type: MailboxAutomationAuditEvent; detail_json: string; created_at: number; };
+- parseJson · function · L73-L80 — function parseJson<T>(value: string | null | undefined, fallback: T): T
+- stringifyJson · function · L82-L84 — function stringifyJson(value: unknown): string
+- normalizeString · function · L86-L90 — function normalizeString(value: unknown): string | undefined
+- ruleTriggerName · function · L92-L94 — function ruleTriggerName(recipe: MailboxRuleRecipe): string
+- scheduleJobName · function · L96-L98 — function scheduleJobName(recipe: MailboxScheduleRecipe): string
+- forwardingJobName · function · L100-L102 — function forwardingJobName(recipe: MailboxForwardRecipe): string
+- normalizeStringArray · function · L104-L111 — function normalizeStringArray(values: unknown, lowercase = true): string[]
+- MailboxAutomationRegistry · class · L113-L1054 — class MailboxAutomationRegistry
+- configure · method · L116-L119 — static configure(deps: MailboxAutomationRegistryDeps): void
+- reset · method · L121-L123 — static reset(): void
+- listAutomations · method · L125-L169 — static listAutomations(input?: { workspaceId?: string; threadId?: string; }): MailboxAutomationRecord[]
+- listThreadAutomations · method · L171-L173 — static listThreadAutomations(threadId: string): MailboxAutomationRecord[]
+- listAutomationHistory · method · L175-L186 — static listAutomationHistory(automationId: string, limit = 25): MailboxAutomationAuditRow[]
+- createRule · method · L188-L258 — static createRule(recipe: MailboxRuleRecipe): MailboxAutomationRecord
+- updateRule · method · L260-L336 — static updateRule( automationId: string, patch: Partial<MailboxRuleRecipe> & { status?: MailboxAutomationStatus }, ): MailboxAutomationRecord | null
+- deleteRule · method · L338-L348 — static deleteRule(automationId: string): boolean
+- createForward · method · L350-L420 — static createForward(recipe: MailboxForwardRecipe): MailboxAutomationRecord
+- updateForward · method · L422-L534 — static updateForward( automationId: string, patch: Partial<MailboxForwardRecipe> & { status?: MailboxAutomationStatus }, ): MailboxAutomationRecord | null
+- deleteForward · method · L536-L541 — static deleteForward(automationId: string): boolean
+- createSchedule · method · L543-L591 — static async createSchedule(recipe: MailboxScheduleRecipe): Promise<MailboxAutomationRecord>
+- updateSchedule · method · L593-L652 — static async updateSchedule( automationId: string, patch: Partial<MailboxScheduleRecipe> & { status?: MailboxAutomationStatus }, ): Promise<MailboxAutomationRecord | null>
+- deleteSchedule · method · L654-L665 — static async deleteSchedule(automationId: string): Promise<boolean>
+- recordTriggerFire · method · L667-L693 — static recordTriggerFire(payload: { trigger: EventTrigger; event: TriggerEvent; historyEntry: TriggerHistoryEntry; }): void
+- recordCronEvent · method · L695-L755 — static async recordCronEvent(evt: CronEvent): Promise<void>
+- ensureSchema · method · L757-L797 — private static ensureSchema(): void
+- getDeps · method · L799-L804 — private static getDeps(): MailboxAutomationRegistryDeps
+- fetchRow · method · L806-L833 — private static fetchRow(automationId: string): MailboxAutomationRow | undefined
+- enrichRecord · method · L835-L871 — private static enrichRecord(row: MailboxAutomationRow): MailboxAutomationRecord
+- insertRecord · method · L873-L917 — private static insertRecord( record: MailboxAutomationRecord, audit: { automationId: string; workspaceId: string; eventType: MailboxAutomationAuditEvent; detail: Record<string, unknown>; }, ): void
+- insertScheduleRecord · method · L919-L956 — private static insertScheduleRecord(input: { automationId: string; workspaceId: string; recipe: MailboxScheduleRecipe; cronJobId?: string; status: MailboxAutomationStatus; now: number; nextRunAt?: number; }): MailboxAutomationRecord
+- appendAudit · method · L958-L972 — private static appendAudit( automationId: string, workspaceId: string, eventType: MailboxAutomationAuditEvent, detail: Record<string, unknown>, ): void
+- markDeleted · method · L974-L989 — private static markDeleted( automationId: string, workspaceId: string, detail: Record<string, unknown>, ): void
+- markForwardRunStarted · method · L991-L1004 — static markForwardRunStarted(automationId: string, runAtMs: number): void
+- markForwardRunFinished · method · L1006-L1042 — static markForwardRunFinished( automationId: string, input: { status: MailboxAutomationStatus; latestOutcome?: string; latestError?: string | null; latestFireAt?: number; nextRunAt?: number | null; }, ): void
+- setForwardNextRun · method · L1044-L1053 — static setForwardNextRun(automationId: string, nextRunAt?: number): void

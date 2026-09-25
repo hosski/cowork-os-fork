@@ -1,0 +1,24 @@
+# src/electron/agent/decisions/types.ts
+
+- JevJsonValue · type · L2-L8 — type JevJsonValue = | string | number | boolean | null | JevJsonValue[] | { [key: string]: JevJsonValue };
+- JevState · type · L11-L11 — type JevState = string | { [key: string]: JevJsonValue } | JevJsonValue[];
+- JevContent · type · L14-L14 — type JevContent = string | { [key: string]: JevJsonValue } | JevJsonValue[] | null;
+- JevNoulCriteria · interface · L16-L19 — interface JevNoulCriteria
+- JevNoulQuestion · interface · L21-L25 — interface JevNoulQuestion
+- JevChoiceCriteria · type · L27-L27 — type JevChoiceCriteria = Record<string, JevContent>;
+- JevChoiceQuestion · interface · L29-L33 — interface JevChoiceQuestion
+- JevScoreCriteria · type · L35-L35 — type JevScoreCriteria = readonly [JevContent, JevContent, ...JevContent[]];
+- JevScoreQuestion · interface · L37-L41 — interface JevScoreQuestion
+- JevQuestion · type · L43-L43 — type JevQuestion = JevNoulQuestion | JevChoiceQuestion | JevScoreQuestion;
+- JevQuestions · type · L44-L44 — type JevQuestions = Record<string, JevQuestion>;
+- JevNoulAnswer · interface · L46-L49 — interface JevNoulAnswer
+- JevChoiceAnswer · interface · L51-L56 — interface JevChoiceAnswer
+- JevScoreAnswer · interface · L58-L64 — interface JevScoreAnswer
+- JevAnswer · type · L66-L66 — type JevAnswer = JevNoulAnswer | JevChoiceAnswer | JevScoreAnswer;
+- JevUsage · interface · L68-L73 — interface JevUsage
+- JevProviderMetadata · type · L75-L75 — type JevProviderMetadata = string | { [key: string]: JevJsonValue };
+- JevRequest · interface · L77-L81 — interface JevRequest<Q extends JevQuestions = JevQuestions>
+- JevRequestPayload · interface · L83-L88 — interface JevRequestPayload<Q extends JevQuestions = JevQuestions> extends Omit< JevRequest<Q>, "model" >
+- JevResponse · interface · L90-L96 — interface JevResponse
+- DecisionRequestOptions · interface · L98-L103 — interface DecisionRequestOptions
+- DecisionConnectionResult · interface · L105-L111 — interface DecisionConnectionResult

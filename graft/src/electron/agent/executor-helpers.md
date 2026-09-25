@@ -1,0 +1,67 @@
+# src/electron/agent/executor-helpers.ts
+
+- AwaitingUserInputError · class · L25-L35 — class AwaitingUserInputError extends Error
+- constructor · method · L29-L34 — constructor(message: string, opts?: { reasonCode?: string; userMessage?: string })
+- CompletionContract · type · L39-L49 — type CompletionContract = { requiresExecutionEvidence: boolean; requiresDirectAnswer: boolean; requiresDecisionSignal: boolean; allowsOperationalStatus: boolean; requiresArtifactEvidence: boolean; requiredArtifactExtensions: string[]; requiresVerificationEvidence: boolean; artifactKind: "none" | "file" | "canvas"; requiredSuccessfulTools: string[]; };
+- isNonRetryableError · function · L209-L211 — function isNonRetryableError(errorMessage: string): boolean
+- isNonRetryableLLMError · function · L218-L226 — function isNonRetryableLLMError(errorMessage: string): boolean
+- isInputDependentError · function · L232-L234 — function isInputDependentError(errorMessage: string): boolean
+- isCurrentLocationProviderFailure · function · L236-L241 — function isCurrentLocationProviderFailure(toolName: string, errorMessage: string): boolean
+- isContextCapacityError · function · L246-L255 — function isContextCapacityError(errorLike: unknown): boolean
+- isRecoverablePathDriftError · function · L261-L270 — function isRecoverablePathDriftError(errorMessage: string): boolean
+- getCurrentDateString · function · L278-L286 — function getCurrentDateString(): string
+- getCurrentDateTimeContext · function · L292-L313 — function getCurrentDateTimeContext(): string
+- isAskingQuestion · function · L320-L424 — function isAskingQuestion(text: string): boolean
+- ToolCallDeduplicator · class · L437-L891 — class ToolCallDeduplicator
+- constructor · method · L453-L465 — constructor( maxDuplicates = 2, windowMs = 60000, maxSemanticSimilar = 4, rateLimit = 20, maxSemanticPerRun = 12, )
+- getCallKey · method · L470-L474 — private getCallKey(toolName: string, input: Any): string
+- getSemanticSignature · method · L480-L540 — private getSemanticSignature(toolName: string, input: Any): string
+- normalizeUrlForSemanticSignature · method · L542-L577 — private normalizeUrlForSemanticSignature(rawUrl: string): string
+- resolveRateLimitForCall · method · L582-L603 — private resolveRateLimitForCall(toolName: string, input: Any): number
+- checkRateLimit · method · L605-L625 — private checkRateLimit(toolName: string, input: Any): { exceeded: boolean; reason?: string }
+- checkSemanticDuplicate · method · L630-L666 — private checkSemanticDuplicate( toolName: string, input: Any, ): { isDuplicate: boolean; reason?: string }
+- checkDuplicate · method · L672-L735 — checkDuplicate( toolName: string, input: Any, ): { isDuplicate: boolean; reason?: string; cachedResult?: string }
+- recordCall · method · L740-L776 — recordCall(toolName: string, input: Any, result?: string): void
+- reset · method · L781-L785 — reset(): void
+- clearReadOnlyHistory · method · L792-L815 — clearReadOnlyHistory(): void
+- resetMutationHistoryForNewStep · method · L824-L854 — resetMutationHistoryForNewStep(): void
+- isMutationTool · function · L825-L832 — isMutationTool = (toolName: string): boolean
+- isIdempotentTool · method · L859-L890 — static isIdempotentTool(toolName: string): boolean
+- ToolFailureTracker · class · L903-L1193 — class ToolFailureTracker
+- getMaxInputDependentFailures · method · L912-L925 — private getMaxInputDependentFailures(toolName: string): number
+- isToolRuntimeTimeoutFailure · method · L927-L932 — private isToolRuntimeTimeoutFailure(toolName: string, errorMessage: string): boolean
+- isShellSandboxRuntimeFailure · method · L934-L939 — private isShellSandboxRuntimeFailure(toolName: string, errorMessage: string): boolean
+- getMaxSystemicFailures · method · L941-L949 — private getMaxSystemicFailures(toolName: string, errorMessage: string): number
+- extractSearchProvider · method · L951-L959 — private extractSearchProvider(errorMessage: string): string | null
+- recordFailure · method · L965-L1045 — recordFailure(toolName: string, errorMessage: string): boolean
+- recordSuccess · method · L1050-L1053 — recordSuccess(toolName: string): void
+- isDisabled · method · L1058-L1076 — isDisabled(toolName: string): boolean
+- getDisabledToolNames · method · L1081-L1091 — getDisabledToolNames(): string[]
+- getLastError · method · L1096-L1105 — getLastError(toolName: string): string | undefined
+- getAlternativeApproachGuidance · method · L1110-L1173 — private getAlternativeApproachGuidance(toolName: string, error: string): string | undefined
+- getDisabledTools · method · L1178-L1192 — getDisabledTools(): string[]
+- FileOperationTracker · class · L1202-L1632 — class FileOperationTracker
+- checkFileRead · method · L1233-L1267 — checkFileRead(filePath: string): { blocked: boolean; reason?: string; suggestion?: string; cachedResult?: string; }
+- recordFileRead · method · L1272-L1300 — recordFileRead(filePath: string, content: string): void
+- checkDirectoryListing · method · L1306-L1332 — checkDirectoryListing(dirPath: string): { blocked: boolean; reason?: string; cachedFiles?: string[]; suggestion?: string; }
+- recordDirectoryListing · method · L1337-L1351 — recordDirectoryListing(dirPath: string, files: string[]): void
+- getCachedDirectoryListing · method · L1356-L1359 — getCachedDirectoryListing(dirPath: string): string[] | undefined
+- checkFileCreation · method · L1365-L1403 — checkFileCreation(filename: string): { isDuplicate: boolean; existingPath?: string; suggestion?: string; }
+- recordFileCreation · method · L1408-L1415 — recordFileCreation(filePath: string): void
+- recordFileRename · method · L1418-L1442 — recordFileRename(oldPath: string, newPath: string): void
+- getStats · method · L1447-L1463 — getStats(): { totalReads: number; totalCreates: number; totalListings: number; uniqueFilesRead: number; filesCreated: number; dirsListed: number; }
+- incrementOperation · method · L1465-L1468 — private incrementOperation(operation: string): void
+- normalizePath · method · L1470-L1473 — private normalizePath(filePath: string): string
+- normalizeFilename · method · L1475-L1489 — private normalizeFilename(filename: string): string
+- areSimilarFilenames · method · L1491-L1505 — private areSimilarFilenames(name1: string, name2: string): boolean
+- invalidateFileRead · method · L1510-L1513 — invalidateFileRead(filePath: string): void
+- invalidateDirectoryListing · method · L1518-L1521 — invalidateDirectoryListing(dirPath: string): void
+- reset · method · L1526-L1532 — reset(): void
+- getLastCreatedDocument · method · L1537-L1546 — getLastCreatedDocument(): string | undefined
+- getCreatedFiles · method · L1551-L1553 — getCreatedFiles(): string[]
+- getKnowledgeSummary · method · L1558-L1580 — getKnowledgeSummary(): string
+- serialize · method · L1586-L1596 — serialize(): { readFiles: string[]; createdFiles: string[]; directories: string[]; }
+- restore · method · L1602-L1631 — restore(state: { readFiles?: string[]; createdFiles?: string[]; directories?: string[] }): void
+- withTimeout · function · L1639-L1665 — function withTimeout<T>( promise: Promise<T>, timeoutMs: number, operation: string, onTimeout?: () => void, ): Promise<T>
+- calculateBackoffDelay · function · L1675-L1691 — function calculateBackoffDelay( attempt: number, initialDelay = INITIAL_BACKOFF_MS, maxDelay = MAX_BACKOFF_MS, multiplier = BACKOFF_MULTIPLIER, ): number
+- sleep · function · L1696-L1698 — function sleep(ms: number): Promise<void>

@@ -1,0 +1,25 @@
+# src/electron/agent/llm/openrouter-provider.ts
+
+- normalizeOpenRouterApiKey · function · L41-L66 — function normalizeOpenRouterApiKey(value?: string): string | undefined
+- normalizeParetoMinCodingScore · function · L68-L72 — function normalizeParetoMinCodingScore(value?: number): number | undefined
+- isParetoCodeModel · function · L74-L79 — function isParetoCodeModel(model: string): boolean
+- OpenRouterProvider · class · L85-L679 — class OpenRouterProvider implements LLMProvider
+- constructor · method · L96-L110 — constructor(config: LLMProviderConfig)
+- createMessage · method · L112-L180 — async createMessage(request: LLMRequest): Promise<LLMResponse>
+- testConnection · method · L182-L220 — async testConnection(): Promise<{ success: boolean; error?: string }>
+- isRetryableOpenRouterError · method · L222-L250 — private isRetryableOpenRouterError(status: number, detail: string): boolean
+- shouldDemoteErrorLog · method · L252-L264 — private shouldDemoteErrorLog(error: Any): boolean
+- convertMessages · method · L266-L364 — private convertMessages( request: Pick<LLMRequest, "messages" | "system" | "systemBlocks">, promptCache?: LLMRequest["promptCache"], ): Array<{ role: string; content: Any; tool_call_id?: string }>
+- sendChatCompletion · method · L366-L430 — private async sendChatCompletion(params: { model: string; messages: Array<{ role: string; content: Any; tool_call_id?: string }>; maxTokens: number; tools?: Array<{ type: "function"; function: { name: string; description: string; parameters: Any; }; }>; toolChoice?: LLMRequest["toolChoice"]; promptCache?: LLMRequest["promptCache"]; signal?: AbortSignal; }): Promise<Any>
+- getParetoRouterPluginBody · method · L432-L450 — private getParetoRouterPluginBody(model: string): { plugins?: Array<{ id: "pareto-router"; min_coding_score: number }>; }
+- hasInlineImages · method · L452-L457 — private hasInlineImages(messages: LLMRequest["messages"]): boolean
+- isImageInputUnsupportedError · method · L459-L466 — private isImageInputUnsupportedError(status: number | undefined, detail: string): boolean
+- isToolChoiceUnsupportedError · method · L468-L474 — private isToolChoiceUnsupportedError(status: number | undefined, detail: string): boolean
+- buildImageInputUnsupportedError · method · L476-L484 — private buildImageInputUnsupportedError(model: string): LLMProviderError
+- modelSupportsImageInput · method · L486-L501 — private async modelSupportsImageInput(model: string): Promise<boolean>
+- loadModelCatalog · method · L503-L552 — private async loadModelCatalog(): Promise<void>
+- convertTools · method · L554-L570 — private convertTools(tools: LLMTool[]): Array<{ type: "function"; function: { name: string; description: string; parameters: Any; }; }>
+- convertResponse · method · L572-L625 — private convertResponse(response: Any): LLMResponse
+- mapStopReason · method · L627-L640 — private mapStopReason(finishReason?: string): LLMResponse["stopReason"]
+- getAvailableModels · method · L645-L668 — async getAvailableModels(): Promise<Array<{ id: string; name: string; context_length: number }>>
+- getImageSupportHint · method · L670-L678 — static getImageSupportHint(model: string): boolean | undefined

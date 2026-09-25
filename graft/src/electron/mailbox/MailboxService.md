@@ -1,0 +1,402 @@
+# src/electron/mailbox/MailboxService.ts
+
+- MailboxAccountRow · type · L160-L170 — type MailboxAccountRow = { id: string; provider: MailboxProvider; address: string; display_name: string | null; status: "connected" | "degraded" | "disconnected"; capabilities_json: string | null; sync_cursor?: string | null; last_synced_at: number | null; classification_initial_batch_at: number | null; };
+- MailboxFolderRow · type · L172-L182 — type MailboxFolderRow = { id: string; account_id: string; provider_folder_id: string; name: string; role: MailboxFolder["role"]; unread_count: number | null; total_count: number | null; created_at: number; updated_at: number; };
+- MailboxLabelRow · type · L184-L194 — type MailboxLabelRow = { id: string; account_id: string; provider_label_id: string; name: string; color: string | null; unread_count: number | null; total_count: number | null; created_at: number; updated_at: number; };
+- MailboxIdentityRow · type · L196-L206 — type MailboxIdentityRow = { id: string; account_id: string; provider_identity_id: string | null; email: string; display_name: string | null; signature_id: string | null; is_default: number; created_at: number; updated_at: number; };
+- MailboxSignatureRow · type · L208-L217 — type MailboxSignatureRow = { id: string; account_id: string; name: string; body_html: string | null; body_text: string; is_default: number; created_at: number; updated_at: number; };
+- MailboxComposeDraftRow · type · L219-L241 — type MailboxComposeDraftRow = { id: string; account_id: string; thread_id: string | null; provider_draft_id: string | null; mode: MailboxComposeDraft["mode"]; status: MailboxComposeDraft["status"]; subject: string; body_text: string; body_html: string | null; to_json: string | null; cc_json: string | null; bcc_json: string | null; identity_id: string | null; signature_id: string | null; attachments_json: string | null; scheduled_at: number | null; send_after: number | null; latest_error: string | null; metadata_json: string | null; created_at: number; updated_at: number; };
+- MailboxOutgoingMessageRow · type · L243-L254 — type MailboxOutgoingMessageRow = { id: string; draft_id: string | null; account_id: string; status: MailboxOutgoingMessage["status"]; provider_message_id: string | null; scheduled_at: number | null; send_after: number | null; latest_error: string | null; created_at: number; updated_at: number; };
+- MailboxQueuedActionRow · type · L256-L270 — type MailboxQueuedActionRow = { id: string; account_id: string | null; thread_id: string | null; draft_id: string | null; action_type: MailboxQueuedAction["type"]; status: MailboxQueuedAction["status"]; payload_json: string | null; attempts: number; next_attempt_at: number | null; latest_error: string | null; undo_of_action_id: string | null; created_at: number; updated_at: number; };
+- MailboxThreadRow · type · L272-L303 — type MailboxThreadRow = { id: string; account_id: string; provider: MailboxProvider; provider_thread_id: string; subject: string; snippet: string; participants_json: string | null; labels_json: string | null; category: MailboxThreadCategory; today_bucket: MailboxTodayBucket; domain_category: MailboxDomainCategory; classification_rationale: string | null; priority_score: number; urgency_score: number; needs_reply: number; stale_followup: number; cleanup_candidate: number; handled: number; local_inbox_hidden: number; unread_count: number; message_count: number; last_message_at: number; classification_state: MailboxClassificationState; classification_fingerprint: string | null; classification_model_key: string | null; classification_prompt_version: string | null; classification_confidence: number; classification_updated_at: number | null; classification_error: string | null; sensitive_content_json: string | null; };
+- MailboxMessageRow · type · L305-L322 — type MailboxMessageRow = { id: string; thread_id: string; provider_message_id: string; direction: "incoming" | "outgoing"; from_name: string | null; from_email: string | null; to_json: string | null; cc_json: string | null; bcc_json: string | null; subject: string; snippet: string; body_text: string; body_html: string | null; received_at: number; is_unread: number; metadata_json: string | null; };
+- MailboxMessageMetadata · type · L324-L328 — type MailboxMessageMetadata = { imapUid?: number; microsoftGraphMessageId?: string; rfcMessageId?: string; };
+- MailboxAttachmentRow · type · L330-L346 — type MailboxAttachmentRow = { id: string; thread_id: string; message_id: string; provider: MailboxProvider; provider_message_id: string; provider_attachment_id: string | null; filename: string; mime_type: string | null; size: number | null; extraction_status: MailboxAttachmentSummary["extractionStatus"]; extraction_error: string | null; text_content?: string | null; extraction_mode?: string | null; created_at: number; updated_at: number; };
+- MailboxSummaryRow · type · L348-L355 — type MailboxSummaryRow = { thread_id: string; summary_text: string; key_asks_json: string | null; extracted_questions_json: string | null; suggested_next_action: string; updated_at: number; };
+- ThreadUpsertResult · type · L357-L360 — type ThreadUpsertResult = { shouldClassify: boolean; isNewThread: boolean; };
+- MailboxDraftRow · type · L362-L372 — type MailboxDraftRow = { id: string; thread_id: string; subject: string; body_text: string; tone: string; rationale: string; schedule_notes: string | null; created_at: number; updated_at: number; };
+- MailboxProposalRow · type · L374-L384 — type MailboxProposalRow = { id: string; thread_id: string; proposal_type: MailboxProposalType; title: string; reasoning: string; preview_json: string | null; status: MailboxProposalStatus; created_at: number; updated_at: number; };
+- MailboxCommitmentRow · type · L386-L398 — type MailboxCommitmentRow = { id: string; thread_id: string; message_id: string | null; title: string; due_at: number | null; state: MailboxCommitmentState; owner_email: string | null; source_excerpt: string | null; metadata_json: string | null; created_at: number; updated_at: number; };
+- MailboxCommitmentMetadata · type · L400-L405 — type MailboxCommitmentMetadata = { source?: string; followUpTaskId?: string; followUpTaskCreatedAt?: number; followUpTaskWorkspaceId?: string; };
+- MailboxContactRow · type · L407-L421 — type MailboxContactRow = { id: string; account_id: string; email: string; name: string | null; company: string | null; role: string | null; encryption_preference: "required" | "preferred" | "optional" | null; policy_flags_json: string | null; crm_links_json: string | null; learned_facts_json: string | null; response_tendency: string | null; last_interaction_at: number | null; open_commitments: number; };
+- MailboxEventRow · type · L423-L438 — type MailboxEventRow = { id: string; fingerprint: string; workspace_id: string; event_type: MailboxEventType; account_id: string | null; thread_id: string | null; provider: MailboxProvider | null; subject: string | null; summary_text: string | null; evidence_refs_json: string | null; payload_json: string; duplicate_count: number; created_at: number; last_seen_at: number; };
+- MailboxMissionControlHandoffRow · type · L440-L455 — type MailboxMissionControlHandoffRow = { id: string; thread_id: string; workspace_id: string; company_id: string; company_name: string; operator_role_id: string; operator_display_name: string; issue_id: string; issue_title: string; source: "mailbox_handoff"; latest_outcome: string | null; latest_wake_at: number | null; created_at: number; updated_at: number; };
+- MailboxEventRecordInput · type · L457-L468 — type MailboxEventRecordInput = { type: MailboxEventType; workspaceId?: string; accountId?: string; threadId?: string; provider?: MailboxProvider; subject?: string; summary?: string; evidenceRefs?: string[]; payload?: Record<string, unknown>; timestamp?: number; };
+- MailboxEventRecordResult · type · L470-L474 — type MailboxEventRecordResult = { event: MailboxEvent; duplicateCount: number; isDuplicate: boolean; };
+- ScheduleOption · type · L476-L480 — type ScheduleOption = { label: string; start: string; end: string; };
+- ScheduleSuggestion · type · L482-L485 — type ScheduleSuggestion = { options: ScheduleOption[]; summary: string; };
+- MailboxClassificationResult · type · L487-L500 — type MailboxClassificationResult = { category: MailboxThreadCategory; todayBucket: MailboxTodayBucket; domainCategory: MailboxDomainCategory; needsReply: boolean; priorityScore: number; urgencyScore: number; staleFollowup: boolean; cleanupCandidate: boolean; handled: boolean; confidence: number; rationale?: string; labels?: string[]; };
+- MailboxClassificationSnapshot · type · L502-L522 — type MailboxClassificationSnapshot = { threadId: string; accountId: string; provider: MailboxProvider; subject: string; snippet: string; unreadCount: number; categoryHint?: MailboxThreadCategory; participants: MailboxParticipant[]; labels: string[]; lastMessageAt: number; messageCount: number; messages: Array<{ direction: "incoming" | "outgoing"; from?: MailboxParticipant; snippet: string; body: string; receivedAt: number; unread: boolean; }>; };
+- NormalizedMailboxAttachment · type · L524-L530 — type NormalizedMailboxAttachment = { id: string; providerAttachmentId?: string; filename: string; mimeType?: string; size?: number; };
+- DraftStyleProfile · type · L532-L540 — type DraftStyleProfile = { greeting?: string; signoff?: string; tone: MailboxDraftOptions["tone"]; averageLength: number; averageResponseHours?: number; styleSignals: string[]; recentOutboundExample?: string; };
+- MailboxCipherState · type · L542-L546 — type MailboxCipherState = { safeStorage: SafeStorageLike | null; encryptionAvailable: boolean; machineId: string | null; };
+- MailboxServiceOptions · type · L548-L550 — type MailboxServiceOptions = { autoSync?: boolean; };
+- MailboxAskRunOptions · type · L552-L554 — type MailboxAskRunOptions = { onAskEvent?: (event: MailboxAskRunEvent) => void; };
+- MailboxAskActionPlan · type · L556-L568 — type MailboxAskActionPlan = | { action: "sent_followup_drafts"; thresholdHours?: number; limit?: number; rationale?: string; usedLlm: boolean; } | { action: "none"; rationale?: string; usedLlm: boolean; };
+- flattenMailboxError · function · L592-L599 — function flattenMailboxError(error: unknown): Error[]
+- isMailboxConnectionError · function · L601-L609 — function isMailboxConnectionError(error: unknown): boolean
+- isMailboxAuthConfigurationError · function · L611-L615 — function isMailboxAuthConfigurationError(message: string): boolean
+- summarizeMailboxConnectionError · function · L617-L629 — function summarizeMailboxConnectionError(error: unknown): string
+- normalizeMicrosoftScope · function · L631-L633 — function normalizeMicrosoftScope(scope: string): string
+- microsoftScopesIncludeAll · function · L635-L645 — function microsoftScopesIncludeAll( granted: string[] | undefined, required: readonly string[], ): boolean
+- escapeODataString · function · L647-L649 — function escapeODataString(value: string): string
+- toMailboxActionError · function · L651-L668 — function toMailboxActionError( action: MailboxApplyActionInput["type"], provider: MailboxProvider, error: unknown, ): Error
+- ensureMailboxCipherState · function · L670-L706 — function ensureMailboxCipherState(): MailboxCipherState
+- deriveMailboxCipherKey · function · L708-L711 — function deriveMailboxCipherKey(machineId: string): Buffer
+- encryptMailboxValue · function · L713-L735 — function encryptMailboxValue(value: string | null | undefined): string | null
+- decryptMailboxValue · function · L737-L780 — function decryptMailboxValue(value: string | null | undefined): string | null
+- setMailboxServiceInstance · function · L784-L786 — function setMailboxServiceInstance(service: MailboxService | null): void
+- getMailboxServiceInstance · function · L788-L790 — function getMailboxServiceInstance(): MailboxService | null
+- NormalizedThreadInput · type · L792-L828 — type NormalizedThreadInput = { id: string; accountId: string; provider: MailboxProvider; providerThreadId: string; subject: string; snippet: string; participants: MailboxParticipant[]; labels: string[]; category: MailboxThreadCategory; priorityScore: number; urgencyScore: number; needsReply: boolean; staleFollowup: boolean; cleanupCandidate: boolean; handled: boolean; localInboxHidden?: boolean; unreadCount: number; lastMessageAt: number; messages: Array<{ id: string; providerMessageId: string; metadata?: MailboxMessageMetadata; direction: "incoming" | "outgoing"; from?: MailboxParticipant; to: MailboxParticipant[]; cc: MailboxParticipant[]; bcc: MailboxParticipant[]; subject: string; snippet: string; body: string; bodyHtml?: string; attachments?: NormalizedMailboxAttachment[]; receivedAt: number; unread: boolean; }>; };
+- NormalizedMailboxMessage · type · L830-L830 — type NormalizedMailboxMessage = NormalizedThreadInput["messages"][number];
+- asObject · function · L832-L834 — function asObject(value: unknown): Record<string, unknown> | null
+- asString · function · L836-L840 — function asString(value: unknown): string | null
+- asNumber · function · L842-L844 — function asNumber(value: unknown): number | null
+- asBoolean · function · L846-L848 — function asBoolean(value: unknown): boolean | null
+- parseTimestamp · function · L850-L859 — function parseTimestamp(value: unknown): number | null
+- parseMailboxMessageMetadata · function · L861-L873 — function parseMailboxMessageMetadata(value: string | null | undefined): MailboxMessageMetadata
+- parseJsonArray · function · L875-L883 — function parseJsonArray<T>(value: string | null | undefined): T[]
+- parseCommitmentMetadata · function · L885-L900 — function parseCommitmentMetadata(value: string | null | undefined): MailboxCommitmentMetadata
+- parseMailboxSensitiveContent · function · L902-L925 — function parseMailboxSensitiveContent(value: string | null | undefined): MailboxSensitiveContent
+- detectSensitiveContent · function · L927-L974 — function detectSensitiveContent(text: string): MailboxSensitiveContent
+- add · function · L932-L935 — add = (category: MailboxSensitiveContent["categories"][number], reason: string)
+- parseJsonObject · function · L976-L986 — function parseJsonObject(value: string | null | undefined): Record<string, unknown>
+- normalizeMailboxEvidenceRefs · function · L988-L1000 — function normalizeMailboxEvidenceRefs(value: unknown): string[]
+- buildMailboxEventFingerprint · function · L1002-L1029 — function buildMailboxEventFingerprint( type: MailboxEventType, workspaceId: string, payload: Record<string, unknown>, ): string
+- stripHtml · function · L1031-L1051 — function stripHtml(html: string): string
+- normalizeWhitespace · function · L1053-L1060 — function normalizeWhitespace(value: string, maxLength = 600): string
+- normalizeMailboxSearchText · function · L1094-L1099 — function normalizeMailboxSearchText(value: string): string
+- tokenizeMailboxQuery · function · L1101-L1108 — function tokenizeMailboxQuery(query: string): string[]
+- normalizeEmailAddress · function · L1110-L1121 — function normalizeEmailAddress(value?: unknown): string | null
+- formatScheduleLabel · function · L1123-L1131 — function formatScheduleLabel(date: Date): string
+- formatMailboxDateTime · function · L1133-L1141 — function formatMailboxDateTime(timestamp?: number): string
+- buildScheduleOption · function · L1143-L1150 — function buildScheduleOption(date: Date, durationMinutes = 30): ScheduleOption
+- average · function · L1152-L1155 — function average(values: number[]): number | undefined
+- inferGreeting · function · L1157-L1165 — function inferGreeting(messages: string[]): string | undefined
+- inferSignoff · function · L1167-L1180 — function inferSignoff(messages: string[]): string | undefined
+- classifyTone · function · L1182-L1189 — function classifyTone(messages: string[]): DraftStyleProfile["tone"]
+- extractDisplayName · function · L1191-L1201 — function extractDisplayName(value?: unknown): string | undefined
+- parseAddressList · function · L1203-L1234 — function parseAddressList(input: unknown): MailboxParticipant[]
+- graphEmailAddressToParticipant · function · L1236-L1244 — function graphEmailAddressToParticipant(input: unknown): MailboxParticipant | undefined
+- graphRecipientsToParticipants · function · L1246-L1251 — function graphRecipientsToParticipants(input: unknown): MailboxParticipant[]
+- base64UrlDecode · function · L1253-L1262 — function base64UrlDecode(data?: string): string
+- extractGmailHeader · function · L1264-L1272 — function extractGmailHeader( headers: Array<{ name?: string; value?: string }> | undefined, name: string, ): string | null
+- extractGmailBody · function · L1274-L1298 — function extractGmailBody(payload: Any): string
+- extractGmailHtml · function · L1301-L1315 — function extractGmailHtml(payload: Any): string
+- extractGmailAttachments · function · L1317-L1339 — function extractGmailAttachments(payload: Any, messageId: string): NormalizedMailboxAttachment[]
+- visit · function · L1319-L1336 — visit = (part: Any): void
+- uniqueParticipants · function · L1341-L1352 — function uniqueParticipants(participants: MailboxParticipant[]): MailboxParticipant[]
+- normalizeClassifierText · function · L1354-L1356 — function normalizeClassifierText(subject: string, body: string): string
+- isAutomatedMailbox · function · L1358-L1379 — function isAutomatedMailbox( subject: string, body: string, senderEmail?: string, labels: string[] = [], ): boolean
+- isOnboardingMailbox · function · L1381-L1386 — function isOnboardingMailbox(subject: string, body: string): boolean
+- hasDirectReplyRequest · function · L1388-L1397 — function hasDirectReplyRequest(text: string): boolean
+- hasBoilerplateNotification · function · L1399-L1405 — function hasBoilerplateNotification(text: string): boolean
+- likelyNeedsReply · function · L1407-L1428 — function likelyNeedsReply(params: { direction: "incoming" | "outgoing"; subject: string; body: string; senderEmail?: string; labels?: string[]; category?: MailboxThreadCategory; }): boolean
+- deriveCategory · function · L1430-L1476 — function deriveCategory( subject: string, labels: string[], body: string, senderEmail?: string, ): MailboxThreadCategory
+- computeScores · function · L1478-L1538 — function computeScores(params: { subject: string; body: string; unreadCount: number; lastMessageAt: number; needsReply: boolean; cleanupCandidate: boolean; category: MailboxThreadCategory; }): { priorityScore: number; urgencyScore: number; staleFollowup: boolean; handled: boolean }
+- priorityBandFromScore · function · L1540-L1545 — function priorityBandFromScore(score: number): MailboxPriorityBand
+- sha256 · function · L1559-L1561 — function sha256(value: string): string
+- clampScore · function · L1563-L1566 — function clampScore(value: number): number
+- clampConfidence · function · L1568-L1571 — function clampConfidence(value: number): number
+- buildMailboxFtsQuery · function · L1573-L1578 — function buildMailboxFtsQuery(query: string): string
+- isSupportedMailboxAttachment · function · L1580-L1590 — function isSupportedMailboxAttachment(filename: string, mimeType?: string | null): boolean
+- normalizeTodayBucket · function · L1616-L1621 — function normalizeTodayBucket(value: unknown, fallback: MailboxTodayBucket): MailboxTodayBucket
+- normalizeDomainCategory · function · L1623-L1631 — function normalizeDomainCategory( value: unknown, fallback: MailboxDomainCategory, ): MailboxDomainCategory
+- deriveDomainCategoryFromText · function · L1633-L1669 — function deriveDomainCategoryFromText( text: string, category?: MailboxThreadCategory, ): MailboxDomainCategory
+- deriveTodayBucket · function · L1671-L1699 — function deriveTodayBucket(params: { category: MailboxThreadCategory; domainCategory: MailboxDomainCategory; needsReply: boolean; priorityScore: number; urgencyScore: number; cleanupCandidate: boolean; handled: boolean; text: string; }): MailboxTodayBucket
+- mailboxClassificationFingerprint · function · L1701-L1728 — function mailboxClassificationFingerprint(snapshot: MailboxClassificationSnapshot): string
+- summarizeMailboxBody · function · L1730-L1732 — function summarizeMailboxBody(body: string): string
+- mailboxClassificationFallback · function · L1734-L1765 — function mailboxClassificationFallback( snapshot: MailboxClassificationSnapshot, ): MailboxClassificationResult
+- companyFromEmail · function · L1767-L1776 — function companyFromEmail(email?: string): string | undefined
+- excerptLines · function · L1778-L1784 — function excerptLines(text: string, count = 2): string[]
+- isLikelyHtmlArtifactOrNoiseLine · function · L1790-L1801 — function isLikelyHtmlArtifactOrNoiseLine(line: string): boolean
+- pickThreadSummaryLine · function · L1803-L1821 — function pickThreadSummaryLine(lines: string[], snippet: string, subject: string): string
+- parseDueAt · function · L1823-L1848 — function parseDueAt(text: string): number | undefined
+- guessMimeType · function · L1850-L1865 — function guessMimeType(filename: string): string
+- MailboxService · class · L1867-L12760 — class MailboxService
+- constructor · method · L1889-L1904 — constructor( private db: Database.Database, options: MailboxServiceOptions = {}, )
+- isAvailable · method · L1906-L1913 — isAvailable(): boolean
+- getMailboxAgentSearchService · method · L1915-L1938 — private getMailboxAgentSearchService(): MailboxAgentSearchService
+- startAutoSyncLoop · method · L1940-L1949 — private startAutoSyncLoop(): void
+- run · function · L1942-L1944 — run = ()
+- startOutboxLoop · method · L1951-L1959 — private startOutboxLoop(): void
+- run · function · L1953-L1955 — run = ()
+- runAutoSyncIfDue · method · L1961-L2018 — private async runAutoSyncIfDue(): Promise<void>
+- getAgentMailClient · method · L2020-L2022 — private getAgentMailClient(): AgentMailClient
+- agentMailEnabled · method · L2024-L2027 — private agentMailEnabled(): boolean
+- getGoogleWorkspaceAuthIssue · method · L2029-L2058 — private getGoogleWorkspaceAuthIssue(): { key: string; statusLabel: string; logMessage: string; } | null
+- getExistingMailboxAccounts · method · L2060-L2076 — private getExistingMailboxAccounts( provider: MailboxProvider, status?: MailboxAccount["status"], ): MailboxAccount[]
+- isMicrosoftGraphAccountRow · method · L2078-L2087 — private isMicrosoftGraphAccountRow(row: MailboxAccountRow): boolean
+- getObsoleteDuplicateMailboxAccountIds · method · L2089-L2110 — private getObsoleteDuplicateMailboxAccountIds(rows?: MailboxAccountRow[]): string[]
+- filterVisibleMailboxAccountRows · method · L2112-L2115 — private filterVisibleMailboxAccountRows(rows: MailboxAccountRow[]): MailboxAccountRow[]
+- noteGmailTransientSyncFailure · method · L2117-L2136 — private noteGmailTransientSyncFailure(error: unknown): string
+- noteGmailTransientSyncBackoff · method · L2138-L2148 — private noteGmailTransientSyncBackoff(): string
+- resetGmailTransientSyncFailure · method · L2150-L2155 — private resetGmailTransientSyncFailure(): void
+- isLoomEmailChannel · method · L2157-L2161 — private isLoomEmailChannel(): boolean
+- getSyncStatus · method · L2163-L2252 — async getSyncStatus(): Promise<MailboxSyncStatus>
+- getMailboxClientState · method · L2254-L2268 — async getMailboxClientState(): Promise<MailboxClientState>
+- getMailboxDraft · method · L2270-L2272 — getMailboxDraft(draftId: string): MailboxComposeDraft | null
+- createMailboxDraft · method · L2274-L2320 — async createMailboxDraft(input: MailboxComposeDraftInput): Promise<MailboxComposeDraft>
+- updateMailboxDraft · method · L2322-L2362 — async updateMailboxDraft( draftId: string, patch: MailboxComposeDraftPatch, ): Promise<MailboxComposeDraft>
+- addMailboxDraftAttachment · method · L2364-L2383 — async addMailboxDraftAttachment( draftId: string, input: MailboxDraftAttachmentInput, ): Promise<MailboxComposeDraft>
+- removeMailboxDraftAttachment · method · L2385-L2400 — async removeMailboxDraftAttachment( draftId: string, attachmentId: string, ): Promise<MailboxComposeDraft>
+- updateMailboxClientSettings · method · L2402-L2445 — updateMailboxClientSettings(patch: MailboxClientSettingsPatch): MailboxClientState["settings"]
+- sendMailboxDraft · method · L2447-L2488 — async sendMailboxDraft(draftId: string): Promise<MailboxOutgoingMessage>
+- scheduleMailboxSend · method · L2490-L2495 — async scheduleMailboxSend(draftId: string, scheduledAt: number): Promise<MailboxComposeDraft>
+- discardMailboxDraft · method · L2497-L2515 — async discardMailboxDraft(draftId: string): Promise<boolean>
+- undoMailboxAction · method · L2517-L2537 — async undoMailboxAction(actionId: string): Promise<MailboxQueuedAction>
+- retryMailboxAction · method · L2539-L2554 — async retryMailboxAction(actionId: string): Promise<MailboxQueuedAction>
+- processMailboxQueue · method · L2556-L2590 — async processMailboxQueue( limit = 25, ): Promise<{ processed: number; succeeded: number; failed: number }>
+- listMailboxEvents · method · L2592-L2638 — async listMailboxEvents(limit = 50, threadId?: string): Promise<MailboxEvent[]>
+- listMailboxAutomations · method · L2640-L2648 — async listMailboxAutomations(input?: { workspaceId?: string; threadId?: string; }): Promise<MailboxAutomationRecord[]>
+- listThreadAutomations · method · L2650-L2652 — async listThreadAutomations(threadId: string): Promise<MailboxAutomationRecord[]>
+- createMailboxRule · method · L2654-L2660 — async createMailboxRule(recipe: MailboxRuleRecipe): Promise<MailboxAutomationRecord>
+- updateMailboxRule · method · L2662-L2667 — async updateMailboxRule( automationId: string, patch: Partial<MailboxRuleRecipe> & { status?: MailboxAutomationStatus }, ): Promise<MailboxAutomationRecord | null>
+- deleteMailboxRule · method · L2669-L2671 — async deleteMailboxRule(automationId: string): Promise<boolean>
+- createMailboxSchedule · method · L2673-L2678 — async createMailboxSchedule(recipe: MailboxScheduleRecipe): Promise<MailboxAutomationRecord>
+- createMailboxForward · method · L2680-L2685 — async createMailboxForward(recipe: MailboxForwardRecipe): Promise<MailboxAutomationRecord>
+- updateMailboxSchedule · method · L2687-L2692 — async updateMailboxSchedule( automationId: string, patch: Partial<MailboxScheduleRecipe> & { status?: MailboxAutomationStatus }, ): Promise<MailboxAutomationRecord | null>
+- updateMailboxForward · method · L2694-L2699 — async updateMailboxForward( automationId: string, patch: Partial<MailboxForwardRecipe> & { status?: MailboxAutomationStatus }, ): Promise<MailboxAutomationRecord | null>
+- deleteMailboxSchedule · method · L2701-L2703 — async deleteMailboxSchedule(automationId: string): Promise<boolean>
+- deleteMailboxForward · method · L2705-L2707 — async deleteMailboxForward(automationId: string): Promise<boolean>
+- runMailboxForward · method · L2709-L2715 — async runMailboxForward(automationId: string): Promise<string>
+- listMailboxAutomationHistory · method · L2717-L2719 — async listMailboxAutomationHistory(automationId: string, limit = 25): Promise<Any[]>
+- previewMissionControlHandoff · method · L2721-L2755 — async previewMissionControlHandoff( threadId: string, ): Promise<MailboxMissionControlHandoffPreview | null>
+- createMissionControlHandoff · method · L2757-L2881 — async createMissionControlHandoff( request: MailboxMissionControlHandoffRequest, ): Promise<MailboxMissionControlHandoffRecord>
+- listMissionControlHandoffs · method · L2883-L2907 — listMissionControlHandoffs(threadId: string): MailboxMissionControlHandoffRecord[]
+- getMailboxDigest · method · L2909-L3059 — async getMailboxDigest(workspaceId?: string): Promise<MailboxDigestSnapshot>
+- getMailboxTodayDigest · method · L3061-L3111 — async getMailboxTodayDigest( input: { limitPerBucket?: number } = {}, ): Promise<MailboxTodayDigest>
+- countThreadsByTodayBucket · method · L3113-L3121 — private countThreadsByTodayBucket(bucket: MailboxTodayBucket): number
+- getMailboxSenderCleanupDigest · method · L3123-L3190 — async getMailboxSenderCleanupDigest( input: { limit?: number } = {}, ): Promise<MailboxSenderCleanupDigest>
+- askMailbox · method · L3192-L3365 — async askMailbox( input: MailboxAskInput, options: MailboxAskRunOptions = {}, ): Promise<MailboxAskResult>
+- emitAskEvent · function · L3199-L3207 — emitAskEvent = (event: Omit<MailboxAskRunEvent, "runId" | "timestamp">): void
+- searchMailboxRows · method · L3367-L3434 — private searchMailboxRows( query: string, limit: number, ): Array<{ thread_id: string; attachment_id: string | null; snippet: string; score: number; }>
+- scoreMailboxSearchRow · method · L3436-L3480 — private scoreMailboxSearchRow( query: string, tokens: string[], row: { subject?: string | null; sender?: string | null; body?: string | null; attachment_filename?: string | null; attachment_text?: string | null; fts_score?: number; }, ): number
+- generateMailboxAskAnswer · method · L3482-L3592 — private async generateMailboxAskAnswer( query: string, results: MailboxAskResult["results"], search?: Awaited<ReturnType<MailboxAgentSearchService["search"]>>, ): Promise<{ answer?: string; usedLlm: boolean; error?: string }>
+- searchConnectedMailboxProviders · method · L3594-L3623 — private async searchConnectedMailboxProviders( plan: MailboxSearchQueryPlan, limit: number, ): Promise<Array<{ thread: MailboxThreadDetail; snippet?: string; score?: number }>>
+- searchGmailProvider · method · L3625-L3688 — private async searchGmailProvider( plan: MailboxSearchQueryPlan, limit: number, ): Promise<Array<{ thread: MailboxThreadDetail; snippet?: string; score?: number }>>
+- searchMicrosoftGraphProvider · method · L3690-L3756 — private async searchMicrosoftGraphProvider( plan: MailboxSearchQueryPlan, limit: number, ): Promise<Array<{ thread: MailboxThreadDetail; snippet?: string; score?: number }>>
+- createSentFollowupDrafts · method · L3758-L3934 — async createSentFollowupDrafts( input: MailboxSentFollowupDraftInput = {}, ): Promise<MailboxSentFollowupDraftResult>
+- isSentFollowupDraftRequest · method · L3936-L3945 — private isSentFollowupDraftRequest(query: string): boolean
+- planMailboxAskAction · method · L3947-L4035 — private async planMailboxAskAction( query: string, requestedLimit?: number, ): Promise<MailboxAskActionPlan>
+- planMailboxAskActionHeuristically · method · L4037-L4051 — private planMailboxAskActionHeuristically( query: string, requestedLimit?: number, ): MailboxAskActionPlan
+- parseMailboxAskActionPlanText · method · L4053-L4082 — private parseMailboxAskActionPlanText(text: string): MailboxAskActionPlan | null
+- extractSentFollowupThresholdHours · method · L4084-L4093 — private extractSentFollowupThresholdHours(query: string): number
+- buildSentFollowupDraftBody · method · L4095-L4114 — private buildSentFollowupDraftBody( thread: MailboxThreadListItem, recipients: MailboxRecipientInput[], waitHours: number, ): string
+- formatSentFollowupDraftAnswer · method · L4116-L4133 — private formatSentFollowupDraftAnswer(result: MailboxSentFollowupDraftResult): string
+- extractCandidateAttachmentsForAsk · method · L4135-L4159 — private async extractCandidateAttachmentsForAsk(query: string): Promise<void>
+- getMailboxAttachment · method · L4161-L4172 — getMailboxAttachment(attachmentId: string, includeText = false): MailboxAttachmentRecord | null
+- extractMailboxAttachmentText · method · L4174-L4239 — async extractMailboxAttachmentText(attachmentId: string): Promise<MailboxAttachmentRecord>
+- fetchMailboxAttachmentBytes · method · L4241-L4259 — private async fetchMailboxAttachmentBytes(row: MailboxAttachmentRow): Promise<Buffer>
+- extractTextFromAttachmentBytes · method · L4261-L4285 — private async extractTextFromAttachmentBytes( row: MailboxAttachmentRow, bytes: Buffer, ): Promise<{ text: string; mode: string }>
+- mapAttachmentRow · method · L4287-L4308 — private mapAttachmentRow( row: MailboxAttachmentRow, includeText = false, ): MailboxAttachmentRecord
+- updateSyncProgress · method · L4310-L4315 — private updateSyncProgress(progress: Omit<MailboxSyncProgress, "updatedAt">): void
+- resolveDefaultWorkspaceId · method · L4317-L4323 — private resolveDefaultWorkspaceId(): string | undefined
+- buildInboxVisibleThreadFilter · method · L4325-L4387 — private buildInboxVisibleThreadFilter( threadAlias = "mailbox_threads", workspaceId = this.resolveDefaultWorkspaceId(), ): { sql: string; params: unknown[] }
+- filterValidMailboxThreadIds · method · L4390-L4405 — private filterValidMailboxThreadIds(threadIds: string[], accountId?: string): string[]
+- scoreSavedViewCandidate · method · L4407-L4423 — private scoreSavedViewCandidate( seedTokens: Set<string>, subject: string, snippet: string, ): number
+- tokenize · function · L4412-L4418 — tokenize = (value: string): string[]
+- scoreOverlap · function · L4419-L4420 — scoreOverlap = (tokens: string[], weight: number): number
+- pruneMailboxTriageFeedback · method · L4425-L4452 — private pruneMailboxTriageFeedback(workspaceId: string): void
+- createThreadSensitiveContent · method · L4454-L4456 — private createThreadSensitiveContent(textParts: string[]): MailboxSensitiveContent
+- readThreadSensitiveContent · method · L4458-L4460 — private readThreadSensitiveContent(row: MailboxThreadRow): MailboxSensitiveContent
+- buildMailboxEventRecord · method · L4462-L4557 — private buildMailboxEventRecord(event: MailboxEventRecordInput): MailboxEventRecordResult | null
+- emitMailboxEvent · method · L4559-L4566 — private emitMailboxEvent(event: MailboxEventRecordInput): MailboxEvent | null
+- countPendingMailboxClassifications · method · L4568-L4581 — private countPendingMailboxClassifications(accountIds: string[]): number
+- listMailboxAccountIds · method · L4583-L4591 — private listMailboxAccountIds(): string[]
+- classifyPendingMailboxBacklog · method · L4593-L4663 — private async classifyPendingMailboxBacklog( accountIds: string[], limit: number, ): Promise<MailboxReclassifyResult>
+- sync · method · L4665-L4871 — async sync(limit = 25, options: { source?: "auto" | "manual" } = {}): Promise<MailboxSyncResult>
+- buildAgentMailAccountId · method · L4873-L4875 — private buildAgentMailAccountId(podId: string, inboxId: string): string
+- parseAgentMailAccountId · method · L4877-L4888 — private parseAgentMailAccountId(accountId?: string): { podId: string; inboxId: string } | null
+- getAgentMailBindings · method · L4890-L4898 — private getAgentMailBindings(): Array<{ workspace_id: string; pod_id: string }>
+- buildAgentMailAccount · method · L4900-L4926 — private buildAgentMailAccount( podId: string, inboxId: string, address?: string, displayName?: string, ): MailboxAccount
+- normalizeAgentMailLabels · method · L4928-L4934 — private normalizeAgentMailLabels(value: unknown): string[]
+- normalizeAgentMailThread · method · L4936-L5070 — private normalizeAgentMailThread( _workspaceId: string, podId: string, threadPayload: unknown, ): NormalizedThreadInput | null
+- ingestAgentMailThread · method · L5072-L5118 — async ingestAgentMailThread( _workspaceId: string, podId: string, threadPayload: unknown, options?: { classify?: boolean }, ): Promise<{ account: MailboxAccount; syncedMessages: number; isNewThread: boolean } | null>
+- syncAgentMail · method · L5120-L5210 — private async syncAgentMail( limit: number, ): Promise<{ accounts: MailboxAccount[]; syncedThreads: number; syncedMessages: number } | null>
+- reclassifyThread · method · L5212-L5228 — async reclassifyThread(threadId: string): Promise<MailboxReclassifyResult>
+- reclassifyAccount · method · L5230-L5263 — async reclassifyAccount(input: MailboxReclassifyInput): Promise<MailboxReclassifyResult>
+- listThreads · method · L5265-L5456 — async listThreads(input: MailboxListThreadsInput = {}): Promise<MailboxThreadListItem[]>
+- getThread · method · L5458-L5511 — async getThread(threadId: string): Promise<MailboxThreadDetail | null>
+- summarizeThread · method · L5513-L5601 — async summarizeThread(threadId: string): Promise<MailboxSummaryCard | null>
+- generateDraft · method · L5603-L5794 — async generateDraft( threadId: string, options: MailboxDraftOptions = {}, ): Promise<MailboxDraftSuggestion | null>
+- extractCommitments · method · L5796-L5889 — async extractCommitments(threadId: string): Promise<MailboxCommitment[]>
+- updateCommitmentState · method · L5891-L6015 — async updateCommitmentState( commitmentId: string, state: MailboxCommitmentState, ): Promise<MailboxCommitment | null>
+- updateCommitmentDetails · method · L6017-L6132 — async updateCommitmentDetails( commitmentId: string, patch: { title?: string; dueAt?: number | null; ownerEmail?: string | null; state?: MailboxCommitmentState; sourceExcerpt?: string | null; }, ): Promise<MailboxCommitment | null>
+- proposeCleanup · method · L6134-L6187 — async proposeCleanup(limit = 20): Promise<MailboxActionProposal[]>
+- proposeFollowups · method · L6189-L6242 — async proposeFollowups(limit = 20): Promise<MailboxActionProposal[]>
+- reviewBulkAction · method · L6244-L6254 — async reviewBulkAction(input: MailboxBulkReviewInput): Promise<MailboxBulkReviewResult>
+- scheduleReply · method · L6256-L6278 — async scheduleReply( threadId: string, ): Promise<{ threadId: string; suggestions: string[]; summary: string }>
+- resolveContactIdentity · method · L6280-L6312 — async resolveContactIdentity(threadId: string): Promise<ContactIdentityResolution | null>
+- getContactIdentity · method · L6314-L6316 — getContactIdentity(identityId: string): ContactIdentity | null
+- listContactIdentities · method · L6318-L6322 — listContactIdentities(workspaceId?: string): ContactIdentity[]
+- listIdentityCandidates · method · L6324-L6332 — listIdentityCandidates( workspaceId?: string, status?: ContactIdentityCandidate["status"], ): ContactIdentityCandidate[]
+- confirmIdentityLink · method · L6334-L6336 — confirmIdentityLink(candidateId: string): ContactIdentityCandidate | null
+- rejectIdentityLink · method · L6338-L6340 — rejectIdentityLink(candidateId: string): ContactIdentityCandidate | null
+- unlinkIdentityHandle · method · L6342-L6344 — unlinkIdentityHandle(handleId: string): boolean
+- searchIdentityLinkTargets · method · L6346-L6352 — searchIdentityLinkTargets( workspaceId: string, query: string, limit?: number, ): ContactIdentitySearchResult[]
+- linkIdentityHandle · method · L6354-L6367 — linkIdentityHandle(input: { workspaceId: string; contactIdentityId: string; handleType: ContactIdentityHandleType; normalizedValue: string; displayValue: string; source?: "mailbox" | "gateway" | "manual" | "crm" | "kg"; channelId?: string; channelType?: string; channelUserId?: string; }): ContactIdentity | null
+- getIdentityCoverageStats · method · L6369-L6373 — getIdentityCoverageStats(workspaceId?: string): ContactIdentityCoverageStats
+- getChannelPreferenceSummary · method · L6375-L6377 — getChannelPreferenceSummary(contactIdentityId: string): ChannelPreferenceSummary
+- getReplyTargets · method · L6379-L6384 — async getReplyTargets(threadId: string): Promise<ContactIdentityReplyTarget[]>
+- getRelationshipTimeline · method · L6386-L6413 — async getRelationshipTimeline( query: RelationshipTimelineQuery, ): Promise<RelationshipTimelineEvent[]>
+- researchContact · method · L6415-L6525 — async researchContact(threadId: string): Promise<MailboxResearchResult | null>
+- applyAction · method · L6527-L6699 — async applyAction( input: MailboxApplyActionInput, ): Promise<{ success: boolean; action: string; threadId?: string }>
+- syncGmail · method · L6701-L6930 — private async syncGmail(limit: number): Promise<{ account: MailboxAccount; syncedThreads: number; syncedMessages: number; } | null>
+- normalizeGmailThread · method · L6932-L7026 — private normalizeGmailThread( accountId: string, accountEmail: string, thread: Any, ): NormalizedThreadInput | null
+- normalizeMicrosoftGraphMessage · method · L7028-L7101 — private normalizeMicrosoftGraphMessage( accountId: string, accountEmail: string, message: Any, options: { localInboxHidden?: boolean } = {}, ): NormalizedThreadInput | null
+- getMicrosoftGraphThreadIdFromMessage · method · L7103-L7108 — private getMicrosoftGraphThreadIdFromMessage(message: Any): string | null
+- hideMicrosoftGraphJunkThreads · method · L7110-L7139 — private hideMicrosoftGraphJunkThreads( accountId: string, messages: Any[], visibleInboxThreadIds: Set<string>, ): number
+- syncMicrosoftGraphEmailChannel · method · L7141-L7346 — private async syncMicrosoftGraphEmailChannel( channelId: string, config: Any, limit: number, ): Promise<{ account: MailboxAccount; syncedThreads: number; syncedMessages: number; } | null>
+- syncImap · method · L7348-L7673 — private async syncImap(limit: number): Promise<{ account: MailboxAccount; syncedThreads: number; syncedMessages: number; } | null>
+- normalizeImapThreads · method · L7675-L7796 — private normalizeImapThreads( accountId: string, accountEmail: string, messagesRaw: Any[], ): NormalizedThreadInput[]
+- upsertAccount · method · L7798-L7826 — private upsertAccount(account: MailboxAccount): void
+- reconcileMailboxMessageIdentity · method · L7828-L7861 — private reconcileMailboxMessageIdentity( accountId: string, targetThreadId: string, targetMessageId: string, providerMessageId: string, ): void
+- deleteThreadIfEmpty · method · L7863-L7879 — private deleteThreadIfEmpty(threadId: string): void
+- upsertThread · method · L7881-L8199 — private upsertThread(thread: NormalizedThreadInput): ThreadUpsertResult
+- isMessageUnreadAfterLocalState · function · L7995-L7996 — isMessageUnreadAfterLocalState = (message: NormalizedMailboxMessage): boolean
+- upsertMessageSearchIndex · method · L8201-L8235 — private upsertMessageSearchIndex( thread: NormalizedThreadInput, message: NormalizedMailboxMessage, ): void
+- ensureMailboxSearchIndexBackfilled · method · L8237-L8313 — private ensureMailboxSearchIndexBackfilled(): void
+- upsertMessageAttachments · method · L8315-L8385 — private upsertMessageAttachments( thread: NormalizedThreadInput, message: NormalizedMailboxMessage, now: number, ): void
+- upsertAttachmentSearchIndex · method · L8387-L8427 — private upsertAttachmentSearchIndex(attachmentId: string): void
+- buildClassificationSnapshot · method · L8429-L8453 — private buildClassificationSnapshot( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), ): MailboxClassificationSnapshot
+- chooseMailboxClassifierModel · method · L8455-L8473 — private chooseMailboxClassifierModel(): { providerType: string; modelKey: string; modelId: string; } | null
+- parseClassificationResponse · method · L8475-L8532 — private parseClassificationResponse(text: string): MailboxClassificationResult | null
+- classifyThreadWithLLM · method · L8534-L8669 — private async classifyThreadWithLLM( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), options?: { force?: boolean }, ): Promise<MailboxClassificationResult | null>
+- persistThreadClassification · method · L8671-L8739 — private persistThreadClassification( threadId: string, result: MailboxClassificationResult, fingerprint: string, modelKey: string | null, existingState: MailboxClassificationState, rawJson?: string, ): void
+- classifyThreadById · method · L8741-L8826 — private async classifyThreadById( threadId: string, options?: { force?: boolean; preserveBackfill?: boolean }, ): Promise<boolean>
+- classifyMailboxThreadsForAccount · method · L8828-L8903 — private async classifyMailboxThreadsForAccount( accountId: string, options?: { includeBackfill?: boolean; limit?: number; force?: boolean }, ): Promise<MailboxReclassifyResult>
+- refreshThreadProposals · method · L8905-L8953 — private refreshThreadProposals( thread: Pick< NormalizedThreadInput, "id" | "subject" | "needsReply" | "cleanupCandidate" | "staleFollowup" | "category" >, ): void
+- upsertPrimaryContact · method · L8955-L9010 — private upsertPrimaryContact(thread: NormalizedThreadInput): void
+- getSummaryForThread · method · L9012-L9028 — private getSummaryForThread(threadId: string): MailboxSummaryCard | null
+- getMessagesForThread · method · L9030-L9056 — private getMessagesForThread(threadId: string): MailboxMessage[]
+- getDraftsForThread · method · L9058-L9077 — private getDraftsForThread(threadId: string): MailboxDraftSuggestion[]
+- getProposalsForThread · method · L9079-L9098 — private getProposalsForThread(threadId: string): MailboxActionProposal[]
+- getCommitmentsForThread · method · L9100-L9121 — private getCommitmentsForThread(threadId: string): MailboxCommitment[]
+- getPrimaryContactMemory · method · L9123-L9174 — private getPrimaryContactMemory(threadId: string): MailboxContactMemory | null
+- collectPhoneHints · method · L9176-L9206 — private collectPhoneHints(input: { primaryEmail?: string; contactMemory?: MailboxContactMemory | null; messages: MailboxMessage[]; snippet?: string; }): string[]
+- pushPhone · function · L9183-L9186 — pushPhone = (value?: string | null)
+- getContactInsights · method · L9208-L9294 — private getContactInsights( accountId: string, email: string, ): Pick< MailboxContactMemory, | "totalThreads" | "totalMessages" | "averageResponseHours" | "lastOutboundAt" | "recentSubjects" | "styleSignals" | "recentOutboundExample" | "responseTendency" >
+- buildDraftStyleProfile · method · L9296-L9337 — private buildDraftStyleProfile(input: { outgoingMessages: string[]; averageResponseHours?: number; }): DraftStyleProfile
+- getThreadCore · method · L9339-L9378 — private async getThreadCore( threadId: string, ): Promise<(MailboxThreadListItem & { messages: MailboxMessage[] }) | null>
+- resolveThreadWorkspaceId · method · L9380-L9396 — private resolveThreadWorkspaceId(_accountId?: string): string | undefined
+- buildMissionControlIssueTitle · method · L9398-L9402 — private buildMissionControlIssueTitle(detail: MailboxThreadDetail): string
+- buildMissionControlIssueSummary · method · L9404-L9435 — private buildMissionControlIssueSummary( detail: MailboxThreadDetail, sensitiveContentRedacted: boolean, ): string
+- buildMailboxExcerpt · method · L9437-L9446 — private buildMailboxExcerpt(detail: MailboxThreadDetail): string | null
+- buildMailboxEvidenceRefs · method · L9448-L9467 — private buildMailboxEvidenceRefs(detail: MailboxThreadDetail): CompanyEvidenceRef[]
+- buildMissionControlCompanyCandidates · method · L9469-L9528 — private buildMissionControlCompanyCandidates( detail: MailboxThreadDetail, ): MailboxCompanyCandidate[]
+- buildMissionControlOperatorRecommendations · method · L9530-L9603 — private buildMissionControlOperatorRecommendations( detail: MailboxThreadDetail, companyId?: string, ): MailboxOperatorRecommendation[]
+- buildMailboxHandoffOutputContract · method · L9605-L9628 — private buildMailboxHandoffOutputContract( companyId: string, operatorRoleId: string, detail: MailboxThreadDetail, ): CompanyOutputContract
+- mapMailboxPriorityToIssuePriority · method · L9630-L9641 — private mapMailboxPriorityToIssuePriority(band: MailboxPriorityBand): number
+- persistMissionControlHandoff · method · L9643-L9695 — private persistMissionControlHandoff(input: { threadId: string; workspaceId: string; companyId: string; companyName: string; operatorRoleId: string; operatorDisplayName: string; issueId: string; issueTitle: string; latestOutcome?: string; latestWakeAt?: number; }): MailboxMissionControlHandoffRecord
+- findActiveMissionControlHandoff · method · L9697-L9717 — private findActiveMissionControlHandoff( threadId: string, companyId: string, operatorRoleId: string, ): MailboxMissionControlHandoffRecord | null
+- mapMissionControlHandoffRow · method · L9719-L9742 — private mapMissionControlHandoffRow( row: MailboxMissionControlHandoffRow, ): MailboxMissionControlHandoffRecord
+- getScheduleSuggestion · method · L9744-L9813 — private async getScheduleSuggestion(): Promise<ScheduleSuggestion>
+- applyArchive · method · L9815-L9864 — private async applyArchive( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), ): Promise<void>
+- applyLocalCleanup · method · L9866-L9874 — private applyLocalCleanup( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), ): void
+- applyMarkDone · method · L9876-L9904 — private async applyMarkDone( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), ): Promise<void>
+- applyTrash · method · L9906-L9945 — private async applyTrash( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), ): Promise<void>
+- applyMarkRead · method · L9947-L10009 — private async applyMarkRead( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), ): Promise<void>
+- markThreadReadLocally · method · L10011-L10021 — private markThreadReadLocally(threadId: string): void
+- applyMarkUnread · method · L10023-L10098 — private async applyMarkUnread( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), ): Promise<void>
+- applyMicrosoftGraphReadState · method · L10100-L10155 — private async applyMicrosoftGraphReadState( channelId: string, threadId: string, read: boolean, ): Promise<void>
+- resolveMicrosoftGraphMessageIdByInternetMessageId · method · L10157-L10173 — private async resolveMicrosoftGraphMessageIdByInternetMessageId( channelId: string, internetMessageId: string, ): Promise<string | null>
+- updateMicrosoftGraphMessageReadState · method · L10175-L10188 — private async updateMicrosoftGraphMessageReadState( channelId: string, graphMessageId: string, read: boolean, ): Promise<void>
+- persistResolvedMicrosoftGraphMessageId · method · L10190-L10207 — private persistResolvedMicrosoftGraphMessageId( row: Pick<MailboxMessageRow, "id" | "metadata_json">, microsoftGraphMessageId: string, rfcMessageId?: string, ): void
+- applyStandardImapReadState · method · L10209-L10262 — private async applyStandardImapReadState( threadId: string, client: EmailClient, read: boolean, ): Promise<void>
+- extractStoredImapUid · method · L10264-L10273 — private extractStoredImapUid( row: Pick<MailboxMessageRow, "provider_message_id" | "metadata_json">, ): number | null
+- persistResolvedImapMessageUid · method · L10275-L10292 — private persistResolvedImapMessageUid( row: Pick<MailboxMessageRow, "id" | "metadata_json">, uid: number, rfcMessageId?: string, ): void
+- applyLabel · method · L10294-L10328 — private async applyLabel( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), label: string, ): Promise<void>
+- applyRemoveLabel · method · L10330-L10363 — private async applyRemoveLabel( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), label: string, ): Promise<void>
+- applyMove · method · L10365-L10397 — private async applyMove( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), folderId: string, ): Promise<void>
+- applySendDraft · method · L10399-L10491 — private async applySendDraft( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), draftId?: string, override?: { subject?: string; body?: string }, ): Promise<void>
+- stripCRLF · function · L10428-L10428 — stripCRLF = (v: string)
+- applySendMessage · method · L10493-L10587 — private async applySendMessage( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), input: { mode: "reply" | "reply_all" | "forward"; to: string[]; cc: string[]; bcc: string[]; subject?: string; body?: string; }, ): Promise<void>
+- stripCRLF · function · L10519-L10519 — stripCRLF = (value: string)
+- applyDiscardDraft · method · L10589-L10600 — private async applyDiscardDraft( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), draftId?: string, ): Promise<void>
+- applyScheduleEvent · method · L10602-L10644 — private async applyScheduleEvent( thread: MailboxThreadDetail | (MailboxThreadListItem & { messages: MailboxMessage[] }), proposalId?: string, ): Promise<void>
+- updateProposalStatus · method · L10646-L10654 — private updateProposalStatus(proposalId: string, status: MailboxProposalStatus): void
+- updateProposalStatusByThreadAndType · method · L10656-L10668 — private updateProposalStatusByThreadAndType( threadId: string, type: MailboxProposalType, status: MailboxProposalStatus, ): void
+- threadIdFromProposal · method · L10670-L10676 — private threadIdFromProposal(proposalId?: string): string | undefined
+- updateContactOpenCommitments · method · L10678-L10691 — private updateContactOpenCommitments(threadId: string): void
+- upsertProposal · method · L10693-L10744 — private upsertProposal(input: { threadId: string; type: MailboxProposalType; title: string; reasoning: string; preview?: Record<string, unknown>; }): void
+- hasEmailChannel · method · L10746-L10749 — private hasEmailChannel(): boolean
+- isMicrosoftEmailOAuthConfig · method · L10751-L10759 — private isMicrosoftEmailOAuthConfig(config: Any): boolean
+- microsoftGraphRequest · method · L10761-L10804 — private async microsoftGraphRequest( channelId: string, options: { method: "GET" | "POST" | "PATCH" | "DELETE"; path: string; query?: Record<string, string | number | boolean | undefined>; body?: unknown; headers?: Record<string, string>; scopes?: readonly string[]; }, ): Promise<Any>
+- getMicrosoftGraphAccessToken · method · L10806-L10869 — private async getMicrosoftGraphAccessToken( channelId: string, requiredScopes: readonly string[] = MICROSOFT_GRAPH_READWRITE_SCOPES, ): Promise<string>
+- getEmailOAuthAccessToken · method · L10871-L10920 — private async getEmailOAuthAccessToken(channelId: string): Promise<string>
+- createStandardEmailClient · method · L10922-L10942 — private createStandardEmailClient(channelId: string, config: Any): EmailClient
+- getMailboxSyncHealth · method · L10944-L10994 — private getMailboxSyncHealth(accounts: MailboxAccount[]): MailboxSyncHealth[]
+- listMailboxFolders · method · L10996-L11037 — private listMailboxFolders(): MailboxFolder[]
+- listMailboxLabels · method · L11039-L11048 — private listMailboxLabels(): MailboxLabel[]
+- listMailboxIdentities · method · L11050-L11080 — private listMailboxIdentities(): MailboxIdentity[]
+- listMailboxSignatures · method · L11082-L11091 — private listMailboxSignatures(): MailboxSignature[]
+- listMailboxComposeDrafts · method · L11093-L11106 — private listMailboxComposeDrafts(): MailboxComposeDraft[]
+- listMailboxQueuedActions · method · L11108-L11120 — private listMailboxQueuedActions(): MailboxQueuedAction[]
+- listMailboxOutgoingMessages · method · L11122-L11133 — private listMailboxOutgoingMessages(): MailboxOutgoingMessage[]
+- getMailboxClientSettings · method · L11135-L11158 — private getMailboxClientSettings(): MailboxClientState["settings"]
+- getMailboxComposeDraft · method · L11160-L11171 — private getMailboxComposeDraft(draftId: string): MailboxComposeDraft | null
+- getMailboxOutgoingMessage · method · L11173-L11182 — private getMailboxOutgoingMessage(id: string): MailboxOutgoingMessage | null
+- getMailboxQueuedAction · method · L11184-L11194 — private getMailboxQueuedAction(actionId: string): MailboxQueuedAction | null
+- enqueueMailboxAction · method · L11196-L11226 — private enqueueMailboxAction(input: { accountId?: string; threadId?: string; draftId?: string; type: MailboxQueuedAction["type"]; payload: Record<string, unknown>; nextAttemptAt?: number; undoOfActionId?: string; }): MailboxQueuedAction
+- processMailboxQueuedAction · method · L11228-L11249 — private async processMailboxQueuedAction(action: MailboxQueuedAction): Promise<void>
+- markMailboxQueuedActionFailed · method · L11251-L11282 — private markMailboxQueuedActionFailed(row: MailboxQueuedActionRow, error: unknown): void
+- executeQueuedDraftSend · method · L11284-L11326 — private async executeQueuedDraftSend(action: MailboxQueuedAction): Promise<void>
+- executeQueuedThreadAction · method · L11328-L11352 — private async executeQueuedThreadAction(action: MailboxQueuedAction): Promise<void>
+- sendComposeDraftThroughProvider · method · L11354-L11411 — private async sendComposeDraftThroughProvider( draft: MailboxComposeDraft, ): Promise<{ providerMessageId?: string; providerDraftId?: string }>
+- microsoftGraphCreateDraft · method · L11413-L11441 — private async microsoftGraphCreateDraft( draft: MailboxComposeDraft, attachments: EmailAttachment[], ): Promise<Any>
+- toGraphRecipient · method · L11443-L11450 — private toGraphRecipient(recipient: MailboxRecipientInput): Record<string, unknown>
+- sendAgentMailDraft · method · L11452-L11476 — private async sendAgentMailDraft( draft: MailboxComposeDraft, ): Promise<{ providerMessageId?: string }>
+- normalizeComposeAttachmentInput · method · L11478-L11506 — private normalizeComposeAttachmentInput( input: MailboxDraftAttachmentInput, workspaceId?: string, ): MailboxComposeDraft["attachments"][number]
+- resolveComposeDraftWorkspaceId · method · L11508-L11519 — private resolveComposeDraftWorkspaceId(draft: MailboxComposeDraft): string | undefined
+- resolveComposeDraftWorkspaceIdForCreate · method · L11521-L11533 — private resolveComposeDraftWorkspaceIdForCreate( accountId: string, threadId?: string, ): string | undefined
+- assertMailboxAttachmentPathAllowed · method · L11535-L11550 — private assertMailboxAttachmentPathAllowed(realPath: string, workspaceId?: string): void
+- readComposeDraftAttachments · method · L11552-L11575 — private readComposeDraftAttachments(draft: MailboxComposeDraft): EmailAttachment[]
+- buildRawMimeMessage · method · L11577-L11622 — private buildRawMimeMessage(draft: MailboxComposeDraft, attachments: EmailAttachment[]): string
+- strip · function · L11578-L11578 — strip = (value: string)
+- getMailboxAccount · method · L11624-L11633 — private getMailboxAccount(accountId: string): MailboxAccount | null
+- getProviderThreadId · method · L11635-L11640 — private getProviderThreadId(threadId: string): string | undefined
+- refreshGmailNavigation · method · L11642-L11675 — private async refreshGmailNavigation(accountId: string): Promise<void>
+- refreshMicrosoftGraphNavigation · method · L11677-L11703 — private async refreshMicrosoftGraphNavigation( channelId: string, accountId: string, ): Promise<void>
+- upsertMailboxFolder · method · L11705-L11738 — private upsertMailboxFolder(input: { accountId: string; providerFolderId: string; name: string; role: MailboxFolder["role"]; unreadCount?: number; totalCount?: number; now: number; }): void
+- upsertMailboxLabel · method · L11740-L11770 — private upsertMailboxLabel(input: { accountId: string; providerLabelId: string; name: string; unreadCount?: number; totalCount?: number; now: number; }): void
+- gmailLabelRole · method · L11772-L11781 — private gmailLabelRole(id: string, name: string): MailboxFolder["role"] | null
+- microsoftFolderRole · method · L11783-L11792 — private microsoftFolderRole(name: string): MailboxFolder["role"]
+- resolveMicrosoftGraphChannelId · method · L11794-L11802 — private resolveMicrosoftGraphChannelId(): string
+- applyPostSendLocalState · method · L11804-L11856 — private applyPostSendLocalState(draft: MailboxComposeDraft, providerMessageId?: string): void
+- resolveComposeAccountId · method · L11858-L11871 — private resolveComposeAccountId(accountId?: string, threadId?: string): string
+- buildReplyRecipients · method · L11873-L11894 — private buildReplyRecipients( thread: MailboxThreadDetail | null, replyAll: boolean, ): MailboxRecipientInput[]
+- add · function · L11882-L11887 — add = (participant?: MailboxParticipant)
+- prefixMailboxSubject · method · L11896-L11901 — private prefixMailboxSubject(subject: string, prefix: string): string
+- normalizeRecipients · method · L11903-L11910 — private normalizeRecipients(recipients: MailboxRecipientInput[]): MailboxRecipientInput[]
+- normalizeRecipientEmails · method · L11912-L11921 — private normalizeRecipientEmails(recipients: string[]): string[]
+- mapMailboxFolderRow · method · L11923-L11935 — private mapMailboxFolderRow(row: MailboxFolderRow): MailboxFolder
+- mapMailboxLabelRow · method · L11937-L11949 — private mapMailboxLabelRow(row: MailboxLabelRow): MailboxLabel
+- mapMailboxIdentityRow · method · L11951-L11963 — private mapMailboxIdentityRow(row: MailboxIdentityRow): MailboxIdentity
+- mapMailboxSignatureRow · method · L11965-L11976 — private mapMailboxSignatureRow(row: MailboxSignatureRow): MailboxSignature
+- mapMailboxComposeDraftRow · method · L11978-L12004 — private mapMailboxComposeDraftRow(row: MailboxComposeDraftRow): MailboxComposeDraft
+- mapMailboxOutgoingMessageRow · method · L12006-L12019 — private mapMailboxOutgoingMessageRow(row: MailboxOutgoingMessageRow): MailboxOutgoingMessage
+- mapMailboxQueuedActionRow · method · L12021-L12037 — private mapMailboxQueuedActionRow(row: MailboxQueuedActionRow): MailboxQueuedAction
+- mapAccountRow · method · L12039-L12056 — private mapAccountRow(row: MailboxAccountRow): MailboxAccount
+- threadMatchesQuery · method · L12058-L12111 — private threadMatchesQuery(row: MailboxThreadRow, query: string): boolean
+- threadMatchesAttachmentQuery · method · L12113-L12130 — private threadMatchesAttachmentQuery(threadId: string, query: string): boolean
+- mapThreadRow · method · L12132-L12164 — private mapThreadRow( row: MailboxThreadRow, summary?: MailboxSummaryCard | null, ): MailboxThreadListItem
+- getAttachmentSummariesForThread · method · L12166-L12191 — private getAttachmentSummariesForThread(threadId: string, limit = 6): MailboxAttachmentSummary[]
+- mapMessageRow · method · L12193-L12215 — private mapMessageRow(row: MailboxMessageRow): MailboxMessage
+- mapSummaryRow · method · L12217-L12227 — private mapSummaryRow(row: MailboxSummaryRow): MailboxSummaryCard
+- mapDraftRow · method · L12229-L12241 — private mapDraftRow(row: MailboxDraftRow): MailboxDraftSuggestion
+- mapProposalRow · method · L12243-L12257 — private mapProposalRow(row: MailboxProposalRow): MailboxActionProposal
+- mapCommitmentRow · method · L12259-L12274 — private mapCommitmentRow(row: MailboxCommitmentRow): MailboxCommitment
+- ensureFollowUpTaskForCommitment · method · L12276-L12342 — private ensureFollowUpTaskForCommitment( row: MailboxCommitmentRow, metadata: MailboxCommitmentMetadata, ): Task | null
+- recordMailboxTriageFeedback · method · L12344-L12371 — private recordMailboxTriageFeedback( threadId: string, feedbackKind: string, payload?: Record<string, unknown>, ): void
+- listMailboxSnippets · method · L12373-L12401 — listMailboxSnippets(): MailboxSnippetRecord[]
+- upsertMailboxSnippet · method · L12403-L12464 — upsertMailboxSnippet(input: MailboxSnippetInput & { id?: string }): MailboxSnippetRecord
+- deleteMailboxSnippet · method · L12466-L12473 — deleteMailboxSnippet(id: string): boolean
+- listMailboxSavedViews · method · L12475-L12505 — listMailboxSavedViews(): MailboxSavedViewRecord[]
+- previewMailboxLabelSimilar · method · L12507-L12587 — async previewMailboxLabelSimilar(input: { seedThreadId: string; name: string; instructions: string; }): Promise<MailboxSavedViewPreviewResult>
+- createMailboxSavedView · method · L12589-L12655 — async createMailboxSavedView(input: { name: string; instructions: string; seedThreadId?: string; threadIds: string[]; showInInbox?: boolean; }): Promise<MailboxSavedViewRecord>
+- deleteMailboxSavedView · method · L12657-L12664 — deleteMailboxSavedView(viewId: string): boolean
+- getMailboxQuickReplySuggestions · method · L12666-L12690 — async getMailboxQuickReplySuggestions( threadId: string, ): Promise<MailboxQuickReplySuggestionsResult>
+- createReviewScheduleForSavedView · method · L12692-L12733 — async createReviewScheduleForSavedView(viewId: string): Promise<MailboxAutomationRecord>
+- resolveFollowUpWorkspaceId · method · L12735-L12741 — private resolveFollowUpWorkspaceId(): string | null
+- mapContactRow · method · L12743-L12759 — private mapContactRow(row: MailboxContactRow): MailboxContactMemory

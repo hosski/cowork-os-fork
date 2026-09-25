@@ -1,0 +1,21 @@
+# src/renderer/components/timeline/parallel-group-projection.ts
+
+- ParallelLaneProjection · interface · L10-L19 — interface ParallelLaneProjection
+- ParallelGroupProjection · interface · L21-L29 — interface ParallelGroupProjection
+- ParallelGroupProjectionResult · interface · L31-L34 — interface ParallelGroupProjectionResult
+- LaneAccumulator · interface · L36-L46 — interface LaneAccumulator
+- GroupAccumulator · interface · L48-L59 — interface GroupAccumulator
+- asObject · function · L61-L64 — function asObject(value: unknown): Record<string, unknown>
+- toTimelineStatus · function · L66-L80 — function toTimelineStatus(value: unknown, fallback: TimelineEventStatus): TimelineEventStatus
+- getEventGroupId · function · L82-L91 — function getEventGroupId(event: TaskEvent): string | null
+- isToolsParallelGroupId · function · L93-L96 — function isToolsParallelGroupId(groupId: string | null | undefined): boolean
+- extractStepId · function · L98-L111 — function extractStepId(event: TaskEvent): string | undefined
+- extractToolUseIdFromStepId · function · L113-L119 — function extractToolUseIdFromStepId(stepId: string | undefined): string | undefined
+- getToolCallIndex · function · L121-L126 — function getToolCallIndex(payload: Record<string, unknown>): number | undefined
+- getToolCorrelationId · function · L128-L139 — function getToolCorrelationId(payload: Record<string, unknown>): string | undefined
+- ensureLane · function · L141-L157 — function ensureLane( group: GroupAccumulator, laneKey: string, firstOrder: number, timestamp: number, ): LaneAccumulator
+- laneTitleForToolName · function · L159-L161 — function laneTitleForToolName(toolName: string | undefined): string
+- isGenericLaneTitle · function · L163-L181 — function isGenericLaneTitle( title: string | undefined, toolName: string | undefined, failed: boolean, ): boolean
+- humanizeToolLaneMessage · function · L183-L207 — function humanizeToolLaneMessage(message: string, fallbackToolName?: string): string
+- inferGroupStatus · function · L209-L224 — function inferGroupStatus(group: GroupAccumulator): TimelineEventStatus
+- buildParallelGroupProjection · function · L226-L568 — function buildParallelGroupProjection(events: TaskEvent[]): ParallelGroupProjectionResult

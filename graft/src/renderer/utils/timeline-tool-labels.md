@@ -1,0 +1,29 @@
+# src/renderer/utils/timeline-tool-labels.ts
+
+- truncateLabel · function · L8-L12 — function truncateLabel(s: string, max = TRUNC): string
+- asTrimmedString · function · L14-L16 — function asTrimmedString(value: unknown): string
+- asTrimmedStringArray · function · L18-L23 — function asTrimmedStringArray(value: unknown): string[]
+- fileBase · function · L25-L27 — function fileBase(path: string): string
+- parentDirBase · function · L29-L33 — function parentDirBase(path: string): string
+- humanizeIdentifier · function · L35-L43 — function humanizeIdentifier(value: string): string
+- formatSkillLabel · function · L45-L49 — function formatSkillLabel(name: string): string
+- isSkillToolName · function · L51-L54 — function isSkillToolName(toolName: string | undefined): boolean
+- skillNameFromPayload · function · L56-L67 — function skillNameFromPayload(values: Record<string, unknown>): string
+- skillNameFromSkillPath · function · L69-L73 — function skillNameFromSkillPath(path: string): string
+- skillNameFromToolInput · function · L75-L77 — function skillNameFromToolInput(input: Record<string, unknown>): string
+- skillNamesFromReadFilesResult · function · L79-L88 — function skillNamesFromReadFilesResult(result: Record<string, unknown>): string[]
+- skillReadLabel · function · L90-L93 — function skillReadLabel(name: string, tense: "running" | "completed"): string
+- summarizeList · function · L95-L100 — function summarizeList(values: string[], maxItems = 2): string
+- isBrowserToolName · function · L102-L104 — function isBrowserToolName(toolName: string | undefined): boolean
+- browserToolDisplayName · function · L106-L175 — function browserToolDisplayName(toolName: string): string
+- friendlyBrowserRunningLabel · function · L177-L179 — function friendlyBrowserRunningLabel(toolName: string): string
+- friendlyBrowserCompletedLabel · function · L181-L183 — function friendlyBrowserCompletedLabel(toolName: string): string
+- friendlyToolRunningLabel · function · L186-L225 — function friendlyToolRunningLabel(toolName: string | undefined): string
+- hostOrPathFromUrl · function · L227-L236 — function hostOrPathFromUrl(url: string): string
+- ToolInput · type · L238-L238 — type ToolInput = Record<string, unknown> | null | undefined;
+- ToolResult · type · L239-L239 — type ToolResult = Record<string, unknown> | null | undefined;
+- friendlyToolCallTitle · function · L242-L331 — function friendlyToolCallTitle(tool: string | undefined, input: ToolInput): string
+- friendlyToolResultTitle · function · L334-L418 — function friendlyToolResultTitle( tool: string | undefined, result: ToolResult, success: boolean, ): string
+- friendlyToolLaneCompletedLabel · function · L421-L457 — function friendlyToolLaneCompletedLabel( toolName: string | undefined, failed: boolean, ): string
+- friendlyPastVerb · function · L459-L495 — function friendlyPastVerb(tool: string): string
+- detailSuffix · function · L497-L516 — function detailSuffix(res: Record<string, unknown>, tool: string): string

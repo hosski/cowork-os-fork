@@ -1,0 +1,32 @@
+# src/electron/telemetry/pulse-service.ts
+
+- PulsePrivateSettings · interface · L18-L29 — interface PulsePrivateSettings
+- PulseServiceOptions · interface · L31-L36 — interface PulseServiceOptions
+- clampCount · function · L41-L44 — function clampCount(value: unknown): number
+- utcDayBounds · function · L46-L50 — function utcDayBounds(now: number): { start: number; end: number }
+- platform · function · L52-L57 — function platform(): PulseDailyPackage["client"]["platform"]
+- architecture · function · L59-L62 — function architecture(): PulseDailyPackage["client"]["architecture"]
+- activeMinutesBucket · function · L64-L73 — function activeMinutesBucket( milliseconds: number, ): PulseDailyPackage["activity"]["activeMinutesBucket"]
+- isPulseConsentGranted · function · L86-L95 — function isPulseConsentGranted(): boolean
+- categorizePulseTool · function · L97-L105 — function categorizePulseTool(name: string): keyof PulseToolCounts
+- PulseService · class · L107-L538 — class PulseService
+- constructor · method · L125-L132 — constructor( private readonly db: Database.Database, private readonly options: PulseServiceOptions, )
+- start · method · L134-L145 — start(): void
+- stop · method · L147-L152 — stop(): void
+- getSettings · method · L154-L157 — getSettings(): PulsePublicSettings
+- getPreview · method · L159-L163 — getPreview(): PulseDailyPackage | null
+- setEnabled · method · L165-L192 — async setEnabled(enabled: boolean): Promise<PulseMutationResult>
+- resetIdentity · method · L194-L206 — async resetIdentity(): Promise<PulseMutationResult>
+- deleteRemoteData · method · L208-L234 — async deleteRemoteData(): Promise<PulseMutationResult>
+- flushSafely · method · L242-L248 — private async flushSafely(): Promise<void>
+- flush · method · L250-L311 — async flush(): Promise<void>
+- buildPackage · method · L313-L415 — private buildPackage(installationId: string): PulseDailyPackage
+- hasFullDayConsent · method · L417-L426 — private hasFullDayConsent(): boolean
+- ensureSchema · method · L428-L443 — private ensureSchema(): void
+- loadSettings · method · L445-L451 — private loadSettings(): PulsePrivateSettings
+- saveSettings · method · L453-L455 — private saveSettings(settings: PulsePrivateSettings): void
+- resolveEndpointCandidate · method · L467-L485 — private resolveEndpointCandidate(candidate: string | undefined, source: string): string | null
+- endpoint · method · L487-L493 — private endpoint(settings: PulsePrivateSettings): string
+- toPublic · method · L495-L514 — private toPublic(settings: PulsePrivateSettings): PulsePublicSettings
+- getPreviewWithoutRecursion · method · L516-L530 — private getPreviewWithoutRecursion(settings: PulsePrivateSettings): PulseDailyPackage | null
+- errorCode · method · L532-L537 — private errorCode(error: unknown): string

@@ -1,0 +1,21 @@
+# src/renderer/components/MainContent/artifact-logic.ts
+
+- GeneratedInlinePreviewKind · type · L19-L25 — type GeneratedInlinePreviewKind = | "image" | "video" | "html" | "spreadsheet" | "presentation" | "document";
+- EndOfTaskArtifactCard · interface · L37-L43 — interface EndOfTaskArtifactCard
+- EndOfTaskArtifactStack · interface · L45-L48 — interface EndOfTaskArtifactStack
+- getVisibleEndOfTaskArtifactCards · function · L50-L62 — function getVisibleEndOfTaskArtifactCards( artifacts: EndOfTaskArtifactCard[], expanded: boolean, ): { visibleArtifacts: EndOfTaskArtifactCard[]; hiddenCount: number }
+- estimateEndOfTaskArtifactStackHeight · function · L64-L74 — function estimateEndOfTaskArtifactStackHeight( artifacts: EndOfTaskArtifactCard[], expanded: boolean, ): number
+- getInlinePreviewKindForGeneratedFile · function · L93-L146 — function getInlinePreviewKindForGeneratedFile(args: { path?: unknown; mimeType?: unknown; type?: unknown; }): GeneratedInlinePreviewKind | null
+- normalizeGeneratedArtifactPathCandidate · function · L148-L157 — function normalizeGeneratedArtifactPathCandidate(candidate: string): string
+- getLineAtOffset · function · L159-L163 — function getLineAtOffset(text: string, offset: number): string
+- getPreviousNonEmptyLines · function · L165-L176 — function getPreviousNonEmptyLines(text: string, offset: number, limit: number): string[]
+- hasPositiveArtifactReference · function · L178-L180 — function hasPositiveArtifactReference(line: string): boolean
+- isNonOutputArtifactReferenceContext · function · L182-L192 — function isNonOutputArtifactReferenceContext(text: string, start: number): boolean
+- extractGeneratedArtifactPathsFromText · function · L194-L215 — function extractGeneratedArtifactPathsFromText(text: string, limit = 8): string[]
+- getInlinePreviewKindForTaskEvent · function · L217-L234 — function getInlinePreviewKindForTaskEvent( event: TaskEvent, ): GeneratedInlinePreviewKind | null
+- normalizeArtifactCardKey · function · L236-L238 — function normalizeArtifactCardKey(filePath: string): string
+- getArtifactCardDisplayKey · function · L240-L244 — function getArtifactCardDisplayKey(filePath: string, kind: GeneratedInlinePreviewKind): string
+- getTaskEventArtifactPaths · function · L246-L294 — function getTaskEventArtifactPaths(event: TaskEvent, eventStream?: TaskEvent[]): string[]
+- shouldRenderOpenArtifactCardAtEvent · function · L296-L323 — function shouldRenderOpenArtifactCardAtEvent(args: { path: string; event: TaskEvent; eventStream?: TaskEvent[]; }): boolean
+- collectLatestEndOfTaskArtifactCards · function · L325-L353 — function collectLatestEndOfTaskArtifactCards( eventStream: TaskEvent[], limit = 8, ): EndOfTaskArtifactCard[]
+- collectEndOfTaskArtifactCardStacks · function · L355-L375 — function collectEndOfTaskArtifactCardStacks( eventStream: TaskEvent[], limit = 8, ): EndOfTaskArtifactStack[]

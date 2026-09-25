@@ -1,0 +1,60 @@
+# src/electron/council/CouncilService.ts
+
+- isSafeFilePath · function · L37-L54 — function isSafeFilePath(filePath: string): boolean
+- parseJson · function · L56-L63 — function parseJson<T>(value: string | null | undefined, fallback: T): T
+- normalizeSourceBundle · function · L65-L77 — function normalizeSourceBundle( sourceBundle?: Partial<CouncilSourceBundle> | CouncilSourceBundle | null, ): CouncilSourceBundle
+- normalizeDeliveryConfig · function · L79-L88 — function normalizeDeliveryConfig( deliveryConfig?: Partial<CouncilDeliveryConfig> | CouncilDeliveryConfig | null, ): CouncilDeliveryConfig
+- normalizeExecutionPolicy · function · L90-L100 — function normalizeExecutionPolicy( executionPolicy?: Partial<CouncilExecutionPolicy> | CouncilExecutionPolicy | null, ): CouncilExecutionPolicy
+- normalizeParticipants · function · L102-L112 — function normalizeParticipants(participants: CouncilParticipant[]): CouncilParticipant[]
+- clampIndex · function · L114-L117 — function clampIndex(value: number, length: number): number
+- isAllOllama · function · L119-L124 — function isAllOllama(participants: CouncilParticipant[]): boolean
+- computeParallelism · function · L126-L137 — function computeParallelism( participants: CouncilParticipant[], policy: CouncilExecutionPolicy, ): number
+- assertCouncilParticipants · function · L139-L152 — function assertCouncilParticipants(participants: CouncilParticipant[]): void
+- CouncilConfigRepository · class · L154-L316 — class CouncilConfigRepository
+- constructor · method · L155-L155 — constructor(private readonly db: Database.Database)
+- listByWorkspace · method · L157-L162 — listByWorkspace(workspaceId: string): CouncilConfig[]
+- findById · method · L164-L167 — findById(id: string): CouncilConfig | undefined
+- findByManagedCronJobId · method · L169-L174 — findByManagedCronJobId(managedCronJobId: string): CouncilConfig | undefined
+- create · method · L176-L224 — create(request: CreateCouncilConfigRequest): CouncilConfig
+- update · method · L226-L290 — update(request: UpdateCouncilConfigRequest): CouncilConfig | undefined
+- delete · method · L292-L295 — delete(id: string): boolean
+- mapRow · method · L297-L315 — private mapRow(row: Any): CouncilConfig
+- CouncilRunRepository · class · L318-L416 — class CouncilRunRepository
+- constructor · method · L319-L319 — constructor(private readonly db: Database.Database)
+- create · method · L321-L353 — create(params: { councilConfigId: string; workspaceId: string; proposerSeatIndex: number; sourceSnapshot: CouncilSourceBundle; }): CouncilRun
+- listByCouncil · method · L355-L362 — listByCouncil(councilConfigId: string, limit = 20): CouncilRun[]
+- findById · method · L364-L367 — findById(id: string): CouncilRun | undefined
+- findByTaskId · method · L369-L372 — findByTaskId(taskId: string): CouncilRun | undefined
+- bindTask · method · L374-L377 — bindTask(runId: string, taskId: string): CouncilRun | undefined
+- complete · method · L379-L398 — complete( runId: string, updates: { status: "completed" | "failed"; summary?: string; error?: string; memoId?: string }, ): CouncilRun | undefined
+- mapRow · method · L400-L415 — private mapRow(row: Any): CouncilRun
+- CouncilMemoRepository · class · L418-L493 — class CouncilMemoRepository
+- constructor · method · L419-L419 — constructor(private readonly db: Database.Database)
+- create · method · L421-L463 — create(params: { councilRunId: string; councilConfigId: string; workspaceId: string; taskId?: string; proposerSeatIndex: number; content: string; delivered: boolean; deliveryError?: string; }): CouncilMemo
+- getLatestForCouncil · method · L465-L472 — getLatestForCouncil(councilConfigId: string): CouncilMemo | undefined
+- findById · method · L474-L477 — findById(id: string): CouncilMemo | undefined
+- mapRow · method · L479-L492 — private mapRow(row: Any): CouncilMemo
+- CouncilServiceDeps · interface · L495-L506 — interface CouncilServiceDeps
+- CouncilService · class · L508-L920 — class CouncilService
+- constructor · method · L516-L522 — constructor(private readonly deps: CouncilServiceDeps)
+- buildManagedTrigger · method · L524-L526 — static buildManagedTrigger(councilId: string): string
+- parseManagedTrigger · method · L528-L536 — static parseManagedTrigger(prompt: string): string | null
+- list · method · L538-L540 — list(workspaceId: string): CouncilConfig[]
+- get · method · L542-L544 — get(id: string): CouncilConfig | undefined
+- getMemo · method · L546-L548 — getMemo(id: string): CouncilMemo | undefined
+- getLatestMemo · method · L550-L552 — getLatestMemo(councilConfigId: string): CouncilMemo | undefined
+- listRuns · method · L554-L556 — listRuns(councilConfigId: string, limit = 20): CouncilRun[]
+- create · method · L558-L561 — async create(request: CreateCouncilConfigRequest): Promise<CouncilConfig>
+- update · method · L563-L567 — async update(request: UpdateCouncilConfigRequest): Promise<CouncilConfig | undefined>
+- setEnabled · method · L569-L573 — async setEnabled(id: string, enabled: boolean): Promise<CouncilConfig | undefined>
+- delete · method · L575-L583 — async delete(id: string): Promise<boolean>
+- runNow · method · L585-L595 — async runNow(id: string): Promise<CouncilRun | null>
+- isCouncilJob · method · L597-L599 — isCouncilJob(jobId: string): boolean
+- prepareTaskForTrigger · method · L601-L624 — async prepareTaskForTrigger( triggerPrompt: string, workspaceId: string, ): Promise<{ runId: string; title: string; prompt: string; workspaceId: string; agentConfig: Task["agentConfig"]; } | null>
+- _prepareTaskForTriggerInner · method · L626-L689 — private async _prepareTaskForTriggerInner( councilId: string, workspaceId: string, ): Promise<{ runId: string; title: string; prompt: string; workspaceId: string; agentConfig: Task["agentConfig"]; } | null>
+- bindRunTask · method · L691-L693 — bindRunTask(runId: string, taskId: string): CouncilRun | undefined
+- finalizeRunForTask · method · L695-L775 — async finalizeRunForTask(taskId: string): Promise<CouncilRun | null>
+- syncManagedJob · method · L777-L819 — async syncManagedJob(id: string): Promise<CouncilConfig>
+- buildCouncilPrompt · method · L821-L854 — private async buildCouncilPrompt( config: CouncilConfig, proposerSeatIndex: number, ): Promise<string>
+- buildSourceContext · method · L856-L902 — private async buildSourceContext(sourceBundle: CouncilSourceBundle): Promise<string>
+- readFileSnippet · method · L904-L919 — private async readFileSnippet(filePath: string, maxBytes: number): Promise<string>

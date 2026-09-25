@@ -1,0 +1,32 @@
+# src/electron/agent/context-manager.ts
+
+- inferModelLimit · function · L28-L54 — function inferModelLimit(modelKey: string): number | null
+- messageTextForPinnedCheck · function · L75-L86 — function messageTextForPinnedCheck(message: LLMMessage): string
+- isPinnedMessage · function · L88-L92 — function isPinnedMessage(message: LLMMessage): boolean
+- messageHasToolUse · function · L94-L97 — function messageHasToolUse(message: LLMMessage): boolean
+- messageHasToolResult · function · L99-L102 — function messageHasToolResult(message: LLMMessage): boolean
+- estimateTokens · function · L108-L111 — function estimateTokens(text: string): number
+- estimateMessageTokens · function · L116-L134 — function estimateMessageTokens(message: LLMMessage): number
+- estimateTotalTokens · function · L139-L145 — function estimateTotalTokens(messages: LLMMessage[], systemPrompt?: string): number
+- truncateToTokens · function · L150-L156 — function truncateToTokens(text: string, maxTokens: number): string
+- safeJsonParse · function · L161-L167 — function safeJsonParse(jsonString: string): Any | null
+- isExpandedDocumentPayload · function · L169-L178 — function isExpandedDocumentPayload(parsed: Any): boolean
+- getToolResultTokenBudget · function · L180-L185 — function getToolResultTokenBudget(parsed: Any | null): number
+- truncateToolResult · function · L190-L228 — function truncateToolResult(result: string): string
+- CompactionKind · type · L230-L230 — type CompactionKind = "none" | "tool_truncation_only" | "message_removal";
+- CompactionMeta · type · L232-L247 — type CompactionMeta = { availableTokens: number; originalTokens: number; truncatedToolResults: { didTruncate: boolean; count: number; tokensAfter: number; }; removedMessages: { didRemove: boolean; count: number; tokensAfter: number; messages: LLMMessage[]; }; kind: CompactionKind; };
+- CompactionResult · type · L249-L252 — type CompactionResult = { messages: LLMMessage[]; meta: CompactionMeta; };
+- ContextManager · class · L257-L662 — class ContextManager
+- constructor · method · L261-L264 — constructor(modelKey: string = "default")
+- getAvailableTokens · method · L269-L271 — getAvailableTokens(systemPromptTokens: number = 0): number
+- getModelTokenLimit · method · L276-L278 — getModelTokenLimit(): number
+- estimateMaxOutputTokens · method · L283-L286 — estimateMaxOutputTokens(messages: LLMMessage[], systemPrompt: string = ""): number
+- compactMessages · method · L292-L294 — compactMessages(messages: LLMMessage[], systemPromptTokens: number = 0): LLMMessage[]
+- compactMessagesWithMeta · method · L296-L365 — compactMessagesWithMeta( messages: LLMMessage[], systemPromptTokens: number = 0, ): CompactionResult
+- truncateLargeResultsWithMeta · method · L370-L400 — private truncateLargeResultsWithMeta(messages: LLMMessage[]): { messages: LLMMessage[]; count: number; }
+- extractFilePathsFromMessages · method · L408-L437 — private extractFilePathsFromMessages(msgs: LLMMessage[]): Set<string>
+- messageReferencesActivePaths · method · L442-L468 — private messageReferencesActivePaths(msg: LLMMessage, activePaths: Set<string>): boolean
+- removeOlderMessagesWithMeta · method · L470-L556 — private removeOlderMessagesWithMeta( messages: LLMMessage[], targetTokens: number, ): { messages: LLMMessage[]; removedMessages: LLMMessage[] }
+- wouldExceedLimit · method · L561-L571 — wouldExceedLimit( currentMessages: LLMMessage[], newMessage: LLMMessage, systemPromptTokens: number = 0, ): boolean
+- getContextUtilization · method · L576-L587 — getContextUtilization( messages: LLMMessage[], systemPromptTokens: number = 0, ): { currentTokens: number; availableTokens: number; utilization: number }
+- proactiveCompactWithMeta · method · L594-L661 — proactiveCompactWithMeta( messages: LLMMessage[], systemPromptTokens: number = 0, targetUtilization: number = 0.55, ): CompactionResult

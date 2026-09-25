@@ -1,0 +1,77 @@
+# src/electron/browser/browser-session-manager.ts
+
+- Any · type · L6-L6 — type Any = any;
+- BrowserBackendKind · type · L8-L8 — type BrowserBackendKind = "electron-workbench" | "playwright-local" | "external-cdp";
+- BrowserBounds · interface · L10-L15 — interface BrowserBounds
+- BrowserSnapshotNode · interface · L17-L27 — interface BrowserSnapshotNode
+- BrowserSnapshotResult · interface · L29-L39 — interface BrowserSnapshotResult
+- BrowserDiagnosticSummary · interface · L41-L44 — interface BrowserDiagnosticSummary
+- BrowserConsoleEntry · interface · L46-L51 — interface BrowserConsoleEntry
+- BrowserNetworkEntry · interface · L53-L61 — interface BrowserNetworkEntry
+- BrowserTabInfo · interface · L63-L69 — interface BrowserTabInfo
+- ElectronWorkbenchSessionRegistration · interface · L71-L77 — interface ElectronWorkbenchSessionRegistration
+- BrowserSessionAccessPolicy · interface · L79-L83 — interface BrowserSessionAccessPolicy
+- BrowserSessionRecord · interface · L85-L106 — interface BrowserSessionRecord
+- BrowserRefTarget · interface · L108-L113 — interface BrowserRefTarget
+- normalizeBrowserUrl · function · L125-L133 — function normalizeBrowserUrl(rawUrl?: unknown): string
+- redactBrowserText · function · L135-L142 — function redactBrowserText(value: unknown, maxLength = 2000): string
+- isSensitiveStorageKey · function · L144-L150 — function isSensitiveStorageKey(key: string): boolean
+- redactBrowserStoragePayload · function · L152-L185 — function redactBrowserStoragePayload(value: unknown, keyHint = "", depth = 0): unknown
+- normalizeSessionId · function · L187-L190 — function normalizeSessionId(sessionId?: unknown): string
+- sessionKey · function · L192-L194 — function sessionKey(taskId: string, sessionId?: unknown): string
+- getAxValue · function · L196-L202 — function getAxValue(value: unknown): string
+- getAxProperty · function · L204-L208 — function getAxProperty(node: Any, name: string): unknown
+- isInterestingAxNode · function · L210-L233 — function isInterestingAxNode(node: Any): boolean
+- boundsFromBoxModel · function · L235-L251 — function boundsFromBoxModel(model: Any): BrowserBounds | undefined
+- BrowserSessionManager · class · L253-L1101 — class BrowserSessionManager
+- setAccessPolicy · method · L266-L272 — setAccessPolicy(taskId: string, policy: BrowserSessionAccessPolicy, sessionId?: unknown): void
+- clearAccessPolicy · method · L274-L276 — clearAccessPolicy(taskId: string, sessionId?: unknown): void
+- allowLocalPreviewUrl · method · L283-L291 — allowLocalPreviewUrl(rawUrl: string): void
+- revokeLocalPreviewUrl · method · L293-L297 — revokeLocalPreviewUrl(rawUrl: string): void
+- isAllowedLocalPreviewUrl · method · L299-L313 — private isAllowedLocalPreviewUrl(rawUrl: string): boolean
+- assertUrlAllowed · method · L315-L322 — assertUrlAllowed(taskId: string, rawUrl: string, sessionId?: unknown): void
+- registerElectronWorkbenchSession · method · L324-L345 — registerElectronWorkbenchSession(registration: ElectronWorkbenchSessionRegistration): void
+- unregisterSession · method · L347-L362 — unregisterSession(input: { taskId: string; sessionId?: string; webContentsId?: number }): void
+- updateSession · method · L364-L379 — updateSession(input: { taskId: string; sessionId?: string; webContentsId?: number; url?: string; title?: string; }): void
+- getTabs · method · L381-L393 — getTabs(taskId: string, sessionId?: unknown): BrowserTabInfo[]
+- snapshot · method · L395-L459 — async snapshot(input: { taskId: string; sessionId?: unknown; }): Promise<BrowserSnapshotResult | null>
+- clickRef · method · L461-L486 — async clickRef(input: { taskId: string; sessionId?: unknown; ref: string }): Promise<Any | null>
+- hoverRef · method · L488-L499 — async hoverRef(input: { taskId: string; sessionId?: unknown; ref: string }): Promise<Any | null>
+- dragRef · method · L501-L547 — async dragRef(input: { taskId: string; sessionId?: unknown; fromRef: string; toRef: string; }): Promise<Any | null>
+- fillRef · method · L549-L565 — async fillRef(input: { taskId: string; sessionId?: unknown; ref: string; value: string; }): Promise<Any | null>
+- typeRef · method · L567-L578 — async typeRef(input: { taskId: string; sessionId?: unknown; ref: string; text: string; }): Promise<Any | null>
+- getTextRef · method · L580-L604 — async getTextRef(input: { taskId: string; sessionId?: unknown; ref: string; }): Promise<Any | null>
+- uploadFile · method · L606-L642 — async uploadFile(input: { taskId: string; sessionId?: unknown; filePath: string; ref?: string; selector?: string; }): Promise<Any | null>
+- handleDialog · method · L644-L660 — async handleDialog(input: { taskId: string; sessionId?: unknown; accept?: boolean; promptText?: string; }): Promise<Any | null>
+- getConsole · method · L662-L669 — getConsole( taskId: string, sessionId?: unknown, ): { success: true; entries: BrowserConsoleEntry[] } | null
+- getNetwork · method · L671-L678 — getNetwork( taskId: string, sessionId?: unknown, ): { success: true; entries: BrowserNetworkEntry[] } | null
+- getDownloads · method · L680-L687 — getDownloads( taskId: string, sessionId?: unknown, ): { success: true; entries: BrowserNetworkEntry[] } | null
+- getStorage · method · L689-L714 — async getStorage(taskId: string, sessionId?: unknown): Promise<Any | null>
+- emulate · method · L716-L739 — async emulate(input: { taskId: string; sessionId?: unknown; width?: number; height?: number; deviceScaleFactor?: number; mobile?: boolean; }): Promise<Any | null>
+- traceStart · method · L741-L752 — async traceStart(taskId: string, sessionId?: unknown): Promise<Any | null>
+- traceStop · method · L754-L766 — async traceStop(taskId: string, sessionId?: unknown): Promise<Any | null>
+- resolveFreshRef · method · L768-L781 — private async resolveFreshRef(input: { taskId: string; sessionId?: unknown; ref: string; }): Promise<{ session: BrowserSessionRecord | null; contents: Any | null; target: BrowserRefTarget | null; }>
+- getFreshRefTarget · method · L783-L792 — private getFreshRefTarget(session: BrowserSessionRecord, ref: string): BrowserRefTarget
+- getTargetCenter · method · L794-L810 — private async getTargetCenter( contents: Any, target: BrowserRefTarget, ): Promise<{ x: number; y: number }>
+- focusRefTarget · method · L812-L835 — private async focusRefTarget( contents: Any, target: BrowserRefTarget, clear: boolean, ): Promise<void>
+- callOnBackendNode · method · L837-L853 — private async callOnBackendNode( contents: Any, backendNodeId: number, functionDeclaration: string, args: Array<Record<string, unknown>> = [], ): Promise<Any>
+- resolveSelector · method · L855-L878 — private async resolveSelector( contents: Any, selector: string, ): Promise<{ nodeId?: number; backendNodeId?: number } | null>
+- getBounds · method · L880-L887 — private async getBounds( contents: Any, backendNodeId: number, ): Promise<BrowserBounds | undefined>
+- summarize · method · L889-L892 — private summarize(values: string[]): BrowserDiagnosticSummary
+- ensureDebugger · method · L894-L908 — private async ensureDebugger(session: BrowserSessionRecord, contents: Any): Promise<void>
+- handler · function · L898-L900 — handler = (_event: Any, method: string, params: Any)
+- ensureDebuggerForContents · method · L910-L916 — private async ensureDebuggerForContents(contents: Any): Promise<void>
+- sendCommand · method · L918-L924 — private async sendCommand( contents: Any, method: string, params?: Record<string, unknown>, ): Promise<Any>
+- recordDebuggerEvent · method · L926-L982 — private recordDebuggerEvent(webContentsId: number, method: string, params: Any): void
+- pushConsole · method · L984-L987 — private pushConsole(session: BrowserSessionRecord, entry: BrowserConsoleEntry): void
+- pushNetwork · method · L989-L992 — private pushNetwork(session: BrowserSessionRecord, entry: BrowserNetworkEntry): void
+- findSessionByWebContentsId · method · L994-L999 — private findSessionByWebContentsId(webContentsId: number): BrowserSessionRecord | null
+- getWebContents · method · L1001-L1014 — private async getWebContents( session: BrowserSessionRecord | null | undefined, ): Promise<Any | null>
+- getAccessPolicy · method · L1016-L1018 — private getAccessPolicy(session: BrowserSessionRecord): BrowserSessionAccessPolicy | undefined
+- isUrlAllowed · method · L1020-L1022 — private isUrlAllowed(session: BrowserSessionRecord, rawUrl: string): boolean
+- isUrlAllowedWithPolicy · method · L1024-L1053 — private isUrlAllowedWithPolicy( policy: BrowserSessionAccessPolicy | undefined, rawUrl: string, ): boolean
+- assertCurrentUrlAllowed · method · L1055-L1059 — private assertCurrentUrlAllowed(session: BrowserSessionRecord, url: string): void
+- attachAccessGuards · method · L1061-L1100 — private attachAccessGuards(session: BrowserSessionRecord, contents: Any): void
+- willNavigate · function · L1066-L1071 — willNavigate = (event: Any, url: string)
+- willRedirect · function · L1072-L1077 — willRedirect = (event: Any, url: string)
+- getBrowserSessionManager · function · L1105-L1107 — function getBrowserSessionManager(): BrowserSessionManager

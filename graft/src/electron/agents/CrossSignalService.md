@@ -1,0 +1,24 @@
+# src/electron/agents/CrossSignalService.ts
+
+- Any · type · L9-L9 — type Any = any;
+- Mention · type · L11-L16 — type Mention = { display: string; count: number; lastSeenAt: number; roles: Set<string>; };
+- WorkspaceState · type · L18-L21 — type WorkspaceState = { mentions: Map<string, Mention>; // key = lowercased entity flushTimer: ReturnType<typeof setTimeout> | null; };
+- sanitizeInline · function · L36-L42 — function sanitizeInline(text: string): string
+- normalizeText · function · L44-L49 — function normalizeText(text: string): string
+- normalizeKey · function · L51-L53 — function normalizeKey(text: string): string
+- isMostlyNumberOrPunct · function · L55-L60 — function isMostlyNumberOrPunct(text: string): boolean
+- stripCodeBlocks · function · L62-L66 — function stripCodeBlocks(text: string): string
+- extractEntities · function · L68-L120 — function extractEntities(raw: string): string[]
+- push · function · L75-L85 — push = (value: string)
+- upsertMarkedSection · function · L122-L147 — function upsertMarkedSection(markdown: string, bodyLines: string[]): string
+- CrossSignalService · class · L149-L374 — class CrossSignalService
+- constructor · method · L156-L160 — constructor(private db: Database.Database)
+- start · method · L162-L190 — async start(agentDaemon: AgentDaemon): Promise<void>
+- getWorkspaceState · method · L192-L198 — private getWorkspaceState(workspaceId: string): WorkspaceState
+- ingestTaskMessage · method · L200-L236 — private ingestTaskMessage(taskId: string, content: string, timestampMs: number): void
+- scheduleFlush · method · L238-L246 — private scheduleFlush(workspaceId: string): void
+- flushAll · method · L248-L253 — async flushAll(): Promise<void>
+- formatRoleName · method · L255-L259 — private formatRoleName(roleId: string): string
+- buildSignalsSection · method · L261-L294 — private buildSignalsSection(workspaceId: string, nowMs: number): string[]
+- flushWorkspace · method · L296-L337 — private async flushWorkspace(workspaceId: string): Promise<void>
+- rebuildFromRecentAssistantMessages · method · L339-L373 — private async rebuildFromRecentAssistantMessages(): Promise<void>

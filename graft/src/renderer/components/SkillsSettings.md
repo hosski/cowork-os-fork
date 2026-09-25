@@ -1,0 +1,21 @@
+# src/renderer/components/SkillsSettings.tsx
+
+- SkillsSettingsProps · interface · L6-L8 — interface SkillsSettingsProps
+- SkillsSettings · function · L10-L339 — function SkillsSettings({ onSkillSelect }: SkillsSettingsProps)
+- loadSkills · function · L24-L40 — loadSkills = async ()
+- handleReload · function · L42-L50 — handleReload = async ()
+- handleOpenFolder · function · L52-L54 — handleOpenFolder = async ()
+- handleAddExternalDirectory · function · L56-L71 — handleAddExternalDirectory = async ()
+- handleRemoveExternalDirectory · function · L73-L83 — handleRemoveExternalDirectory = async (dir: string)
+- handleOpenExternalDirectory · function · L85-L91 — handleOpenExternalDirectory = async (dir: string)
+- handleDelete · function · L93-L102 — handleDelete = async (id: string)
+- handleEdit · function · L104-L107 — handleEdit = (skill: CustomSkill)
+- handleCreate · function · L109-L121 — handleCreate = ()
+- handleSave · function · L123-L140 — handleSave = async ()
+- handleCancel · function · L142-L145 — handleCancel = ()
+- SkillEditorProps · interface · L342-L349 — interface SkillEditorProps
+- SkillEditor · function · L351-L557 — function SkillEditor({ skill, isCreating, onChange, onSave, onCancel, error }: SkillEditorProps)
+- updateField · function · L352-L354 — updateField = <K extends keyof CustomSkill>(field: K, value: CustomSkill[K])
+- addParameter · function · L356-L364 — addParameter = ()
+- updateParameter · function · L366-L370 — updateParameter = (index: number, updates: Partial<SkillParameter>)
+- removeParameter · function · L372-L376 — removeParameter = (index: number)

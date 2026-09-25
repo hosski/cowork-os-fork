@@ -1,0 +1,23 @@
+# src/electron/extensions/types.ts
+
+- PluginManifest · interface · L17-L109 — interface PluginManifest
+- AgentRoleDefinition · interface · L114-L129 — interface AgentRoleDefinition
+- SkillDirectoryDefinition · interface · L135-L146 — interface SkillDirectoryDefinition
+- PluginType · type · L151-L151 — type PluginType = "channel" | "tool" | "provider" | "integration" | "pack";
+- PluginConfigSchema · interface · L156-L165 — interface PluginConfigSchema
+- PluginConfigProperty · interface · L170-L197 — interface PluginConfigProperty
+- PluginCapabilities · interface · L202-L259 — interface PluginCapabilities
+- PluginAPI · interface · L264-L294 — interface PluginAPI
+- PluginRuntime · interface · L299-L314 — interface PluginRuntime
+- RegisterChannelOptions · interface · L319-L328 — interface RegisterChannelOptions
+- RegisterToolOptions · interface · L333-L345 — interface RegisterToolOptions
+- DeclarativeConnector · interface · L351-L395 — interface DeclarativeConnector
+- SlashCommandDefinition · interface · L400-L407 — interface SlashCommandDefinition
+- SecureStorage · interface · L412-L424 — interface SecureStorage
+- Plugin · interface · L429-L438 — interface Plugin
+- LoadedPlugin · interface · L443-L464 — interface LoadedPlugin
+- PluginState · type · L469-L469 — type PluginState = "loading" | "loaded" | "registered" | "active" | "error" | "disabled";
+- PluginLoadResult · interface · L474-L483 — interface PluginLoadResult
+- PluginDiscoveryResult · interface · L488-L497 — interface PluginDiscoveryResult
+- PluginEventType · type · L502-L507 — type PluginEventType = | "plugin:loaded" | "plugin:registered" | "plugin:unregistered" | "plugin:error" | "plugin:config-changed";
+- PluginEvent · interface · L512-L517 — interface PluginEvent

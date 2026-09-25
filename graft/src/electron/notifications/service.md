@@ -1,0 +1,22 @@
+# src/electron/notifications/service.ts
+
+- NotificationEventType · type · L19-L19 — type NotificationEventType = "added" | "updated" | "removed" | "cleared";
+- NotificationEvent · interface · L21-L25 — interface NotificationEvent
+- NotificationServiceConfig · interface · L27-L30 — interface NotificationServiceConfig
+- AddNotificationParams · type · L32-L42 — type AddNotificationParams = { type: NotificationType; title: string; message: string; taskId?: string; cronJobId?: string; workspaceId?: string; suggestionId?: string; recommendedDelivery?: "briefing" | "inbox" | "nudge"; companionStyle?: "email" | "note"; };
+- getInputRequiredDedupeKey · function · L44-L47 — function getInputRequiredDedupeKey(notification: AppNotification): string | null
+- getIntegrationAuthDedupeKey · function · L49-L58 — function getIntegrationAuthDedupeKey(notification: AppNotification): string | null
+- getPersistentDedupeKey · function · L60-L62 — function getPersistentDedupeKey(notification: AppNotification): string | null
+- collapseDuplicateNotifications · function · L64-L95 — function collapseDuplicateNotifications(notifications: AppNotification[]): { notifications: AppNotification[]; changed: boolean; }
+- NotificationService · class · L97-L272 — class NotificationService
+- constructor · method · L102-L121 — constructor(config: NotificationServiceConfig = {})
+- list · method · L126-L128 — list(): AppNotification[]
+- getUnreadCount · method · L133-L135 — getUnreadCount(): number
+- add · method · L140-L166 — async add(params: AddNotificationParams): Promise<AppNotification>
+- findExistingPersistentNotification · method · L168-L196 — private findExistingPersistentNotification( params: AddNotificationParams, ): AppNotification | null
+- markRead · method · L201-L210 — async markRead(id: string): Promise<AppNotification | null>
+- markAllRead · method · L215-L225 — async markAllRead(): Promise<void>
+- delete · method · L230-L239 — async delete(id: string): Promise<boolean>
+- deleteAll · method · L244-L251 — async deleteAll(): Promise<void>
+- save · method · L256-L262 — private async save(): Promise<void>
+- emit · method · L267-L271 — private emit(event: NotificationEvent): void

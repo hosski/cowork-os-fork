@@ -1,0 +1,31 @@
+# src/electron/control-plane/server.ts
+
+- ControlPlaneConfig · interface · L40-L72 — interface ControlPlaneConfig
+- ControlPlaneServerEvent · interface · L77-L91 — interface ControlPlaneServerEvent
+- MethodHandler · type · L96-L96 — type MethodHandler = (client: ControlPlaneClient, params?: unknown) => Promise<unknown>;
+- ControlPlaneServer · class · L101-L1011 — class ControlPlaneServer
+- constructor · method · L114-L133 — constructor(config: ControlPlaneConfig)
+- isRunning · method · L138-L140 — get isRunning(): boolean
+- getAddress · method · L145-L155 — getAddress(): { host: string; port: number; wsUrl: string } | null
+- start · method · L160-L249 — async start(): Promise<void>
+- startWithTailscale · method · L254-L278 — async startWithTailscale(): Promise<TailscaleExposureResult | null>
+- stop · method · L283-L325 — async stop(): Promise<void>
+- registerMethod · method · L330-L332 — registerMethod(method: string, handler: MethodHandler): void
+- getStatus · method · L337-L349 — getStatus(): { running: boolean; address: ReturnType<ControlPlaneServer["getAddress"]>; clients: ReturnType<ClientRegistry["getStatus"]>; tailscale: ReturnType<typeof getExposureStatus>; }
+- broadcast · method · L354-L356 — broadcast(event: string, payload?: unknown): number
+- broadcastToOperators · method · L362-L364 — broadcastToOperators(event: string, payload?: unknown): number
+- broadcastToNodes · method · L369-L371 — broadcastToNodes(event: string, payload?: unknown): number
+- handleConnection · method · L378-L461 — private handleConnection(socket: WebSocket, request: http.IncomingMessage): void
+- handleMessage · method · L466-L499 — private async handleMessage(client: ControlPlaneClient, message: string): Promise<void>
+- isOriginAllowed · method · L501-L528 — private isOriginAllowed(origin: string | undefined, hostHeader: string | undefined): boolean
+- handleConnect · method · L533-L681 — private async handleConnect(client: ControlPlaneClient, request: RequestFrame): Promise<void>
+- recordFailedAuth · method · L686-L698 — private recordFailedAuth(remoteAddress: string): void
+- handleRequest · method · L703-L743 — private async handleRequest(client: ControlPlaneClient, request: RequestFrame): Promise<void>
+- verifyToken · method · L748-L756 — private verifyToken(provided: string, expectedToken: string): boolean
+- registerBuiltinMethods · method · L761-L890 — private registerBuiltinMethods(): void
+- requireScope · method · L892-L899 — private requireScope(client: ControlPlaneClient, scope: ClientScope): void
+- invokeNodeCommand · method · L904-L960 — private async invokeNodeCommand( node: ControlPlaneClient, command: string, params: Record<string, unknown> | undefined, timeoutMs: number, ): Promise<{ ok: boolean; payload?: unknown; error?: { code: string; message: string } }>
+- handleResponse · function · L915-L935 — handleResponse = (data: Buffer | string)
+- startHeartbeat · method · L965-L977 — private startHeartbeat(): void
+- startCleanup · method · L982-L997 — private startCleanup(): void
+- emitEvent · method · L1002-L1010 — private emitEvent(event: ControlPlaneServerEvent): void

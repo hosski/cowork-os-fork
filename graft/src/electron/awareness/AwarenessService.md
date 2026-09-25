@@ -1,0 +1,47 @@
+# src/electron/awareness/AwarenessService.ts
+
+- readClipboardText · function · L44-L51 — function readClipboardText(): string
+- PersistedAwarenessState · interface · L53-L56 — interface PersistedAwarenessState
+- AwarenessServiceDeps · interface · L58-L63 — interface AwarenessServiceDeps
+- buildDefaultPolicy · function · L65-L76 — function buildDefaultPolicy( overrides: Partial<AwarenessConfig["sources"][AwarenessSource]> = {}, ): AwarenessConfig["sources"][AwarenessSource]
+- defaultPersistedState · function · L95-L100 — function defaultPersistedState(): PersistedAwarenessState
+- truncate · function · L102-L108 — function truncate(value: string, max = 180): string
+- fingerprint · function · L110-L112 — function fingerprint(parts: Array<string | number | undefined>): string
+- redactSensitiveText · function · L114-L132 — function redactSensitiveText(text: string): { summary: string; sensitivity: AwarenessSensitivity }
+- normalizeProjectHint · function · L134-L142 — function normalizeProjectHint(filePath: string): string | null
+- isHighSensitivitySource · function · L144-L146 — function isHighSensitivitySource(source: AwarenessSource): boolean
+- AwarenessService · class · L148-L921 — class AwarenessService
+- constructor · method · L160-L162 — constructor(deps: AwarenessServiceDeps = {})
+- initialize · method · L164-L171 — static initialize(deps: AwarenessServiceDeps = {}): AwarenessService
+- getInstance · method · L173-L175 — static getInstance(): AwarenessService
+- start · method · L177-L185 — async start(): Promise<void>
+- stop · method · L187-L191 — async stop(): Promise<void>
+- getConfig · method · L193-L196 — getConfig(): AwarenessConfig
+- saveConfig · method · L198-L210 — saveConfig(config: AwarenessConfig): AwarenessConfig
+- listBeliefs · method · L212-L218 — listBeliefs(workspaceId?: string): AwarenessBelief[]
+- updateBelief · method · L220-L245 — updateBelief( id: string, patch: Partial<Pick<AwarenessBelief, "confidence" | "promotionStatus" | "value">>, ): AwarenessBelief | null
+- deleteBelief · method · L247-L254 — deleteBelief(id: string): boolean
+- listEvents · method · L256-L264 — listEvents(params: { workspaceId?: string; limit?: number } = {}): AwarenessEvent[]
+- getSnapshot · method · L266-L323 — getSnapshot(workspaceId?: string): AwarenessSnapshot
+- getSummary · method · L325-L376 — getSummary(workspaceId?: string): AwarenessSummary
+- captureEvent · method · L378-L437 — captureEvent( input: Omit<AwarenessEvent, "id" | "fingerprint" | "timestamp"> & { timestamp?: number; }, ): AwarenessEvent | null
+- captureConversation · method · L439-L451 — captureConversation(message: string, workspaceId?: string, taskId?: string): void
+- captureFeedback · method · L453-L465 — captureFeedback(reason?: string, workspaceId?: string, taskId?: string): void
+- captureTaskCompletion · method · L467-L483 — captureTaskCompletion( workspaceId: string, title: string, resultSummary?: string, taskId?: string, ): void
+- ensureLoaded · method · L485-L511 — private ensureLoaded(): void
+- save · method · L513-L521 — private save(): void
+- pruneExpiredEvents · method · L523-L531 — private pruneExpiredEvents(): void
+- toSummaryItem · method · L533-L562 — private toSummaryItem(event: AwarenessEvent): AwarenessSummaryItem
+- shouldWakeFromEvent · method · L564-L569 — private shouldWakeFromEvent(event: AwarenessEvent): boolean
+- promoteEvent · method · L571-L623 — private promoteEvent(event: AwarenessEvent): void
+- maybePromoteRepeatedEvent · method · L625-L649 — private maybePromoteRepeatedEvent( event: AwarenessEvent, beliefType: AwarenessBeliefType, subject: string, value: string, ): void
+- extractBeliefsFromText · method · L651-L740 — private extractBeliefsFromText(event: AwarenessEvent): AwarenessBelief[]
+- push · function · L654-L661 — push = (data: Omit<AwarenessBelief, "id" | "createdAt" | "updatedAt">)
+- upsertBelief · method · L742-L783 — private upsertBelief(input: Omit<AwarenessBelief, "id" | "createdAt" | "updatedAt">): void
+- applyLegacyMemorySideEffects · method · L785-L808 — private applyLegacyMemorySideEffects(belief: AwarenessBelief): void
+- pollDeviceContext · method · L810-L817 — private async pollDeviceContext(): Promise<void>
+- pollForegroundApp · method · L819-L848 — private async pollForegroundApp(workspaceId?: string): Promise<void>
+- pollClipboard · method · L850-L866 — private async pollClipboard(workspaceId?: string): Promise<void>
+- pollNotifications · method · L868-L890 — private async pollNotifications(workspaceId?: string): Promise<void>
+- readForegroundContext · method · L892-L920 — private async readForegroundContext(): Promise<{ appName: string; windowTitle?: string } | null>
+- getAwarenessService · function · L923-L925 — function getAwarenessService(): AwarenessService

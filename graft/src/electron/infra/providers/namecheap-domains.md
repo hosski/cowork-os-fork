@@ -1,0 +1,22 @@
+# src/electron/infra/providers/namecheap-domains.ts
+
+- NamecheapConfig · interface · L10-L14 — interface NamecheapConfig
+- DomainSearchResult · interface · L16-L22 — interface DomainSearchResult
+- DomainInfo · interface · L24-L30 — interface DomainInfo
+- DnsRecord · interface · L32-L39 — interface DnsRecord
+- NamecheapDomainsProvider · class · L41-L296 — class NamecheapDomainsProvider
+- setConfig · method · L44-L46 — setConfig(config: NamecheapConfig): void
+- isConfigured · method · L48-L50 — isConfigured(): boolean
+- search · method · L55-L68 — async search(query: string, tlds?: string[]): Promise<DomainSearchResult[]>
+- register · method · L73-L131 — async register( domain: string, years: number = 1, contact?: { firstName: string; lastName: string; email: string; address: string; city: string; state: string; zip: string; country: string; phone: string; }, ): Promise<{ success: boolean; domain: string; orderId?: string; error?: string }>
+- listDomains · method · L136-L145 — async listDomains(): Promise<DomainInfo[]>
+- getDnsRecords · method · L150-L163 — async getDnsRecords(domain: string): Promise<DnsRecord[]>
+- setDnsRecords · method · L168-L194 — async setDnsRecords(domain: string, records: DnsRecord[]): Promise<boolean>
+- addDnsRecord · method · L199-L203 — async addDnsRecord(domain: string, record: DnsRecord): Promise<boolean>
+- deleteDnsRecord · method · L208-L213 — async deleteDnsRecord(domain: string, type: string, name: string): Promise<boolean>
+- ensureConfigured · method · L217-L223 — private ensureConfigured(): void
+- buildParams · method · L225-L236 — private buildParams(command: string, extra: Record<string, string>): URLSearchParams
+- apiRequest · method · L238-L244 — private async apiRequest(params: URLSearchParams): Promise<string>
+- parseCheckResponse · method · L246-L260 — private parseCheckResponse(xml: string): DomainSearchResult[]
+- parseDomainList · method · L262-L277 — private parseDomainList(xml: string): DomainInfo[]
+- parseDnsRecords · method · L279-L295 — private parseDnsRecords(xml: string): DnsRecord[]

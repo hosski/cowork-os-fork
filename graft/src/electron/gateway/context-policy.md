@@ -1,0 +1,23 @@
+# src/electron/gateway/context-policy.ts
+
+- ContextPolicyRow · interface · L19-L27 — interface ContextPolicyRow
+- CreateContextPolicyOptions · interface · L32-L37 — interface CreateContextPolicyOptions
+- UpdateContextPolicyOptions · interface · L42-L45 — interface UpdateContextPolicyOptions
+- ContextAccessResult · interface · L50-L54 — interface ContextAccessResult
+- ContextPolicyManager · class · L65-L369 — class ContextPolicyManager
+- constructor · method · L68-L70 — constructor(db: Database.Database)
+- getPolicy · method · L76-L84 — getPolicy(channelId: string, contextType: ContextType): ContextPolicy
+- getPolicyForChat · method · L90-L93 — getPolicyForChat(channelId: string, _chatId: string, isGroup: boolean): ContextPolicy
+- findPolicy · method · L98-L108 — findPolicy(channelId: string, contextType: ContextType): ContextPolicy | null
+- getPoliciesForChannel · method · L113-L119 — getPoliciesForChannel(channelId: string): ContextPolicy[]
+- create · method · L125-L169 — create(options: CreateContextPolicyOptions): ContextPolicy
+- update · method · L174-L198 — update(id: string, options: UpdateContextPolicyOptions): ContextPolicy | null
+- updateByContext · method · L203-L223 — updateByContext( channelId: string, contextType: ContextType, options: UpdateContextPolicyOptions, ): ContextPolicy
+- delete · method · L228-L231 — delete(id: string): boolean
+- deleteByChannel · method · L236-L241 — deleteByChannel(channelId: string): number
+- isToolAllowed · method · L246-L274 — isToolAllowed( channelId: string, contextType: ContextType, toolName: string, toolGroups: string[], ): boolean
+- getDeniedTools · method · L279-L282 — getDeniedTools(channelId: string, contextType: ContextType): string[]
+- createDefaultPolicies · method · L287-L292 — createDefaultPolicies(channelId: string): void
+- createDefaultPolicy · method · L297-L314 — private createDefaultPolicy(channelId: string, contextType: ContextType): ContextPolicy
+- findById · method · L319-L329 — private findById(id: string): ContextPolicy | null
+- rowToPolicy · method · L336-L368 — private rowToPolicy(row: ContextPolicyRow): ContextPolicy

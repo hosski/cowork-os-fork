@@ -1,0 +1,21 @@
+# src/electron/agent/tools/text-tools.ts
+
+- CountMode · type · L6-L12 — type CountMode = | "characters" | "characters_no_whitespace" | "words" | "lines" | "paragraphs" | "sentences";
+- TextInputBase · type · L14-L20 — type TextInputBase = { text?: string; path?: string; normalize_newlines?: boolean; trim?: boolean; collapse_whitespace?: boolean; };
+- CountTextInput · type · L22-L24 — type CountTextInput = TextInputBase & { mode?: CountMode; };
+- TextMetricsInput · type · L26-L29 — type TextMetricsInput = TextInputBase & { include_top_characters?: boolean; top_character_limit?: number; };
+- TextCounts · type · L31-L38 — type TextCounts = { characters: number; characters_no_whitespace: number; words: number; lines: number; paragraphs: number; sentences: number; };
+- CountTextResult · type · L40-L53 — type CountTextResult = | { success: true; mode: CountMode; count: number; source: "text" | "file"; path?: string; counts: TextCounts; empty: boolean; } | { success: false; error: string; };
+- TextMetricsResult · type · L55-L70 — type TextMetricsResult = | { success: true; source: "text" | "file"; path?: string; counts: TextCounts; empty: boolean; top_characters?: Array<{ character: string; count: number; }>; } | { success: false; error: string; };
+- TextTools · class · L72-L363 — class TextTools
+- constructor · method · L73-L78 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, private fileTools: FileTools, )
+- setWorkspace · method · L80-L82 — setWorkspace(workspace: Workspace): void
+- getToolDefinitions · method · L84-L175 — static getToolDefinitions(): LLMTool[]
+- countText · method · L177-L218 — async countText(input: CountTextInput): Promise<CountTextResult>
+- textMetrics · method · L220-L263 — async textMetrics(input: TextMetricsInput): Promise<TextMetricsResult>
+- resolveTextInput · method · L265-L291 — private async resolveTextInput( input: TextInputBase, ): Promise<{ text: string; source: "text" | "file"; path?: string }>
+- preprocessText · method · L293-L305 — private preprocessText(text: string, input: TextInputBase): string
+- computeCounts · method · L307-L324 — private computeCounts(text: string): TextCounts
+- countSentences · method · L326-L330 — private countSentences(text: string): number
+- buildTopCharacters · method · L332-L354 — private buildTopCharacters( text: string, limit: number, ): Array<{ character: string; count: number; }>
+- displayCharacter · method · L356-L362 — private displayCharacter(character: string): string

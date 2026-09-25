@@ -1,0 +1,23 @@
+# src/electron/voice/system-voice.ts
+
+- CommandRunner · type · L12-L12 — type CommandRunner = (command: string, args: string[]) => Promise<void>;
+- CommandResolver · type · L13-L13 — type CommandResolver = (command: string) => string | null;
+- SystemVoiceSynthesisOptions · interface · L15-L18 — interface SystemVoiceSynthesisOptions
+- SystemVoiceTranscriptionOptions · interface · L20-L22 — interface SystemVoiceTranscriptionOptions
+- SystemVoiceRuntime · interface · L24-L29 — interface SystemVoiceRuntime
+- NativeSystemVoiceRuntimeOptions · interface · L31-L35 — interface NativeSystemVoiceRuntimeOptions
+- DetectedSystemTts · interface · L37-L40 — interface DetectedSystemTts
+- resolveCommandFromPath · function · L45-L72 — function resolveCommandFromPath(command: string): string | null
+- detectSystemTts · function · L74-L112 — function detectSystemTts( platform: NodeJS.Platform, resolveCommand: CommandResolver, ): DetectedSystemTts
+- unavailable · function · L78-L81 — unavailable = (reason: string): DetectedSystemTts
+- available · function · L82-L88 — available = ( adapter: Exclude<SystemVoiceAdapter, null>, command: string, ): DetectedSystemTts
+- getSystemVoiceCapabilities · function · L114-L123 — function getSystemVoiceCapabilities( options: Pick<NativeSystemVoiceRuntimeOptions, "platform" | "resolveCommand"> = {}, ): VoiceCapabilities
+- NativeSystemVoiceRuntime · class · L125-L270 — class NativeSystemVoiceRuntime implements SystemVoiceRuntime
+- constructor · method · L130-L136 — constructor(options: NativeSystemVoiceRuntimeOptions = {})
+- getCapabilities · method · L138-L143 — getCapabilities(): VoiceCapabilities
+- synthesize · method · L145-L168 — async synthesize(text: string, options: SystemVoiceSynthesisOptions): Promise<Buffer>
+- transcribe · method · L170-L172 — async transcribe(_audioData: Buffer, _options: SystemVoiceTranscriptionOptions): Promise<string>
+- stop · method · L174-L179 — stop(): void
+- buildSynthesisArgs · method · L181-L236 — private buildSynthesisArgs( adapter: Exclude<SystemVoiceAdapter, null>, inputPath: string, outputPath: string, options: SystemVoiceSynthesisOptions, ): string[]
+- runCommand · method · L238-L269 — private async runCommand(command: string, args: string[]): Promise<void>
+- createSystemVoiceRuntime · function · L272-L276 — function createSystemVoiceRuntime( options?: NativeSystemVoiceRuntimeOptions, ): SystemVoiceRuntime

@@ -1,0 +1,33 @@
+# src/electron/agent/AcpxRuntimeRunner.ts
+
+- assertAcpxExecutionAuthority · function · L6-L30 — function assertAcpxExecutionAuthority( permissions: WorkspacePermissions, runtimePolicy: AdminPolicies["runtime"], ): void
+- AcpxRuntimeEvent · interface · L32-L35 — interface AcpxRuntimeEvent
+- AcpxPromptResult · interface · L37-L41 — interface AcpxPromptResult
+- AcpxRuntimeUnavailableError · class · L43-L50 — class AcpxRuntimeUnavailableError extends Error
+- constructor · method · L46-L49 — constructor(message = "acpx is not installed or is not available on PATH")
+- getAcpxSessionName · function · L52-L54 — function getAcpxSessionName(taskId: string): string
+- getAcpxPermissionArgs · function · L56-L68 — function getAcpxPermissionArgs( permissionMode: ExternalRuntimeConfig["permissionMode"], ): string[]
+- getAcpxAgentDisplayName · function · L70-L78 — function getAcpxAgentDisplayName(agent: ExternalRuntimeConfig["agent"]): string
+- buildAcpxBaseArgs · function · L80-L102 — function buildAcpxBaseArgs(input: { cwd: string; runtimeConfig: ExternalRuntimeConfig; }): string[]
+- buildAcpxCommandArgs · function · L104-L110 — function buildAcpxCommandArgs(input: { cwd: string; runtimeConfig: ExternalRuntimeConfig; commandArgs: string[]; }): string[]
+- AcpxLauncherSpec · type · L112-L116 — type AcpxLauncherSpec = { command: string; prefixArgs: string[]; label: string; };
+- getAcpxLaunchCandidates · function · L120-L131 — function getAcpxLaunchCandidates(): AcpxLauncherSpec[]
+- resetAcpxLauncherPreferenceForTests · function · L133-L135 — function resetAcpxLauncherPreferenceForTests(): void
+- parseAcpxJsonLine · function · L137-L148 — function parseAcpxJsonLine(line: string): Record<string, unknown> | null
+- quoteShellToken · function · L150-L152 — function quoteShellToken(value: string): string
+- formatCommand · function · L154-L162 — function formatCommand(value: unknown): string
+- normalizeToolName · function · L164-L179 — function normalizeToolName(update: Record<string, unknown>): string
+- mapAcpxSessionUpdate · function · L181-L308 — function mapAcpxSessionUpdate( update: Record<string, unknown>, agent: ExternalRuntimeConfig["agent"] = "codex", ): AcpxRuntimeEvent[]
+- AcpxRuntimeRunner · class · L310-L602 — class AcpxRuntimeRunner
+- constructor · method · L314-L323 — constructor( private readonly input: { taskId: string; cwd: string; runtimeConfig: ExternalRuntimeConfig; emitEvent: (type: string, payload: Record<string, unknown>) => void; }, )
+- getSessionName · method · L325-L327 — getSessionName(): string
+- createSession · method · L329-L331 — async createSession(): Promise<AcpxPromptResult>
+- ensureSession · method · L333-L335 — async ensureSession(): Promise<AcpxPromptResult>
+- prompt · method · L337-L348 — async prompt(prompt: string): Promise<AcpxPromptResult>
+- cancel · method · L350-L419 — async cancel(): Promise<void>
+- resolveOnce · function · L360-L364 — resolveOnce = ()
+- startFallbackCancel · function · L365-L388 — startFallbackCancel = ()
+- closeSession · method · L421-L430 — async closeSession(): Promise<void>
+- runCommand · method · L432-L601 — private async runCommand( commandArgs: string[], options?: { stdin?: string; trackAsActivePrompt?: boolean; }, ): Promise<AcpxPromptResult>
+- finishLine · function · L456-L510 — finishLine = (line: string)
+- startAttempt · function · L512-L597 — startAttempt = (attemptIndex: number)

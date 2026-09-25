@@ -1,0 +1,18 @@
+# scripts/qa/run_battery.cjs
+
+- sleep · function · L20-L20 — sleep = (ms)
+- postJson · function · L22-L39 — async function postJson(pathname, body)
+- openDb · function · L41-L46 — function openDb()
+- sqlEscape · function · L48-L50 — function sqlEscape(value)
+- sqlJson · function · L52-L60 — function sqlJson(db, query)
+- sqlFirst · function · L62-L65 — function sqlFirst(db, query)
+- getTask · function · L67-L73 — function getTask(db, taskId)
+- getWorkspace · function · L75-L78 — function getWorkspace(db, workspaceId)
+- listPendingApprovals · function · L80-L86 — function listPendingApprovals(db, taskId)
+- getLatestEvent · function · L88-L94 — function getLatestEvent(db, taskId)
+- getLatestEventOfTypeSince · function · L96-L104 — function getLatestEventOfTypeSince(db, taskId, type, sinceTs)
+- waitForTerminalStatus · function · L106-L138 — async function waitForTerminalStatus(db, taskId, opts)
+- ensureNonEmptyFile · function · L140-L146 — function ensureNonEmptyFile(absPath)
+- readTextFile · function · L148-L150 — function readTextFile(absPath)
+- verifySpreadsheetFormula · function · L152-L167 — function verifySpreadsheetFormula(absPath)
+- main · function · L169-L423 — async function main()

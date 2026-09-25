@@ -1,0 +1,33 @@
+# src/electron/mailbox/MailboxAgentSearchService.ts
+
+- MailboxSearchSource · type · L11-L15 — type MailboxSearchSource = | "local_fts" | "local_vector" | "provider_search" | "attachment_text";
+- MailboxSearchQueryPlan · interface · L17-L29 — interface MailboxSearchQueryPlan
+- MailboxAgentSearchOutput · interface · L31-L41 — interface MailboxAgentSearchOutput
+- MailboxAgentSearchProgress · interface · L43-L56 — interface MailboxAgentSearchProgress
+- SearchCandidate · type · L58-L67 — type SearchCandidate = { threadId: string; attachmentId?: string; snippet: string; score: number; sources: Set<MailboxSearchSource>; matchedFields: Set<string>; evidenceSnippets: string[]; provider?: MailboxProvider; };
+- FtsSearchRow · type · L69-L82 — type FtsSearchRow = { record_type: string; record_id: string; thread_id: string; message_id: string | null; attachment_id: string | null; snippet: string | null; subject: string | null; sender: string | null; body: string | null; attachment_filename: string | null; attachment_text: string | null; fts_score?: number; };
+- EmbeddingRow · type · L84-L93 — type EmbeddingRow = { record_type: string; record_id: string; thread_id: string; message_id: string | null; attachment_id: string | null; snippet: string; embedding_json: string; updated_at: number; };
+- MailboxAgentSearchService · class · L164-L618 — class MailboxAgentSearchService
+- constructor · method · L165-L180 — constructor( private db: Database.Database, private readonly deps: { getThread(threadId: string): Promise<MailboxThreadDetail | null>; getAttachment(attachmentId: string, includeText?: boolean): MailboxAttachmentRecord | null; extractCandidateAttachments?(query: string): Promise<void>; ensureLocalSearchIndex?(): void; providerSearch?( plan: MailboxSearchQueryPlan, limit: number, ): Promise<Array<{ thread: MailboxThreadDetail; snippet?: string; score?: number }>>; fallbackSearch?(query: string, limit: number): Promise<MailboxAskResult["results"]>; }, )
+- search · method · L182-L351 — async search( query: string, limit: number, progress?: MailboxAgentSearchProgress, ): Promise<MailboxAgentSearchOutput>
+- upsertEmbeddingForPlainText · method · L353-L410 — static upsertEmbeddingForPlainText( db: Database.Database, input: { recordType: "message" | "attachment"; recordId: string; accountId?: string; threadId: string; messageId?: string | null; attachmentId?: string | null; subject?: string; sender?: string; body?: string; attachmentFilename?: string; attachmentText?: string; }, ): void
+- ensureEmbeddingTable · method · L412-L414 — private ensureEmbeddingTable(): void
+- backfillEmbeddingsFromFts · method · L416-L453 — private backfillEmbeddingsFromFts(): void
+- searchLocalFts · method · L455-L474 — private searchLocalFts(plan: MailboxSearchQueryPlan, limit: number): SearchCandidate[]
+- searchLocalVectors · method · L476-L507 — private searchLocalVectors(plan: MailboxSearchQueryPlan, limit: number): SearchCandidate[]
+- candidateFromFtsRow · method · L509-L558 — private candidateFromFtsRow(plan: MailboxSearchQueryPlan, row: FtsSearchRow): SearchCandidate
+- applyIntentScore · method · L560-L583 — private applyIntentScore( plan: MailboxSearchQueryPlan, candidate: SearchCandidate, ): SearchCandidate
+- findBestAttachmentForThread · method · L585-L617 — private findBestAttachmentForThread( plan: MailboxSearchQueryPlan, threadId: string, ): string | undefined
+- planMailboxSearchQuery · function · L620-L665 — function planMailboxSearchQuery(query: string): MailboxSearchQueryPlan
+- buildMailboxAskNoEvidenceAnswer · function · L667-L672 — function buildMailboxAskNoEvidenceAnswer(output: MailboxAgentSearchOutput): string
+- ensureMailboxEmbeddingTable · function · L674-L694 — function ensureMailboxEmbeddingTable(db: Database.Database): void
+- mergeCandidate · function · L696-L715 — function mergeCandidate( candidates: Map<string, SearchCandidate>, candidate: SearchCandidate, ): void
+- buildEmbeddingText · function · L717-L734 — function buildEmbeddingText(row: { subject?: string | null; sender?: string | null; body?: string | null; attachment_filename?: string | null; attachment_text?: string | null; }): string
+- buildFtsQuery · function · L736-L743 — function buildFtsQuery(tokens: string[]): string | undefined
+- buildProviderQueries · function · L745-L779 — function buildProviderQueries( query: string, entities: string[], expandedTokens: string[], intent: { wantsAttachmentEvidence: boolean; wantsFinancialEvidence: boolean; wantsDueDate: boolean; }, ): string[]
+- extractEntities · function · L781-L791 — function extractEntities(query: string, tokens: string[]): string[]
+- tokenize · function · L793-L802 — function tokenize(value: string): string[]
+- normalizeSearchText · function · L804-L809 — function normalizeSearchText(value: string): string
+- normalizeWhitespace · function · L811-L814 — function normalizeWhitespace(value: string, maxLength = 1000): string
+- parseEmbedding · function · L816-L823 — function parseEmbedding(value: string): number[] | null
+- sha256 · function · L825-L827 — function sha256(value: string): string

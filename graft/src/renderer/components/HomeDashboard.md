@@ -1,0 +1,30 @@
+# src/renderer/components/HomeDashboard.tsx
+
+- RecentHubFile · interface · L47-L57 — interface RecentHubFile
+- PreviewableFileType · type · L59-L59 — type PreviewableFileType = NonNullable<FileViewerResult["data"]>["fileType"];
+- HomeFilePreviewState · type · L61-L69 — type HomeFilePreviewState = | { status: "loading" } | { status: "ready"; fileType: PreviewableFileType; content: string | null; pdfThumbnailDataUrl?: string; } | { status: "error" };
+- HomeDashboardProps · interface · L71-L87 — interface HomeDashboardProps
+- EverydayAgentHomeSnapshot · interface · L89-L94 — interface EverydayAgentHomeSnapshot
+- CompanionSuggestion · interface · L96-L116 — interface CompanionSuggestion
+- CompanionTaskResultItem · interface · L118-L133 — interface CompanionTaskResultItem
+- CompanionInboxItem · type · L135-L135 — type CompanionInboxItem = CompanionSuggestion | CompanionTaskResultItem;
+- isCompanionTaskResultItem · function · L137-L139 — function isCompanionTaskResultItem(item: CompanionInboxItem): item is CompanionTaskResultItem
+- CompanionNotification · interface · L141-L153 — interface CompanionNotification
+- formatRelativeTime · function · L157-L167 — function formatRelativeTime(timestamp?: number): string
+- formatFileSize · function · L169-L174 — function formatFileSize(bytes?: number): string
+- stripHtml · function · L176-L184 — function stripHtml(html: string): string
+- normalizePreviewText · function · L186-L191 — function normalizePreviewText(value: string | null | undefined): string
+- getPreviewLabel · function · L193-L226 — function getPreviewLabel(fileType?: PreviewableFileType, filePath?: string): string
+- getTextPreviewContent · function · L228-L232 — function getTextPreviewContent(preview: HomeFilePreviewState): string
+- HomeFilePreview · function · L234-L372 — function HomeFilePreview({ filePath, workspacePath, fileName, isDirectory, cloudThumbnailUrl, }: { filePath: string; workspacePath?: string; fileName: string; isDirectory?: boolean; cloudThumbnailUrl?: string; })
+- getTaskStatusInfo · function · L374-L388 — function getTaskStatusInfo(task: Task): { icon: "live" | "complete" | "paused"; label: string }
+- getTaskTone · function · L390-L395 — function getTaskTone(task: Task): "live" | "queued" | "done" | "attention"
+- getAutomationSender · function · L397-L405 — function getAutomationSender(task: Task): string
+- getAutomationPreview · function · L407-L416 — function getAutomationPreview(task: Task): string
+- getAutomationTag · function · L418-L426 — function getAutomationTag(task: Task): string
+- HomeDashboard · function · L428-L1387 — function HomeDashboard({ workspace, tasks, selectedProvider, selectedModel, providers, onOpenTask, onCreateTask, onNewSession, onOpenScheduledTasks, onOpenMissionControl, onOpenEverydayAgent, onOpenEventTriggers, onOpenSelfImprove, onOpenModelSettings, automationInboxFocusTick, }: HomeDashboardProps)
+- handleDismissCompanionSuggestion · function · L659-L670 — handleDismissCompanionSuggestion = async (id: string)
+- handleSnoozeCompanionSuggestion · function · L672-L683 — handleSnoozeCompanionSuggestion = async (id: string)
+- handleActOnCompanionSuggestion · function · L685-L699 — handleActOnCompanionSuggestion = async (suggestion: CompanionSuggestion)
+- loadMoreAutomationTasks · function · L894-L904 — loadMoreAutomationTasks = (element?: HTMLDivElement | null)
+- handleAutomationListScroll · function · L906-L910 — handleAutomationListScroll = (event: React.UIEvent<HTMLDivElement>)

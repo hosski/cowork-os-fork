@@ -1,0 +1,41 @@
+# src/electron/agent/llm/types.ts
+
+- LLMProviderConfig · interface · L22-L105 — interface LLMProviderConfig
+- LLMTool · interface · L107-L118 — interface LLMTool
+- LLMToolPromptRenderContext · interface · L120-L129 — interface LLMToolPromptRenderContext
+- LLMToolPromptRenderResult · interface · L131-L136 — interface LLMToolPromptRenderResult
+- LLMToolPromptMetadata · interface · L138-L144 — interface LLMToolPromptMetadata
+- LLMToolUse · interface · L146-L160 — interface LLMToolUse
+- LLMTextContent · interface · L162-L165 — interface LLMTextContent
+- LLMImageMimeType · type · L168-L168 — type LLMImageMimeType = "image/jpeg" | "image/png" | "image/gif" | "image/webp";
+- LLMImageContent · interface · L170-L178 — interface LLMImageContent
+- LLMContent · type · L180-L180 — type LLMContent = LLMToolUse | LLMTextContent | LLMImageContent;
+- LLMToolResultCompanionContent · type · L181-L181 — type LLMToolResultCompanionContent = LLMTextContent | LLMImageContent;
+- LLMProviderImageCaps · interface · L184-L188 — interface LLMProviderImageCaps
+- LLMToolResult · interface · L280-L286 — interface LLMToolResult
+- LLMMessage · interface · L288-L293 — interface LLMMessage
+- LLMSystemBlockScope · type · L295-L295 — type LLMSystemBlockScope = "session" | "turn" | "none";
+- LLMSystemBlock · interface · L297-L302 — interface LLMSystemBlock
+- LLMPromptCacheMode · type · L304-L311 — type LLMPromptCacheMode = | "disabled" | "anthropic_auto" | "anthropic_explicit" | "openai_key" | "openrouter_implicit" | "bedrock" | "pi";
+- PromptCacheProviderFamily · type · L313-L328 — type PromptCacheProviderFamily = | "unsupported" | "anthropic" | "azure-anthropic" | "anthropic-compatible" | "openrouter-claude" | "openrouter-explicit" | "openai" | "azure-openai" | "openai-compatible" | "openrouter-openai" | "openrouter-implicit" | "bedrock-anthropic" | "bedrock-nova" | "pi-anthropic" | "pi-openai";
+- LLMPromptCacheConfig · interface · L330-L336 — interface LLMPromptCacheConfig
+- LLMToolChoiceMode · type · L338-L338 — type LLMToolChoiceMode = "auto" | "none";
+- StreamProgress · interface · L341-L349 — interface StreamProgress
+- StreamProgressCallback · type · L351-L351 — type StreamProgressCallback = (progress: StreamProgress) => void;
+- LLMRequest · interface · L353-L370 — interface LLMRequest
+- LLMResponse · interface · L372-L385 — interface LLMResponse
+- LLMProviderError · interface · L387-L397 — interface LLMProviderError extends Error
+- LLMProvider · interface · L402-L414 — interface LLMProvider
+- normalizeAnthropicModelId · function · L484-L487 — function normalizeAnthropicModelId(modelId: string): string
+- normalizeAnthropicModelKey · function · L489-L492 — function normalizeAnthropicModelKey(modelKey: string): string
+- isRetiredAnthropicModelReference · function · L494-L500 — function isRetiredAnthropicModelReference(model: string): boolean
+- GeminiModelKey · type · L538-L538 — type GeminiModelKey = keyof typeof GEMINI_MODELS;
+- OpenRouterModelKey · type · L597-L597 — type OpenRouterModelKey = keyof typeof OPENROUTER_MODELS;
+- OpenAIModelKey · type · L641-L641 — type OpenAIModelKey = keyof typeof OPENAI_MODELS;
+- GroqModelKey · type · L659-L659 — type GroqModelKey = keyof typeof GROQ_MODELS;
+- XAIModelKey · type · L687-L687 — type XAIModelKey = keyof typeof XAI_MODELS;
+- KimiModelKey · type · L720-L720 — type KimiModelKey = keyof typeof KIMI_MODELS;
+- DeepSeekModelKey · type · L730-L730 — type DeepSeekModelKey = keyof typeof DEEPSEEK_MODELS;
+- PiProviderKey · type · L755-L755 — type PiProviderKey = keyof typeof PI_PROVIDERS;
+- OllamaModelKey · type · L777-L777 — type OllamaModelKey = keyof typeof OLLAMA_MODELS;
+- ModelKey · type · L779-L779 — type ModelKey = keyof typeof MODELS;

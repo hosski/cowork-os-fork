@@ -1,0 +1,33 @@
+# src/electron/improvement/__tests__/ImprovementLoopService.test.ts
+
+- Any · type · L14-L14 — type Any = any;
+- findAll · method · L67-L69 — findAll()
+- findById · method · L70-L72 — findById(id: string)
+- create · method · L75-L96 — create(input: Any)
+- update · method · L97-L101 — update(id: string, updates: Partial<Task>)
+- findById · method · L102-L104 — findById(id: string)
+- list · method · L110-L115 — list(params?: { workspaceId?: string })
+- findById · method · L116-L118 — findById(id: string)
+- findByFingerprint · method · L119-L121 — findByFingerprint()
+- create · method · L124-L133 — create(input: Any)
+- update · method · L134-L138 — update(id: string, updates: Partial<ImprovementCampaign>)
+- findById · method · L139-L141 — findById(id: string)
+- list · method · L142-L151 — list(params?: { workspaceId?: string; status?: string[] | string })
+- countActive · method · L152-L156 — countActive()
+- list · method · L159-L161 — list()
+- create · method · L164-L172 — create(input: Any)
+- update · method · L173-L177 — update(id: string, updates: Partial<ImprovementVariantRun>)
+- findById · method · L178-L180 — findById(id: string)
+- findByTaskId · method · L181-L183 — findByTaskId(taskId: string)
+- listByCampaignId · method · L184-L186 — listByCampaignId(campaignId: string)
+- list · method · L187-L195 — list(params?: { campaignId?: string; status?: string[] | string })
+- upsert · method · L198-L201 — upsert(input: ImprovementJudgeVerdict)
+- findByCampaignId · method · L202-L204 — findByCampaignId(campaignId: string)
+- snapshot · method · L227-L237 — snapshot(windowDays: number)
+- evaluateVariant · method · L238-L273 — evaluateVariant(params: Any)
+- evaluateCampaign · method · L274-L297 — evaluateCampaign(params: Any)
+- makeCandidate · function · L329-L354 — function makeCandidate(): ImprovementCandidate
+- makeWorkspace · function · L356-L375 — function makeWorkspace(overrides: Partial<Workspace> = {}): Workspace
+- makeTempWorkspace · function · L377-L392 — function makeTempWorkspace(): Workspace
+- completeVariantTask · function · L394-L409 — function completeVariantTask( taskId: string, summary: string, terminalStatus: Task["terminalStatus"] = "ok", )
+- attachCanonicalTaskLifecycle · function · L411-L449 — function attachCanonicalTaskLifecycle(daemon: Any): Any

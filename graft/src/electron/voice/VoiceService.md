@@ -1,0 +1,28 @@
+# src/electron/voice/VoiceService.ts
+
+- VoiceServiceOptions · interface · L30-L34 — interface VoiceServiceOptions
+- VoiceService · class · L36-L597 — class VoiceService extends EventEmitter
+- constructor · method · L41-L56 — constructor(options: VoiceServiceOptions = {})
+- initialize · method · L61-L72 — async initialize(): Promise<void>
+- updateSettings · method · L77-L81 — updateSettings(settings: Partial<VoiceSettings>): void
+- getSettings · method · L86-L88 — getSettings(): VoiceSettings
+- getState · method · L93-L95 — getState(): VoiceState
+- getCapabilities · method · L97-L99 — getCapabilities(): VoiceCapabilities
+- isTranscriptionAvailable · method · L105-L121 — isTranscriptionAvailable(): boolean
+- speak · method · L127-L179 — async speak(text: string): Promise<Buffer | null>
+- finishSpeaking · method · L184-L187 — finishSpeaking(): void
+- stopSpeaking · method · L192-L196 — stopSpeaking(): void
+- transcribe · method · L205-L255 — async transcribe(audioData: Buffer, options?: { force?: boolean }): Promise<string>
+- getElevenLabsVoices · method · L260-L279 — async getElevenLabsVoices(): Promise<ElevenLabsVoice[]>
+- testElevenLabsConnection · method · L284-L295 — async testElevenLabsConnection(): Promise<{ success: boolean; voiceCount?: number; error?: string; }>
+- testOpenAIConnection · method · L300-L330 — async testOpenAIConnection(): Promise<{ success: boolean; error?: string }>
+- testAzureConnection · method · L335-L376 — async testAzureConnection(): Promise<{ success: boolean; error?: string }>
+- dispose · method · L381-L384 — dispose(): void
+- updateState · method · L388-L391 — private updateState(partial: Partial<VoiceState>): void
+- elevenLabsTTS · method · L396-L429 — private async elevenLabsTTS(text: string): Promise<ArrayBuffer>
+- openaiTTS · method · L434-L462 — private async openaiTTS(text: string): Promise<ArrayBuffer>
+- openaiSTT · method · L467-L502 — private async openaiSTT(audioData: Buffer): Promise<string>
+- azureTTS · method · L507-L546 — private async azureTTS(text: string): Promise<ArrayBuffer>
+- azureSTT · method · L551-L596 — private async azureSTT(audioData: Buffer): Promise<string>
+- getVoiceService · function · L605-L610 — function getVoiceService(options?: VoiceServiceOptions): VoiceService
+- resetVoiceService · function · L615-L620 — function resetVoiceService(): void

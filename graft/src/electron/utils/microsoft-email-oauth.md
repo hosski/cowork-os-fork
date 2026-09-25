@@ -1,0 +1,23 @@
+# src/electron/utils/microsoft-email-oauth.ts
+
+- MicrosoftEmailOAuthRequest · interface · L10-L17 — interface MicrosoftEmailOAuthRequest
+- MicrosoftEmailOAuthResult · interface · L19-L25 — interface MicrosoftEmailOAuthResult
+- MicrosoftEmailRefreshRequest · interface · L27-L33 — interface MicrosoftEmailRefreshRequest
+- getElectronShell · function · L38-L49 — function getElectronShell(): Any | null
+- openExternalUrl · function · L51-L57 — async function openExternalUrl(url: string): Promise<void>
+- base64Url · function · L59-L61 — function base64Url(buffer: Buffer): string
+- createCodeVerifier · function · L63-L65 — function createCodeVerifier(): string
+- createCodeChallenge · function · L67-L70 — function createCodeChallenge(verifier: string): string
+- parseJsonSafe · function · L72-L80 — function parseJsonSafe(text: string): Any | undefined
+- parseScopeList · function · L82-L88 — function parseScopeList(scope?: string): string[] | undefined
+- resolveTenant · function · L90-L93 — function resolveTenant(tenant?: string): string
+- buildAuthorizeUrl · function · L95-L97 — function buildAuthorizeUrl(tenant: string): string
+- buildTokenUrl · function · L99-L101 — function buildTokenUrl(tenant: string): string
+- MicrosoftEmailAuthorizeUrlOptions · interface · L103-L112 — interface MicrosoftEmailAuthorizeUrlOptions
+- buildMicrosoftEmailAuthorizeUrl · function · L114-L129 — function buildMicrosoftEmailAuthorizeUrl(options: MicrosoftEmailAuthorizeUrlOptions): URL
+- startOAuthCallbackServer · function · L131-L227 — async function startOAuthCallbackServer(timeoutMs = DEFAULT_TIMEOUT_MS): Promise<{ redirectUri: string; state: string; waitForCode: () => Promise<{ code: string; state: string }>; }>
+- resolveCode · function · L141-L141 — resolveCode: (value: { code: string; state: string }) => void = ()
+- rejectCode · function · L142-L142 — rejectCode: (error: Error) => void = ()
+- exchangeCodeForTokens · function · L229-L259 — async function exchangeCodeForTokens( params: URLSearchParams, tenant: string, ): Promise<MicrosoftEmailOAuthResult>
+- startMicrosoftEmailOAuth · function · L261-L304 — async function startMicrosoftEmailOAuth( request: MicrosoftEmailOAuthRequest, ): Promise<MicrosoftEmailOAuthResult>
+- refreshMicrosoftEmailAccessToken · function · L306-L331 — async function refreshMicrosoftEmailAccessToken( request: MicrosoftEmailRefreshRequest, ): Promise<MicrosoftEmailOAuthResult>

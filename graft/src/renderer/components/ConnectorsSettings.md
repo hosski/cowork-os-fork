@@ -1,0 +1,21 @@
+# src/renderer/components/ConnectorsSettings.tsx
+
+- MCPConnectionStatus · type · L16-L16 — type MCPConnectionStatus = "disconnected" | "connecting" | "connected" | "reconnecting" | "error";
+- MCPServerConfig · type · L18-L26 — type MCPServerConfig = { id: string; name: string; description?: string; enabled: boolean; command?: string; args?: string[]; env?: Record<string, string>; };
+- MCPServerStatus · type · L28-L34 — type MCPServerStatus = { id: string; name: string; status: MCPConnectionStatus; error?: string; tools: Array<{ name: string }>; };
+- MCPSettingsData · type · L36-L38 — type MCPSettingsData = { servers: MCPServerConfig[]; };
+- ConnectorCategory · type · L40-L47 — type ConnectorCategory = | "" | "crm" | "productivity" | "communication" | "finance" | "legal" | "devtools";
+- ConnectorDefinition · interface · L49-L57 — interface ConnectorDefinition
+- IntegrationDefinition · interface · L720-L725 — interface IntegrationDefinition
+- getStatusColor · function · L772-L784 — getStatusColor = (status: MCPConnectionStatus): string
+- getStatusText · function · L786-L799 — getStatusText = (status: MCPConnectionStatus): string
+- matchConnector · function · L801-L806 — function matchConnector(config: MCPServerConfig, connector: ConnectorDefinition): boolean
+- getConnectorCategory · function · L808-L888 — function getConnectorCategory(connector: ConnectorDefinition): Exclude<ConnectorCategory, "">
+- getIntegrationCategory · function · L890-L892 — function getIntegrationCategory(): Exclude<ConnectorCategory, "">
+- normalizeConnectorSearch · function · L894-L896 — function normalizeConnectorSearch(value: string): string
+- ConnectorsSettings · function · L898-L1381 — function ConnectorsSettings()
+- loadData · function · L946-L966 — loadData = async ()
+- handleInstall · function · L995-L1005 — handleInstall = async (connector: ConnectorDefinition)
+- handleConnectServer · function · L1007-L1023 — handleConnectServer = async (serverId: string)
+- handleDisconnectServer · function · L1025-L1041 — handleDisconnectServer = async (serverId: string)
+- handleSaveCustom · function · L1043-L1069 — handleSaveCustom = async ()

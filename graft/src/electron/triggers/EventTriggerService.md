@@ -1,0 +1,30 @@
+# src/electron/triggers/EventTriggerService.ts
+
+- isMailboxEventSource · function · L16-L18 — function isMailboxEventSource(source: string): boolean
+- triggerMatchesEventSource · function · L20-L25 — function triggerMatchesEventSource(triggerSource: string, eventSource: string): boolean
+- EventTriggerService · class · L27-L552 — class EventTriggerService
+- constructor · method · L43-L47 — constructor(deps: EventTriggerServiceDeps, db?: Any)
+- start · method · L51-L68 — start(): void
+- stop · method · L70-L76 — async stop(): Promise<void>
+- setFireInterceptor · method · L78-L87 — setFireInterceptor( interceptor: | (( trigger: EventTrigger, event: TriggerEvent, ) => Promise<{ handled: boolean; actionResult?: string }>) | null, ): void
+- drainPendingEvents · method · L89-L94 — async drainPendingEvents(): Promise<void>
+- addTrigger · method · L98-L112 — addTrigger( input: Omit<EventTrigger, "id" | "fireCount" | "createdAt" | "updatedAt">, ): EventTrigger
+- updateTrigger · method · L114-L127 — updateTrigger(id: string, updates: Partial<EventTrigger>): EventTrigger | null
+- removeTrigger · method · L129-L133 — removeTrigger(id: string): boolean
+- listTriggers · method · L135-L139 — listTriggers(workspaceId?: string): EventTrigger[]
+- getTrigger · method · L141-L143 — getTrigger(id: string): EventTrigger | undefined
+- getHistory · method · L145-L148 — getHistory(triggerId: string, limit = 20): TriggerHistoryEntry[]
+- evaluateEvent · method · L157-L167 — async evaluateEvent(event: TriggerEvent): Promise<void>
+- evaluateEventNow · method · L169-L190 — private async evaluateEventNow(event: TriggerEvent): Promise<void>
+- fireTrigger · method · L194-L277 — private async fireTrigger(trigger: EventTrigger, event: TriggerEvent): Promise<void>
+- recordHistory · method · L279-L298 — private recordHistory( trigger: EventTrigger, event: TriggerEvent, historyEntry: TriggerHistoryEntry, ): void
+- enqueueEvent · method · L300-L315 — private enqueueEvent(event: TriggerEvent): void
+- drainQueuedEvents · method · L317-L334 — private drainQueuedEvents(): Promise<void>
+- runDrainQueuedEvents · method · L336-L388 — private async runDrainQueuedEvents(): Promise<void>
+- ensureSchema · method · L392-L442 — private ensureSchema(): void
+- loadFromDB · method · L444-L484 — private loadFromDB(): void
+- saveToDB · method · L486-L515 — private saveToDB(trigger: EventTrigger): void
+- deleteFromDB · method · L517-L525 — private deleteFromDB(id: string): void
+- saveHistoryToDB · method · L527-L546 — private saveHistoryToDB(entry: TriggerHistoryEntry): void
+- log · method · L548-L551 — private log(...args: unknown[]): void
+- stableStringify · function · L554-L563 — function stableStringify(value: unknown): string

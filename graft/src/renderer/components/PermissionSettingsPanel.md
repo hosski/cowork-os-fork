@@ -1,0 +1,25 @@
+# src/renderer/components/PermissionSettingsPanel.tsx
+
+- RuleDraft · type · L18-L26 — type RuleDraft = { effect: "allow" | "deny" | "ask"; scopeKind: PermissionRuleScope["kind"]; toolName: string; domain: string; path: string; prefix: string; serverName: string; };
+- ApprovalExperiencePreset · type · L28-L28 — type ApprovalExperiencePreset = "standard" | "fewer_prompts" | "custom";
+- updateProfileList · function · L60-L68 — function updateProfileList( profiles: AccessProfileDefinition[], profileId: AccessProfileId, patch: Partial<AccessProfileDefinition>, ): AccessProfileDefinition[]
+- normalizeProfileList · function · L70-L75 — function normalizeProfileList(value: string): string[]
+- normalizeFilesystemRules · function · L77-L91 — function normalizeFilesystemRules(value: string): AccessFilesystemRule[]
+- normalizeDomainRules · function · L93-L107 — function normalizeDomainRules(value: string): NonNullable<AccessProfileDefinition["domainRules"]>
+- PermissionSettingsPanelProps · interface · L109-L111 — interface PermissionSettingsPanelProps
+- scopeToLabel · function · L113-L134 — function scopeToLabel(scope: PermissionRuleScope): string
+- buildScope · function · L136-L158 — function buildScope(draft: RuleDraft): PermissionRuleScope
+- applyFewerApprovalPromptsPreset · function · L160-L180 — function applyFewerApprovalPromptsPreset<T extends BuiltinToolsSettingsData>( permissionSettings: PermissionSettingsData, builtinSettings: T, ): { permissionSettings: PermissionSettingsData; builtinSettings: T; }
+- applyStandardApprovalPromptsPreset · function · L182-L202 — function applyStandardApprovalPromptsPreset<T extends BuiltinToolsSettingsData>( permissionSettings: PermissionSettingsData, builtinSettings: T, ): { permissionSettings: PermissionSettingsData; builtinSettings: T; }
+- detectApprovalExperiencePreset · function · L204-L223 — function detectApprovalExperiencePreset( permissionSettings: PermissionSettingsData, builtinSettings: Pick<BuiltinToolsSettingsData, "runCommandApprovalMode">, ): ApprovalExperiencePreset
+- PermissionSettingsPanel · function · L225-L1052 — function PermissionSettingsPanel({ workspaceId }: PermissionSettingsPanelProps)
+- loadSettings · function · L249-L260 — loadSettings = async ()
+- loadBuiltinSettings · function · L262-L270 — loadBuiltinSettings = async ()
+- saveSettings · function · L272-L285 — saveSettings = async (next: PermissionSettingsData)
+- applyApprovalPreset · function · L292-L327 — applyApprovalPreset = async (preset: Exclude<ApprovalExperiencePreset, "custom">)
+- loadWorkspaceRules · function · L329-L344 — loadWorkspaceRules = async (nextWorkspaceId?: string)
+- addRule · function · L346-L360 — addRule = ()
+- removeRule · function · L362-L369 — removeRule = (index: number)
+- removeWorkspaceRule · function · L371-L397 — removeWorkspaceRule = async (ruleId: string)
+- addCustomProfile · function · L416-L437 — addCustomProfile = ()
+- removeCustomProfile · function · L439-L451 — removeCustomProfile = (profileId: AccessProfileId)

@@ -1,0 +1,46 @@
+# src/renderer/components/MainContent/task-feed-logic.ts
+
+- TaskFeedRow · type · L15-L50 — type TaskFeedRow = | { kind: "history-control"; key: string; estimatedHeight: number; hasMoreHistory: boolean; isLoading: boolean; error: string | null; revision: string; visiblePerfEventId: null; } | { kind: "leading-command-outputs"; key: string; estimatedHeight: number; sessions: CommandOutputSession[]; revision: string; visiblePerfEventId: null; } | { kind: "artifact-stack"; key: string; estimatedHeight: number; artifacts: EndOfTaskArtifactCard[]; revision: string; visiblePerfEventId: null; } | { kind: "timeline"; key: string; estimatedHeight: number; timelineIndex: number; item: any; revision: string; visiblePerfEventId: string | null; };
+- SkillModalLaunchMode · type · L52-L52 — type SkillModalLaunchMode = "skill_menu" | "slash";
+- SelectedSkillModalState · type · L54-L58 — type SelectedSkillModalState = { skill: CustomSkill; launchMode: SkillModalLaunchMode; commandName?: string; };
+- TranscriptMode · type · L60-L60 — type TranscriptMode = "live" | "inspect" | "delivery";
+- getTaskFeedRowEventType · function · L62-L66 — function getTaskFeedRowEventType(row: TaskFeedRow): string | null
+- getTaskFeedRowEvent · function · L68-L72 — function getTaskFeedRowEvent(row: TaskFeedRow): TaskEvent | null
+- isConversationMessageRow · function · L79-L88 — function isConversationMessageRow(row: TaskFeedRow): boolean
+- getTaskFeedRowVisiblePerfEventId · function · L90-L92 — function getTaskFeedRowVisiblePerfEventId(row: TaskFeedRow): string | null
+- getDefaultTranscriptMode · function · L113-L130 — function getDefaultTranscriptMode(args: { isTaskWorking: boolean; isReplayMode: boolean; verboseSteps: boolean; isChatTask: boolean; taskStatus?: Task["status"] | null; }): TranscriptMode
+- shouldShowBootstrapProgressRow · function · L132-L138 — function shouldShowBootstrapProgressRow(args: { isTaskWorking: boolean; visibleRenderableFeedRowsLength: number; isChatTask: boolean; }): boolean
+- getBootstrapProgressTitle · function · L140-L151 — function getBootstrapProgressTitle(task: Task | null | undefined): string
+- isUserFacingProgressMessage · function · L153-L160 — function isUserFacingProgressMessage(message: string): boolean
+- AgentReasoningPanelState · interface · L162-L166 — interface AgentReasoningPanelState
+- cleanAgentReasoningText · function · L168-L176 — function cleanAgentReasoningText(text: string): string
+- isAgentReasoningStreamingEvent · function · L178-L185 — function isAgentReasoningStreamingEvent(event: TaskEvent): boolean
+- deriveAgentReasoningPanelState · function · L187-L247 — function deriveAgentReasoningPanelState(args: { events: TaskEvent[]; taskId?: string | null; isTaskWorking: boolean; }): AgentReasoningPanelState
+- hasAgentReasoningPanelContent · function · L249-L251 — function hasAgentReasoningPanelContent(state: AgentReasoningPanelState): boolean
+- isTransientLiveTranscriptRow · function · L253-L266 — function isTransientLiveTranscriptRow(row: TaskFeedRow): boolean
+- isUrgentLiveTranscriptRow · function · L268-L271 — function isUrgentLiveTranscriptRow(row: TaskFeedRow): boolean
+- getTaskFeedRowEvents · function · L273-L291 — function getTaskFeedRowEvents(row: TaskFeedRow): Array<{ event: TaskEvent; eventIndex?: number; eventOrder: number; }>
+- collectTaskFeedRowEventStream · function · L293-L295 — function collectTaskFeedRowEventStream(feedRows: TaskFeedRow[]): TaskEvent[]
+- isDeliveryCompletionEvent · function · L297-L306 — function isDeliveryCompletionEvent(event: TaskEvent, eventStream: TaskEvent[]): boolean
+- isDeliveryCriticalEvent · function · L308-L317 — function isDeliveryCriticalEvent(event: TaskEvent): boolean
+- isDeliveryEvent · function · L319-L321 — function isDeliveryEvent(event: TaskEvent, eventStream: TaskEvent[]): boolean
+- normalizeDeliveryMessageText · function · L323-L328 — function normalizeDeliveryMessageText(value: string): string
+- isCompletionSummaryCoveredByAssistantEvent · function · L336-L395 — function isCompletionSummaryCoveredByAssistantEvent( completionEvent: TaskEvent, assistantEvent: TaskEvent, ): boolean
+- createDeliveryEventRow · function · L397-L417 — function createDeliveryEventRow( row: TaskFeedRow, event: TaskEvent, eventIndex: number | undefined, eventOrder: number, ): TaskFeedRow
+- isMeaningfulLiveTranscriptRow · function · L419-L425 — function isMeaningfulLiveTranscriptRow(row: TaskFeedRow): boolean
+- isUserFacingLiveStatusRow · function · L427-L437 — function isUserFacingLiveStatusRow(row: TaskFeedRow): boolean
+- selectVisibleTaskFeedRows · function · L439-L580 — function selectVisibleTaskFeedRows( feedRows: TaskFeedRow[], transcriptMode: TranscriptMode, ): { visibleFeedRows: TaskFeedRow[]; hiddenLiveFeedRowCount: number }
+- getHiddenContentRowCount · function · L443-L449 — getHiddenContentRowCount = (visibleRows: TaskFeedRow[])
+- isHiddenStepRow · function · L444-L445 — isHiddenStepRow = (row: TaskFeedRow)
+- pushCandidate · function · L454-L456 — pushCandidate = (order: number, row: TaskFeedRow)
+- keepLastMatch · function · L536-L543 — keepLastMatch = (predicate: (row: TaskFeedRow) => boolean)
+- hasInactiveStringSetEntries · function · L582-L590 — function hasInactiveStringSetEntries( selectedIds: ReadonlySet<string>, activeIds: ReadonlySet<string>, ): boolean
+- pruneStringSetToActiveIds · function · L592-L601 — function pruneStringSetToActiveIds( selectedIds: ReadonlySet<string>, activeIds: ReadonlySet<string>, ): Set<string>
+- getCommandOutputSessionsRevision · function · L603-L613 — function getCommandOutputSessionsRevision( sessions: CommandOutputSession[] | undefined, ): string
+- collectInlineRunCommandSessionIds · function · L615-L636 — function collectInlineRunCommandSessionIds(args: { events: TaskEvent[]; eventIndices: number[]; commandOutputSessionsByInsertIndex: Map<number, CommandOutputSession[]>; isEventExpanded: (event: TaskEvent) => boolean; }): Set<string>
+- getEvidenceSourceSet · function · L638-L649 — function getEvidenceSourceSet(event: TaskEvent): Set<string>
+- isRedundantTimelineEvidenceEvent · function · L651-L677 — function isRedundantTimelineEvidenceEvent(event: TaskEvent, events: TaskEvent[]): boolean
+- estimateTaskFeedRowHeight · function · L679-L727 — function estimateTaskFeedRowHeight( item: any, options?: { expanded?: boolean; visibleEventCount?: number; hasVisibilityToggle?: boolean; }, ): number
+- assignTimelineRef · function · L729-L735 — function assignTimelineRef( ref: RefObject<HTMLDivElement | null> | undefined, node: HTMLDivElement | null, )
+- getAutoScrollTargetTop · function · L737-L739 — function getAutoScrollTargetTop(scrollHeight: number, clientHeight: number): number
+- shouldScheduleAutoScrollWrite · function · L741-L754 — function shouldScheduleAutoScrollWrite(args: { scrollTop: number; scrollHeight: number; clientHeight: number; lastTargetTop: number | null; }): boolean

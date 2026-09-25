@@ -1,0 +1,22 @@
+# src/renderer/components/PresentationArtifactViewer.tsx
+
+- PresentationArtifactViewerMode · type · L31-L31 — type PresentationArtifactViewerMode = "sidebar" | "fullscreen";
+- PresentationSettingsTab · type · L32-L32 — type PresentationSettingsTab = Any;
+- PendingPresentationAttachment · type · L33-L39 — type PendingPresentationAttachment = { id: string; path: string; name: string; size: number; mimeType?: string; };
+- PresentationArtifactViewerProps · type · L41-L64 — type PresentationArtifactViewerProps = { filePath: string; workspacePath: string; mode: PresentationArtifactViewerMode; onClose: () => void; onFullscreen: () => void; onExitFullscreen: () => void; onSendMessage?: (message: string, images?: ImageAttachment[]) => Promise<void>; selectedModelLabel?: string; selectedModel?: string; selectedProvider?: LLMProviderType; selectedReasoningEffort?: LLMReasoningEffort; availableModels?: LLMModelInfo[]; availableProviders?: LLMProviderInfo[]; workspaceId?: string; onModelChange?: (selection: { providerType?: LLMProviderType; modelKey: string; reasoningEffort?: LLMReasoningEffort; }) => void; onOpenSettings?: (tab?: PresentationSettingsTab) => void; turnContext?: SpreadsheetTurnContext | null; refreshKey?: string | number | null; };
+- ViewerData · type · L66-L66 — type ViewerData = NonNullable<FileViewerResult["data"]>;
+- getPresentationViewerCacheKey · function · L70-L76 — function getPresentationViewerCacheKey(args: { filePath: string; workspacePath: string; refreshKey?: string | number | null; }): string
+- presentationPreviewNeedsRender · function · L78-L80 — function presentationPreviewNeedsRender(preview: PresentationPreview | null | undefined): boolean
+- getFileName · function · L82-L84 — function getFileName(filePath: string): string
+- formatAttachmentSize · function · L86-L92 — function formatAttachmentSize(size: number): string
+- formatFileSize · function · L94-L100 — function formatFileSize(bytes: number): string
+- isImageAttachment · function · L102-L104 — function isImageAttachment(attachment: PendingPresentationAttachment): boolean
+- buildPresentationText · function · L106-L116 — function buildPresentationText(preview: PresentationPreview | null): string
+- PresentationArtifactViewer · function · L118-L614 — function PresentationArtifactViewer({ filePath, workspacePath, mode, onClose, onFullscreen, onExitFullscreen, onSendMessage, selectedModelLabel, selectedModel, selectedProvider, selectedReasoningEffort, availableModels = [], availableProviders = [], workspaceId, onModelChange, onOpenSettings, turnContext, refreshKey, }: PresentationArtifactViewerProps)
+- applyViewerData · function · L178-L181 — applyViewerData = (data: ViewerData)
+- loadFullPreview · function · L183-L203 — loadFullPreview = ()
+- handleCopyText · function · L269-L278 — handleCopyText = async ()
+- handleOpenExternal · function · L280-L282 — handleOpenExternal = ()
+- handleShowInFinder · function · L284-L286 — handleShowInFinder = ()
+- handleFullscreenSend · function · L342-L362 — handleFullscreenSend = async ()
+- renderBody · function · L364-L382 — renderBody = ()

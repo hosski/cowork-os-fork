@@ -1,0 +1,145 @@
+# src/electron/ipc/handlers.ts
+
+- isEnvFlagEnabled · function · L61-L63 — function isEnvFlagEnabled(name: string): boolean
+- shouldDisableBackgroundAutostart · function · L65-L71 — function shouldDisableBackgroundAutostart(): boolean
+- requireString · function · L73-L77 — function requireString(value: unknown, field: string): string
+- optionalString · function · L79-L82 — function optionalString(value: unknown): string | undefined
+- validateComposerDraftOwner · function · L84-L127 — function validateComposerDraftOwner( value: unknown, ): import("../../shared/composer-drafts").ComposerDraftGetRequest
+- validateComposerDraft · function · L129-L145 — function validateComposerDraft( value: unknown, ): import("../../shared/composer-drafts").ComposerDraft
+- FileViewerRequestOptions · type · L513-L520 — type FileViewerRequestOptions = { workspacePath?: string; enableImageOcr?: boolean; imageOcrMaxChars?: number; includeImageContent?: boolean; includePdfBase64?: boolean; presentationRenderMode?: PptxPreviewRenderMode; };
+- MacSystemSettingsTarget · type · L521-L521 — type MacSystemSettingsTarget = "microphone" | "dictation";
+- getSharedPptxPreviewService · function · L525-L535 — function getSharedPptxPreviewService(): PptxPreviewService
+- buildPptxContentFromPreview · function · L537-L547 — function buildPptxContentFromPreview(preview: PptxPresentationPreview): string
+- isIpcPerfTelemetryEnabled · function · L652-L654 — function isIpcPerfTelemetryEnabled(): boolean
+- getSerializedByteSize · function · L656-L663 — function getSerializedByteSize(value: unknown): number
+- getEventPayloadByteSize · function · L665-L667 — function getEventPayloadByteSize(event: Pick<TaskEvent, "payload">): number
+- summarizeEventPayloads · function · L669-L681 — function summarizeEventPayloads(events: Array<Pick<TaskEvent, "payload">>): { payloadBytes: number; largestEventPayloadBytes: number; }
+- logIpcPerf · function · L683-L686 — function logIpcPerf(channel: string, metrics: Record<string, unknown>): void
+- warnLargeTaskEventPayloads · function · L688-L712 — function warnLargeTaskEventPayloads( channel: string, taskId: string, eventCount: number, payloadBytes: number, largestEventPayloadBytes: number, ): void
+- isFfmpegInstalled · function · L721-L736 — isFfmpegInstalled = async (): Promise<boolean>
+- sanitizeVideoPreviewBaseName · function · L738-L742 — sanitizeVideoPreviewBaseName = (resolvedPath: string): string
+- getCachedVideoPreviewPath · function · L744-L750 — getCachedVideoPreviewPath = (resolvedPath: string, stats: fsSync.Stats): string
+- generateTranscodedVideoPreviewDataUrl · function · L752-L802 — generateTranscodedVideoPreviewDataUrl = async ( resolvedPath: string, stats: fsSync.Stats, ): Promise<string | null>
+- isMacSystemSettingsTarget · function · L804-L805 — isMacSystemSettingsTarget = (value: unknown): value is MacSystemSettingsTarget
+- openMacSystemSettings · function · L807-L868 — openMacSystemSettings = async (target: MacSystemSettingsTarget): Promise<void>
+- HooksWakeSubmitter · type · L872-L875 — type HooksWakeSubmitter = (action: { text: string; mode: "now" | "next-heartbeat"; }) => Promise<void> | void;
+- HooksWakeAction · type · L877-L877 — type HooksWakeAction = { text: string; mode: "now" | "next-heartbeat" };
+- resolveCustomProviderId · function · L880-L881 — resolveCustomProviderId = (providerType: string)
+- setHeartbeatWakeSubmitter · function · L883-L901 — function setHeartbeatWakeSubmitter(submitter: HooksWakeSubmitter | null): void
+- getNotificationService · function · L906-L908 — function getNotificationService(): NotificationService | null
+- checkRateLimit · function · L911-L923 — function checkRateLimit( channel: string, _config: { maxRequests: number; windowMs: number; } = RATE_LIMIT_CONFIGS.standard, ): void
+- validateOpenAICompatibleBaseUrl · function · L931-L982 — async function validateOpenAICompatibleBaseUrl( baseUrl: string, options: { allowLoopback?: boolean } = {}, ): Promise<string>
+- validateOptionalProviderApiKey · function · L984-L989 — function validateOptionalProviderApiKey( apiKey: string | undefined, providerLabel: string, ): string | undefined
+- validateOptionalProviderBaseUrl · function · L991-L1013 — async function validateOptionalProviderBaseUrl( baseUrl: string | undefined, options: { providerLabel: string; allowLoopback?: boolean; }, ): Promise<string | undefined>
+- validateJevBaseUrl · function · L1015-L1050 — async function validateJevBaseUrl( baseUrl: string | undefined, options: { providerLabel: "TypeSafe" | "OpenRouter"; reuseMainOpenRouterKey?: boolean }, ): Promise<string | undefined>
+- getMainWindow · function · L1143-L1153 — function getMainWindow(): BrowserWindow | null
+- assertTrustedMailboxSender · function · L1155-L1161 — function assertTrustedMailboxSender(event: Any): void
+- looksLikeCodeMultitaskRequest · function · L1163-L1170 — function looksLikeCodeMultitaskRequest(text: string): boolean
+- resolveWorkspaceContainedCwd · function · L1172-L1186 — async function resolveWorkspaceContainedCwd(workspacePath: string, cwd?: string): Promise<string>
+- assertTerminalShellAllowed · function · L1188-L1209 — function assertTerminalShellAllowed(workspace: Workspace, task?: Task): void
+- approveTerminalCommand · function · L1211-L1245 — async function approveTerminalCommand(params: { agentDaemon: AgentDaemon; taskId: string; command: string; cwd: string; timeoutMs: number; }): Promise<void>
+- findCompletionTokenStart · function · L1247-L1292 — function findCompletionTokenStart(line: string, cursor: number): number
+- unquoteCompletionToken · function · L1294-L1302 — function unquoteCompletionToken(token: string): string
+- quoteCompletionToken · function · L1304-L1312 — function quoteCompletionToken(value: string, originalToken: string): string
+- commonPrefix · function · L1314-L1323 — function commonPrefix(values: string[]): string
+- completeTerminalInput · function · L1325-L1424 — async function completeTerminalInput(params: { line: string; cursor: number; cwd: string; }): Promise<TerminalTabCompletionResult>
+- planMultitaskLanes · function · L1426-L1483 — async function planMultitaskLanes(prompt: string, laneCount: number)
+- setupIpcHandlers · function · L1485-L10968 — async function setupIpcHandlers( dbManager: DatabaseManager, agentDaemon: AgentDaemon, gateway?: ChannelGateway, options?: { getMainWindow?: () => BrowserWindow | null; getRoutineService?: () => RoutineService | null; }, )
+- computerUseMainWindow · function · L1496-L1497 — computerUseMainWindow = (): BrowserWindow | null
+- assertComposerDraftOwner · function · L1522-L1535 — assertComposerDraftOwner = ( owner: import("../../shared/composer-drafts").ComposerDraftGetRequest, ): void
+- resolveTerminalTask · function · L1583-L1592 — resolveTerminalTask = (workspace: Workspace, taskId?: string): Task | undefined
+- getRoutineService · function · L1593-L1593 — getRoutineService = ()
+- emitTaskStatusEvent · function · L1602-L1613 — emitTaskStatusEvent = ( taskId: string, status: Task["status"], extraPayload?: Record<string, unknown>, ): void
+- scheduleTaskTitleGeneration · function · L1615-L1642 — scheduleTaskTitleGeneration = ( task: Task, prompt: string, agentConfig?: AgentConfig, ): void
+- principalForEvent · function · L1644-L1645 — principalForEvent = (event: IpcMainInvokeEvent): string
+- authorizeTaskForEvent · function · L1647-L1651 — authorizeTaskForEvent = ( event: IpcMainInvokeEvent, taskId: string, capability: "view" | "contribute" | "review" | "approve" | "manage", )
+- protectedCredentialTaskId · function · L1653-L1658 — protectedCredentialTaskId = (requestId: string): string | undefined
+- authorizeProtectedCredentialRequest · function · L1660-L1666 — authorizeProtectedCredentialRequest = ( event: IpcMainInvokeEvent, requestId: string, ): void
+- resolveRegisteredWorkspaceRoot · function · L1719-L1739 — resolveRegisteredWorkspaceRoot = (workspacePath: string): string | null
+- isPathWithinWorkspace · function · L1741-L1753 — isPathWithinWorkspace = (filePath: string, workspacePath: string): boolean
+- normalizePotentialPath · function · L1755-L1768 — normalizePotentialPath = (rawPath: string): string
+- buildViewerPathCandidates · function · L1770-L1837 — buildViewerPathCandidates = (filePath: string, workspacePath?: string): string[]
+- addCandidate · function · L1774-L1780 — addCandidate = (candidate: string)
+- resolveExistingPathForViewer · function · L1839-L1883 — resolveExistingPathForViewer = async ( filePath: string, workspacePath?: string, options?: { requireWorkspaceContainment?: boolean }, ): Promise<{ resolvedPath: string | null; realPath: string | null; attemptedPaths: string[]; }>
+- listFilesRecursiveSync · function · L1885-L1910 — listFilesRecursiveSync = ( rootPath: string, predicate?: (filePath: string) => boolean, ): string[]
+- normalizeUiPath · function · L1912-L1912 — normalizeUiPath = (rawPath: string): string
+- buildLlmWikiVaultEntry · function · L1914-L1937 — buildLlmWikiVaultEntry = ( filePath: string, workspaceRoot: string, section: "root" | "page" | "query" | "output" | "raw", )
+- collectLlmWikiVaultSummary · function · L1939-L2030 — collectLlmWikiVaultSummary = (workspacePath: string, requestedVaultPath?: string)
+- sortByMtimeDesc · function · L1999-L2000 — sortByMtimeDesc = (left: { mtimeMs: number }, right: { mtimeMs: number })
+- renderPdfFirstPageThumbnail · function · L2032-L2066 — renderPdfFirstPageThumbnail = async (pdfPath: string): Promise<string | undefined>
+- isManagedImageTempFile · function · L2070-L2085 — isManagedImageTempFile = (filePath: string): boolean
+- cleanupTaskImageTempFiles · function · L2087-L2120 — cleanupTaskImageTempFiles = async ( images?: Array<{ filePath?: string; tempFile?: boolean; }>, ): Promise<void>
+- normalizeTempPermissions · function · L2124-L2132 — normalizeTempPermissions = (existing?: Workspace): Workspace["permissions"]
+- ensureTempWorkspace · function · L2134-L2174 — ensureTempWorkspace = async ( workspaceId: string, workspacePath: string, existing?: Workspace, ): Promise<Workspace>
+- getOrCreateTempWorkspace · function · L2178-L2213 — getOrCreateTempWorkspace = async (options?: { createNew?: boolean; }): Promise<Workspace>
+- getValidatedYoutubeWorkspace · function · L2310-L2328 — getValidatedYoutubeWorkspace = ( workspaceId: unknown, options: { requireNetwork?: boolean } = {}, ): Workspace
+- getValidatedYoutubeWorkspacePath · function · L2330-L2333 — getValidatedYoutubeWorkspacePath = ( workspaceId: unknown, options: { requireNetwork?: boolean } = {}, ): string
+- getValidatedYoutubeIngestionWorkspace · function · L2335-L2343 — getValidatedYoutubeIngestionWorkspace = ( workspaceId: unknown, url: string, toolName: string, )
+- getFileType · function · L2577-L2677 — getFileType = ( ext: string, ): | "markdown" | "code" | "text" | "docx" | "document" | "pdf" | "latex" | "image" | "video" | "audio" | "pptx" | "xlsx" | "html" | "json" | "csv" | "unsupported"
+- sanitizeFileName · function · L3315-L3318 — sanitizeFileName = (fileName: string): string
+- ensureUniqueName · function · L3320-L3331 — ensureUniqueName = (dir: string, baseName: string, usedNames: Set<string>): string
+- ensureUploadRoot · function · L3336-L3341 — ensureUploadRoot = async (): Promise<string>
+- sanitizeFileName · function · L3430-L3433 — sanitizeFileName = (fileName: string): string
+- ensureExtension · function · L3435-L3439 — ensureExtension = (fileName: string, mimeType?: string): string
+- ensureUniqueName · function · L3441-L3452 — ensureUniqueName = (dir: string, baseName: string, usedNames: Set<string>): string
+- emitShellSessionLifecycle · function · L5824-L5835 — emitShellSessionLifecycle = ( taskId: string, action: "reset" | "closed", session: ShellSessionInfo | null, ): void
+- toManagedRoutinePayload · function · L6034-L6132 — toManagedRoutinePayload = ( input: ReturnType<ManagedSessionService["buildManagedAgentRoutineDefinition"]>, agentId: string, ): RoutineCreate
+- previewForTask · function · L6408-L6416 — previewForTask = (previewId: string)
+- loadSkillsConfig · function · L6554-L6575 — loadSkillsConfig = (): SkillsConfig
+- ensureCustomSkillLoaderInitialized · function · L6578-L6580 — ensureCustomSkillLoaderInitialized = async (): Promise<void>
+- buildAgentBuilderInventory · function · L6776-L6807 — buildAgentBuilderInventory = async (): Promise<AgentBuilderInventory>
+- redactJevSettingsForRenderer · function · L6868-L6888 — redactJevSettingsForRenderer = ( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, )
+- redactProvider · function · L6872-L6879 — redactProvider = (provider: typeof settings.jev.typesafe)
+- clearCustomProviderConfig · function · L6941-L6951 — clearCustomProviderConfig = (providerId: string)
+- normalize · function · L7956-L7956 — normalize = (value?: string)
+- normalizeScopes · function · L7957-L7962 — normalizeScopes = (value?: string[])
+- normalizeAccounts · function · L7968-L7979 — normalizeAccounts = (accounts?: GoogleWorkspaceSettingsData["accounts"])
+- emitTeamEvent · function · L9516-L9518 — emitTeamEvent = (event: Any)
+- bounded · function · L10034-L10040 — bounded = (candidate: unknown, max: number): string | undefined
+- getPulseService · function · L10167-L10173 — getPulseService = async ()
+- labelForWorkspace · function · L10222-L10222 — labelForWorkspace = (id: string)
+- decorateItem · function · L10346-L10350 — decorateItem = (item: Any)
+- setupHealthHandlers · function · L10973-L11078 — function setupHealthHandlers(): void
+- ensureMCPHostProvider · function · L11083-L11110 — function ensureMCPHostProvider(): void
+- getTools · method · L11101-L11103 — getTools()
+- executeTool · method · L11104-L11106 — async executeTool(name: string, args: Record<string, Any>)
+- setupSecureMcpTunnelHandlers · function · L11146-L11226 — function setupSecureMcpTunnelHandlers(): void
+- assertSecureMcpTunnelsEnabled · function · L11152-L11158 — assertSecureMcpTunnelsEnabled = (): void
+- setupMCPHandlers · function · L11228-L11614 — function setupMCPHandlers(): void
+- setupInfraHandlers · function · L11619-L11695 — function setupInfraHandlers(): void
+- setupScrapingHandlers · function · L11700-L11793 — function setupScrapingHandlers(): void
+- setupCronHandlers · function · L11798-L11892 — function setupCronHandlers(): void
+- setupCouncilHandlers · function · L11894-L12100 — function setupCouncilHandlers(): void
+- setupNotificationHandlers · function · L12105-L12249 — function setupNotificationHandlers(): void
+- handleNotificationClick · function · L12111-L12121 — handleNotificationClick = (_notificationId: string, taskId?: string)
+- shouldShowDesktopNotifications · function · L12125-L12134 — shouldShowDesktopNotifications = (): boolean
+- getHooksServer · function · L12276-L12278 — function getHooksServer(): HooksServer | null
+- setHookTriggerEmitter · function · L12280-L12282 — function setHookTriggerEmitter(emitter: ((event: TriggerEvent) => void) | null): void
+- setHookAgentDispatchObserver · function · L12284-L12297 — function setHookAgentDispatchObserver( observer: | ((payload: { mappingId?: string; path?: string; workspaceId?: string; taskId?: string; metadata?: Record<string, string>; response?: { statusCode?: number; message?: string; includeTaskId?: boolean }; }) => void) | null, ): void
+- setHookWorkflowDispatchObserver · function · L12299-L12309 — function setHookWorkflowDispatchObserver( observer: | ((payload: { routineId: string; payload: Record<string, unknown>; metadata?: Record<string, string>; }) => Promise<{ runId: string; status: string }>) | null, ): void
+- setupHooksHandlers · function · L12314-L12749 — async function setupHooksHandlers(agentDaemon: AgentDaemon): Promise<void>
+- getHooksRuntimeSettings · function · L12324-L12334 — getHooksRuntimeSettings = ()
+- ensureHooksServerRunning · function · L12336-L12475 — ensureHooksServerRunning = async (): Promise<void>
+- broadcastPersonalitySettingsChanged · function · L12755-L12771 — function broadcastPersonalitySettingsChanged(settings: Any): void
+- setupKitHandlers · function · L12776-L13741 — function setupKitHandlers(workspaceRepo: WorkspaceRepository, agentDaemon: AgentDaemon): void
+- getLocalDateStamp · function · L12779-L12784 — getLocalDateStamp = (now: Date): string
+- buildKitFrontmatter · function · L12786-L12799 — buildKitFrontmatter = (fileName: string, updated: string): string
+- withKitFrontmatter · function · L12801-L12818 — withKitFrontmatter = (relPath: string, content: string, updated: string): string
+- getWorkspacePath · function · L12820-L12825 — getWorkspacePath = (workspaceId: string): string
+- computeStatus · function · L12827-L12833 — computeStatus = async (workspaceId: string): Promise<WorkspaceKitStatus>
+- templatesForInit · function · L12835-L13262 — templatesForInit = ( now: Date, preset: "default" | "venture_operator" = "default", ): Array<{ relPath: string; content: string }>
+- writeTemplate · function · L13264-L13289 — writeTemplate = async ( workspacePath: string, relPath: string, content: string, mode: "missing" | "overwrite", )
+- ensureDir · function · L13291-L13294 — ensureDir = async (workspacePath: string, relPath: string)
+- ensureDefaultKitCronJobs · function · L13296-L13528 — ensureDefaultKitCronJobs = async ( workspaceId: string, kitMode: "missing" | "overwrite", ): Promise<void>
+- buildHourlyPrompt · function · L13311-L13354 — buildHourlyPrompt = ()
+- buildDailyPrompt · function · L13356-L13392 — buildDailyPrompt = ()
+- buildWeeklyPrompt · function · L13394-L13423 — buildWeeklyPrompt = ()
+- findJob · function · L13474-L13477 — findJob = (name: string, marker: string)
+- setupMemoryHandlers · function · L13746-L14984 — function setupMemoryHandlers(): void
+- ensurePluginRegistryInitialized · function · L14646-L14650 — ensurePluginRegistryInitialized = async (): Promise<Any>
+- normalizePluginAuthor · function · L14651-L14656 — normalizePluginAuthor = (author?: string): string | undefined
+- setupLocalAIHandlers · function · L14989-L15538 — function setupLocalAIHandlers(): void
+- ModelDetail · interface · L15134-L15144 — interface ModelDetail
+- readLlamaLog · function · L15214-L15222 — async function readLlamaLog(lines = 20): Promise<string>
+- getEarlyExitMsg · function · L15284-L15287 — getEarlyExitMsg = ()
+- appendMLXLog · function · L15295-L15302 — appendMLXLog = (chunk: Buffer)

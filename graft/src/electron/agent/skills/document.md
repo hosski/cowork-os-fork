@@ -1,0 +1,28 @@
+# src/electron/agent/skills/document.ts
+
+- ContentBlock · interface · L22-L29 — interface ContentBlock
+- DocumentOptions · interface · L31-L44 — interface DocumentOptions
+- DocumentSection · interface · L49-L56 — interface DocumentSection
+- DocumentBuilder · class · L61-L1167 — class DocumentBuilder
+- constructor · method · L62-L62 — constructor(private workspace: Workspace)
+- create · method · L64-L87 — async create( outputPath: string, format: "docx" | "pdf" | "md", content: ContentBlock[] | ContentBlock | string | undefined, options: DocumentOptions = {}, ): Promise<void>
+- normalizeContent · method · L93-L148 — private normalizeContent( content: ContentBlock[] | ContentBlock | string | undefined, ): ContentBlock[]
+- createDocx · method · L153-L285 — private async createDocx( outputPath: string, content: ContentBlock[], options: DocumentOptions, ): Promise<void>
+- createPDF · method · L290-L399 — private async createPDF( outputPath: string, content: ContentBlock[], options: DocumentOptions, ): Promise<void>
+- createMarkdown · method · L404-L437 — private async createMarkdown(outputPath: string, content: ContentBlock[]): Promise<void>
+- getHeadingLevel · method · L439-L456 — private getHeadingLevel(level: number): (typeof HeadingLevel)[keyof typeof HeadingLevel]
+- readDocument · method · L461-L473 — async readDocument( inputPath: string, ): Promise<{ html: string; text: string; messages: string[] }>
+- appendToDocument · method · L480-L547 — async appendToDocument( inputPath: string, outputPath: string, newContent: ContentBlock[], _options: DocumentOptions = {}, ): Promise<{ success: boolean; sectionsAdded: number }>
+- contentBlocksToOoxml · method · L553-L591 — private contentBlocksToOoxml(blocks: ContentBlock[]): string
+- createOoxmlParagraph · method · L596-L600 — private createOoxmlParagraph(text: string, styleId?: string): string
+- createOoxmlListItem · method · L605-L609 — private createOoxmlListItem(text: string): string
+- createOoxmlTable · method · L614-L629 — private createOoxmlTable(rows: string[][]): string
+- escapeXml · method · L634-L641 — private escapeXml(text: string): string
+- parseSections · method · L647-L741 — private parseSections(xmlContent: string): DocumentSection[]
+- moveSectionAfter · method · L750-L853 — async moveSectionAfter( inputPath: string, outputPath: string, sectionIdentifier: string, afterSection: string, ): Promise<{ success: boolean; message: string }>
+- findSection · method · L858-L884 — private findSection( sections: DocumentSection[], identifier: string, ): DocumentSection | undefined
+- insertAfterSection · method · L893-L955 — async insertAfterSection( inputPath: string, outputPath: string, afterSection: string, newContent: ContentBlock[], ): Promise<{ success: boolean; message: string; sectionsAdded: number }>
+- replaceBlocksById · method · L957-L1023 — async replaceBlocksById( inputPath: string, outputPath: string, blockIds: string[], newContent: ContentBlock[], ): Promise<{ success: boolean; message: string; sectionsAdded: number }>
+- listSections · method · L1028-L1051 — async listSections(inputPath: string): Promise< Array<{ number?: string; title: string; level: number; }> >
+- htmlToContentBlocks · method · L1057-L1166 — private htmlToContentBlocks(html: string): ContentBlock[]
+- stripTags · function · L1074-L1074 — stripTags = (str: string): string

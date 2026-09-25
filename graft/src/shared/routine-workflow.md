@@ -1,0 +1,26 @@
+# src/shared/routine-workflow.ts
+
+- WorkflowJsonPrimitive · type · L11-L11 — type WorkflowJsonPrimitive = string | number | boolean | null;
+- WorkflowReference · interface · L13-L18 — interface WorkflowReference
+- WorkflowTemplateValue · interface · L20-L23 — interface WorkflowTemplateValue
+- WorkflowInputValue · type · L25-L30 — type WorkflowInputValue = | WorkflowJsonPrimitive | WorkflowReference | WorkflowTemplateValue | WorkflowInputValue[] | { [key: string]: WorkflowInputValue };
+- WorkflowNodeKind · type · L32-L40 — type WorkflowNodeKind = | "starter" | "action" | "ai" | "condition" | "filter" | "foreach" | "agent" | "custom";
+- WorkflowRiskLevel · type · L42-L42 — type WorkflowRiskLevel = "read" | "local_write" | "external_write" | "data_export";
+- WorkflowRetryPolicy · interface · L44-L49 — interface WorkflowRetryPolicy
+- RoutineWorkflowNode · interface · L51-L67 — interface RoutineWorkflowNode
+- RoutineWorkflowEdge · interface · L69-L76 — interface RoutineWorkflowEdge
+- RoutineWorkflowSettings · interface · L78-L84 — interface RoutineWorkflowSettings
+- RoutineWorkflowDefinition · interface · L86-L96 — interface RoutineWorkflowDefinition
+- WorkflowValidationIssue · interface · L98-L104 — interface WorkflowValidationIssue
+- WorkflowValidationResult · interface · L106-L111 — interface WorkflowValidationResult
+- WorkflowFieldDefinition · interface · L113-L123 — interface WorkflowFieldDefinition
+- WorkflowOperationDefinition · interface · L125-L139 — interface WorkflowOperationDefinition
+- WorkflowCapabilities · interface · L141-L146 — interface WorkflowCapabilities
+- RoutineWorkflowTemplate · interface · L148-L155 — interface RoutineWorkflowTemplate
+- RoutineWorkflowRunStatus · type · L157-L164 — type RoutineWorkflowRunStatus = | "queued" | "running" | "waiting_for_approval" | "completed" | "partial_success" | "failed" | "cancelled";
+- RoutineWorkflowStepStatus · type · L166-L175 — type RoutineWorkflowStepStatus = | "pending" | "ready" | "running" | "waiting_for_approval" | "retrying" | "skipped" | "completed" | "failed" | "cancelled";
+- RoutineWorkflowStepRecord · interface · L177-L193 — interface RoutineWorkflowStepRecord
+- RoutineWorkflowRunRecord · interface · L195-L210 — interface RoutineWorkflowRunRecord
+- RoutineWorkflowEventEnvelope · interface · L212-L222 — interface RoutineWorkflowEventEnvelope
+- RoutineWorkflowTestRequest · interface · L224-L230 — interface RoutineWorkflowTestRequest
+- RoutineWorkflowApprovalRequest · interface · L232-L236 — interface RoutineWorkflowApprovalRequest

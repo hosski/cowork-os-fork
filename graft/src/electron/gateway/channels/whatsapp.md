@@ -1,0 +1,88 @@
+# src/electron/gateway/channels/whatsapp.ts
+
+- maskWhatsAppIdentity · function · L61-L73 — function maskWhatsAppIdentity(value: string | undefined): string
+- stripWhatsAppTargetPrefixes · function · L75-L84 — function stripWhatsAppTargetPrefixes(value: string): string
+- normalizeWhatsAppPhoneTarget · function · L86-L108 — function normalizeWhatsAppPhoneTarget(value: string): string | null
+- BackoffConfig · interface · L113-L119 — interface BackoffConfig
+- QrCodeHandler · type · L124-L124 — type QrCodeHandler = (qr: string) => void;
+- _WhatsAppInboundMessage · interface · L129-L145 — interface _WhatsAppInboundMessage
+- WhatsAppAdapter · class · L147-L2063 — class WhatsAppAdapter implements ChannelAdapter
+- constructor · method · L208-L227 — constructor(config: WhatsAppConfig)
+- isSelfChatMode · method · L232-L234 — get isSelfChatMode(): boolean
+- responsePrefix · method · L239-L244 — get responsePrefix(): string
+- status · method · L246-L248 — get status(): ChannelStatus
+- botUsername · method · L250-L252 — get botUsername(): string | undefined
+- qrCode · method · L257-L259 — get qrCode(): string | undefined
+- hasCredentials · method · L264-L267 — async hasCredentials(): Promise<boolean>
+- connect · method · L272-L389 — async connect(): Promise<void>
+- handleConnectionUpdate · method · L394-L489 — private handleConnectionUpdate(update: Partial<ConnectionState>): void
+- handleMessagesUpsert · method · L494-L511 — private async handleMessagesUpsert(upsert: { type?: string; messages?: WAMessage[]; }): Promise<void>
+- processInboundMessage · method · L516-L772 — private async processInboundMessage(msg: WAMessage, upsertType: string): Promise<void>
+- disconnect · method · L777-L806 — async disconnect(): Promise<void>
+- convertMarkdownToWhatsApp · method · L812-L845 — private convertMarkdownToWhatsApp(text: string): string
+- sendMessage · method · L850-L904 — async sendMessage(message: OutgoingMessage): Promise<string>
+- sendMediaAttachment · method · L909-L978 — private async sendMediaAttachment( jid: string, attachment: MessageAttachment, caption?: string, ): Promise<string>
+- resolveAttachmentPayload · method · L983-L1037 — private async resolveAttachmentPayload(attachment: MessageAttachment): Promise<Buffer | null>
+- extractAttachmentFileNameFromUrl · method · L1042-L1060 — private extractAttachmentFileNameFromUrl(url?: string): string | undefined
+- sendWithRetry · method · L1065-L1090 — private async sendWithRetry<T>( operation: () => Promise<T>, operationName = "operation", ): Promise<T>
+- calculateSendRetryDelay · method · L1095-L1104 — private calculateSendRetryDelay(attempt: number): number
+- sendComposingTo · method · L1109-L1118 — async sendComposingTo(chatId: string): Promise<void>
+- sendTyping · method · L1123-L1125 — async sendTyping(chatId: string): Promise<void>
+- editMessage · method · L1130-L1156 — async editMessage(chatId: string, messageId: string, text: string): Promise<void>
+- deleteMessage · method · L1161-L1172 — async deleteMessage(chatId: string, messageId: string): Promise<void>
+- sendDocument · method · L1177-L1192 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- sendPhoto · method · L1197-L1209 — async sendPhoto(chatId: string, filePath: string, caption?: string): Promise<string>
+- addReaction · method · L1214-L1228 — async addReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- removeReaction · method · L1233-L1235 — async removeReaction(chatId: string, messageId: string): Promise<void>
+- onMessage · method · L1240-L1242 — onMessage(handler: MessageHandler): void
+- onCallbackQuery · method · L1247-L1249 — onCallbackQuery(_handler: CallbackQueryHandler): void
+- onError · method · L1254-L1256 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L1261-L1263 — onStatusChange(handler: StatusHandler): void
+- onQrCode · method · L1268-L1270 — onQrCode(handler: QrCodeHandler): void
+- updateConfig · method · L1275-L1301 — updateConfig(config: ChannelConfig): void
+- getInfo · method · L1306-L1318 — async getInfo(): Promise<ChannelInfo>
+- logout · method · L1323-L1326 — async logout(): Promise<void>
+- clearCredentials · method · L1331-L1342 — private async clearCredentials(): Promise<void>
+- handleIncomingMessage · method · L1351-L1363 — private async handleIncomingMessage(message: IncomingMessage): Promise<void>
+- handleError · method · L1368-L1376 — private handleError(error: Error, context?: string): void
+- setStatus · method · L1381-L1390 — private setStatus(status: ChannelStatus, error?: Error): void
+- attemptReconnection · method · L1395-L1448 — private async attemptReconnection(): Promise<void>
+- calculateBackoffDelay · method · L1453-L1462 — private calculateBackoffDelay(config: BackoffConfig): number
+- resetBackoff · method · L1467-L1474 — private resetBackoff(): void
+- failNonRetryableConnection · method · L1476-L1498 — private failNonRetryableConnection(error: Error, context: string): void
+- trackDisconnect · method · L1503-L1508 — private trackDisconnect(): void
+- isConnectionFlapping · method · L1513-L1515 — private isConnectionFlapping(): boolean
+- startDedupCleanup · method · L1520-L1524 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L1529-L1536 — private cleanupDedupCache(): void
+- getGroupMeta · method · L1541-L1558 — private async getGroupMeta(jid: string): Promise<{ subject?: string }>
+- jidToE164 · method · L1563-L1566 — private jidToE164(jid: string | null | undefined): string | null
+- toWhatsAppJid · method · L1571-L1583 — private toWhatsAppJid(chatId: string): string
+- extractText · method · L1588-L1610 — private extractText(message: proto.IMessage | null | undefined): string | undefined
+- extractQuotedMessageContext · method · L1612-L1661 — private extractQuotedMessageContext(message: proto.IMessage | null | undefined): { messageId?: string; senderJid?: string; senderE164?: string; senderName?: string; body?: string; }
+- formatQuotedMessageContextBlock · method · L1663-L1673 — private formatQuotedMessageContextBlock(context: { senderE164?: string; senderName?: string; body?: string; }): string | undefined
+- truncateTextForReplyContext · method · L1675-L1678 — private truncateTextForReplyContext(value: string, maxLength: number): string
+- extractMediaPlaceholder · method · L1683-L1695 — private extractMediaPlaceholder(message: proto.IMessage | null | undefined): string | undefined
+- downloadAudioAttachment · method · L1700-L1719 — private async downloadAudioAttachment(params: { audioMessage: DownloadableMessage; mimeType?: string; isVoiceNote?: boolean; fileName?: string; defaultBaseName?: string; }): Promise<MessageAttachment | null>
+- downloadMediaMessage · method · L1721-L1763 — private async downloadMediaMessage(params: { media: DownloadableMessage; mediaType: "audio" | "image" | "video" | "document" | "sticker"; attachmentType: MessageAttachment["type"]; mimeType?: string; fileName?: string; isVoiceNote?: boolean; defaultBaseName: string; }): Promise<MessageAttachment | null>
+- bufferFromWhatsAppMedia · method · L1765-L1775 — private async bufferFromWhatsAppMedia( media: DownloadableMessage, mediaType: "audio" | "image" | "video" | "document" | "sticker", ): Promise<Buffer>
+- normalizeAttachmentName · method · L1777-L1785 — private normalizeAttachmentName(fileName: string, ext: string): string
+- inferAttachmentExtension · method · L1787-L1817 — private inferAttachmentExtension( mimeType: string | undefined, attachmentType: MessageAttachment["type"], fileName?: string, ): string
+- extractWaFilename · method · L1819-L1822 — private extractWaFilename(message: { fileName?: string } | null | undefined): string | undefined
+- looksLikePairingCode · method · L1827-L1829 — private looksLikePairingCode(text: string): boolean
+- normalizeJid · method · L1834-L1837 — private normalizeJid(jid: string): string
+- extractDigits · method · L1842-L1844 — private extractDigits(value: string): string
+- getBotMentionTokens · method · L1849-L1864 — private getBotMentionTokens(): string[]
+- extractMentionTokensFromText · method · L1869-L1876 — private extractMentionTokensFromText(text: string): string[]
+- getAllowedNumbersSet · method · L1878-L1893 — private getAllowedNumbersSet(allowedNumbers: unknown): Set<string>
+- isSelfMentionedInMessage · method · L1898-L1929 — private isSelfMentionedInMessage( message: proto.IMessage | null | undefined, text: string, ): boolean
+- shouldRouteGroupMessage · method · L1934-L1965 — private shouldRouteGroupMessage( isGroup: boolean, params: { isCommand: boolean; isPairingCode: boolean; botMentioned: boolean; isNaturalCommand: boolean; }, ): boolean
+- normalizeGroupMessageText · method · L1970-L1995 — private normalizeGroupMessageText(body: string, botMentioned: boolean): string
+- getStatusCode · method · L2000-L2005 — private getStatusCode(err: unknown): number | undefined
+- getNonRetryableConnectionError · method · L2007-L2019 — private getNonRetryableConnectionError(err: unknown): Error | undefined
+- stringifyError · method · L2021-L2034 — private stringifyError(err: unknown): string
+- isCertificateTrustError · method · L2036-L2038 — private isCertificateTrustError(err: unknown): boolean
+- isTransientNetworkError · method · L2040-L2042 — private isTransientNetworkError(err: unknown): boolean
+- isCredentialStateError · method · L2044-L2046 — private isCredentialStateError(err: unknown): boolean
+- invalidateCredentials · method · L2048-L2053 — private async invalidateCredentials(error: Error): Promise<void>
+- ensureDir · method · L2058-L2062 — private async ensureDir(dirPath: string): Promise<void>
+- createWhatsAppAdapter · function · L2068-L2070 — function createWhatsAppAdapter(config: WhatsAppConfig): WhatsAppAdapter

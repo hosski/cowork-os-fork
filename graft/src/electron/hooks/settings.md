@@ -1,0 +1,30 @@
+# src/electron/hooks/settings.ts
+
+- generateHookToken · function · L41-L43 — function generateHookToken(bytes = 24): string
+- encryptSecret · function · L48-L64 — function encryptSecret(value?: string): string | undefined
+- decryptSecret · function · L69-L94 — function decryptSecret(value?: string): string | undefined
+- _encryptSettings · function · L99-L116 — function _encryptSettings(settings: HooksConfig): HooksConfig
+- decryptSettings · function · L121-L138 — function decryptSettings(settings: HooksConfig): HooksConfig
+- HooksSettingsManager · class · L143-L514 — class HooksSettingsManager
+- initialize · method · L152-L163 — static initialize(): void
+- migrateFromLegacyFile · method · L168-L226 — private static migrateFromLegacyFile(): void
+- loadSettings · method · L231-L261 — static loadSettings(): HooksConfig
+- saveSettings · method · L266-L282 — static saveSettings(settings: HooksConfig): void
+- clearCache · method · L287-L289 — static clearCache(): void
+- getDefaults · method · L294-L296 — static getDefaults(): HooksConfig
+- updateConfig · method · L301-L306 — static updateConfig(updates: Partial<HooksConfig>): HooksConfig
+- enableHooks · method · L311-L319 — static enableHooks(): HooksConfig
+- disableHooks · method · L324-L329 — static disableHooks(): HooksConfig
+- regenerateToken · method · L334-L339 — static regenerateToken(): string
+- addPreset · method · L344-L351 — static addPreset(preset: string): HooksConfig
+- removePreset · method · L356-L361 — static removePreset(preset: string): HooksConfig
+- addMapping · method · L366-L371 — static addMapping(mapping: HookMappingConfig): HooksConfig
+- updateMapping · method · L376-L384 — static updateMapping(id: string, updates: Partial<HookMappingConfig>): HooksConfig | null
+- removeMapping · method · L389-L394 — static removeMapping(id: string): HooksConfig
+- configureGmail · method · L399-L413 — static configureGmail(gmailConfig: GmailHooksConfig): HooksConfig
+- getGmailConfig · method · L418-L446 — static getGmailConfig(): GmailHooksConfig
+- getSettingsForDisplay · method · L451-L470 — static getSettingsForDisplay(): HooksConfig
+- configureResend · method · L475-L488 — static configureResend(resendConfig: ResendHooksConfig): HooksConfig
+- isConfigured · method · L493-L496 — static isConfigured(): boolean
+- isGmailConfigured · method · L501-L504 — static isGmailConfigured(): boolean
+- ensureInitialized · method · L509-L513 — private static ensureInitialized(): void

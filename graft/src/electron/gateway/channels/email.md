@@ -1,0 +1,32 @@
+# src/electron/gateway/channels/email.ts
+
+- maskEmailIdentity · function · L48-L63 — function maskEmailIdentity(value: string | undefined): string
+- getEmailHeader · function · L65-L80 — function getEmailHeader(email: EmailMessage, headerName: string): string
+- isAutomatedEmailIdentity · function · L82-L96 — function isAutomatedEmailIdentity(address: string, name = ""): boolean
+- isBounceOrAutoresponseSubject · function · L98-L102 — function isBounceOrAutoresponseSubject(subject: string): boolean
+- isAutomatedOrBounceEmail · function · L104-L131 — function isAutomatedOrBounceEmail(email: EmailMessage): boolean
+- EmailAdapter · class · L133-L640 — class EmailAdapter implements ChannelAdapter
+- constructor · method · L160-L177 — constructor(config: EmailConfig)
+- status · method · L179-L181 — get status(): ChannelStatus
+- botUsername · method · L183-L185 — get botUsername(): string | undefined
+- connect · method · L190-L306 — async connect(): Promise<void>
+- getLoomAccessToken · function · L206-L206 — getLoomAccessToken = ()
+- disconnect · method · L311-L338 — async disconnect(): Promise<void>
+- scheduleReconnect · method · L343-L369 — private scheduleReconnect(): void
+- sendMessage · method · L375-L383 — async sendMessage(message: OutgoingMessage): Promise<string>
+- editMessage · method · L388-L390 — async editMessage(_chatId: string, _messageId: string, _text: string): Promise<void>
+- deleteMessage · method · L395-L397 — async deleteMessage(_chatId: string, _messageId: string): Promise<void>
+- sendDocument · method · L402-L404 — async sendDocument(_chatId: string, _filePath: string, _caption?: string): Promise<string>
+- sendPhoto · method · L409-L411 — async sendPhoto(_chatId: string, _filePath: string, _caption?: string): Promise<string>
+- onMessage · method · L416-L418 — onMessage(handler: MessageHandler): void
+- onError · method · L423-L425 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L430-L432 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L437-L455 — async getInfo(): Promise<ChannelInfo>
+- handleIncomingMessage · method · L464-L572 — private async handleIncomingMessage(email: EmailMessage): Promise<void>
+- isMessageProcessed · method · L577-L579 — private isMessageProcessed(messageId: string): boolean
+- markMessageProcessed · method · L584-L591 — private markMessageProcessed(messageId: string): void
+- startDedupCleanup · method · L596-L600 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L605-L612 — private cleanupDedupCache(): void
+- handleError · method · L617-L625 — private handleError(error: Error, context?: string): void
+- setStatus · method · L630-L639 — private setStatus(status: ChannelStatus, error?: Error): void
+- createEmailAdapter · function · L645-L696 — function createEmailAdapter(config: EmailConfig): EmailAdapter

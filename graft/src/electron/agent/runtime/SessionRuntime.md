@@ -1,0 +1,153 @@
+# src/electron/agent/runtime/SessionRuntime.ts
+
+- WebEvidenceEntry · interface · L79-L86 — interface WebEvidenceEntry
+- SessionRuntimeTaskProjection · interface · L88-L99 — interface SessionRuntimeTaskProjection
+- SessionRuntimeOutputState · interface · L101-L111 — interface SessionRuntimeOutputState
+- SessionRuntimeCompactionSnapshot · interface · L113-L124 — interface SessionRuntimeCompactionSnapshot
+- SessionRuntimeCompactionLifecycleHandle · interface · L126-L131 — interface SessionRuntimeCompactionLifecycleHandle
+- SessionRuntimeCompactionLifecycleOptions · interface · L133-L143 — interface SessionRuntimeCompactionLifecycleOptions
+- SessionRuntimeVerificationState · interface · L145-L151 — interface SessionRuntimeVerificationState
+- SessionRuntimeRecoveryState · interface · L153-L165 — interface SessionRuntimeRecoveryState
+- SessionRuntimePermissionDenialState · interface · L167-L170 — interface SessionRuntimePermissionDenialState
+- SessionRuntimePermissionState · interface · L172-L179 — interface SessionRuntimePermissionState
+- SessionRuntimeSnapshotV2 · interface · L181-L308 — interface SessionRuntimeSnapshotV2
+- SessionRuntimeState · interface · L310-L432 — interface SessionRuntimeState
+- SessionRuntimeDeps · interface · L434-L573 — interface SessionRuntimeDeps
+- SessionRuntimeTextLoopInput · interface · L575-L585 — interface SessionRuntimeTextLoopInput
+- SessionRuntimePreparedTurnInput · interface · L587-L590 — interface SessionRuntimePreparedTurnInput extends Omit<TurnKernelInput, "mode">
+- RuntimeRecoverySourceFreshness · interface · L592-L596 — interface RuntimeRecoverySourceFreshness
+- ContextCapacityExhaustedError · class · L601-L628 — class ContextCapacityExhaustedError extends Error
+- constructor · method · L610-L627 — constructor(opts: { phase: "step" | "follow_up"; contextLabel: string; availableTokens: number; tokensBefore: number; tokensAfter: number; })
+- SessionRuntime · class · L630-L4889 — class SessionRuntime
+- constructor · method · L648-L654 — constructor( readonly deps: SessionRuntimeDeps, readonly state: SessionRuntimeState, )
+- createTaskList · method · L656-L679 — createTaskList(items: SessionChecklistToolItemInput[]): SessionChecklistState
+- updateTaskList · method · L681-L686 — updateTaskList(items: SessionChecklistToolItemInput[]): SessionChecklistState
+- listTaskList · method · L688-L690 — listTaskList(): SessionChecklistItem[]
+- getTaskListState · method · L692-L695 — getTaskListState(): SessionChecklistState
+- clearTaskListVerificationNudge · method · L697-L708 — clearTaskListVerificationNudge(): void
+- runStepLoop · method · L710-L723 — runStepLoop(input: SessionRuntimePreparedTurnInput): Promise<TurnKernelOutcome>
+- runFollowUpLoop · method · L725-L738 — runFollowUpLoop(input: SessionRuntimePreparedTurnInput): Promise<TurnKernelOutcome>
+- runTextLoop · method · L740-L845 — async runTextLoop(opts: SessionRuntimeTextLoopInput): Promise<{ messages: LLMMessage[]; assistantText: string; }>
+- extractTextFromLLMContent · method · L847-L852 — private extractTextFromLLMContent(content: Any[]): string
+- applyTaskListState · method · L854-L873 — private applyTaskListState( items: SessionChecklistToolItemInput[], eventType: "task_list_created" | "task_list_updated", ): SessionChecklistState
+- normalizeTaskListItems · method · L875-L932 — private normalizeTaskListItems(items: SessionChecklistToolItemInput[]): SessionChecklistItem[]
+- cloneTaskListState · method · L934-L941 — private cloneTaskListState(): SessionChecklistState
+- getTaskListStateFromPayload · method · L943-L963 — private getTaskListStateFromPayload(payload: Any): SessionChecklistState | null
+- normalizePersistedChecklistItem · method · L965-L981 — private normalizePersistedChecklistItem(item: Any): SessionChecklistItem | null
+- restoreTaskListState · method · L983-L992 — private restoreTaskListState(state: SessionChecklistState | null): void
+- restoreTaskListStateFromEvents · method · L994-L1016 — private restoreTaskListStateFromEvents(events: TaskEvent[]): void
+- reconcileTaskListVerificationState · method · L1018-L1052 — private reconcileTaskListVerificationState(): void
+- consumeTaskListVerificationReminder · method · L1054-L1067 — private consumeTaskListVerificationReminder(): string | null
+- updateTracking · method · L1069-L1123 — updateTracking( inputTokens: number, outputTokens: number, cachedTokens = 0, cacheWriteTokens = 0, cacheWriteTtl?: "5m" | "1h", ): void
+- recordLlmTurn · method · L1130-L1138 — recordLlmTurn(): void
+- getCumulativeInputTokens · method · L1140-L1142 — getCumulativeInputTokens(): number
+- getCumulativeOutputTokens · method · L1144-L1146 — getCumulativeOutputTokens(): number
+- getCumulativeCost · method · L1148-L1150 — getCumulativeCost(): number
+- getHistoryGeneration · method · L1152-L1154 — getHistoryGeneration(): number
+- getCompactionSnapshot · method · L1156-L1169 — getCompactionSnapshot(): SessionRuntimeCompactionSnapshot
+- captureHistoryProjection · method · L1171-L1186 — private captureHistoryProjection(): { generation: number; history: LLMMessage[]; length: number; lastMessage: LLMMessage | undefined; fingerprint: string; }
+- getHistoryProjectionFingerprint · method · L1188-L1199 — private getHistoryProjectionFingerprint(history: LLMMessage[]): string
+- isHistoryProjectionCurrent · method · L1201-L1212 — private isHistoryProjectionCurrent( projection: ReturnType<SessionRuntime["captureHistoryProjection"]>, ): boolean
+- emitCompactionEvent · method · L1214-L1225 — private emitCompactionEvent( type: ContextCompactionEventType, payload: ContextCompactionEventPayload, ): void
+- emitBestEffortEvent · method · L1227-L1234 — private emitBestEffortEvent(type: string, payload: Record<string, unknown>): void
+- beginCompaction · method · L1236-L1293 — private beginCompaction(opts: { trigger: ContextCompactionTrigger; phase: ContextCompactionPhase; reason: string; inputTokens?: number; inputMessageCount?: number; thresholdRatio?: number; targetRatio?: number; contextWindowTokens?: number; extra?: Record<string, unknown>; }): { compactionId: string; attemptId: string; projection: ReturnType<SessionRuntime["captureHistoryProjection"]>; } | null
+- beginCompactionLifecycle · method · L1300-L1311 — beginCompactionLifecycle( opts: SessionRuntimeCompactionLifecycleOptions, ): SessionRuntimeCompactionLifecycleHandle | null
+- completeCompactionLifecycle · method · L1313-L1328 — completeCompactionLifecycle( handle: SessionRuntimeCompactionLifecycleHandle, opts: Omit< Parameters<SessionRuntime["completeCompaction"]>[0], "compactionId" | "trigger" | "phase" > = {}, ): boolean
+- failCompactionLifecycle · method · L1330-L1344 — failCompactionLifecycle( handle: SessionRuntimeCompactionLifecycleHandle, opts: Omit< Parameters<SessionRuntime["failCompaction"]>[0], "compactionId" | "trigger" | "phase" >, ): void
+- completeCompaction · method · L1346-L1427 — private completeCompaction(opts: { compactionId: string; trigger: ContextCompactionTrigger; phase: ContextCompactionPhase; reason?: string; inputTokens?: number; replacementTokens?: number; inputMessageCount?: number; replacementMessageCount?: number; removedMessageCount?: number; removedApproxTokens?: number; thresholdRatio?: number; targetRatio?: number; summaryPreview?: string; fallbackUsed?: boolean; extra?: Record<string, unknown>; }): void
+- failCompaction · method · L1429-L1463 — private failCompaction(opts: { compactionId: string; trigger: ContextCompactionTrigger; phase: ContextCompactionPhase; reason: string; retryable?: boolean; failureStage?: string; errorCode?: string; inputTokens?: number; extra?: Record<string, unknown>; }): void
+- updateConversationHistory · method · L1465-L1479 — updateConversationHistory(messages: LLMMessage[]): void
+- appendConversationHistory · method · L1481-L1483 — appendConversationHistory(message: LLMMessage): void
+- queueFollowUp · method · L1485-L1512 — queueFollowUp( message: string, images?: ImageAttachment[], quotedAssistantMessage?: QuotedAssistantMessage, integrationMentions?: TaskFollowUpInput["integrationMentions"], agentConfigOverride?: TaskFollowUpInput["agentConfigOverride"], interactionMode?: TaskFollowUpInput["interactionMode"], messageSource?: TaskFollowUpInput["messageSource"], messageId?: TaskFollowUpInput["messageId"], senderTaskId?: TaskFollowUpInput["senderTaskId"], senderLabel?: TaskFollowUpInput["senderLabel"], deliveryMode?: TaskFollowUpInput["deliveryMode"], ): void
+- hasPendingFollowUps · method · L1514-L1516 — get hasPendingFollowUps(): boolean
+- hasPendingFollowUpMessage · method · L1518-L1527 — hasPendingFollowUpMessage(messageId: string): boolean
+- getConsumedFollowUpMessageIds · method · L1529-L1534 — private getConsumedFollowUpMessageIds(): Set<string>
+- markFollowUpMessageConsumed · method · L1536-L1539 — markFollowUpMessageConsumed(messageId: string): void
+- unmarkFollowUpMessageConsumed · method · L1541-L1544 — unmarkFollowUpMessageConsumed(messageId: string): void
+- isFollowUpMessageConsumed · method · L1546-L1549 — isFollowUpMessageConsumed(messageId: string): boolean
+- getConsumedFollowUpMessageIdsSnapshot · method · L1551-L1553 — getConsumedFollowUpMessageIdsSnapshot(): string[]
+- setStepFeedback · method · L1555-L1588 — setStepFeedback( stepId: string, action: "retry" | "skip" | "stop" | "drift", message?: string, ): void
+- consumeStepFeedback · method · L1590-L1621 — consumeStepFeedback(currentStepId: string): SessionRuntimeState["queues"]["stepFeedbackSignal"]
+- getStepFeedbackSignature · method · L1623-L1629 — private getStepFeedbackSignature( stepId: string, action: "retry" | "skip" | "stop" | "drift", message?: string, ): string
+- drainPendingFollowUp · method · L1631-L1655 — drainPendingFollowUp(): TaskFollowUpInput | undefined
+- drainAllPendingFollowUps · method · L1657-L1661 — drainAllPendingFollowUps(): TaskFollowUpInput[]
+- takeNextFollowUpAtTurnBoundary · method · L1663-L1674 — takeNextFollowUpAtTurnBoundary(): TaskFollowUpInput | undefined
+- removeFollowUpAtTurnBoundary · method · L1676-L1686 — removeFollowUpAtTurnBoundary(messageId: string): boolean
+- requeueFollowUpAtTurnBoundary · method · L1688-L1698 — requeueFollowUpAtTurnBoundary(followUp: TaskFollowUpInput): boolean
+- getPendingSkillParameterCollection · method · L1700-L1704 — getPendingSkillParameterCollection(): PendingSkillParameterCollection | null
+- setPendingSkillParameterCollection · method · L1706-L1711 — setPendingSkillParameterCollection( pending: PendingSkillParameterCollection | null, ): PendingSkillParameterCollection | null
+- markPrimarySlashCommandHandled · method · L1713-L1715 — markPrimarySlashCommandHandled(): void
+- hasHandledPrimarySlashCommand · method · L1717-L1719 — hasHandledPrimarySlashCommand(): boolean
+- invalidateToolAvailabilityCache · method · L1721-L1726 — private invalidateToolAvailabilityCache(): void
+- buildToolPromptRenderContext · method · L1728-L1740 — private buildToolPromptRenderContext(): LLMToolPromptRenderContext
+- buildToolAvailabilityCacheKey · method · L1742-L1760 — private buildToolAvailabilityCacheKey(params: { baseKey: string; renderContext: LLMToolPromptRenderContext; taskTitle: string; taskPrompt: string; lastUserMessage: string; currentStepId: string | null; discoveredDeferredToolNames: string[]; }): string
+- getAvailableTools · method · L1762-L1876 — getAvailableTools(): Any[]
+- restrictedByTask · function · L1766-L1767 — restrictedByTask = (name: string)
+- blockedByAllowlist · function · L1768-L1769 — blockedByAllowlist = (name: string)
+- requestLLMResponseWithAdaptiveBudget · method · L1878-L1922 — async requestLLMResponseWithAdaptiveBudget(opts: { messages: LLMMessage[]; retryLabel: string; operation: string; forceNoTools?: boolean; }): Promise<{ response: Any; availableTools: Any[] }>
+- getHardContextBudget · method · L1924-L1952 — private getHardContextBudget( messages: LLMMessage[], systemPromptTokens: number, ): { availableTokens: number; currentTokens: number } | null
+- createContextCapacityExhaustedError · method · L1954-L1962 — private createContextCapacityExhaustedError(opts: { phase: "step" | "follow_up"; contextLabel: string; availableTokens: number; tokensBefore: number; tokensAfter: number; }): ContextCapacityExhaustedError
+- emitContextCapacityRecoveryExhausted · method · L1964-L1987 — private emitContextCapacityRecoveryExhausted( error: ContextCapacityExhaustedError, opts: { phase: "step" | "follow_up"; contextLabel: string; stepId?: string; attempt?: number; maxAttempts?: number; }, ): void
+- prepareMessagesForTurnIteration · method · L1989-L2415 — async prepareMessagesForTurnIteration(opts: { messages: LLMMessage[]; phase: "step" | "follow_up"; systemPromptTokens: number; allowSharedContextInjection: boolean; allowMemoryInjection: boolean; memoryQuery: string; contextLabel: string; lastTurnMemoryRecallQuery: string; lastTurnMemoryRecallBlock: string; lastSharedContextKey: string; lastSharedContextBlock: string; }): Promise<{ messages: LLMMessage[]; lastTurnMemoryRecallQuery: string; lastTurnMemoryRecallBlock: string; lastSharedContextKey: string; lastSharedContextBlock: string; }>
+- installCompactionSummary · method · L2425-L2499 — private async installCompactionSummary(opts: { messages: LLMMessage[]; removedMessages: LLMMessage[]; systemPromptTokens: number; maxOutputTokens?: number; availableTokens?: number; contextLabel: string; historySource?: string; proactive?: boolean; allowMemoryInjection?: boolean; }): Promise<{ messages: LLMMessage[]; summaryBlock?: string }>
+- persistCompactionSummaryMemory · method · L2507-L2553 — private async persistCompactionSummaryMemory(opts: { removedMessages: LLMMessage[]; summaryBlock: string; contextLabel: string; historySource?: string; proactive?: boolean; allowMemoryInjection?: boolean; }): Promise<void>
+- recoverFromContextCapacityOverflow · method · L2555-L2767 — async recoverFromContextCapacityOverflow(opts: { error: unknown; messages: LLMMessage[]; systemPromptTokens: number; phase: "step" | "follow_up"; stepId?: string; attempt: number; maxAttempts: number; }): Promise<{ recovered: boolean; exhausted: boolean; messages: LLMMessage[] }>
+- maybeCompactBeforeContinuation · method · L2769-L2920 — async maybeCompactBeforeContinuation(_assessment: Any): Promise<void>
+- maybeAutoContinueAfterTurnLimit · method · L2922-L3144 — async maybeAutoContinueAfterTurnLimit(error: unknown): Promise<boolean>
+- resetTurnBudgetWindow · method · L3146-L3178 — resetTurnBudgetWindow(opts: { mode: "manual" | "auto" | "follow_up"; reason: string }): void
+- resetForRetry · method · L3180-L3196 — resetForRetry(): void
+- continueAfterBudgetExhausted · method · L3198-L3355 — async continueAfterBudgetExhausted( mode: "manual" | "auto", continuationAssessment?: Any, rethrowOnError = false, ): Promise<void>
+- saveSnapshot · method · L3357-L3490 — saveSnapshot(planSummary?: Any): boolean
+- serializeConversationWithSizeLimit · method · L3492-L3541 — private serializeConversationWithSizeLimit(history: LLMMessage[]): Any[]
+- getRuntimeEventFreshness · method · L3543-L3552 — private getRuntimeEventFreshness( event: TaskEvent, position: number, ): RuntimeRecoverySourceFreshness
+- compareRuntimeRecoveryFreshness · method · L3554-L3570 — private compareRuntimeRecoveryFreshness( left: RuntimeRecoverySourceFreshness, right: RuntimeRecoverySourceFreshness, ): number
+- getCheckpointRecoveryFreshness · method · L3572-L3599 — private getCheckpointRecoveryFreshness( checkpointPayload: Any, events: TaskEvent[], ): RuntimeRecoverySourceFreshness
+- getLatestSnapshotEvent · method · L3601-L3613 — private getLatestSnapshotEvent( events: TaskEvent[], ): { event: TaskEvent; freshness: RuntimeRecoverySourceFreshness } | null
+- restoreStepFeedbackStateFromEvents · method · L3615-L3714 — private restoreStepFeedbackStateFromEvents( events: TaskEvent[], snapshotFreshness?: RuntimeRecoverySourceFreshness | null, ): void
+- isStepFeedbackAction · method · L3716-L3718 — private isStepFeedbackAction(value: unknown): value is "retry" | "skip" | "stop" | "drift"
+- hasPersistedStepFeedbackState · method · L3720-L3726 — private hasPersistedStepFeedbackState(payload: Any): boolean
+- restoreFromEvents · method · L3728-L3914 — restoreFromEvents(events: TaskEvent[]): void
+- reconcileCompactionLifecycleFromEvents · method · L3922-L4073 — private reconcileCompactionLifecycleFromEvents( events: TaskEvent[], snapshotPending: Array<{ compactionId: string; attemptId?: string; historyGenerationBefore: number; trigger: ContextCompactionTrigger; phase: ContextCompactionPhase; }> = [], ): void
+- restoreQueuedAgentFollowUpsFromEvents · method · L4085-L4243 — private restoreQueuedAgentFollowUpsFromEvents(events: TaskEvent[]): void
+- blockQueuedAttachmentRecovery · method · L4245-L4269 — private blockQueuedAttachmentRecovery(messageId: string, error: unknown): void
+- restoreConversationFromPayload · method · L4271-L4398 — private restoreConversationFromPayload( payload: Any, _sourceLabel: string, ): { restored: boolean; interruptedCompaction?: { compactionId: string; attemptId?: string; historyGenerationBefore: number; trigger: ContextCompactionTrigger; phase: ContextCompactionPhase; } | null; }
+- restoreFromV2Payload · method · L4400-L4549 — private restoreFromV2Payload(payload: SessionRuntimeSnapshotV2): { compactionId: string; attemptId?: string; historyGenerationBefore: number; trigger: ContextCompactionTrigger; phase: ContextCompactionPhase; } | null
+- restorePendingSkillStateFromEvents · method · L4551-L4580 — private restorePendingSkillStateFromEvents(events: TaskEvent[]): void
+- restoreUsageTotalsFromEvents · method · L4582-L4595 — private restoreUsageTotalsFromEvents(events: TaskEvent[]): void
+- buildPlanContextSummary · method · L4597-L4621 — private buildPlanContextSummary(planSummary: { description?: string; completedSteps?: string[]; failedSteps?: { description: string; error?: string }[]; }): string
+- projectTaskState · method · L4623-L4636 — projectTaskState(): SessionRuntimeTaskProjection
+- getOutputState · method · L4638-L4652 — getOutputState(): SessionRuntimeOutputState
+- getPermissionState · method · L4654-L4663 — getPermissionState(): SessionRuntimePermissionState
+- setPermissionMode · method · L4665-L4667 — setPermissionMode(mode: PermissionMode): void
+- addSessionPermissionRule · method · L4669-L4687 — addSessionPermissionRule(rule: PermissionRule): void
+- setLatestPermissionPromptContext · method · L4689-L4691 — setLatestPermissionPromptContext(details: PermissionPromptDetails | null): void
+- getLatestPermissionPromptContext · method · L4693-L4695 — getLatestPermissionPromptContext(): PermissionPromptDetails | null
+- clearLatestPermissionPromptContext · method · L4697-L4699 — clearLatestPermissionPromptContext(): void
+- recordSensitiveSourceRead · method · L4701-L4714 — recordSensitiveSourceRead(source: SensitiveSourceRef): void
+- listRecentSensitiveSources · method · L4716-L4718 — listRecentSensitiveSources(): SensitiveSourceRef[]
+- addTemporaryPermissionGrant · method · L4720-L4730 — addTemporaryPermissionGrant(key: string, opts?: { ttlMs?: number }): void
+- hasActiveTemporaryPermissionGrant · method · L4732-L4740 — hasActiveTemporaryPermissionGrant(key: string): boolean
+- clearTemporaryPermissionGrant · method · L4742-L4744 — clearTemporaryPermissionGrant(key: string): void
+- getPermissionDenialState · method · L4746-L4753 — getPermissionDenialState(fingerprint: string): SessionRuntimePermissionDenialState
+- recordPermissionDenial · method · L4755-L4762 — recordPermissionDenial(fingerprint: string): void
+- recordPermissionSuccess · method · L4764-L4774 — recordPermissionSuccess(fingerprint: string): void
+- getVerificationState · method · L4776-L4785 — getVerificationState(): SessionRuntimeVerificationState
+- getRecoveryState · method · L4787-L4796 — getRecoveryState(): SessionRuntimeRecoveryState
+- resetVerificationState · method · L4798-L4804 — resetVerificationState(): void
+- hasDispatchedMentionedAgents · method · L4806-L4808 — hasDispatchedMentionedAgents(): boolean
+- markDispatchedMentionedAgents · method · L4810-L4812 — markDispatchedMentionedAgents(): void
+- setVerificationAgentState · method · L4814-L4816 — setVerificationAgentState(state: Record<string, unknown>): void
+- recordVerificationEvidence · method · L4818-L4820 — recordVerificationEvidence(entry: VerificationEvidenceEntry): void
+- addNonBlockingVerificationFailedStep · method · L4822-L4825 — addNonBlockingVerificationFailedStep(stepId: string): void
+- addBlockingVerificationFailedStep · method · L4827-L4830 — addBlockingVerificationFailedStep(stepId: string): void
+- clearVerificationFailedStep · method · L4832-L4835 — clearVerificationFailedStep(stepId: string): void
+- setRecoveryRequestActive · method · L4837-L4839 — setRecoveryRequestActive(active: boolean): void
+- setRecoveryFailureSignature · method · L4841-L4843 — setRecoveryFailureSignature(signature: string): void
+- clearRecoveryFailureSignature · method · L4845-L4847 — clearRecoveryFailureSignature(): void
+- markRecoveredFailureStep · method · L4849-L4851 — markRecoveredFailureStep(stepId: string): void
+- clearRecoveredFailureStep · method · L4853-L4855 — clearRecoveredFailureStep(stepId: string): void
+- setRecoveryClass · method · L4857-L4861 — setRecoveryClass( recoveryClass: "user_blocker" | "local_runtime" | "provider_quota" | "external_unknown" | null, ): void
+- setToolDisabledScope · method · L4863-L4865 — setToolDisabledScope(scope: "provider" | "global" | null): void
+- setRetryReason · method · L4867-L4869 — setRetryReason(reason: string | null): void
+- resetRecoveryState · method · L4871-L4878 — resetRecoveryState(): void
+- applyWorkspaceUpdate · method · L4880-L4888 — applyWorkspaceUpdate(workspace: Workspace, nextToolRegistry: ToolRegistry): void

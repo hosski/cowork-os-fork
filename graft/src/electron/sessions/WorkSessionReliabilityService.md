@@ -1,0 +1,23 @@
+# src/electron/sessions/WorkSessionReliabilityService.ts
+
+- WorkSessionReliabilityOptions · interface · L89-L97 — interface WorkSessionReliabilityOptions
+- WorkSessionReliabilityObservation · interface · L99-L106 — interface WorkSessionReliabilityObservation
+- WorkSessionReliabilityResult · interface · L108-L113 — interface WorkSessionReliabilityResult
+- WorkSessionReliabilityProjectionState · interface · L115-L121 — interface WorkSessionReliabilityProjectionState
+- eventType · function · L123-L132 — function eventType(event: WorkSessionReliabilityObservation["event"]): string
+- payloadRecord · function · L134-L138 — function payloadRecord(event: WorkSessionReliabilityObservation["event"]): Record<string, unknown>
+- nestedIdentifier · function · L140-L145 — function nestedIdentifier(payload: Record<string, unknown>, key: string): string | undefined
+- operationKey · function · L147-L179 — function operationKey( sessionId: string, kind: WorkSessionActivityLeaseKind, event: WorkSessionReliabilityObservation["event"], ): string
+- leaseKind · function · L181-L188 — function leaseKind(type: string): WorkSessionActivityLeaseKind
+- projectionOptions · function · L190-L225 — function projectionOptions( options: WorkSessionReliabilityOptions, ): WorkSessionProjectionOptions<WorkSessionReliabilityProjectionState>
+- WorkSessionReliabilityService · class · L228-L491 — class WorkSessionReliabilityService
+- constructor · method · L240-L255 — constructor(db: Database.Database, options: WorkSessionReliabilityOptions = {})
+- start · method · L258-L266 — start(): void
+- stop · method · L268-L275 — stop(): void
+- maintainKnownLeases · method · L277-L296 — private maintainKnownLeases(): void
+- isTerminalSession · method · L298-L306 — private isTerminalSession(sessionId: string): boolean
+- observeTaskEvent · method · L308-L465 — observeTaskEvent(observation: WorkSessionReliabilityObservation): WorkSessionReliabilityResult
+- reclaimActivityLease · method · L468-L473 — reclaimActivityLease(input: WorkSessionActivityLeaseAcquireInput)
+- projectSession · method · L475-L479 — projectSession( sessionId: string, ): WorkSessionProjectionUpdate<WorkSessionReliabilityProjectionState>
+- evaluateReplay · method · L481-L486 — evaluateReplay( items: WorkSessionItem[], fixtureOrOptions?: string | WorkSessionReplayEvaluationOptions, ): WorkSessionReplayEvaluationResult
+- evaluateReplayFixtureSuite · method · L488-L490 — evaluateReplayFixtureSuite(): WorkSessionReplayEvaluationResult[]

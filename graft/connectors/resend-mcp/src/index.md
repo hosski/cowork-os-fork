@@ -1,0 +1,49 @@
+# connectors/resend-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L36 — type MCPToolProperty = { type?: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; oneOf?: MCPToolProperty[]; };
+- MCPTool · type · L38-L47 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L49-L56 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- ResendConfig · type · L79-L82 — type ResendConfig = { baseUrl: string; apiKey?: string; };
+- RequestMeta · type · L84-L87 — type RequestMeta = { durationMs: number; baseUrl: string; };
+- RequestResult · type · L89-L93 — type RequestResult = { data: any; meta: RequestMeta; status: number; };
+- SendEmailInput · type · L95-L108 — type SendEmailInput = { from: string; to: string | string[]; subject: string; text?: string; html?: string; cc?: string | string[]; bcc?: string | string[]; reply_to?: string | string[]; headers?: Record<string, string>; tags?: Array<{ name: string; value: string }>; scheduled_at?: string; idempotency_key?: string; };
+- CreateWebhookInput · type · L110-L113 — type CreateWebhookInput = { endpoint: string; events: string[]; };
+- ResendClient · class · L115-L237 — class ResendClient
+- constructor · method · L116-L116 — constructor(private config: ResendConfig)
+- health · method · L118-L120 — async health(): Promise<RequestResult>
+- sendEmail · method · L122-L145 — async sendEmail(input: SendEmailInput): Promise<RequestResult>
+- listWebhooks · method · L147-L159 — async listWebhooks(args: { limit?: number; after?: string; before?: string; }): Promise<RequestResult>
+- createWebhook · method · L161-L166 — async createWebhook(input: CreateWebhookInput): Promise<RequestResult>
+- deleteWebhook · method · L168-L170 — async deleteWebhook(id: string): Promise<RequestResult>
+- getReceivedEmail · method · L172-L174 — async getReceivedEmail(id: string): Promise<RequestResult>
+- getBaseUrl · method · L176-L178 — private getBaseUrl(): string
+- getAuthHeader · method · L180-L185 — private getAuthHeader(): string
+- request · method · L187-L236 — private async request( method: "GET" | "POST" | "DELETE", path: string, body?: Record<string, any>, extraHeaders?: Record<string, string>, ): Promise<RequestResult>
+- safeJsonParse · function · L239-L246 — function safeJsonParse(text: string): any
+- stripUndefined · function · L248-L251 — function stripUndefined<T extends Record<string, any>>(value: T): T
+- normalizeStringList · function · L253-L273 — function normalizeStringList(input: unknown, field: string): string[]
+- asOptionalString · function · L275-L279 — function asOptionalString(input: unknown): string | undefined
+- asOptionalNumber · function · L281-L284 — function asOptionalNumber(input: unknown): number | undefined
+- ToolProvider · type · L288-L291 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L293-L475 — class StdioMCPServer
+- constructor · method · L297-L300 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L302-L314 — start(): void
+- stop · method · L316-L322 — stop(): void
+- handleLine · method · L324-L334 — private handleLine(line: string): void
+- handleMessage · method · L336-L345 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L347-L380 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L382-L388 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L390-L404 — private handleInitialize(_params: any): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsList · method · L406-L408 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L410-L437 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L439-L442 — private handleShutdown(): Record<string, never>
+- sendResult · method · L444-L447 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L449-L456 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L458-L460 — private sendMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- requireInitialized · method · L462-L466 — private requireInitialized(): void
+- createError · method · L468-L474 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }
+- buildEnvelope · function · L743-L754 — function buildEnvelope(result: RequestResult): any

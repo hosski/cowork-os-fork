@@ -1,0 +1,114 @@
+# src/renderer/components/Settings.tsx
+
+- lazySettingsPanel · function · L100-L105 — function lazySettingsPanel<T extends ComponentType<Any>>( loader: () => Promise<Any>, exportName: string, )
+- SettingsTab · type · L249-L299 — type SettingsTab = | "appearance" | "personality" | "companies" | "system" | "tray" | "guardrails" | "policies" | "voice" | "aimodels" | "jev" | "llm" | "image" | "search" | "telegram" | "slack" | "whatsapp" | "teams" | "x" | "morechannels" | "integrations" | "updates" | "automations" | "queue" | "skills" | "skillhub" | "connectors" | "identity" | "infrastructure" | "mcp" | "tools" | "scheduled" | "hooks" | "controlplane" | "nodes" | "extensions" | "memory" | "git" | "insights" | "pulse" | "suggestions" | "traces" | "customize" | "digitaltwins" | "everydayAgent" | "triggers" | "briefing" | "subconscious" | "health" | "access" | "webaccess";
+- SecondaryChannel · type · L302-L316 — type SecondaryChannel = | "teams" | "x" | "discord" | "imessage" | "signal" | "mattermost" | "matrix" | "twitch" | "line" | "bluebubbles" | "email" | "googlechat" | "feishu" | "wecom";
+- SettingsProps · interface · L318-L347 — interface SettingsProps
+- ModelOption · interface · L349-L352 — interface ModelOption
+- isOpenRouterParetoCodeModel · function · L358-L360 — function isOpenRouterParetoCodeModel(model: string): boolean
+- ProviderInfo · interface · L362-L366 — interface ProviderInfo
+- ProviderRoutingConfig · interface · L368-L376 — interface ProviderRoutingConfig
+- getOpenAIReasoningEffortOptions · function · L445-L455 — function getOpenAIReasoningEffortOptions( modelKey: string, authMethod: "api_key" | "oauth" = "api_key", )
+- formatBytes · function · L480-L486 — function formatBytes(bytes: number): string
+- SearchableSelectOption · interface · L489-L493 — interface SearchableSelectOption
+- SearchableSelectProps · interface · L495-L503 — interface SearchableSelectProps
+- SearchableSelect · function · L505-L680 — function SearchableSelect({ options, value, onChange, placeholder = "Select...", className = "", allowCustomValue = false, }: SearchableSelectProps)
+- handleClickOutside · function · L552-L557 — handleClickOutside = (e: MouseEvent)
+- handleKeyDown · function · L562-L602 — handleKeyDown = (e: React.KeyboardEvent)
+- handleSelect · function · L604-L608 — handleSelect = (optionValue: string)
+- SidebarItem · type · L684-L690 — type SidebarItem = { tab: SettingsTab; label: string; icon: ReactNode; macOnly?: boolean; group: string; };
+- SidebarSearchTarget · type · L692-L707 — type SidebarSearchTarget = { tab?: SettingsTab; secondaryChannel?: SecondaryChannel; aiModelsSubTab?: "llm" | "image" | "video" | "search"; automationsSubTab?: | "routines" | "queue" | "subconscious" | "scheduled" | "hooks" | "triggers" | "council"; skillsSubTab?: "custom" | "store"; integrationsSubTab?: "git" | "connectors" | "identity" | "infrastructure"; accessSubTab?: "controlplane" | "webaccess"; };
+- SidebarSearchEntry · type · L709-L712 — type SidebarSearchEntry = { terms: string[]; target?: SidebarSearchTarget; };
+- getSidebarItemLabel · function · L1155-L1155 — getSidebarItemLabel = (item: SidebarItem): string
+- normalizeSettingsSidebarSearchQuery · function · L1157-L1157 — normalizeSettingsSidebarSearchQuery = (value: string): string
+- matchesSettingsSidebarSearchQuery · function · L1159-L1164 — matchesSettingsSidebarSearchQuery = (haystack: string, query: string): boolean
+- SettingsSidebarProps · interface · L1166-L1171 — interface SettingsSidebarProps
+- SystemSettingsSectionProps · interface · L1304-L1310 — interface SystemSettingsSectionProps
+- SystemSettingsSection · function · L1312-L1331 — function SystemSettingsSection({ icon, title, description, children, className = "", }: SystemSettingsSectionProps)
+- Settings · function · L1333-L9171 — function Settings({ onBack, onSettingsChanged, themeMode, visualTheme, accentColor, transparencyEffectsEnabled, onThemeChange, onVisualThemeChange, onAccentChange, onTransparencyEffectsEnabledChange, uiDensity, onUiDensityChange, commandOutputStyle, onCommandOutputStyleChange, devRunLoggingEnabled, onDevRunLoggingEnabledChange, homeResearchVaultEnabled, homeNextActionsEnabled, onHomeResearchVaultEnabledChange, onHomeNextActionsEnabledChange, initialTab = "appearance", onShowOnboarding, onboardingCompletedAt, workspaceId, onCreateTask, onOpenTask, onNavigateToMissionControl, onNavigateToAgents, }: SettingsProps)
+- setSettings · function · L1419-L1425 — setSettings = (value: SetStateAction<LLMSettingsData>)
+- ImageGenProvider · type · L1580-L1580 — type ImageGenProvider = "openai" | "openai-codex" | "azure" | "openrouter" | "gemini";
+- ImageProviderTab · type · L1581-L1581 — type ImageProviderTab = ImageGenProvider | "auto";
+- ImageGenModel · type · L1582-L1582 — type ImageGenModel = "gpt-image-2" | "gpt-image-1.5" | "nano-banana-2";
+- poll · function · L1782-L1786 — poll = ()
+- resolveCustomProviderId · function · L1792-L1793 — resolveCustomProviderId = (providerType: LLMProviderType)
+- updateCustomProvider · function · L1795-L1807 — updateCustomProvider = ( providerType: LLMProviderType, updates: Partial<CustomProviderConfig>, )
+- sanitizeFailoverProviders · function · L1809-L1827 — sanitizeFailoverProviders = ( providers?: LLMProviderFallbackConfig[], ): LLMProviderFallbackConfig[]
+- sanitizeCustomProviders · function · L1829-L1900 — sanitizeCustomProviders = (providers: Record<string, CustomProviderConfig>)
+- parseAzureDeployments · function · L1902-L1915 — parseAzureDeployments = (value: string): string[]
+- buildAzureSettings · function · L1917-L1932 — buildAzureSettings = ()
+- buildAzureAnthropicSettings · function · L1934-L1949 — buildAzureAnthropicSettings = ()
+- getProviderRoutingConfig · function · L1951-L1993 — getProviderRoutingConfig = (providerType: LLMProviderType): ProviderRoutingConfig
+- getProviderFailoverConfig · function · L1995-L2068 — getProviderFailoverConfig = ( providerType: LLMProviderType, ): Pick<ProviderRoutingConfig, "fallbackProviders" | "failoverPrimaryRetryCooldownSeconds">
+- setProviderRoutingConfig · function · L2070-L2146 — setProviderRoutingConfig = ( providerType: LLMProviderType, updates: Partial<ProviderRoutingConfig>, )
+- patchSettings · function · L2087-L2094 — patchSettings = <T extends keyof LLMSettingsData>(key: T)
+- getProviderPrimaryModel · function · L2148-L2199 — getProviderPrimaryModel = (providerType: LLMProviderType): string
+- getRoutingModelOptions · function · L2201-L2221 — getRoutingModelOptions = (providerType: LLMProviderType): ModelOption[]
+- addOption · function · L2204-L2211 — addOption = (value?: string, label?: string)
+- loadProviderRoutingModels · function · L2264-L2270 — loadProviderRoutingModels = async ( providerType: LLMProviderType, claudeCredentials?: ReturnType<typeof buildClaudeCredentialInput>, )
+- getMoaProviderOptions · function · L2272-L2276 — getMoaProviderOptions = (): ProviderInfo[]
+- getDefaultMoaProviderType · function · L2278-L2284 — getDefaultMoaProviderType = (): LLMProviderType
+- getMoaModelOptions · function · L2286-L2302 — getMoaModelOptions = ( providerType: LLMProviderType, currentModelKey?: string, ): ModelOption[]
+- addOption · function · L2291-L2295 — addOption = (value?: string, label?: string)
+- createDefaultMoaSlot · function · L2304-L2314 — createDefaultMoaSlot = ( providerType: LLMProviderType = getDefaultMoaProviderType(), ): MoaModelSlot
+- updateMoaPreset · function · L2316-L2334 — updateMoaPreset = (presetId: string, updater: (preset: MoaPreset) => MoaPreset)
+- handleAddMoaPreset · function · L2336-L2371 — handleAddMoaPreset = ()
+- handleDeleteMoaPreset · function · L2373-L2391 — handleDeleteMoaPreset = (presetId: string)
+- updateMoaSlotProvider · function · L2393-L2411 — updateMoaSlotProvider = ( presetId: string, slotKind: "aggregator" | "reference", providerType: LLMProviderType, referenceIndex?: number, )
+- updateMoaReference · function · L2413-L2419 — updateMoaReference = (presetId: string, index: number, patch: Partial<MoaModelSlot>)
+- sanitizeMoaSlot · function · L2421-L2436 — sanitizeMoaSlot = (slot?: MoaModelSlot): MoaModelSlot | null
+- sanitizeMoaPresets · function · L2438-L2480 — sanitizeMoaPresets = (presets?: Record<string, MoaPreset>): Record<string, MoaPreset>
+- loadClaudeModels · function · L2482-L2526 — loadClaudeModels = async ( currentModelKeyOverride?: string, claudeCredentials?: ReturnType<typeof buildClaudeCredentialInput>, ): Promise<ModelOption[]>
+- getFailoverModelOptions · function · L2528-L2549 — getFailoverModelOptions = ( providerType: LLMProviderType, currentModelKey?: string, ): SearchableSelectOption[]
+- addOption · function · L2533-L2540 — addOption = (value?: string, label?: string)
+- loadConfigStatus · function · L2571-L3015 — loadConfigStatus = async ()
+- loadOllamaModels · function · L3017-L3035 — loadOllamaModels = async (baseUrl?: string)
+- loadGeminiModels · function · L3037-L3054 — loadGeminiModels = async (apiKey?: string)
+- loadOpenRouterModels · function · L3056-L3076 — loadOpenRouterModels = async (apiKey?: string)
+- loadOpenRouterImageModels · function · L3078-L3095 — loadOpenRouterImageModels = async (apiKey?: string)
+- loadOpenAIModels · function · L3097-L3115 — loadOpenAIModels = async (apiKey?: string)
+- loadGroqModels · function · L3117-L3135 — loadGroqModels = async (apiKey?: string)
+- loadXAIModels · function · L3137-L3155 — loadXAIModels = async (apiKey?: string)
+- loadDeepSeekModels · function · L3157-L3176 — loadDeepSeekModels = async (apiKey?: string)
+- loadKimiModels · function · L3178-L3196 — loadKimiModels = async (apiKey?: string)
+- loadPiModels · function · L3198-L3214 — loadPiModels = async (provider?: string)
+- loadPiProviders · function · L3216-L3223 — loadPiProviders = async ()
+- loadOpenAICompatibleModels · function · L3225-L3245 — loadOpenAICompatibleModels = async (baseUrl?: string, apiKey?: string)
+- loadCustomProviderModels · function · L3247-L3325 — loadCustomProviderModels = async (providerType: LLMProviderType)
+- handleProviderSelect · function · L3327-L3418 — handleProviderSelect = (providerType: LLMProviderType)
+- handleOpenAIOAuthLogin · function · L3420-L3447 — handleOpenAIOAuthLogin = async ()
+- handleHfDetectHardware · function · L3449-L3462 — handleHfDetectHardware = async ()
+- handleLocalAIServerStart · function · L3464-L3506 — handleLocalAIServerStart = async (providerType: "hf-agents" | "mlx")
+- poll · function · L3483-L3497 — poll = async ()
+- handleHfStartServer · function · L3508-L3508 — handleHfStartServer = ()
+- handleMlxStartServer · function · L3509-L3509 — handleMlxStartServer = ()
+- handleLocalAIServerStop · function · L3511-L3521 — handleLocalAIServerStop = async ()
+- handleHfStopServer · function · L3523-L3523 — handleHfStopServer = ()
+- handleMlxStopServer · function · L3524-L3524 — handleMlxStopServer = ()
+- handleOpenAIOAuthLogout · function · L3526-L3538 — handleOpenAIOAuthLogout = async ()
+- handleXAIOAuthLogin · function · L3540-L3577 — handleXAIOAuthLogin = async ()
+- handleXAIOAuthLogout · function · L3579-L3590 — handleXAIOAuthLogout = async ()
+- loadBedrockModels · function · L3592-L3646 — loadBedrockModels = async ()
+- clearProviderFormState · function · L3648-L3755 — clearProviderFormState = (providerType: LLMProviderType)
+- handleResetProviderCredentials · function · L3757-L3777 — handleResetProviderCredentials = async ()
+- parseOpenRouterParetoMinCodingScore · function · L3779-L3794 — parseOpenRouterParetoMinCodingScore = (): { value?: number; error?: string; shouldSave: boolean; }
+- handleSave · function · L3796-L4169 — handleSave = async ()
+- routingFor · function · L3835-L3850 — routingFor = (providerType: LLMProviderType): ProviderRoutingConfig
+- failoverFor · function · L3851-L3873 — failoverFor = ( providerType: LLMProviderType, ): Pick< ProviderRoutingConfig, "fallbackProviders" | "failoverPrimaryRetryCooldownSeconds" >
+- imageTimeoutSeconds · function · L3885-L3889 — imageTimeoutSeconds = (value: string): number | undefined
+- handleTestConnection · function · L4171-L4342 — handleTestConnection = async ()
+- handleTestJevConnection · function · L4344-L4372 — handleTestJevConnection = async ()
+- renderJevSettingsSection · function · L4374-L4731 — renderJevSettingsSection = ()
+- renderModelSettingsActions · function · L4733-L4769 — renderModelSettingsActions = (options?: { includeProviderActions?: boolean; className?: string; })
+- updateCurrentFailoverProviders · function · L4785-L4791 — updateCurrentFailoverProviders = ( updater: (prev: LLMProviderFallbackConfig[]) => LLMProviderFallbackConfig[], )
+- getImageProviderModel · function · L4888-L4889 — getImageProviderModel = (provider: ImageGenProvider): ImageGenModel
+- getImageModelLabel · function · L4891-L4892 — getImageModelLabel = (model: ImageGenModel): string
+- renderImageTimeoutField · function · L4894-L4912 — renderImageTimeoutField = (value: string, onChange: (value: string) => void)
+- selectImageDefaultProvider · function · L4914-L4920 — selectImageDefaultProvider = (provider: ImageGenProvider)
+- selectImageProviderTab · function · L4922-L4929 — selectImageProviderTab = (provider: ImageProviderTab)
+- selectImageBackupProvider · function · L4931-L4938 — selectImageBackupProvider = (provider: ImageGenProvider | "")
+- renderImagePanel · function · L4958-L5263 — renderImagePanel = ()
+- renderVideoPanel · function · L5265-L5637 — renderVideoPanel = ()
+- renderMoaSlotEditor · function · L5639-L5742 — renderMoaSlotEditor = ( presetId: string, slot: MoaModelSlot, slotKind: "aggregator" | "reference", referenceIndex?: number, )
+- updateSlot · function · L5646-L5655 — updateSlot = (patch: Partial<MoaModelSlot>)
+- renderLLMPanel · function · L5744-L8721 — renderLLMPanel = ()

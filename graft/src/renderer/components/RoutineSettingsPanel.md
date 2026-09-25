@@ -1,0 +1,34 @@
+# src/renderer/components/RoutineSettingsPanel.tsx
+
+- CronSchedule · type · L4-L7 — type CronSchedule = | { kind: "cron"; expr: string; tz?: string } | { kind: "every"; everyMs: number; anchorMs?: number } | { kind: "at"; atMs: number };
+- RoutineTrigger · type · L9-L72 — type RoutineTrigger = | { id: string; type: "schedule"; enabled: boolean; schedule: CronSchedule; managedCronJobId?: string; } | { id: string; type: "api"; enabled: boolean; path?: string; token?: string; managedHookMappingId?: string; } | { id: string; type: "connector_event"; enabled: boolean; connectorId: string; changeType?: string; resourceUriContains?: string; cooldownMs?: number; managedEventTriggerId?: string; } | { id: string; type: "channel_event"; enabled: boolean; channelType?: string; chatId?: string; textContains?: string; senderContains?: string; cooldownMs?: number; managedEventTriggerId?: string; } | { id: string; type: "mailbox_event"; enabled: boolean; eventType?: string; subjectContains?: string; provider?: string; labelContains?: string; cooldownMs?: number; managedEventTriggerId?: string; } | { id: string; type: "github_event"; enabled: boolean; eventName?: string; repository?: string; action?: string; ref?: string; cooldownMs?: number; managedEventTriggerId?: string; } | { id: string; type: "manual"; enabled: boolean; };
+- RoutineOutput · type · L74-L90 — type RoutineOutput = | { kind: "task_only" } | { kind: "channel_message"; channelType?: string; channelDbId?: string; channelId?: string; summaryOnly?: boolean; deliverOnSuccess?: boolean; deliverOnError?: boolean; } | { kind: "webhook_response"; statusCode?: number; message?: string; includeTaskId?: boolean; };
+- RoutineRun · type · L92-L105 — type RoutineRun = { id: string; routineId: string; triggerType: RoutineTrigger["type"]; status: string; outputStatus: string; startedAt: number; finishedAt?: number; sourceEventSummary?: string; backingTaskId?: string; backingManagedSessionId?: string; errorSummary?: string; artifactsSummary?: string; };
+- Routine · type · L107-L131 — type Routine = { id: string; name: string; description?: string; enabled: boolean; workspaceId: string; instructions: string; prompt: string; executionTarget: { kind: "workspace" | "worktree" | "device" | "managed_environment"; deviceId?: string; managedEnvironmentId?: string; }; connectorPolicy: { mode: "prefer" | "allowlist"; connectorIds: string[]; }; approvalPolicy: { mode: "inherit" | "auto_safe" | "confirm_external" | "strict_confirm"; }; outputs: RoutineOutput[]; triggers: RoutineTrigger[]; createdAt: number; updatedAt: number; };
+- Workspace · type · L133-L137 — type Workspace = { id: string; name: string; path: string; };
+- HookStatus · type · L139-L143 — type HookStatus = { enabled: boolean; serverRunning: boolean; serverAddress?: { host: string; port: number }; };
+- HookSettings · type · L145-L149 — type HookSettings = { path: string; host?: string; port?: number; };
+- MCPServerStatus · type · L151-L155 — type MCPServerStatus = { id: string; name: string; status: string; };
+- RoutineFormState · type · L157-L208 — type RoutineFormState = { enabled: boolean; name: string; description: string; workspaceId: string; instructions: string; executionTargetKind: Routine["executionTarget"]["kind"]; deviceId: string; managedEnvironmentId: string; connectorPolicyMode: Routine["connectorPolicy"]["mode"]; connectorIds: string[]; approvalMode: Routine["approvalPolicy"]["mode"]; outputTaskOnly: boolean; outputChannelMessage: boolean; outputChannelType: string; outputChannelId: string; outputSummaryOnly: boolean; outputDeliverOnSuccess: boolean; outputDeliverOnError: boolean; outputWebhookResponse: boolean; outputWebhookStatusCode: number; outputWebhookMessage: string; outputWebhookIncludeTaskId: boolean; scheduleEnabled: boolean; scheduleKind: CronSchedule["kind"]; scheduleExpr: string; scheduleTz: string; scheduleEveryMinutes: number; scheduleAt: string; apiEnabled: boolean; apiPath: string; connectorEventEnabled: boolean; connectorEventConnectorId: string; connectorEventChangeType: string; connectorEventResourceUriContains: string; channelEventEnabled: boolean; channelEventChannelType: string; channelEventChatId: string; channelEventTextContains: string; channelEventSenderContains: string; mailboxEventEnabled: boolean; mailboxEventType: string; mailboxEventProvider: string; mailboxEventSubjectContains: string; mailboxEventLabelContains: string; githubEventEnabled: boolean; githubEventName: string; githubEventRepository: string; githubEventAction: string; githubEventRef: string; manualEnabled: boolean; };
+- RoutineButtonTone · type · L265-L265 — type RoutineButtonTone = "primary" | "secondary" | "danger";
+- routineButtonStyle · function · L267-L309 — function routineButtonStyle(tone: RoutineButtonTone, disabled = false): CSSProperties
+- createDefaultFormState · function · L311-L364 — function createDefaultFormState(workspaceId = ""): RoutineFormState
+- RoutineSettingsPanel · function · L366-L1512 — function RoutineSettingsPanel({ onOpenTask }: { onOpenTask?: (taskId: string) => void })
+- loadAll · function · L406-L435 — async function loadAll()
+- resetForm · function · L437-L441 — function resetForm()
+- startCreate · function · L443-L447 — function startCreate()
+- startEdit · function · L449-L552 — function startEdit(routine: Routine)
+- toggleConnector · function · L554-L561 — function toggleConnector(connectorId: string)
+- saveRoutine · function · L563-L646 — async function saveRoutine()
+- deleteRoutine · function · L648-L667 — async function deleteRoutine(routineId: string)
+- runRoutineNow · function · L669-L688 — async function runRoutineNow(routineId: string)
+- regenerateApiToken · function · L690-L701 — async function regenerateApiToken(routine: Routine, triggerId: string)
+- copyText · function · L703-L705 — async function copyText(text: string)
+- TriggerToggle · function · L1514-L1536 — function TriggerToggle(props: { checked: boolean; label: string; description: string; onChange: (checked: boolean) => void; })
+- RoutineCheckbox · function · L1538-L1554 — function RoutineCheckbox(props: { checked: boolean; label: string; onChange: (checked: boolean) => void; })
+- buildTriggers · function · L1556-L1655 — function buildTriggers(form: RoutineFormState, existing: Routine | null): RoutineTrigger[]
+- findExisting · function · L1557-L1560 — findExisting = <T extends RoutineTrigger["type"]>(type: T)
+- buildOutputs · function · L1657-L1681 — function buildOutputs(form: RoutineFormState): RoutineOutput[]
+- toDateTimeLocal · function · L1683-L1687 — function toDateTimeLocal(timestampMs: number): string
+- pad · function · L1685-L1685 — pad = (value: number)
+- formatTime · function · L1689-L1691 — function formatTime(timestampMs: number): string

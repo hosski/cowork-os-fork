@@ -1,0 +1,29 @@
+# src/renderer/components/mission-control/useMissionControlData.ts
+
+- AgentRole · type · L46-L46 — type AgentRole = AgentRoleData;
+- Any · type · L47-L47 — type Any = any;
+- MissionColumn · type · L52-L57 — type MissionColumn = { id: string; label: string; color: string; boardColumn: NonNullable<Task["boardColumn"]>; };
+- TaskPriorityMeta · type · L59-L64 — type TaskPriorityMeta = { value: number; label: string; color: string; shortLabel: string; };
+- TaskDueInfo · type · L66-L71 — type TaskDueInfo = { label: string; tone: "muted" | "soon" | "overdue"; isOverdue: boolean; isDueSoon: boolean; };
+- HeartbeatStatusInfo · interface · L73-L89 — interface HeartbeatStatusInfo
+- FeedItem · type · L122-L132 — type FeedItem = { id: string; type: "comments" | "tasks" | "status" | MissionControlCategory; agentId?: string; agentName: string; content: string; taskId?: string; workspaceId?: string; workspaceName?: string; timestamp: number; };
+- MissionControlHeartbeatEvent · type · L134-L136 — type MissionControlHeartbeatEvent = HeartbeatEvent & { rendererEventId: string; };
+- RuntimeQueueStatusState · type · L138-L138 — type RuntimeQueueStatusState = "loading" | "ready" | "unavailable" | "error";
+- MissionControlCategoryFilter · type · L140-L140 — type MissionControlCategoryFilter = "all" | MissionControlCategory;
+- MissionControlSeverityFilter · type · L141-L141 — type MissionControlSeverityFilter = "all" | MissionControlSeverity;
+- MCTab · type · L142-L142 — type MCTab = "overview" | "agents" | "board" | "intelligence" | "feed" | "ops";
+- OpsSubTab · type · L143-L150 — type OpsSubTab = | "overview" | "operators" | "outputs" | "execution" | "planner" | "harness" | "automation";
+- DetailPanelView · type · L151-L155 — type DetailPanelView = | { kind: "task"; taskId: string } | { kind: "agent"; agentId: string } | { kind: "issue"; issueId: string } | null;
+- normalizeMissionControlAgentDisplayName · function · L161-L163 — function normalizeMissionControlAgentDisplayName(displayName: string): string
+- normalizeMissionControlAgent · function · L165-L170 — function normalizeMissionControlAgent(agent: AgentRole): AgentRole
+- getTaskPriorityMeta · function · L172-L177 — function getTaskPriorityMeta(priority?: number): TaskPriorityMeta
+- getTaskDueInfo · function · L179-L233 — function getTaskDueInfo(dueDate?: number, now = Date.now()): TaskDueInfo | null
+- formatTaskEstimate · function · L235-L240 — function formatTaskEstimate(minutes?: number): string | null
+- isTerminalTaskStatus · function · L242-L244 — function isTerminalTaskStatus(status: Task["status"]): boolean
+- resolveMissionColumnForTask · function · L246-L262 — function resolveMissionColumnForTask( task: Pick<Task, "status" | "boardColumn" | "assignedAgentRoleId">, ): MissionColumn["id"]
+- isTaskStaleForUi · function · L264-L271 — function isTaskStaleForUi( task: Pick<Task, "status" | "updatedAt" | "createdAt">, now = Date.now(), ): boolean
+- useMissionControlData · function · L273-L1879 — function useMissionControlData( initialCompanyId: string | null = null, initialIssueId: string | null = null, initialEverydayAgentFocus = false, )
+- refreshMissionControlSnapshot · function · L921-L939 — refreshMissionControlSnapshot = ()
+- isWorkspaceVisible · function · L941-L947 — isWorkspaceVisible = (workspaceId?: string | null)
+- fmt · function · L1698-L1698 — fmt = (v: number, u: string, s: string)
+- MissionControlData · type · L1881-L1881 — type MissionControlData = ReturnType<typeof useMissionControlData>;

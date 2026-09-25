@@ -1,0 +1,47 @@
+# src/electron/awareness/AutonomyEngine.ts
+
+- PersistedAutonomyState · interface · L29-L35 — interface PersistedAutonomyState
+- AutonomyEngineDeps · interface · L37-L50 — interface AutonomyEngineDeps
+- hashFingerprint · function · L52-L54 — function hashFingerprint(parts: Array<string | number | undefined>): string
+- clampConfidence · function · L56-L58 — function clampConfidence(value: number): number
+- buildActionPolicy · function · L60-L72 — function buildActionPolicy( actionType: ChiefOfStaffActionType, level: AutonomyPolicyLevel, cooldownMinutes: number, allowExternalSideEffects = false, ): ActionPolicy
+- defaultState · function · L90-L98 — function defaultState(): PersistedAutonomyState
+- AutonomyEngine · class · L100-L849 — class AutonomyEngine
+- constructor · method · L109-L111 — constructor(deps: AutonomyEngineDeps = {})
+- initialize · method · L113-L120 — static initialize(deps: AutonomyEngineDeps = {}): AutonomyEngine
+- getInstance · method · L122-L124 — static getInstance(): AutonomyEngine
+- start · method · L126-L134 — async start(): Promise<void>
+- stop · method · L136-L140 — async stop(): Promise<void>
+- getConfig · method · L142-L145 — getConfig(): AutonomyConfig
+- saveConfig · method · L147-L159 — saveConfig(config: AutonomyConfig): AutonomyConfig
+- getWorldModel · method · L161-L166 — getWorldModel(workspaceId?: string): ChiefOfStaffWorldModel | null
+- listDecisions · method · L168-L174 — listDecisions(workspaceId?: string): AutonomyDecision[]
+- listActions · method · L176-L185 — listActions(workspaceId?: string): AutonomyAction[]
+- listOutcomes · method · L187-L193 — listOutcomes(workspaceId?: string): AutonomyOutcome[]
+- triggerEvaluation · method · L195-L201 — async triggerEvaluation(workspaceId?: string): Promise<ChiefOfStaffWorldModel | null>
+- notifyEvent · method · L203-L209 — notifyEvent(event: AwarenessEvent): void
+- updateDecision · method · L211-L245 — updateDecision( id: string, patch: Partial<Pick<AutonomyDecision, "status">>, ): AutonomyDecision | null
+- ensureLoaded · method · L247-L276 — private ensureLoaded(): void
+- save · method · L278-L285 — private save(): void
+- evaluateAll · method · L287-L303 — private async evaluateAll(): Promise<void>
+- evaluateWorkspace · method · L305-L324 — private async evaluateWorkspace(workspaceId: string): Promise<void>
+- deriveWorldModel · method · L326-L368 — private deriveWorldModel(workspaceId: string): ChiefOfStaffWorldModel
+- deriveGoals · method · L370-L407 — private deriveGoals( workspaceId: string, beliefs: AwarenessBelief[], facts: Array<{ id: string; category: string; value: string; confidence: number; lastUpdatedAt: number; }>, ): GoalState[]
+- deriveProjects · method · L409-L440 — private deriveProjects( workspaceId: string, recentProjects: string[], recentFiles: string[], beliefs: AwarenessBelief[], ): ProjectState[]
+- deriveOpenLoops · method · L442-L457 — private deriveOpenLoops(workspaceId: string): OpenLoopState[]
+- deriveRoutines · method · L459-L509 — private deriveRoutines( workspaceId: string, beliefs: AwarenessBelief[], whatChanged: Array<{ id: string; title: string; detail: string; tags: string[] }>, ): RoutineState[]
+- deriveFocusSession · method · L511-L541 — private deriveFocusSession( workspaceId: string, snapshot: ReturnType<typeof getAwarenessService>["getSnapshot"] extends ( ...args: never[] ) => infer T ? T : never, summary: ReturnType<typeof getAwarenessService>["getSummary"] extends ( ...args: never[] ) => infer T ? T : never, ): FocusSessionState | undefined
+- classifyFocusMode · method · L543-L554 — private classifyFocusMode( activeApp?: string, windowTitle?: string, currentFocus?: string, ): FocusSessionState["mode"]
+- generateDecisions · method · L556-L661 — private generateDecisions( workspaceId: string, worldModel: ChiefOfStaffWorldModel, ): AutonomyDecision[]
+- pushDecision · function · L562-L595 — pushDecision = ( title: string, description: string, actionType: ChiefOfStaffActionType, priority: AutonomyDecision["priority"], reason: string, evidenceRefs: string[], suggestedTaskTitle?: string, suggestedPrompt?: string, routineId?: string, )
+- mergeDecisions · method · L663-L679 — private mergeDecisions(decisions: AutonomyDecision[]): void
+- executePendingDecisions · method · L681-L710 — private async executePendingDecisions(workspaceId: string): Promise<void>
+- buildActionMetadata · method · L712-L715 — private buildActionMetadata(decision: AutonomyDecision): Record<string, unknown> | undefined
+- executeDecision · method · L717-L797 — private async executeDecision(decision: AutonomyDecision): Promise<AutonomyAction>
+- canExecuteLocally · method · L799-L802 — private canExecuteLocally(actionType: ChiefOfStaffActionType): boolean
+- hasActiveDecisionFingerprint · method · L804-L812 — private hasActiveDecisionFingerprint(fingerprint: string, now: number): boolean
+- isRoutineReady · method · L814-L817 — private isRoutineReady(routine: RoutineState, now: number): boolean
+- findLastExecutedAt · method · L819-L827 — private findLastExecutedAt(routineId: string): number | undefined
+- dedupeByTitle · method · L829-L841 — private dedupeByTitle<T extends { title?: string; name?: string }>(items: T[]): T[]
+- pruneDecisions · method · L843-L848 — private pruneDecisions(): void
+- getAutonomyEngine · function · L851-L853 — function getAutonomyEngine(): AutonomyEngine

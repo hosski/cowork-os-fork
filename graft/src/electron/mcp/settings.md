@@ -1,0 +1,33 @@
+# src/electron/mcp/settings.ts
+
+- getElectronApp · function · L23-L34 — function getElectronApp(): Any | null
+- arraysEqual · function · L36-L39 — function arraysEqual(a: string[], b: string[]): boolean
+- getConnectorScriptPathForCurrentRuntime · function · L41-L49 — function getConnectorScriptPathForCurrentRuntime(connectorName: string): string
+- normalizeConnectorRuntime · function · L56-L98 — function normalizeConnectorRuntime(server: MCPServerConfig): { server: MCPServerConfig; changed: boolean; }
+- encryptSecret · function · L103-L119 — function encryptSecret(value?: string): string | undefined
+- decryptSecret · function · L124-L150 — function decryptSecret(value?: string): string | undefined
+- encryptServerAuth · function · L155-L166 — function encryptServerAuth(auth?: MCPAuthConfig): MCPAuthConfig | undefined
+- decryptServerAuth · function · L171-L182 — function decryptServerAuth(auth?: MCPAuthConfig): MCPAuthConfig | undefined
+- _encryptSettings · function · L187-L195 — function _encryptSettings(settings: MCPSettings): MCPSettings
+- decryptSettings · function · L200-L208 — function decryptSettings(settings: MCPSettings): MCPSettings
+- MCPSettingsManager · class · L213-L572 — class MCPSettingsManager
+- initialize · method · L224-L235 — static initialize(): void
+- migrateFromLegacyFile · method · L240-L297 — private static migrateFromLegacyFile(): void
+- loadSettings · method · L302-L351 — static loadSettings(): MCPSettings
+- saveSettings · method · L356-L369 — static saveSettings(settings: MCPSettings): void
+- saveSettingsImmediate · method · L374-L387 — private static saveSettingsImmediate(settings: MCPSettings): void
+- beginBatch · method · L393-L396 — static beginBatch(): void
+- endBatch · method · L401-L407 — static endBatch(): void
+- clearCache · method · L412-L414 — static clearCache(): void
+- getDefaults · method · L419-L421 — static getDefaults(): MCPSettings
+- addServer · method · L426-L438 — static addServer(config: Omit<MCPServerConfig, "id">): MCPServerConfig
+- updateServer · method · L443-L462 — static updateServer(id: string, updates: Partial<MCPServerConfig>): MCPServerConfig | null
+- removeServer · method · L467-L480 — static removeServer(id: string): boolean
+- toggleServer · method · L485-L487 — static toggleServer(id: string, enabled: boolean): MCPServerConfig | null
+- getServer · method · L492-L495 — static getServer(id: string): MCPServerConfig | undefined
+- getEnabledServers · method · L500-L503 — static getEnabledServers(): MCPServerConfig[]
+- hasServers · method · L508-L511 — static hasServers(): boolean
+- updateServerTools · method · L516-L525 — static updateServerTools(id: string, tools: MCPServerConfig["tools"]): void
+- updateServerError · method · L530-L538 — static updateServerError(id: string, error: string | undefined): void
+- getSettingsForDisplay · method · L543-L562 — static getSettingsForDisplay(): MCPSettings
+- ensureInitialized · method · L567-L571 — private static ensureInitialized(): void

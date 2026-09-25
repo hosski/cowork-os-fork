@@ -1,0 +1,28 @@
+# src/renderer/components/UsageInsightsPanel.tsx
+
+- TaskMetrics · interface · L23-L29 — interface TaskMetrics
+- CostByModelRow · interface · L31-L39 — interface CostByModelRow
+- CostMetrics · interface · L41-L46 — interface CostMetrics
+- LlmSummary · interface · L48-L58 — interface LlmSummary
+- JevSummary · interface · L60-L76 — interface JevSummary
+- RequestDayRow · interface · L78-L85 — interface RequestDayRow
+- ProviderSlice · interface · L87-L96 — interface ProviderSlice
+- ExecutionMetrics · interface · L98-L114 — interface ExecutionMetrics
+- ActivityPattern · interface · L116-L121 — interface ActivityPattern
+- AwuMetrics · interface · L123-L145 — interface AwuMetrics
+- UsageInsightsData · interface · L147-L189 — interface UsageInsightsData
+- UsageInsightsPanelProps · interface · L191-L193 — interface UsageInsightsPanelProps
+- formatDuration · function · L197-L203 — function formatDuration(ms: number | null): string
+- formatTokens · function · L205-L209 — function formatTokens(n: number): string
+- formatDayLabel · function · L211-L216 — function formatDayLabel(dateKey: string): string
+- formatChartCurrency · function · L218-L222 — function formatChartCurrency(n: number): string
+- MiniBar · function · L224-L231 — function MiniBar({ value, max }: { value: number; max: number })
+- PackSkillMap · interface · L233-L238 — interface PackSkillMap
+- PluginPackSummary · interface · L240-L244 — interface PluginPackSummary
+- OverviewLoadState · interface · L246-L249 — interface OverviewLoadState
+- toISODate · function · L263-L265 — function toISODate(d: Date): string
+- daysBetween · function · L267-L270 — function daysBetween(start: string, end: string): number
+- isValidWorkspaceId · function · L272-L274 — function isValidWorkspaceId(id: string | undefined): id is string
+- UsageInsightsPanel · function · L276-L1279 — function UsageInsightsPanel({ workspaceId: initialWorkspaceId }: UsageInsightsPanelProps)
+- handleClickOutside · function · L405-L409 — function handleClickOutside(e: MouseEvent)
+- TrendIndicator · function · L1281-L1294 — function TrendIndicator({ change, invertColor }: { change: number | null; invertColor?: boolean })

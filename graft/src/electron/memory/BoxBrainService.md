@@ -1,0 +1,58 @@
+# src/electron/memory/BoxBrainService.ts
+
+- BoxBrainMcpClient · interface · L40-L48 — interface BoxBrainMcpClient
+- BoxBrainServiceDeps · interface · L50-L65 — interface BoxBrainServiceDeps
+- DiscoveredBoxItem · interface · L67-L78 — interface DiscoveredBoxItem
+- CrawlResult · interface · L80-L83 — interface CrawlResult
+- IndexOutcome · interface · L85-L91 — interface IndexOutcome
+- RunAiState · interface · L93-L96 — interface RunAiState
+- isRecord · function · L98-L100 — function isRecord(value: unknown): value is Record<string, unknown>
+- asNonEmptyString · function · L102-L106 — function asNonEmptyString(value: unknown): string | undefined
+- asFiniteNumber · function · L108-L115 — function asFiniteNumber(value: unknown): number | undefined
+- normalizeLabel · function · L117-L123 — function normalizeLabel(value: string, maxLength = 255): string
+- parseJsonText · function · L125-L131 — function parseJsonText(value: string): unknown
+- unwrapBoxMcpPayload · function · L134-L159 — function unwrapBoxMcpPayload(result: unknown): unknown
+- looksLikeBoxEntry · function · L161-L166 — function looksLikeBoxEntry(value: unknown): value is Record<string, unknown>
+- findEntryArray · function · L168-L184 — function findEntryArray(value: unknown, depth = 0): unknown[] | null
+- extractBoxMcpEntries · function · L187-L191 — function extractBoxMcpEntries(result: unknown): unknown[]
+- findValueByKeys · function · L193-L211 — function findValueByKeys(value: unknown, keys: Set<string>, depth = 0): unknown
+- extractBoxMcpNextMarker · function · L213-L219 — function extractBoxMcpNextMarker(result: unknown): string | undefined
+- extractTextValue · function · L221-L242 — function extractTextValue(value: unknown, depth = 0): string
+- extractBoxMcpText · function · L245-L247 — function extractBoxMcpText(result: unknown): string
+- parseModifiedAt · function · L249-L257 — function parseModifiedAt(value: unknown): number | undefined
+- normalizeBoxEntry · function · L259-L308 — function normalizeBoxEntry(value: unknown, pathPrefix: string): DiscoveredBoxItem | null
+- isFolder · function · L310-L312 — function isFolder(item: DiscoveredBoxItem): boolean
+- itemIdentityChanged · function · L314-L327 — function itemIdentityChanged(existing: BoxBrainItemRecord, item: DiscoveredBoxItem): boolean
+- formatDate · function · L329-L331 — function formatDate(value?: number): string
+- toHash · function · L333-L335 — function toHash(value: string): string
+- buildBoxMemoryContent · function · L337-L352 — function buildBoxMemoryContent(item: DiscoveredBoxItem, material: string): string
+- buildBoxMemorySummary · function · L354-L357 — function buildBoxMemorySummary(item: DiscoveredBoxItem, material: string): string
+- hasMcpError · function · L359-L365 — function hasMcpError(result: unknown): string | undefined
+- BoxBrainService · class · L367-L1023 — class BoxBrainService
+- constructor · method · L375-L380 — constructor( private readonly db: Database.Database, private readonly deps: BoxBrainServiceDeps = {}, )
+- initialize · method · L382-L385 — static initialize(db: Database.Database): BoxBrainService
+- getInstance · method · L387-L394 — static getInstance(): BoxBrainService
+- resetForTests · method · L396-L399 — static resetForTests(): void
+- start · method · L401-L413 — start(): void
+- stop · method · L415-L421 — stop(): void
+- syncDueSources · method · L423-L444 — async syncDueSources(): Promise<BoxBrainSyncResult[]>
+- syncNow · method · L446-L461 — async syncNow(workspaceId?: string): Promise<BoxBrainSyncResult>
+- getStatus · method · L463-L497 — getStatus(workspaceId?: string): BoxBrainStatus
+- listItems · method · L499-L507 — listItems(workspaceId?: string): BoxBrainItemRecord[]
+- listRuns · method · L509-L517 — listRuns(workspaceId?: string, limit = 20)
+- getSettings · method · L519-L521 — private getSettings(): BoxSettingsData
+- getMcpManager · method · L523-L525 — private getMcpManager(): BoxBrainMcpClient
+- getBoxMcpServer · method · L527-L529 — private getBoxMcpServer(): MCPServerConfig | undefined
+- now · method · L531-L533 — private now(): number
+- findWorkspace · method · L535-L542 — private findWorkspace(workspaceId?: string): Workspace | null
+- resolveSource · method · L544-L579 — private async resolveSource( settings: BoxSettingsData, brain: BoxBrainSettings, ): Promise<{ source: BoxBrainSourceRecord; workspace: Workspace } | null>
+- ensureMcpTools · method · L581-L590 — private async ensureMcpTools(serverId: string): Promise<MCPTool[]>
+- pickTool · method · L592-L594 — private pickTool(tools: MCPTool[], name: string): MCPTool | undefined
+- callTool · method · L596-L605 — private async callTool( serverId: string, toolName: string, args: Record<string, unknown>, ): Promise<unknown>
+- crawlFolderTree · method · L607-L677 — private async crawlFolderTree( source: BoxBrainSourceRecord, tools: MCPTool[], ): Promise<CrawlResult>
+- syncSource · method · L679-L861 — private async syncSource( source: BoxBrainSourceRecord, workspace: Workspace, ): Promise<BoxBrainSyncResult>
+- indexItem · method · L863-L955 — private async indexItem( source: BoxBrainSourceRecord, workspaceId: string, item: DiscoveredBoxItem, previous: BoxBrainItemRecord | undefined, tools: MCPTool[], aiState: RunAiState, ): Promise<IndexOutcome>
+- deleteMemoryEntries · method · L957-L960 — private deleteMemoryEntries(workspaceId: string, ids: string[]): void
+- waitForAiPacing · method · L962-L971 — private async waitForAiPacing(): Promise<void>
+- maybeRunImprovement · method · L973-L1004 — private async maybeRunImprovement( source: BoxBrainSourceRecord, workspace: Workspace, indexedCount: number, ): Promise<string | undefined>
+- emptyResult · method · L1006-L1022 — private emptyResult( status: BoxBrainRunStatus, error?: string, sourceId?: string, ): BoxBrainSyncResult

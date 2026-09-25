@@ -1,0 +1,36 @@
+# src/renderer/components/MemorySettings.tsx
+
+- PrivacyMode · type · L6-L6 — type PrivacyMode = "normal" | "strict" | "disabled";
+- MemorySettingsData · interface · L8-L17 — interface MemorySettingsData
+- MemoryStats · interface · L19-L24 — interface MemoryStats
+- ImportedStats · interface · L26-L29 — interface ImportedStats
+- UserFactCategory · type · L31-L41 — type UserFactCategory = | "identity" | "preference" | "bio" | "work" | "goal" | "operating" | "voice" | "accountability" | "constraint" | "other";
+- UserFact · interface · L43-L53 — interface UserFact
+- UserProfile · interface · L55-L59 — interface UserProfile
+- RelationshipLayer · type · L61-L61 — type RelationshipLayer = "identity" | "preferences" | "context" | "history" | "commitments";
+- RelationshipMemoryItem · interface · L63-L73 — interface RelationshipMemoryItem
+- MemoryItem · interface · L75-L81 — interface MemoryItem
+- ChronicleObservationItem · interface · L83-L91 — interface ChronicleObservationItem
+- MemorySettingsProps · interface · L93-L96 — interface MemorySettingsProps
+- ToggleRowProps · interface · L98-L104 — interface ToggleRowProps
+- parseImportTag · function · L107-L142 — function parseImportTag(content: string): { title: string; preview: string; ignoredForPromptRecall: boolean; isImported: boolean; }
+- formatRelativeTime · function · L144-L153 — function formatRelativeTime(timestamp: number): string
+- formatMemoryTypeLabel · function · L155-L159 — function formatMemoryTypeLabel(type?: string): string
+- ToggleRow · function · L161-L190 — function ToggleRow({ title, description, checked, onChange, disabled }: ToggleRowProps)
+- MemorySettings · function · L194-L1542 — function MemorySettings({ workspaceId, onSettingsChanged }: MemorySettingsProps)
+- loadData · function · L239-L279 — loadData = async ()
+- handleToggleImported · function · L345-L350 — handleToggleImported = ()
+- handleDeleteImported · function · L352-L373 — handleDeleteImported = async ()
+- handleDeleteImportedEntry · function · L375-L389 — handleDeleteImportedEntry = async (memoryId: string)
+- handleToggleImportedPromptRecallIgnored · function · L391-L427 — handleToggleImportedPromptRecallIgnored = async ( memoryId: string, currentlyIgnored: boolean, )
+- handleSave · function · L429-L441 — handleSave = async (updates: Partial<MemorySettingsData>)
+- handleClear · function · L443-L464 — handleClear = async ()
+- handleDeleteChronicleObservation · function · L466-L476 — handleDeleteChronicleObservation = async (observationId: string)
+- handleClearChronicleObservations · function · L478-L488 — handleClearChronicleObservations = async ()
+- handleAddFact · function · L490-L512 — handleAddFact = async ()
+- handleDeleteFact · function · L514-L528 — handleDeleteFact = async (factId: string)
+- handleToggleFactPin · function · L530-L548 — handleToggleFactPin = async (fact: UserFact)
+- handleDeleteRelationship · function · L550-L558 — handleDeleteRelationship = async (itemId: string)
+- handleToggleCommitmentStatus · function · L560-L575 — handleToggleCommitmentStatus = async (item: RelationshipMemoryItem)
+- handleEditRelationship · function · L577-L593 — handleEditRelationship = async (item: RelationshipMemoryItem)
+- handleCleanupRecurringHistory · function · L595-L618 — handleCleanupRecurringHistory = async ()

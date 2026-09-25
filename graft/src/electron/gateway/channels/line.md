@@ -1,0 +1,30 @@
+# src/electron/gateway/channels/line.ts
+
+- LineAdapter · class · L38-L553 — class LineAdapter implements ChannelAdapter
+- constructor · method · L69-L77 — constructor(config: LineConfig)
+- status · method · L79-L81 — get status(): ChannelStatus
+- botUsername · method · L83-L85 — get botUsername(): string | undefined
+- connect · method · L90-L161 — async connect(): Promise<void>
+- disconnect · method · L166-L195 — async disconnect(): Promise<void>
+- scheduleReconnect · method · L200-L226 — private scheduleReconnect(): void
+- splitMessage · method · L231-L259 — private splitMessage(text: string): string[]
+- sendMessage · method · L264-L304 — async sendMessage(message: OutgoingMessage): Promise<string>
+- editMessage · method · L309-L311 — async editMessage(_chatId: string, _messageId: string, _text: string): Promise<void>
+- deleteMessage · method · L316-L318 — async deleteMessage(_chatId: string, _messageId: string): Promise<void>
+- sendDocument · method · L323-L325 — async sendDocument(_chatId: string, _filePath: string, _caption?: string): Promise<string>
+- sendPhoto · method · L330-L332 — async sendPhoto(_chatId: string, _filePath: string, _caption?: string): Promise<string>
+- onMessage · method · L337-L339 — onMessage(handler: MessageHandler): void
+- onError · method · L344-L346 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L351-L353 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L358-L370 — async getInfo(): Promise<ChannelInfo>
+- getUserProfile · method · L379-L389 — async getUserProfile(userId: string): Promise<LineUserProfile | null>
+- leaveGroup · method · L394-L399 — async leaveGroup(groupId: string): Promise<void>
+- leaveRoom · method · L404-L409 — async leaveRoom(roomId: string): Promise<void>
+- handleIncomingMessage · method · L418-L485 — private async handleIncomingMessage(lineMessage: LineMessage): Promise<void>
+- isMessageProcessed · method · L490-L492 — private isMessageProcessed(messageId: string): boolean
+- markMessageProcessed · method · L497-L504 — private markMessageProcessed(messageId: string): void
+- startDedupCleanup · method · L509-L513 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L518-L525 — private cleanupDedupCache(): void
+- handleError · method · L530-L538 — private handleError(error: Error, context?: string): void
+- setStatus · method · L543-L552 — private setStatus(status: ChannelStatus, error?: Error): void
+- createLineAdapter · function · L558-L566 — function createLineAdapter(config: LineConfig): LineAdapter

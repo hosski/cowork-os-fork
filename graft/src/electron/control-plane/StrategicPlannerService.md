@@ -1,0 +1,42 @@
+# src/electron/control-plane/StrategicPlannerService.ts
+
+- PlannerManagedIssueKind · type · L36-L41 — type PlannerManagedIssueKind = | "goal_planning" | "project_workspace" | "project_next_step" | "project_blocked_review" | "issue_refresh";
+- PlannerManagedIssueSeed · interface · L43-L53 — interface PlannerManagedIssueSeed
+- PlannerScore · interface · L55-L61 — interface PlannerScore
+- StrategicPlannerServiceDeps · interface · L63-L68 — interface StrategicPlannerServiceDeps
+- StrategicPlannerService · class · L70-L1062 — class StrategicPlannerService
+- constructor · method · L78-L84 — constructor(private readonly deps: StrategicPlannerServiceDeps)
+- start · method · L86-L91 — start(): void
+- stop · method · L93-L98 — stop(): void
+- listConfigs · method · L100-L105 — listConfigs(): StrategicPlannerConfig[]
+- getConfig · method · L107-L136 — getConfig(companyId: string): StrategicPlannerConfig
+- updateConfig · method · L138-L175 — updateConfig(companyId: string, updates: StrategicPlannerConfigUpdate): StrategicPlannerConfig
+- persistConfig · method · L177-L201 — private persistConfig(config: StrategicPlannerConfig): void
+- listRuns · method · L203-L224 — listRuns(input?: { companyId?: string; limit?: number; offset?: number }): StrategicPlannerRun[]
+- runNow · method · L226-L345 — async runNow(request: StrategicPlannerRunRequest): Promise<StrategicPlannerRun>
+- recordAutomatedRunOutcome · method · L347-L381 — private async recordAutomatedRunOutcome(params: { company: Company; config: StrategicPlannerConfig; trigger: string; run: StrategicPlannerRun; outcome: { createdIssueIds: string[]; updatedIssueIds: string[]; dispatchedTaskIds: string[]; suppressedOutputs: Array<{ seedTitle: string; summary: string; outputType: CompanyOutputType; }>; }; }): Promise<void>
+- recordAutomatedRunFailure · method · L383-L402 — private async recordAutomatedRunFailure( company: Company, config: StrategicPlannerConfig, trigger: string, message: string, ): Promise<void>
+- normalizeTrigger · method · L404-L406 — private normalizeTrigger(trigger: string): StrategicPlannerRun["trigger"]
+- tick · method · L408-L426 — private async tick(): Promise<void>
+- isPlanningEligibleCompany · method · L428-L430 — private isPlanningEligibleCompany(company: Company): boolean
+- recordSuccessfulRunConfigUpdate · method · L432-L477 — private recordSuccessfulRunConfigUpdate(companyId: string, completedAt: number): void
+- executePlanningRun · method · L479-L707 — private async executePlanningRun( company: Company, config: StrategicPlannerConfig, ): Promise<{ createdIssueIds: string[]; updatedIssueIds: string[]; dispatchedTaskIds: string[]; suppressedOutputs: Array<{ seedTitle: string; summary: string; outputType: CompanyOutputType }>; }>
+- dispatchIssue · method · L709-L756 — private async dispatchIssue( company: Company, config: StrategicPlannerConfig, issue: Issue, plannerAgent: AgentRole | undefined, ): Promise<string | null>
+- buildDispatchPrompt · method · L758-L789 — private buildDispatchPrompt(company: Company, issue: Issue): string
+- findManagedIssue · method · L791-L801 — private findManagedIssue(issues: Issue[], seed: PlannerManagedIssueSeed): Issue | undefined
+- isStaleIssue · method · L803-L807 — private isStaleIssue(issue: Issue, staleIssueDays: number): boolean
+- pickPlannerAgent · method · L809-L822 — private pickPlannerAgent(config: StrategicPlannerConfig): AgentRole | undefined
+- pickDefaultWorkspaceId · method · L824-L831 — private pickDefaultWorkspaceId(): string | undefined
+- getPlannerMetadata · method · L833-L848 — private getPlannerMetadata(issue: Issue): { plannerManaged?: boolean; plannerKind?: PlannerManagedIssueKind; targetIssueId?: string; outputContract?: CompanyOutputContract; source?: string; } | null
+- scoreSeed · method · L850-L876 — private scoreSeed(seed: PlannerManagedIssueSeed, companyWorkspaceId?: string): PlannerScore
+- buildIssueOutputContract · method · L878-L908 — private buildIssueOutputContract( company: Company, plannerAgent: AgentRole | undefined, seed: PlannerManagedIssueSeed, score: PlannerScore, issueId?: string, ): CompanyOutputContract
+- buildCompletionContract · method · L910-L922 — private buildCompletionContract(seed: PlannerManagedIssueSeed): Record<string, unknown>
+- insertConfig · method · L924-L949 — private insertConfig(config: StrategicPlannerConfig): void
+- getRunOrThrow · method · L951-L957 — private getRunOrThrow(runId: string): StrategicPlannerRun
+- mapConfig · method · L959-L974 — private mapConfig(row: Any): StrategicPlannerConfig
+- sanitizeConfigReferences · method · L976-L994 — private sanitizeConfigReferences(config: StrategicPlannerConfig): StrategicPlannerConfig
+- mapRun · method · L996-L1015 — private mapRun(row: Any): StrategicPlannerRun
+- ensureSchema · method · L1017-L1057 — private ensureSchema(): void
+- log · method · L1059-L1061 — private log(...args: unknown[]): void
+- setStrategicPlannerService · function · L1066-L1068 — function setStrategicPlannerService(service: StrategicPlannerService | null): void
+- getStrategicPlannerService · function · L1070-L1072 — function getStrategicPlannerService(): StrategicPlannerService | null

@@ -1,0 +1,21 @@
+# src/renderer/components/FileViewer.tsx
+
+- FileViewerData · type · L50-L50 — type FileViewerData = NonNullable<FileViewerResult["data"]>;
+- FileType · type · L51-L51 — type FileType = FileViewerData["fileType"];
+- FileViewerProps · interface · L53-L57 — interface FileViewerProps
+- formatSize · function · L59-L66 — formatSize = (bytes: number): string
+- detectLanguage · function · L94-L97 — detectLanguage = (fileName: string): string
+- safeHighlight · function · L99-L118 — safeHighlight = (code: string, language: string): string
+- parseDsv · function · L121-L172 — parseDsv = (text: string, delimiter: string): string[][]
+- formatDuration · function · L174-L182 — formatDuration = (seconds: number): string
+- hasAlphaChannel · function · L186-L189 — hasAlphaChannel = (fileName: string): boolean
+- JsonNodeProps · interface · L191-L196 — interface JsonNodeProps
+- JsonNode · function · L198-L269 — function JsonNode({ value, name, depth, defaultOpen }: JsonNodeProps)
+- FileViewer · function · L271-L1034 — function FileViewer({ filePath, workspacePath, onClose }: FileViewerProps)
+- loadFile · function · L288-L305 — loadFile = async ()
+- handleKeyDown · function · L311-L315 — handleKeyDown = (e: KeyboardEvent)
+- handleOpenExternal · function · L384-L390 — handleOpenExternal = async ()
+- handleShowInFinder · function · L392-L398 — handleShowInFinder = async ()
+- handleCopyPath · function · L400-L409 — handleCopyPath = async ()
+- getFileIcon · function · L411-L443 — getFileIcon = (type?: FileType): React.ReactNode
+- renderContent · function · L534-L892 — renderContent = ()

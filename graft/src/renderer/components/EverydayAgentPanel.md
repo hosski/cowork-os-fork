@@ -1,0 +1,51 @@
+# src/renderer/components/EverydayAgentPanel.tsx
+
+- EverydayAgentPanelProps · interface · L39-L45 — interface EverydayAgentPanelProps
+- PauseKind · type · L47-L47 — type PauseKind = EverydayPauseScope["kind"];
+- PriorityTone · type · L48-L48 — type PriorityTone = "danger" | "warn" | "quiet" | "success";
+- EverydayAgentStatus · type · L49-L49 — type EverydayAgentStatus = "loading" | "enabled" | "paused" | "disabled" | "blocked";
+- EverydayAgentTemporaryModes · type · L50-L54 — type EverydayAgentTemporaryModes = { noMemory: boolean; disposableBrowser: boolean; readOnly: boolean; };
+- EverydayAgentPriorityItem · interface · L56-L63 — interface EverydayAgentPriorityItem
+- EverydayRoutineSummary · interface · L65-L73 — interface EverydayRoutineSummary
+- EverydayAgentPlanStep · interface · L75-L82 — interface EverydayAgentPlanStep
+- EverydayAgentRecoveryItem · interface · L84-L90 — interface EverydayAgentRecoveryItem
+- updateEverydayAgentTemporaryMode · function · L92-L101 — function updateEverydayAgentTemporaryMode( current: EverydayAgentTemporaryModes, mode: keyof EverydayAgentTemporaryModes, checked: boolean, ): EverydayAgentTemporaryModes
+- EverydayAgentRecipe · interface · L103-L111 — interface EverydayAgentRecipe
+- EverydaySecureLane · interface · L113-L119 — interface EverydaySecureLane
+- isEverydayAgentUuid · function · L181-L186 — function isEverydayAgentUuid(value: string | undefined): value is string
+- formatTime · function · L188-L191 — function formatTime(value?: number): string
+- capabilityLabel · function · L193-L198 — function capabilityLabel(capability: EverydayCapabilityBundle): string
+- getEverydayAgentStatus · function · L200-L208 — function getEverydayAgentStatus( result: EverydayAgentProfileResult | null, ): EverydayAgentStatus
+- statusLabel · function · L210-L217 — function statusLabel(result: EverydayAgentProfileResult | null): string
+- isEverydayAgentConsentRequired · function · L219-L227 — function isEverydayAgentConsentRequired(result: EverydayAgentProfileResult | null): boolean
+- riskTone · function · L229-L235 — function riskTone(risk: EverydayActionRisk): "quiet" | "warn" | "danger"
+- receiptTone · function · L237-L241 — function receiptTone(status: EverydayActionReceipt["status"]): PriorityTone
+- suggestionDescription · function · L243-L245 — function suggestionDescription(suggestion: ProactiveSuggestion): string
+- inferSuggestionCapability · function · L247-L260 — function inferSuggestionCapability(suggestion: ProactiveSuggestion): EverydayCapabilityBundle
+- previewTargetLabel · function · L262-L273 — function previewTargetLabel(preview: EverydayActionPreview): string
+- buildEverydayAgentPriorityItems · function · L275-L376 — function buildEverydayAgentPriorityItems({ result, receipts, suggestions, memoryCandidateCount, preview, }: { result: EverydayAgentProfileResult | null; receipts: EverydayActionReceipt[]; suggestions: ProactiveSuggestion[]; memoryCandidateCount: number | null; preview?: EverydayActionPreview | null; }): EverydayAgentPriorityItem[]
+- classifyEverydayAgentRecovery · function · L378-L428 — function classifyEverydayAgentRecovery( receipt: EverydayActionReceipt, ): EverydayAgentRecoveryItem | null
+- buildEverydayAgentPlanSteps · function · L430-L509 — function buildEverydayAgentPlanSteps({ status, busy, preview, suggestions, receipts, }: { status: EverydayAgentStatus; busy: string | null; preview: EverydayActionPreview | null; suggestions: ProactiveSuggestion[]; receipts: EverydayActionReceipt[]; }): EverydayAgentPlanStep[]
+- buildSecureLanes · function · L511-L567 — function buildSecureLanes( enabledCapabilities: EverydayCapabilityBundle[], connectedAppsCount: number, pausedScopes: EverydayPauseScope[], ): EverydaySecureLane[]
+- hasPause · function · L516-L517 — hasPause = (capability: EverydayCapabilityBundle)
+- laneFor · function · L518-L533 — laneFor = ( id: string, title: string, description: string, capability: EverydayCapabilityBundle, ): EverydaySecureLane
+- routineTriggerSummary · function · L569-L575 — function routineTriggerSummary(routine: Any): string
+- routineRunFor · function · L577-L579 — function routineRunFor(routineId: string, runs: Any[]): Any | undefined
+- summarizeRoutine · function · L581-L593 — function summarizeRoutine(routine: Any, latestRun?: Any): EverydayRoutineSummary
+- loadRoutineSummaries · function · L595-L624 — async function loadRoutineSummaries( profile: EverydayAgentProfileResult["profile"], workspaceId?: string, ): Promise<EverydayRoutineSummary[]>
+- EverydayAgentPanel · function · L626-L1958 — function EverydayAgentPanel({ workspace, settingsMode = false, onOpenSettings, onOpenMissionControl, onCreateTask, }: EverydayAgentPanelProps)
+- updateTemporaryMode · function · L649-L651 — updateTemporaryMode = (mode: keyof EverydayAgentTemporaryModes, checked: boolean)
+- run · function · L765-L778 — run = async <T,>(label: string, action: () => Promise<T>): Promise<T | null>
+- updateCapability · function · L780-L787 — updateCapability = (capability: EverydayCapabilityBundle, enabled: boolean)
+- acceptConsent · function · L789-L796 — acceptConsent = (enabled: boolean)
+- pause · function · L798-L799 — pause = (scope: Partial<EverydayPauseScope>)
+- resume · function · L801-L811 — resume = ()
+- revokeCapability · function · L813-L814 — revokeCapability = (capability: EverydayCapabilityBundle)
+- clearActivity · function · L816-L824 — clearActivity = ()
+- deleteLocalAgentData · function · L826-L839 — deleteLocalAgentData = ()
+- createPreview · function · L841-L855 — createPreview = async ()
+- previewSuggestion · function · L857-L876 — previewSuggestion = async (suggestion: ProactiveSuggestion, trustPattern = false)
+- previewRecipe · function · L878-L901 — previewRecipe = async (recipe: EverydayAgentRecipe)
+- approvePreview · function · L903-L911 — approvePreview = async ()
+- startSuggestion · function · L913-L922 — startSuggestion = async (suggestion: ProactiveSuggestion)
+- EverydayAgentSettingsPanel · function · L1960-L1974 — function EverydayAgentSettingsPanel({ workspaceId, onCreateTask, }: { workspaceId?: string; onCreateTask?: (title: string, prompt: string) => void; })

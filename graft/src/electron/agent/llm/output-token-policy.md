@@ -1,0 +1,26 @@
+# src/electron/agent/llm/output-token-policy.ts
+
+- OutputTokenPolicyMode · type · L14-L14 — type OutputTokenPolicyMode = "legacy" | "adaptive";
+- OutputBudgetRequestKind · type · L15-L15 — type OutputBudgetRequestKind = "agentic_main" | "tool_followup" | "continuation";
+- OutputBudgetProviderFamily · type · L16-L23 — type OutputBudgetProviderFamily = | "anthropic" | "bedrock-claude" | "openai" | "azure-openai" | "gemini" | "openrouter" | "generic";
+- OutputTokenParamName · type · L24-L24 — type OutputTokenParamName = "max_tokens" | "max_completion_tokens" | "max_output_tokens";
+- OutputTruncationClassification · type · L25-L25 — type OutputTruncationClassification = "visible_partial_output" | "reasoning_exhausted";
+- OutputTokenPolicyInput · interface · L27-L45 — interface OutputTokenPolicyInput
+- ResolvedOutputTokenBudget · interface · L47-L68 — interface ResolvedOutputTokenBudget
+- normalizePositiveInteger · function · L100-L104 — function normalizePositiveInteger(value: unknown): number | null
+- readEnvLimit · function · L106-L114 — function readEnvLimit(name: string): number | null
+- isOpenAIReasoningModel · function · L116-L129 — function isOpenAIReasoningModel(modelId: string): boolean
+- inferOpenRouterRoutedFamily · function · L135-L146 — function inferOpenRouterRoutedFamily( modelId: string, ): Exclude<OutputBudgetProviderFamily, "openrouter"> | null
+- resolvePolicyFamily · function · L148-L182 — function resolvePolicyFamily(opts: { providerType: LLMProviderType | string; modelId: string }): { providerFamily: OutputBudgetProviderFamily; routedFamily: Exclude<OutputBudgetProviderFamily, "openrouter"> | null; }
+- estimateContextLimit · function · L184-L204 — function estimateContextLimit( contextManager: ContextManager | null | undefined, messages: LLMMessage[], system: string, ): number | null
+- getKnownHardCap · function · L206-L228 — function getKnownHardCap( providerFamily: OutputBudgetProviderFamily, routedFamily: Exclude<OutputBudgetProviderFamily, "openrouter"> | null, modelId: string, ): number | null
+- getPolicyDefault · function · L230-L262 — function getPolicyDefault( requestKind: OutputBudgetRequestKind, providerFamily: OutputBudgetProviderFamily, routedFamily: Exclude<OutputBudgetProviderFamily, "openrouter"> | null, phase: "initial" | "escalated", localProfile?: LocalModelExecutionProfile | null, ): number
+- stripThinkingBlocks · function · L264-L269 — function stripThinkingBlocks(text: string): string
+- getOutputTokenPolicyMode · function · L271-L276 — function getOutputTokenPolicyMode(): OutputTokenPolicyMode
+- isAdaptiveOutputTokenPolicyEnabled · function · L278-L280 — function isAdaptiveOutputTokenPolicyEnabled(): boolean
+- inferOutputBudgetRequestKind · function · L282-L291 — function inferOutputBudgetRequestKind(messages: LLMMessage[]): OutputBudgetRequestKind
+- resolveOutputTokenParamName · function · L293-L312 — function resolveOutputTokenParamName(opts: { providerType: LLMProviderType | string; modelId: string; apiMode?: "chat_completions" | "responses"; }): OutputTokenParamName
+- resolveOutputTokenBudget · function · L314-L402 — function resolveOutputTokenBudget(input: OutputTokenPolicyInput): ResolvedOutputTokenBudget
+- classifyOutputTruncation · function · L404-L418 — function classifyOutputTruncation( content: LLMContent[] | undefined, ): OutputTruncationClassification
+- responseHasToolUse · function · L420-L422 — function responseHasToolUse(content: LLMContent[] | undefined): boolean
+- buildReasoningExhaustedGuidance · function · L424-L429 — function buildReasoningExhaustedGuidance(): string

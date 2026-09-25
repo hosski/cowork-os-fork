@@ -1,0 +1,35 @@
+# src/electron/control-plane/ssh-tunnel.ts
+
+- isSafeSshUsername · function · L21-L23 — function isSafeSshUsername(username: string): boolean
+- isSafeSshHost · function · L29-L35 — function isSafeSshHost(host: string): boolean
+- SSHTunnelEvents · interface · L58-L64 — interface SSHTunnelEvents
+- SSHTunnelManager · class · L72-L693 — class SSHTunnelManager extends EventEmitter
+- constructor · method · L83-L89 — constructor(config: Partial<SSHTunnelConfig>)
+- getStatus · method · L94-L112 — getStatus(): SSHTunnelStatus
+- getLocalUrl · method · L117-L119 — getLocalUrl(): string
+- updateConfig · method · L124-L139 — updateConfig(config: Partial<SSHTunnelConfig>): void
+- connect · method · L144-L160 — async connect(): Promise<void>
+- disconnect · method · L165-L190 — disconnect(): void
+- testConnection · method · L195-L244 — async testConnection(): Promise<{ success: boolean; error?: string; latencyMs?: number }>
+- validateConfig · method · L248-L293 — private validateConfig(): boolean
+- inspectPrivateKey · method · L303-L324 — private inspectPrivateKey(keyPath: string): { error?: string }
+- doConnect · method · L326-L427 — private async doConnect(): Promise<void>
+- buildSSHArgs · method · L429-L471 — private buildSSHArgs(testMode: boolean): string[]
+- maskCommand · method · L473-L476 — private maskCommand(args: string[]): string
+- expandPath · method · L478-L483 — private expandPath(filePath: string): string
+- isConnectionEstablished · method · L485-L493 — private isConnectionEstablished(output: string): boolean
+- isAuthFailure · method · L495-L502 — private isAuthFailure(output: string): boolean
+- parseSSHError · method · L504-L551 — private parseSSHError(output: string): string | null
+- waitForLocalPort · method · L553-L565 — private async waitForLocalPort(): Promise<void>
+- isPortOpen · method · L567-L589 — private isPortOpen(port: number): Promise<boolean>
+- delay · method · L591-L593 — private delay(ms: number): Promise<void>
+- onConnected · method · L595-L603 — private onConnected(): void
+- handleDisconnect · method · L605-L627 — private handleDisconnect(code: number | null, signal: NodeJS.Signals | null): void
+- scheduleReconnect · method · L629-L654 — private scheduleReconnect(): void
+- startHealthCheck · method · L656-L670 — private startHealthCheck(): void
+- setState · method · L672-L678 — private setState(state: SSHTunnelState): void
+- clearReconnectTimer · method · L680-L685 — private clearReconnectTimer(): void
+- clearHealthCheckTimer · method · L687-L692 — private clearHealthCheckTimer(): void
+- getSSHTunnelManager · function · L701-L703 — function getSSHTunnelManager(): SSHTunnelManager | null
+- initSSHTunnelManager · function · L708-L714 — function initSSHTunnelManager(config: Partial<SSHTunnelConfig>): SSHTunnelManager
+- shutdownSSHTunnelManager · function · L719-L724 — function shutdownSSHTunnelManager(): void

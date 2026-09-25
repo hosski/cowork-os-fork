@@ -1,0 +1,23 @@
+# src/electron/infra/wallet/wallet-manager.ts
+
+- EncryptedWalletData · interface · L22-L27 — interface EncryptedWalletData
+- WalletFileFormat · interface · L29-L32 — interface WalletFileFormat
+- WalletManager · class · L39-L322 — class WalletManager
+- generate · method · L45-L60 — static generate(): { address: string; privateKey: string }
+- hasWallet · method · L65-L67 — static hasWallet(): boolean
+- getAddress · method · L72-L75 — static getAddress(): string | null
+- getNetwork · method · L80-L83 — static getNetwork(): string
+- getPrivateKey · method · L88-L91 — static getPrivateKey(): string | null
+- getWalletInfo · method · L96-L104 — static getWalletInfo(): { address: string; network: string; createdAt: string } | null
+- legacyWalletFileExists · method · L109-L112 — static legacyWalletFileExists(): boolean
+- importLegacyWallet · method · L117-L145 — static importLegacyWallet(): boolean
+- migrateFromLegacyEncryptedStore · method · L150-L173 — static migrateFromLegacyEncryptedStore(): boolean
+- startupCheck · method · L178-L196 — static startupCheck(): { address: string | null; status: string }
+- getBalance · method · L201-L242 — static async getBalance(): Promise<string>
+- saveToEncryptedStore · method · L246-L252 — private static saveToEncryptedStore(data: EncryptedWalletData): void
+- loadFromEncryptedStore · method · L254-L262 — private static loadFromEncryptedStore(): EncryptedWalletData | null
+- getBaseRpcUrls · method · L264-L272 — private static getBaseRpcUrls(): string[]
+- withTimeout · method · L274-L290 — private static async withTimeout<T>( promise: Promise<T>, timeoutMs: number, timeoutMessage: string, ): Promise<T>
+- logRpcFailure · method · L292-L295 — private static logRpcFailure(rpcUrl: string, error: unknown): void
+- logWarnThrottled · method · L297-L306 — private static logWarnThrottled(scope: string, message: string): void
+- errorToMessage · method · L308-L321 — private static errorToMessage(error: unknown): string

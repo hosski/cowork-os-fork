@@ -1,0 +1,59 @@
+# src/electron/extensions/registry.ts
+
+- PersistedPackStates · interface · L43-L47 — interface PersistedPackStates
+- parseSkillMarkdownFrontmatter · function · L49-L77 — function parseSkillMarkdownFrontmatter(markdown: string): { frontmatter: Record<string, string>; body: string; }
+- titleFromSkillId · function · L79-L86 — function titleFromSkillId(id: string): string
+- PluginRegistry · class · L91-L1304 — class PluginRegistry extends EventEmitter
+- packStatesPath · method · L123-L125 — private get packStatesPath(): string
+- constructor · method · L127-L130 — private constructor()
+- loadPackStates · method · L135-L191 — private loadPackStates(): void
+- applyPersistedState · function · L136-L163 — applyPersistedState = (data: PersistedPackStates | Record<string, boolean>): void
+- savePackStates · method · L196-L232 — savePackStates(): void
+- setPackEnabled · method · L237-L251 — setPackEnabled(name: string, enabled: boolean): void
+- restorePackEnabled · method · L256-L263 — restorePackEnabled(name: string, enabled: boolean | undefined): void
+- getPackEnabled · method · L268-L270 — getPackEnabled(name: string): boolean | undefined
+- setSkillEnabled · method · L275-L297 — setSkillEnabled(packName: string, skillId: string, enabled: boolean): void
+- getSkillEnabled · method · L302-L304 — getSkillEnabled(packName: string, skillId: string): boolean | undefined
+- applyPersistedSkillStates · method · L309-L326 — private applyPersistedSkillStates(manifest: PluginManifest, pluginName: string): void
+- purgePackState · method · L329-L333 — purgePackState(name: string): void
+- getInstance · method · L338-L343 — static getInstance(): PluginRegistry
+- initialize · method · L348-L375 — async initialize(extensionDirs?: string[]): Promise<void>
+- discoverNewPlugins · method · L381-L393 — async discoverNewPlugins(extensionDirs?: string[]): Promise<void>
+- loadAndRegister · method · L398-L499 — private async loadAndRegister( pluginPath: string, manifest: PluginManifest, securityReport?: import("../../shared/types").CapabilitySecurityReport, ): Promise<void>
+- createPluginAPI · method · L504-L587 — private createPluginAPI(pluginName: string, _loadedPlugin: LoadedPlugin): PluginAPI
+- buildDirectoryBackedSkill · method · L589-L672 — private buildDirectoryBackedSkill( definition: SkillDirectoryDefinition, pluginName: string, pluginPath: string, ): CustomSkill | null
+- registerDeclarativeContent · method · L678-L772 — private async registerDeclarativeContent( manifest: PluginManifest, pluginName: string, pluginPath: string, ): Promise<void>
+- createSecureStorage · method · L777-L973 — private createSecureStorage(pluginName: string): SecureStorage
+- PluginSecretsMap · type · L782-L782 — type PluginSecretsMap = Record<string, string>;
+- readFromRepository · function · L784-L806 — readFromRepository = (): PluginSecretsMap
+- StoredSecretsPayload · interface · L808-L812 — interface StoredSecretsPayload
+- parseSecretsMap · function · L814-L826 — parseSecretsMap = (value: unknown): Record<string, string>
+- isRepositoryAvailable · function · L828-L830 — isRepositoryAvailable = (): boolean
+- readSecrets · function · L832-L848 — readSecrets = (): Record<string, string>
+- readFromFile · function · L850-L882 — readFromFile = (): Record<string, string>
+- writeToRepository · function · L884-L892 — writeToRepository = (secrets: PluginSecretsMap): boolean
+- decodePayload · function · L894-L908 — decodePayload = (payload: string, encrypted: boolean): string | null
+- writeToFile · function · L910-L938 — writeToFile = (secrets: Record<string, string>): void
+- writeSecrets · function · L940-L948 — writeSecrets = (secrets: Record<string, string>): void
+- loadPluginConfig · method · L978-L1001 — private loadPluginConfig(pluginName: string): Record<string, unknown>
+- savePluginConfig · method · L1006-L1012 — private async savePluginConfig( pluginName: string, config: Record<string, unknown>, ): Promise<void>
+- emitPluginEvent · method · L1017-L1025 — private emitPluginEvent(type: PluginEventType, pluginName: string, data?: unknown): void
+- removePluginRuntimeRegistrations · method · L1030-L1052 — private async removePluginRuntimeRegistrations(pluginName: string): Promise<void>
+- getPlugins · method · L1061-L1063 — getPlugins(): LoadedPlugin[]
+- getPlugin · method · L1068-L1070 — getPlugin(name: string): LoadedPlugin | undefined
+- getPluginsByType · method · L1075-L1077 — getPluginsByType(type: PluginType): LoadedPlugin[]
+- reconcilePackRuntimeState · method · L1082-L1110 — async reconcilePackRuntimeState(): Promise<void>
+- hasPlugin · method · L1115-L1117 — hasPlugin(name: string): boolean
+- getChannelAdapter · method · L1122-L1124 — getChannelAdapter(pluginName: string): RegisterChannelOptions | undefined
+- getChannelAdapters · method · L1129-L1131 — getChannelAdapters(): Map<string, RegisterChannelOptions>
+- createChannelAdapterFromPlugin · method · L1136-L1143 — createChannelAdapterFromPlugin(pluginName: string, config: ChannelConfig): ChannelAdapter | null
+- getTools · method · L1148-L1150 — getTools(): Map<string, RegisterToolOptions>
+- getTool · method · L1155-L1157 — getTool(pluginName: string, toolName: string): RegisterToolOptions | undefined
+- enablePlugin · method · L1162-L1174 — async enablePlugin(name: string): Promise<void>
+- disablePlugin · method · L1179-L1203 — async disablePlugin(name: string): Promise<void>
+- unloadPlugin · method · L1208-L1214 — async unloadPlugin(name: string): Promise<void>
+- reloadPlugin · method · L1219-L1256 — async reloadPlugin(name: string): Promise<void>
+- getPluginConfig · method · L1261-L1263 — getPluginConfig(name: string): Record<string, unknown> | undefined
+- setPluginConfig · method · L1268-L1276 — async setPluginConfig(name: string, config: Record<string, unknown>): Promise<void>
+- shutdown · method · L1281-L1303 — async shutdown(): Promise<void>
+- getPluginRegistry · function · L1307-L1307 — getPluginRegistry = (): PluginRegistry

@@ -1,0 +1,221 @@
+# src/electron/preload.ts
+
+- isManagedImageTempFile · function · L325-L340 — isManagedImageTempFile = (filePath: string): boolean
+- deleteTempFiles · function · L342-L353 — deleteTempFiles = (paths: string[]): void
+- normalizeAttachmentName · function · L355-L367 — normalizeAttachmentName = (value: unknown): string
+- isUuidLike · function · L371-L372 — isUuidLike = (value: unknown): value is string
+- isWorkspaceIdLike · function · L374-L375 — isWorkspaceIdLike = (value: unknown): value is string
+- hasInvalidCoreMemoryCandidateScope · function · L377-L384 — hasInvalidCoreMemoryCandidateScope = (request: unknown): boolean
+- writeBase64ImageToTempFile · function · L386-L405 — writeBase64ImageToTempFile = ( imageData: string, mimeType: string, filename?: string, ): string
+- isAbsoluteImagePath · function · L407-L408 — isAbsoluteImagePath = (value: unknown): value is string
+- validateSendMessageAttachments · function · L410-L533 — function validateSendMessageAttachments(images?: ImageAttachment[]): ImageAttachment[] | undefined
+- NodePlatform · type · L544-L544 — type NodePlatform = "ios" | "android" | "macos";
+- NodeCapabilityType · type · L545-L545 — type NodeCapabilityType = "camera" | "location" | "screen" | "sms" | "voice" | "canvas" | "system";
+- NodeInfo · interface · L547-L560 — interface NodeInfo
+- NodeEvent · interface · L562-L567 — interface NodeEvent
+- SkillParameter · interface · L570-L577 — interface SkillParameter
+- SkillSource · type · L579-L579 — type SkillSource = "bundled" | "managed" | "external" | "workspace";
+- SkillRequirements · interface · L581-L588 — interface SkillRequirements
+- SkillMetadata · interface · L590-L598 — interface SkillMetadata
+- CustomSkill · interface · L600-L613 — interface CustomSkill
+- SkillRegistryEntry · interface · L616-L630 — interface SkillRegistryEntry
+- SkillSearchResult · interface · L632-L638 — interface SkillSearchResult
+- SkillStatusEntry · interface · L640-L658 — interface SkillStatusEntry extends CustomSkill
+- SkillStatusReport · interface · L660-L672 — interface SkillStatusReport
+- SkillsConfig · interface · L674-L682 — interface SkillsConfig
+- MCPTransportType · type · L685-L685 — type MCPTransportType = "stdio" | "sse" | "websocket" | "streamable-http";
+- MCPConnectionStatus · type · L686-L686 — type MCPConnectionStatus = "disconnected" | "connecting" | "connected" | "reconnecting" | "error";
+- MCPServerConfig · interface · L688-L716 — interface MCPServerConfig
+- MCPTool · interface · L718-L726 — interface MCPTool
+- MCPServerStatus · interface · L728-L735 — interface MCPServerStatus
+- MCPSettings · interface · L737-L747 — interface MCPSettings
+- MCPRegistryEntry · interface · L749-L763 — interface MCPRegistryEntry
+- MCPRegistry · interface · L765-L769 — interface MCPRegistry
+- MCPUpdateInfo · interface · L771-L776 — interface MCPUpdateInfo
+- CanvasSessionStatus · type · L779-L779 — type CanvasSessionStatus = "active" | "paused" | "closed";
+- CanvasSession · interface · L781-L790 — interface CanvasSession
+- CanvasA2UIAction · interface · L792-L798 — interface CanvasA2UIAction
+- CanvasEvent · interface · L800-L820 — interface CanvasEvent
+- ToolCategoryConfig · interface · L823-L827 — interface ToolCategoryConfig
+- BuiltinToolsSettings · interface · L829-L853 — interface BuiltinToolsSettings
+- TraySettings · interface · L856-L863 — interface TraySettings
+- CronSchedule · type · L866-L869 — type CronSchedule = | { kind: "at"; atMs: number } | { kind: "every"; everyMs: number; anchorMs?: number } | { kind: "cron"; expr: string; tz?: string };
+- CronJobStatus · type · L871-L877 — type CronJobStatus = | "ok" | "partial_success" | "needs_user_action" | "error" | "skipped" | "timeout";
+- CronDeliveryMode · type · L878-L878 — type CronDeliveryMode = "direct" | "outbox";
+- CronDeliverableStatus · type · L879-L879 — type CronDeliverableStatus = "none" | "queued" | "sent" | "dead_letter";
+- CronRunHistoryEntry · interface · L881-L890 — interface CronRunHistoryEntry
+- CronJobState · interface · L892-L904 — interface CronJobState
+- CronDeliveryConfig · interface · L906-L928 — interface CronDeliveryConfig
+- CronJob · interface · L930-L950 — interface CronJob
+- CronJobCreate · interface · L952-L968 — interface CronJobCreate
+- CronJobPatch · interface · L970-L986 — interface CronJobPatch
+- CronRunHistoryResult · interface · L988-L995 — interface CronRunHistoryResult
+- CronWebhookStatus · interface · L997-L1001 — interface CronWebhookStatus
+- CronStatusSummary · interface · L1003-L1012 — interface CronStatusSummary
+- CronEvent · interface · L1014-L1024 — interface CronEvent
+- NotificationType · type · L1027-L1035 — type NotificationType = | "task_completed" | "task_failed" | "scheduled_task" | "input_required" | "companion_suggestion" | "info" | "warning" | "error";
+- AppNotification · interface · L1037-L1050 — interface AppNotification
+- NotificationEvent · interface · L1052-L1056 — interface NotificationEvent
+- MemoryType · type · L1059-L1070 — type MemoryType = | "observation" | "decision" | "error" | "insight" | "screen_context" | "summary" | "preference" | "constraint" | "timing_preference" | "workflow_pattern" | "correction_rule";
+- PrivacyMode · type · L1071-L1071 — type PrivacyMode = "normal" | "strict" | "disabled";
+- MemorySettings · interface · L1073-L1082 — interface MemorySettings
+- Memory · interface · L1084-L1096 — interface Memory
+- UserFactCategory · type · L1098-L1108 — type UserFactCategory = | "identity" | "preference" | "bio" | "work" | "goal" | "operating" | "voice" | "accountability" | "constraint" | "other";
+- UserFact · interface · L1110-L1120 — interface UserFact
+- UserProfile · interface · L1122-L1126 — interface UserProfile
+- MemorySearchResult · type · L1128-L1149 — type MemorySearchResult = | { id: string; snippet: string; type: MemoryType; relevanceScore: number; createdAt: number; taskId?: string; source: "db"; } | { id: string; snippet: string; type: MemoryType; relevanceScore: number; createdAt: number; taskId?: string; source: "markdown"; path: string; startLine: number; endLine: number; };
+- MemoryTimelineEntry · interface · L1151-L1157 — interface MemoryTimelineEntry
+- MemoryStats · interface · L1159-L1164 — interface MemoryStats
+- ChatGPTImportOptions · interface · L1167-L1175 — interface ChatGPTImportOptions
+- ChatGPTImportProgress · interface · L1177-L1184 — interface ChatGPTImportProgress
+- ChatGPTImportResult · interface · L1186-L1193 — interface ChatGPTImportResult
+- TextMemoryImportOptions · interface · L1195-L1200 — interface TextMemoryImportOptions
+- TextMemoryImportResult · interface · L1202-L1209 — interface TextMemoryImportResult
+- HooksSettings · interface · L1212-L1223 — interface HooksSettings
+- HookMapping · interface · L1225-L1244 — interface HookMapping
+- GmailHooksConfig · interface · L1246-L1268 — interface GmailHooksConfig
+- ResendHooksConfig · interface · L1270-L1273 — interface ResendHooksConfig
+- HooksStatus · interface · L1275-L1282 — interface HooksStatus
+- GmailHooksStatus · interface · L1284-L1290 — interface GmailHooksStatus
+- HooksEvent · interface · L1292-L1299 — interface HooksEvent
+- TailscaleMode · type · L1305-L1305 — type TailscaleMode = "off" | "serve" | "funnel";
+- ControlPlaneConnectionMode · type · L1306-L1306 — type ControlPlaneConnectionMode = "local" | "remote";
+- ControlPlaneSettingsData · interface · L1308-L1327 — interface ControlPlaneSettingsData
+- ControlPlaneClientInfo · interface · L1329-L1337 — interface ControlPlaneClientInfo
+- ControlPlaneStatus · interface · L1339-L1360 — interface ControlPlaneStatus
+- ControlPlaneEvent · interface · L1362-L1376 — interface ControlPlaneEvent
+- TailscaleAvailability · interface · L1378-L1382 — interface TailscaleAvailability
+- RemoteGatewayConfig · interface · L1385-L1394 — interface RemoteGatewayConfig
+- SavedRemoteGatewayDevice · interface · L1396-L1403 — interface SavedRemoteGatewayDevice
+- ManagedDeviceRole · type · L1410-L1410 — type ManagedDeviceRole = "local" | "remote";
+- ManagedDevicePurpose · type · L1411-L1411 — type ManagedDevicePurpose = "primary" | "work" | "personal" | "automation" | "archive" | "general";
+- ManagedDeviceTransport · type · L1412-L1412 — type ManagedDeviceTransport = "local" | "direct" | "ssh" | "tailscale" | "unknown";
+- ManagedDeviceAttentionState · type · L1413-L1413 — type ManagedDeviceAttentionState = "none" | "info" | "warning" | "critical";
+- ManagedDeviceStorageSummary · interface · L1415-L1422 — interface ManagedDeviceStorageSummary
+- ManagedDeviceAppsSummary · interface · L1424-L1431 — interface ManagedDeviceAppsSummary
+- ManagedDeviceAlert · interface · L1433-L1439 — interface ManagedDeviceAlert
+- ManagedDevice · interface · L1441-L1462 — interface ManagedDevice
+- ManagedDeviceSummary · interface · L1464-L1498 — interface ManagedDeviceSummary
+- DeviceProxyRequest · interface · L1500-L1504 — interface DeviceProxyRequest
+- RemoteGatewayConnectionState · type · L1506-L1512 — type RemoteGatewayConnectionState = | "disconnected" | "connecting" | "authenticating" | "connected" | "reconnecting" | "error";
+- RemoteGatewayStatus · interface · L1514-L1524 — interface RemoteGatewayStatus
+- RemoteGatewayEvent · interface · L1526-L1533 — interface RemoteGatewayEvent
+- SSHTunnelState · type · L1536-L1536 — type SSHTunnelState = "disconnected" | "connecting" | "connected" | "reconnecting" | "error";
+- SSHTunnelConfig · interface · L1538-L1551 — interface SSHTunnelConfig
+- SSHTunnelStatus · interface · L1553-L1561 — interface SSHTunnelStatus
+- SSHTunnelEvent · interface · L1563-L1568 — interface SSHTunnelEvent
+- AgentCapability · type · L1571-L1579 — type AgentCapability = | "code" | "review" | "research" | "test" | "document" | "plan" | "design" | "analyze";
+- AgentToolRestrictions · interface · L1581-L1584 — interface AgentToolRestrictions
+- AgentAutonomyLevel · type · L1586-L1586 — type AgentAutonomyLevel = "intern" | "specialist" | "lead";
+- AgentRoleData · interface · L1588-L1633 — interface AgentRoleData
+- CreateAgentRoleRequest · interface · L1635-L1661 — interface CreateAgentRoleRequest
+- UpdateAgentRoleRequest · interface · L1663-L1691 — interface UpdateAgentRoleRequest
+- AutomationProfileData · interface · L1693-L1711 — interface AutomationProfileData
+- ActivityActorType · type · L1714-L1714 — type ActivityActorType = "agent" | "user" | "system";
+- ActivityType · type · L1715-L1732 — type ActivityType = | "task_created" | "task_started" | "task_completed" | "task_failed" | "task_paused" | "task_resumed" | "comment" | "file_created" | "file_modified" | "file_deleted" | "command_executed" | "tool_used" | "mention" | "supervisor_exchange" | "agent_assigned" | "error" | "info";
+- ActivityData · interface · L1734-L1747 — interface ActivityData
+- CreateActivityRequest · interface · L1749-L1758 — interface CreateActivityRequest
+- ActivityListQuery · interface · L1760-L1770 — interface ActivityListQuery
+- ActivityEvent · interface · L1772-L1777 — interface ActivityEvent
+- MentionType · type · L1780-L1780 — type MentionType = "request" | "handoff" | "review" | "fyi";
+- MentionStatus · type · L1781-L1781 — type MentionStatus = "pending" | "acknowledged" | "completed" | "dismissed";
+- MentionData · interface · L1783-L1795 — interface MentionData
+- CreateMentionRequest · interface · L1797-L1804 — interface CreateMentionRequest
+- MentionListQuery · interface · L1806-L1814 — interface MentionListQuery
+- MentionEvent · interface · L1820-L1823 — interface MentionEvent
+- HeartbeatStatus · type · L1826-L1826 — type HeartbeatStatus = "idle" | "running" | "sleeping" | "error";
+- HeartbeatResult · interface · L1828-L1848 — interface HeartbeatResult
+- HeartbeatEvent · interface · L1850-L1873 — interface HeartbeatEvent
+- SubscriptionReason · type · L1875-L1875 — type SubscriptionReason = "assigned" | "mentioned" | "commented" | "manual";
+- TaskSubscription · interface · L1877-L1883 — interface TaskSubscription
+- SubscriptionEvent · interface · L1885-L1890 — interface SubscriptionEvent
+- StandupReport · interface · L1892-L1902 — interface StandupReport
+- TaskBoardColumn · type · L1905-L1905 — type TaskBoardColumn = "backlog" | "todo" | "in_progress" | "review" | "done";
+- TaskLabelData · interface · L1907-L1913 — interface TaskLabelData
+- CreateTaskLabelRequest · interface · L1915-L1919 — interface CreateTaskLabelRequest
+- UpdateTaskLabelRequest · interface · L1921-L1924 — interface UpdateTaskLabelRequest
+- TaskLabelListQuery · interface · L1926-L1928 — interface TaskLabelListQuery
+- TaskBoardEvent · interface · L1930-L1946 — interface TaskBoardEvent
+- WorkingStateType · type · L1949-L1949 — type WorkingStateType = "context" | "progress" | "notes" | "plan";
+- AgentWorkingStateData · interface · L1951-L1962 — interface AgentWorkingStateData
+- UpdateWorkingStateRequest · interface · L1964-L1971 — interface UpdateWorkingStateRequest
+- WorkingStateQuery · interface · L1973-L1978 — interface WorkingStateQuery
+- WorkingStateHistoryQuery · interface · L1980-L1985 — interface WorkingStateHistoryQuery
+- SecurityModeType · type · L1988-L1988 — type SecurityModeType = "open" | "allowlist" | "pairing";
+- ContextTypeValue · type · L1989-L1989 — type ContextTypeValue = "dm" | "group";
+- ContextPolicyData · interface · L1991-L1999 — interface ContextPolicyData
+- UpdateContextPolicyOptions · interface · L2001-L2004 — interface UpdateContextPolicyOptions
+- ChannelSpecializationData · interface · L2006-L2020 — interface ChannelSpecializationData
+- CreateChannelSpecializationData · interface · L2022-L2033 — interface CreateChannelSpecializationData
+- UpdateChannelSpecializationData · interface · L2035-L2046 — interface UpdateChannelSpecializationData
+- ReadFileForViewerOptions · interface · L2048-L2054 — interface ReadFileForViewerOptions
+- LlmWikiVaultEntry · interface · L2056-L2061 — interface LlmWikiVaultEntry
+- LlmWikiVaultSummary · interface · L2063-L2078 — interface LlmWikiVaultSummary
+- invokeTaskIpcWithRendererTiming · function · L2080-L2106 — async function invokeTaskIpcWithRendererTiming<T>(channel: string, ...args: unknown[]): Promise<T>
+- handler · function · L2204-L2204 — handler = (_: Any, event: TerminalTabOutputEvent)
+- handler · function · L2316-L2316 — handler = (_: Any, request: BrowserWorkbenchOpenRequest)
+- handler · function · L2321-L2321 — handler = (_: Any, event: BrowserWorkbenchCursorEvent)
+- handler · function · L2326-L2326 — handler = (_: Any, event: BrowserWorkbenchViewportEvent)
+- subscription · function · L2457-L2457 — subscription = (_: Any, data: MailboxAskRunEvent)
+- subscription · function · L2672-L2672 — subscription = (_: Any, data: MailboxEvent)
+- subscription · function · L2801-L2801 — subscription = (_: Any, data: Any)
+- subscription · function · L2806-L2806 — subscription = (_: Any, data: TaskLearningProgress)
+- subscription · function · L3356-L3356 — subscription = (_: Any, data: Any)
+- subscription · function · L3361-L3362 — subscription = (_: Any, data: { channelId: string; channelType: string })
+- subscription · function · L3594-L3594 — subscription = (_: Any, data: Any)
+- subscription · function · L3599-L3599 — subscription = (_: Any, data: Any)
+- subscription · function · L3604-L3604 — subscription = (_: Any, data: Any)
+- subscription · function · L3656-L3656 — subscription = (_: Any, data: Any)
+- subscription · function · L3669-L3669 — subscription = (_: Any, data: Any)
+- subscription · function · L3765-L3765 — subscription = (_: Any, data: Any)
+- subscription · function · L3803-L3803 — subscription = (_: Any, data: Any)
+- subscription · function · L3820-L3820 — subscription = (_: unknown, status: InfraStatus)
+- listener · function · L3858-L3858 — listener = (_e: Any, payload: Any)
+- subscription · function · L3913-L3913 — subscription = (_: Any, data: CronEvent)
+- subscription · function · L3961-L3961 — subscription = (_: Any, data: NotificationEvent)
+- subscription · function · L3966-L3966 — subscription = (_: Any, taskId: string)
+- subscription · function · L3973-L3974 — subscription = (_: Any, payload: { botId: string; conversationId?: string })
+- subscription · function · L3997-L3997 — subscription = (_: Electron.IpcRendererEvent, data: HooksEvent)
+- subscription · function · L4015-L4015 — subscription = (_: Electron.IpcRendererEvent, data: ControlPlaneEvent)
+- subscription · function · L4036-L4036 — subscription = (_: Electron.IpcRendererEvent, data: RemoteGatewayEvent)
+- subscription · function · L4051-L4051 — subscription = (_: Electron.IpcRendererEvent, data: SSHTunnelEvent)
+- subscription · function · L4103-L4103 — subscription = (_: Electron.IpcRendererEvent, data: CanvasEvent)
+- subscription · function · L4120-L4120 — subscription = (_: Electron.IpcRendererEvent, data: Any)
+- subscription · function · L4193-L4193 — subscription = (_: Electron.IpcRendererEvent, data: Any)
+- subscription · function · L4428-L4429 — subscription = (_: Electron.IpcRendererEvent, data: ChatGPTImportProgress)
+- subscription · function · L4850-L4850 — subscription = (_: Electron.IpcRendererEvent, data: Any)
+- subscription · function · L4859-L4859 — subscription = (_: Electron.IpcRendererEvent, data: Any)
+- subscription · function · L4877-L4877 — subscription = (_: Any, data: ActivityEvent)
+- subscription · function · L4890-L4890 — subscription = (_: Any, data: MentionEvent)
+- subscription · function · L4905-L4905 — subscription = (_: Any, data: SupervisorExchangeEvent)
+- subscription · function · L4929-L4929 — subscription = (_: Any, data: HeartbeatEvent)
+- subscription · function · L5033-L5033 — subscription = (_: Any, data: SubscriptionEvent)
+- subscription · function · L5078-L5078 — subscription = (_: Any, data: TaskBoardEvent)
+- subscription · function · L5094-L5094 — subscription = (_: Any, data: ShellSessionLifecycleEvent)
+- subscription · function · L5125-L5125 — subscription = (_: Any, data: LLMRoutingRuntimeState)
+- handler · function · L5224-L5224 — handler = (_event: Electron.IpcRendererEvent, data: VoiceEventData)
+- handler · function · L5370-L5370 — handler = (_: Any, event: Any)
+- FileViewerResult · interface · L5390-L5453 — interface FileViewerResult
+- BrowserWorkbenchOpenRequest · interface · L5518-L5523 — interface BrowserWorkbenchOpenRequest
+- BrowserWorkbenchSessionRegistration · interface · L5525-L5531 — interface BrowserWorkbenchSessionRegistration
+- BrowserWorkbenchCursorEvent · interface · L5533-L5552 — interface BrowserWorkbenchCursorEvent
+- BrowserWorkbenchViewportEvent · interface · L5554-L5563 — interface BrowserWorkbenchViewportEvent
+- BrowserWorkbenchInspectTarget · interface · L5565-L5575 — interface BrowserWorkbenchInspectTarget
+- ElectronAPI · interface · L5589-L8820 — interface ElectronAPI
+- MigrationStatus · interface · L8823-L8827 — interface MigrationStatus
+- ExtensionType · type · L8830-L8830 — type ExtensionType = "channel" | "tool" | "provider" | "integration";
+- ExtensionState · type · L8831-L8831 — type ExtensionState = "loading" | "loaded" | "registered" | "active" | "error" | "disabled";
+- ExtensionData · interface · L8833-L8846 — interface ExtensionData
+- TunnelProvider · type · L8849-L8849 — type TunnelProvider = "ngrok" | "tailscale" | "cloudflare" | "localtunnel";
+- TunnelStatus · type · L8850-L8850 — type TunnelStatus = "stopped" | "starting" | "running" | "error";
+- TunnelStatusData · interface · L8852-L8858 — interface TunnelStatusData
+- VoiceProvider · type · L8861-L8861 — type VoiceProvider = "elevenlabs" | "openai" | "azure" | "local";
+- VoiceInputMode · type · L8862-L8862 — type VoiceInputMode = "push_to_talk" | "voice_activity" | "disabled";
+- VoiceResponseMode · type · L8863-L8863 — type VoiceResponseMode = "auto" | "manual" | "smart";
+- VoiceCapabilitiesData · interface · L8865-L8876 — interface VoiceCapabilitiesData
+- VoiceSettingsData · interface · L8878-L8911 — interface VoiceSettingsData
+- VoiceStateData · interface · L8913-L8921 — interface VoiceStateData
+- ElevenLabsVoiceData · interface · L8923-L8930 — interface ElevenLabsVoiceData
+- VoiceEventType · type · L8932-L8939 — type VoiceEventType = | "voice:state-changed" | "voice:transcript" | "voice:partial-transcript" | "voice:speaking-start" | "voice:speaking-end" | "voice:error" | "voice:audio-level";
+- VoiceEventData · interface · L8941-L8944 — interface VoiceEventData
+- Window · interface · L8947-L8949 — interface Window

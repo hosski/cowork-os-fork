@@ -1,0 +1,36 @@
+# src/electron/routines/types.ts
+
+- RoutineExecutionTargetKind · type · L11-L15 — type RoutineExecutionTargetKind = | "workspace" | "worktree" | "device" | "managed_environment";
+- RoutineExecutionTarget · interface · L17-L21 — interface RoutineExecutionTarget
+- RoutineContextBindings · interface · L23-L29 — interface RoutineContextBindings
+- RoutineConnectorPolicy · interface · L31-L34 — interface RoutineConnectorPolicy
+- RoutineApprovalPolicy · interface · L36-L38 — interface RoutineApprovalPolicy
+- RoutineOutput · type · L40-L46 — type RoutineOutput = | RoutineTaskOnlyOutput | RoutineChannelMessageOutput | RoutineWebhookResponseOutput | RoutineEmailOutput | RoutineGithubCommentOutput | RoutineIssueOrPrOutput;
+- RoutineTaskOnlyOutput · interface · L48-L50 — interface RoutineTaskOnlyOutput
+- RoutineChannelMessageOutput · interface · L52-L60 — interface RoutineChannelMessageOutput
+- RoutineWebhookResponseOutput · interface · L62-L67 — interface RoutineWebhookResponseOutput
+- RoutineEmailOutput · interface · L69-L73 — interface RoutineEmailOutput
+- RoutineGithubCommentOutput · interface · L75-L79 — interface RoutineGithubCommentOutput
+- RoutineIssueOrPrOutput · interface · L81-L85 — interface RoutineIssueOrPrOutput
+- RoutineTrigger · type · L87-L94 — type RoutineTrigger = | RoutineScheduleTrigger | RoutineApiTrigger | RoutineConnectorEventTrigger | RoutineChannelEventTrigger | RoutineMailboxEventTrigger | RoutineGithubEventTrigger | RoutineManualTrigger;
+- RoutineBaseTrigger · interface · L96-L99 — interface RoutineBaseTrigger
+- RoutineEventBaseTrigger · interface · L101-L105 — interface RoutineEventBaseTrigger extends RoutineBaseTrigger
+- RoutineScheduleTrigger · interface · L107-L111 — interface RoutineScheduleTrigger extends RoutineBaseTrigger
+- RoutineApiTrigger · interface · L113-L118 — interface RoutineApiTrigger extends RoutineBaseTrigger
+- RoutineConnectorEventTrigger · interface · L120-L125 — interface RoutineConnectorEventTrigger extends RoutineEventBaseTrigger
+- RoutineChannelEventTrigger · interface · L127-L133 — interface RoutineChannelEventTrigger extends RoutineEventBaseTrigger
+- RoutineMailboxEventTrigger · interface · L135-L141 — interface RoutineMailboxEventTrigger extends RoutineEventBaseTrigger
+- RoutineGithubEventTrigger · interface · L143-L149 — interface RoutineGithubEventTrigger extends RoutineEventBaseTrigger
+- RoutineManualTrigger · interface · L151-L153 — interface RoutineManualTrigger extends RoutineBaseTrigger
+- RoutineDefinition · interface · L155-L174 — interface RoutineDefinition
+- Routine · interface · L180-L183 — interface Routine extends RoutineDefinition
+- RoutineCreate · interface · L185-L195 — interface RoutineCreate extends Omit< RoutineDefinition, "id" | "createdAt" | "updatedAt" | "instructions" | "connectorPolicy" | "triggers" | "outputs" >
+- RoutinePatch · type · L197-L209 — type RoutinePatch = Partial< Omit< RoutineDefinition, "id" | "createdAt" | "updatedAt" | "instructions" | "connectorPolicy" | "triggers" | "outputs" > > & { triggers?: RoutineTrigger[]; outputs?: RoutineOutput[]; instructions?: string; prompt?: string; connectorPolicy?: Partial<RoutineConnectorPolicy>; connectors?: string[]; };
+- RoutineRunStatus · type · L211-L217 — type RoutineRunStatus = | "queued" | "running" | "completed" | "partial_success" | "needs_user_action" | "failed";
+- RoutineOutputStatus · type · L219-L219 — type RoutineOutputStatus = "none" | "queued" | "sent" | "responded" | "failed";
+- RoutineRun · interface · L221-L238 — interface RoutineRun
+- RoutineTaskSnapshot · interface · L240-L246 — interface RoutineTaskSnapshot
+- RoutineManagedSessionSnapshot · interface · L248-L253 — interface RoutineManagedSessionSnapshot
+- RoutineServiceDeps · interface · L255-L307 — interface RoutineServiceDeps
+- CompiledRoutineTarget · interface · L309-L313 — interface CompiledRoutineTarget
+- CompiledRoutineOutputs · interface · L315-L318 — interface CompiledRoutineOutputs

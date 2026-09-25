@@ -1,0 +1,51 @@
+# src/electron/agents/HeartbeatService.ts
+
+- HeartbeatWakeMode · type · L51-L51 — type HeartbeatWakeMode = "now" | "next-heartbeat";
+- HeartbeatWakeSource · type · L52-L52 — type HeartbeatWakeSource = "hook" | "cron" | "api" | "manual";
+- WorkspaceMemoryReadGuard · type · L53-L53 — type WorkspaceMemoryReadGuard = (candidatePath: string) => boolean;
+- MaintenanceWorkspaceContext · interface · L55-L58 — interface MaintenanceWorkspaceContext
+- HeartbeatStatusSnapshot · type · L60-L76 — type HeartbeatStatusSnapshot = { agentRoleId: string; agentName: string; heartbeatEnabled: boolean; heartbeatStatus: HeartbeatStatus; lastHeartbeatAt?: number; nextHeartbeatAt?: number; lastPulseResult?: HeartbeatPulseResultKind; lastDispatchKind?: string; deferred?: ReturnType<HeartbeatService["getDeferredStateForAgent"]>; compressedSignalCount: number; dueProactiveCount: number; checklistDueCount: number; dispatchCooldownUntil?: number; dispatchesToday: number; maxDispatchesPerDay: number; };
+- HeartbeatServiceDeps · interface · L78-L179 — interface HeartbeatServiceDeps
+- normalizeWakeText · function · L181-L184 — function normalizeWakeText(text?: string): string
+- deriveSignalFamily · function · L186-L193 — function deriveSignalFamily( mode: HeartbeatWakeMode, source: HeartbeatWakeSource, ): HeartbeatSignalFamily
+- getStartOfDay · function · L195-L199 — function getStartOfDay(timestamp: number): number
+- buildSignalSummary · function · L201-L204 — function buildSignalSummary(signal: HeartbeatSignal): string
+- isUsableWorkspaceId · function · L206-L208 — function isUsableWorkspaceId(value?: string): value is string
+- getProactiveTasks · function · L210-L212 — function getProactiveTasks(agent: AgentRole): ProactiveTaskDefinition[]
+- getHeartbeatPolicy · function · L214-L216 — function getHeartbeatPolicy(agent: AgentRole)
+- getTimeParts · function · L218-L234 — function getTimeParts(timeZone?: string): { hour: number; weekday: number }
+- isWithinActiveHours · function · L236-L249 — function isWithinActiveHours(agent: AgentRole): boolean
+- HeartbeatService · class · L251-L1390 — class HeartbeatService extends EventEmitter
+- constructor · method · L263-L273 — constructor(private deps: HeartbeatServiceDeps)
+- finalizeCoreLearning · method · L275-L281 — private async finalizeCoreLearning(traceId?: string): Promise<void>
+- start · method · L283-L291 — async start(): Promise<void>
+- stop · method · L293-L300 — async stop(): Promise<void>
+- triggerHeartbeat · method · L302-L346 — async triggerHeartbeat(agentRoleId: string): Promise<HeartbeatResult>
+- submitHeartbeatSignal · method · L348-L359 — submitHeartbeatSignal(input: SubmitHeartbeatSignalInput): HeartbeatSignal
+- submitSignalForAll · method · L361-L372 — submitSignalForAll(input: Omit<SubmitHeartbeatSignalInput, "agentRoleId">): HeartbeatSignal[]
+- submitWakeRequest · method · L374-L394 — submitWakeRequest( agentRoleId: string, request: { text?: string; mode?: HeartbeatWakeMode; source?: HeartbeatWakeSource }, ): void
+- submitWakeForAll · method · L396-L404 — submitWakeForAll(request: { text?: string; mode?: HeartbeatWakeMode; source?: HeartbeatWakeSource; }): void
+- updateAgentConfig · method · L406-L410 — updateAgentConfig(agentRoleId: string, _config: HeartbeatConfig): void
+- cancelHeartbeat · method · L412-L420 — cancelHeartbeat(agentRoleId: string): void
+- getAllStatus · method · L422-L424 — getAllStatus(): HeartbeatStatusSnapshot[]
+- getStatus · method · L426-L437 — getStatus(agentRoleId: string): | (HeartbeatStatusSnapshot & { isRunning: boolean; }) | undefined
+- buildStatus · method · L439-L464 — private buildStatus(agent: AgentRole): HeartbeatStatusSnapshot
+- scheduleHeartbeat · method · L466-L482 — private scheduleHeartbeat(agent: AgentRole): void
+- executePulse · method · L484-L1036 — private async executePulse(agent: AgentRole, manualOverride: boolean): Promise<HeartbeatResult>
+- finishPulse · method · L1038-L1047 — private finishPulse(agent: AgentRole, result: HeartbeatResult): void
+- recordDispatchOutcome · method · L1049-L1077 — private async recordDispatchOutcome(params: { agent: AgentRole; workspaceId: string; sourceRunId: string; trigger: "manual" | "heartbeat"; decision: HeartbeatPulseDecision; dispatchResult: HeartbeatResult; }): Promise<void>
+- recordHeartbeatError · method · L1079-L1099 — private async recordHeartbeatError( agent: AgentRole, runId: string, trigger: "manual" | "heartbeat", message: string, workspaceId?: string, ): Promise<void>
+- maybeRunWorkflowReflection · method · L1101-L1133 — private async maybeRunWorkflowReflection(params: { agent: AgentRole; workspaceId?: string; decision: HeartbeatPulseDecision; pendingMentions: number; assignedTasks: number; relevantActivities: number; heartbeatRunId: string; }): Promise<{ id?: string; outcome?: string } | null>
+- maybeRunMemoryDreaming · method · L1135-L1180 — private async maybeRunMemoryDreaming(params: { workspaceId?: string; workspacePath?: string; decision: HeartbeatPulseDecision; signals: HeartbeatSignal[]; heartbeatRunId: string; }): Promise<{ id?: string; status?: string; candidateCount?: number } | null>
+- getDeferredStateForAgent · method · L1182-L1184 — private getDeferredStateForAgent(agentRoleId: string)
+- getDispatchesToday · method · L1186-L1190 — private getDispatchesToday(agentRoleId: string): number
+- getDispatchCooldownUntil · method · L1192-L1203 — private getDispatchCooldownUntil(agent: AgentRole): number | undefined
+- getNextHeartbeatTime · method · L1205-L1222 — private getNextHeartbeatTime(agent: AgentRole): number | undefined
+- reconcileLegacyMigratedRuns · method · L1224-L1275 — private reconcileLegacyMigratedRuns(): void
+- getDueChecklistItems · method · L1277-L1300 — private getDueChecklistItems(agent: AgentRole): HeartbeatChecklistItem[]
+- getDueProactiveTasks · method · L1302-L1316 — private getDueProactiveTasks( agent: AgentRole, signals: HeartbeatSignal[], ): ProactiveTaskDefinition[]
+- markMaintenanceCompleted · method · L1318-L1336 — private markMaintenanceCompleted( agent: AgentRole, dueChecklistItems: HeartbeatChecklistItem[], dueProactiveTasks: ProactiveTaskDefinition[], outcome: HeartbeatPulseResultKind, ): void
+- emitHeartbeatEvent · method · L1338-L1340 — private emitHeartbeatEvent(event: HeartbeatEvent): void
+- resolveWorkspaceId · method · L1342-L1389 — private resolveWorkspaceId( agent: AgentRole, signals: HeartbeatSignal[], mentions: AgentMention[], tasks: Task[], dueChecklistItems: HeartbeatChecklistItem[] = [], ): string | undefined
+- getHeartbeatService · function · L1394-L1396 — function getHeartbeatService(): HeartbeatService | null
+- setHeartbeatService · function · L1398-L1400 — function setHeartbeatService(service: HeartbeatService | null): void

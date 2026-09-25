@@ -1,0 +1,89 @@
+# src/electron/reports/UsageInsightsService.ts
+
+- formatTokens · function · L6-L10 — function formatTokens(n: number): string
+- UsageInsightsCostByModelRow · interface · L12-L20 — interface UsageInsightsCostByModelRow
+- UsageInsightsLlmSummary · interface · L22-L34 — interface UsageInsightsLlmSummary
+- UsageInsightsJevPurposeRow · interface · L36-L42 — interface UsageInsightsJevPurposeRow
+- UsageInsightsJevSummary · interface · L44-L54 — interface UsageInsightsJevSummary
+- UsageInsightsRequestDay · interface · L56-L63 — interface UsageInsightsRequestDay
+- UsageInsightsAwuDay · interface · L65-L72 — interface UsageInsightsAwuDay
+- UsageInsightsProviderSlice · interface · L74-L83 — interface UsageInsightsProviderSlice
+- UsageInsightsPersonaMetric · interface · L85-L96 — interface UsageInsightsPersonaMetric
+- UsageInsightsFeedbackMetrics · interface · L98-L104 — interface UsageInsightsFeedbackMetrics
+- UsageInsightsRetryMetrics · interface · L106-L111 — interface UsageInsightsRetryMetrics
+- UsageInsights · interface · L113-L197 — interface UsageInsights
+- LlmUsageScanResult · interface · L199-L239 — interface LlmUsageScanResult
+- wsFilter · function · L242-L248 — function wsFilter( workspaceId: string | null, alias: string, ): { clause: string; params: unknown[] }
+- emptyLlmScan · function · L250-L263 — function emptyLlmScan(): LlmUsageScanResult
+- mergeLlmScans · function · L265-L334 — function mergeLlmScans(target: LlmUsageScanResult, source: LlmUsageScanResult): LlmUsageScanResult
+- collectLocalDateKeysInRange · function · L336-L347 — function collectLocalDateKeysInRange(periodStart: number, periodEnd: number): string[]
+- LlmPricingRow · interface · L353-L358 — interface LlmPricingRow
+- TaskMetricsAccumulator · interface · L360-L367 — interface TaskMetricsAccumulator
+- RetryAccumulator · interface · L369-L374 — interface RetryAccumulator
+- ActivityAccumulator · interface · L376-L379 — interface ActivityAccumulator
+- FeedbackAccumulator · interface · L381-L385 — interface FeedbackAccumulator
+- ToolAccumulator · interface · L387-L394 — interface ToolAccumulator
+- PersonaAccumulatorEntry · interface · L396-L408 — interface PersonaAccumulatorEntry
+- AwuAccumulator · interface · L410-L413 — interface AwuAccumulator
+- NonLlmAccumulator · interface · L415-L424 — interface NonLlmAccumulator
+- emptyTaskMetricsAccumulator · function · L426-L435 — function emptyTaskMetricsAccumulator(): TaskMetricsAccumulator
+- emptyRetryAccumulator · function · L437-L444 — function emptyRetryAccumulator(): RetryAccumulator
+- emptyActivityAccumulator · function · L446-L451 — function emptyActivityAccumulator(): ActivityAccumulator
+- emptyFeedbackAccumulator · function · L453-L459 — function emptyFeedbackAccumulator(): FeedbackAccumulator
+- emptyToolAccumulator · function · L461-L470 — function emptyToolAccumulator(): ToolAccumulator
+- emptyAwuAccumulator · function · L472-L477 — function emptyAwuAccumulator(): AwuAccumulator
+- emptyNonLlmAccumulator · function · L479-L490 — function emptyNonLlmAccumulator(): NonLlmAccumulator
+- startOfLocalDay · function · L492-L496 — function startOfLocalDay(timestampMs: number): number
+- nextLocalDayStart · function · L498-L502 — function nextLocalDayStart(timestampMs: number): number
+- mergeNumberMap · function · L504-L508 — function mergeNumberMap(target: Map<string, number>, source: Map<string, number>): void
+- mergeNonLlmAccumulator · function · L510-L584 — function mergeNonLlmAccumulator( target: NonLlmAccumulator, source: NonLlmAccumulator, ): NonLlmAccumulator
+- UsageInsightsService · class · L586-L3270 — class UsageInsightsService
+- constructor · method · L589-L589 — constructor(private db: Database.Database)
+- loadPricingMap · method · L591-L609 — private loadPricingMap(): Map<string, LlmPricingRow>
+- lookupPricing · method · L611-L630 — private lookupPricing(modelKey: string): LlmPricingRow | undefined
+- estimateCost · method · L632-L646 — private estimateCost( modelKey: string, inputTokens: number, outputTokens: number, cachedTokens: number, ): number
+- parseJsonObject · method · L648-L656 — private parseJsonObject(value?: string | null): Record<string, unknown> | null
+- getProviderTypeFromRoutingPayload · method · L658-L668 — private getProviderTypeFromRoutingPayload(routingPayload?: string | null): string | null
+- getProviderTypeFromAgentConfig · method · L670-L675 — private getProviderTypeFromAgentConfig(agentConfig?: string | null): string | null
+- getProviderTypeFromLogPayload · method · L677-L684 — private getProviderTypeFromLogPayload(logPayload?: string | null): string | null
+- resolveProviderType · method · L686-L705 — private resolveProviderType(entry: { providerType?: string | null; routingPayload?: string | null; providerLogPayload?: string | null; agentConfig?: string | null; }): string
+- applyUsageScanEntry · method · L707-L800 — private applyUsageScanEntry( out: LlmUsageScanResult, entry: { taskId?: string | null; timestamp: number; providerType?: string | null; modelKey?: string | null; modelId?: string | null; inputTokens?: number; outputTokens?: number; cachedTokens?: number; cost?: number; }, ): void
+- getEarliestActivityMs · method · L802-L810 — getEarliestActivityMs(workspaceId: string | null): number | null
+- generate · method · L812-L835 — generate(workspaceId: string | null, periodDays = 7): UsageInsights
+- generateDuringBackfill · method · L837-L952 — private generateDuringBackfill( workspaceId: string | null, periodDays: number, projector: UsageInsightsProjector, ): UsageInsights
+- generateRawWindow · method · L954-L1036 — private generateRawWindow(workspaceId: string | null, periodDays = 7): UsageInsights
+- generateFast · method · L1038-L1117 — private generateFast(workspaceId: string | null, periodDays = 7): UsageInsights
+- readNonLlmAccumulatorFast · method · L1119-L1155 — private readNonLlmAccumulatorFast( workspaceId: string | null, periodStart: number, periodEnd: number, ): NonLlmAccumulator
+- readRollupNonLlmAccumulator · method · L1157-L1333 — private readRollupNonLlmAccumulator( workspaceId: string | null, startDateKey: string, endDateKey: string, ): NonLlmAccumulator
+- readNonLlmAccumulatorOverlay · method · L1335-L1354 — private readNonLlmAccumulatorOverlay( workspaceId: string | null, periodStart: number, periodEnd: number, processedEndMs: number, ): NonLlmAccumulator
+- readRawNonLlmAccumulator · method · L1356-L1652 — private readRawNonLlmAccumulator( workspaceId: string | null, periodStart: number, periodEnd: number, ): NonLlmAccumulator
+- collectCanonicalLlmUsageScan · method · L1654-L1717 — private collectCanonicalLlmUsageScan( workspaceId: string | null, periodStart: number, periodEnd: number, ): LlmUsageScanResult
+- collectJevUsageSummary · method · L1719-L1823 — private collectJevUsageSummary( workspaceId: string | null, periodStart: number, periodEnd: number, ): UsageInsightsJevSummary
+- applyCanonicalPersonaCosts · method · L1825-L1930 — private applyCanonicalPersonaCosts( persona: Map<string, PersonaAccumulatorEntry>, workspaceId: string | null, periodStart: number, periodEnd: number, ): void
+- countCanonicalLlmErrors · method · L1932-L1960 — private countCanonicalLlmErrors( workspaceId: string | null, periodStart: number, periodEnd: number, ): number
+- buildTaskMetricsFromAccumulator · method · L1962-L1975 — private buildTaskMetricsFromAccumulator( task: TaskMetricsAccumulator, ): UsageInsights["taskMetrics"]
+- buildActivityPatternFromAccumulator · method · L1977-L1990 — private buildActivityPatternFromAccumulator( activity: ActivityAccumulator, ): UsageInsights["activityPattern"]
+- buildTopSkillsFromAccumulator · method · L1992-L1999 — private buildTopSkillsFromAccumulator( topSkills: Map<string, number>, ): UsageInsights["topSkills"]
+- buildPersonaMetricsFromAccumulator · method · L2001-L2021 — private buildPersonaMetricsFromAccumulator( persona: Map<string, PersonaAccumulatorEntry>, ): UsageInsightsPersonaMetric[]
+- buildFeedbackMetricsFromAccumulator · method · L2023-L2037 — private buildFeedbackMetricsFromAccumulator( feedback: FeedbackAccumulator, ): UsageInsightsFeedbackMetrics
+- buildRetryMetricsFromAccumulator · method · L2039-L2049 — private buildRetryMetricsFromAccumulator( retry: RetryAccumulator, totalTasks: number, ): UsageInsightsRetryMetrics
+- buildExecutionMetricsFromAccumulator · method · L2051-L2095 — private buildExecutionMetricsFromAccumulator( tools: ToolAccumulator, taskMetrics: UsageInsights["taskMetrics"], llmScan: LlmUsageScanResult, ): UsageInsights["executionMetrics"]
+- buildAwuMetricsFromAccumulator · method · L2097-L2169 — private buildAwuMetricsFromAccumulator( workspaceId: string | null, periodStart: number, periodEnd: number, awu: AwuAccumulator, llmScan: LlmUsageScanResult, ): UsageInsights["awuMetrics"]
+- collectLlmUsageScan · method · L2171-L2385 — private collectLlmUsageScan( workspaceId: string | null, periodStart: number, periodEnd: number, ): LlmUsageScanResult
+- countLlmErrors · method · L2387-L2434 — private countLlmErrors( workspaceId: string | null, periodStart: number, periodEnd: number, ): number
+- costMetricsFromScan · method · L2436-L2458 — private costMetricsFromScan(scan: LlmUsageScanResult): UsageInsights["costMetrics"]
+- llmSummaryFromScan · method · L2460-L2482 — private llmSummaryFromScan(scan: LlmUsageScanResult): UsageInsightsLlmSummary
+- requestsByDayFromScan · method · L2484-L2501 — private requestsByDayFromScan( scan: LlmUsageScanResult, periodStart: number, periodEnd: number, ): UsageInsightsRequestDay[]
+- providerBreakdownFromScan · method · L2503-L2529 — private providerBreakdownFromScan(scan: LlmUsageScanResult): UsageInsightsProviderSlice[]
+- getPeriodScanTotals · method · L2531-L2542 — private getPeriodScanTotals( workspaceId: string | null, periodStart: number, periodEnd: number, ): { totalCost: number; totalInputTokens: number; totalOutputTokens: number }
+- getTaskMetrics · method · L2544-L2575 — private getTaskMetrics( workspaceId: string | null, periodStart: number, periodEnd: number, ): UsageInsights["taskMetrics"]
+- getActivityPattern · method · L2577-L2608 — private getActivityPattern( workspaceId: string | null, periodStart: number, periodEnd: number, ): UsageInsights["activityPattern"]
+- getTopSkills · method · L2610-L2645 — private getTopSkills( workspaceId: string | null, periodStart: number, periodEnd: number, ): UsageInsights["topSkills"]
+- getPersonaMetrics · method · L2647-L2739 — private getPersonaMetrics( workspaceId: string | null, periodStart: number, periodEnd: number, ): UsageInsightsPersonaMetric[]
+- getFeedbackMetrics · method · L2741-L2798 — private getFeedbackMetrics( workspaceId: string | null, periodStart: number, periodEnd: number, ): UsageInsightsFeedbackMetrics
+- getRetryMetrics · method · L2800-L2837 — private getRetryMetrics( workspaceId: string | null, periodStart: number, periodEnd: number, totalTasks: number, ): UsageInsightsRetryMetrics
+- getExecutionMetrics · method · L2839-L2984 — private getExecutionMetrics( workspaceId: string | null, periodStart: number, periodEnd: number, taskMetrics: UsageInsights["taskMetrics"], llmScan: LlmUsageScanResult, ): UsageInsights["executionMetrics"]
+- countAwus · method · L2986-L3001 — private countAwus(workspaceId: string | null, periodStart: number, periodEnd: number): number
+- getAwuCountsByDay · method · L3003-L3029 — private getAwuCountsByDay( workspaceId: string | null, periodStart: number, periodEnd: number, ): Map<string, number>
+- getAwuMetrics · method · L3031-L3100 — private getAwuMetrics( workspaceId: string | null, periodStart: number, periodEnd: number, llmScan: LlmUsageScanResult, ): UsageInsights["awuMetrics"]
+- formatReport · method · L3102-L3269 — private formatReport( periodDays: number, taskMetrics: UsageInsights["taskMetrics"], costMetrics: UsageInsights["costMetrics"], activityPattern: UsageInsights["activityPattern"], topSkills: UsageInsights["topSkills"], personaMetrics: UsageInsightsPersonaMetric[], feedbackMetrics: UsageInsightsFeedbackMetrics, retryMetrics: UsageInsightsRetryMetrics, executionMetrics: UsageInsights["executionMetrics"], awuMetrics: UsageInsights["awuMetrics"], llmSummary: UsageInsightsLlmSummary, jevSummary: UsageInsightsJevSummary, llmSuccessRate: number | null, llmErrorCount: number, ): string

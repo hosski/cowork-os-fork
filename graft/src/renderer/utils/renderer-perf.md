@@ -1,0 +1,48 @@
+# src/renderer/utils/renderer-perf.ts
+
+- MetricBucket · type · L2-L4 — type MetricBucket = { samples: number[]; };
+- RenderBucket · type · L6-L11 — type RenderBucket = { total: number; keys: Map<string, number>; windowTotal: number; windowKeys: Map<string, number>; };
+- CounterBucket · type · L13-L16 — type CounterBucket = { value: number; windowValue: number; };
+- PendingVisibleEvent · type · L18-L22 — type PendingVisibleEvent = { location: string; attempts: number; firstQueuedAtMs: number; };
+- TaskEventTrace · type · L24-L36 — type TaskEventTrace = { eventId: string; aliasId?: string; taskId: string; type: string; receivedAtMs: number; queuedAtMs?: number; appendDispatchAtMs?: number; appendedAtMs?: number; renderable: boolean; renderableAtMs?: number; visibleRecorded?: boolean; };
+- StartupMark · type · L38-L43 — type StartupMark = { name: string; atMs: number; details?: Record<string, unknown>; emitted: boolean; };
+- PerfMark · type · L45-L49 — type PerfMark = { name: string; atMs: number; details?: Record<string, unknown>; };
+- RendererPerfState · type · L51-L71 — type RendererPerfState = { schemaVersion: number; metrics: Map<string, MetricBucket>; renders: Map<string, RenderBucket>; counters: Map<string, CounterBucket>; startupMarks: Map<string, StartupMark>; perfMarks: PerfMark[]; taskEvents: Map<string, TaskEventTrace>; taskEventAliases: Map<string, string>; settledVisibleEvents: Map<string, number>; pendingVisibleEvents: Map<string, PendingVisibleEvent>; reportTimer: number | null; visibleFrame1: number | null; visibleFrame2: number | null; frameMonitorStarted: boolean; frameMonitorTimer: number | null; frameMonitorFrame: number | null; lastFrameAtMs: number | null; longTaskObserverStarted: boolean; longTaskObserver: PerformanceObserver | null; };
+- Window · interface · L74-L76 — interface Window
+- isRendererPerfEnabled · function · L90-L92 — function isRendererPerfEnabled(enabled?: boolean): boolean
+- getState · function · L94-L124 — function getState(): RendererPerfState | null
+- migrateRendererPerfState · function · L126-L132 — function migrateRendererPerfState(state: RendererPerfState): void
+- percentile · function · L134-L138 — function percentile(sorted: number[], ratio: number): number
+- cleanupTaskEventTraces · function · L140-L168 — function cleanupTaskEventTraces(state: RendererPerfState, nowMs: number): void
+- getTaskEventAlias · function · L170-L175 — function getTaskEventAlias(event: Pick<TaskEvent, "id" | "eventId">): string | null
+- resolveTaskEventTrace · function · L177-L203 — function resolveTaskEventTrace( state: RendererPerfState, event: Pick<TaskEvent, "id" | "eventId"> | string, ): TaskEventTrace | null
+- deleteTaskEventTrace · function · L205-L210 — function deleteTaskEventTrace(state: RendererPerfState, trace: TaskEventTrace): void
+- isTaskEventVisibilitySettled · function · L212-L224 — function isTaskEventVisibilitySettled( state: RendererPerfState, event: Pick<TaskEvent, "id" | "eventId"> | string, ): boolean
+- emitRendererPerfLog · function · L226-L235 — function emitRendererPerfLog(message: string): void
+- formatStartupMark · function · L237-L247 — function formatStartupMark(mark: StartupMark): string
+- formatPerfMark · function · L249-L259 — function formatPerfMark(name: string, atMs: number, details?: Record<string, unknown>): string
+- addRendererPerfSample · function · L261-L269 — function addRendererPerfSample(state: RendererPerfState, name: string, valueMs: number): void
+- createRenderBucket · function · L271-L278 — function createRenderBucket(): RenderBucket
+- incrementRenderKey · function · L280-L288 — function incrementRenderKey(keys: Map<string, number>, key: string): void
+- shouldRecordFrameGap · function · L290-L294 — function shouldRecordFrameGap(gapMs: number): boolean
+- flushRendererPerfReport · function · L296-L348 — function flushRendererPerfReport(state: RendererPerfState): void
+- scheduleRendererPerfReport · function · L350-L358 — function scheduleRendererPerfReport(state: RendererPerfState): void
+- startRendererPerfMonitors · function · L360-L401 — function startRendererPerfMonitors(state: RendererPerfState): void
+- scheduleNextFrame · function · L363-L382 — scheduleNextFrame = ()
+- measureRendererPerf · function · L403-L413 — function measureRendererPerf<T>(name: string, enabled: boolean | undefined, fn: () => T): T
+- recordRendererPerfSample · function · L415-L423 — function recordRendererPerfSample(name: string, valueMs: number, enabled?: boolean): void
+- markRendererStartup · function · L425-L442 — function markRendererStartup( name: string, enabled?: boolean, details?: Record<string, unknown>, ): void
+- markRendererPerfEvent · function · L444-L460 — function markRendererPerfEvent( name: string, enabled?: boolean, details?: Record<string, unknown>, ): void
+- flushRendererStartupMarks · function · L462-L477 — function flushRendererStartupMarks(enabled?: boolean): void
+- recordRendererRender · function · L479-L490 — function recordRendererRender(name: string, key: string, enabled?: boolean): void
+- incrementRendererPerfCounter · function · L492-L505 — function incrementRendererPerfCounter( name: string, enabled?: boolean, delta: number = 1, ): void
+- noteRendererTaskEventReceived · function · L507-L528 — function noteRendererTaskEventReceived( event: Pick<TaskEvent, "id" | "eventId" | "taskId" | "type">, enabled?: boolean, ): void
+- noteRendererTaskEventQueued · function · L530-L540 — function noteRendererTaskEventQueued( event: Pick<TaskEvent, "id" | "eventId">, queuedAtMs: number, enabled?: boolean, ): void
+- noteRendererTaskEventsAppended · function · L542-L586 — function noteRendererTaskEventsAppended( entries: Array<{ event: Pick<TaskEvent, "id" | "type">; queuedAtMs?: number }>, enabled?: boolean, ): void
+- noteRendererTaskEventsAppendDispatched · function · L588-L611 — function noteRendererTaskEventsAppendDispatched( entries: Array<Pick<TaskEvent, "id" | "eventId" | "type">>, enabled?: boolean, ): void
+- flushPendingVisibleEvents · function · L613-L650 — function flushPendingVisibleEvents(state: RendererPerfState, enabled?: boolean): void
+- schedulePendingVisibleEvents · function · L652-L660 — function schedulePendingVisibleEvents(state: RendererPerfState, enabled?: boolean): void
+- recordTaskEventVisibleFromTrace · function · L662-L712 — function recordTaskEventVisibleFromTrace( event: Pick<TaskEvent, "id" | "eventId"> | string, location: string, enabled?: boolean, ): boolean
+- markTaskEventRenderable · function · L714-L734 — function markTaskEventRenderable( event: Pick<TaskEvent, "id" | "eventId">, enabled?: boolean, ): void
+- markTaskEventVisible · function · L736-L766 — function markTaskEventVisible( event: Pick<TaskEvent, "id" | "eventId">, location: string, enabled?: boolean, ): void
+- noteRendererTaskEventVisible · function · L768-L774 — function noteRendererTaskEventVisible( event: Pick<TaskEvent, "id" | "eventId">, location: string, enabled?: boolean, ): void

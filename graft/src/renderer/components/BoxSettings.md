@@ -1,0 +1,15 @@
+# src/renderer/components/BoxSettings.tsx
+
+- BoxSettings · function · L21-L640 — function BoxSettings()
+- loadSettings · function · L55-L63 — loadSettings = async ()
+- loadWorkspaces · function · L65-L74 — loadWorkspaces = async ()
+- updateSettings · function · L76-L79 — updateSettings = (updates: Partial<BoxSettingsData>)
+- updateBrainSettings · function · L83-L85 — updateBrainSettings = (updates: Partial<BoxBrainSettings>)
+- handleSave · function · L87-L103 — handleSave = async ()
+- refreshBrainStatus · function · L105-L112 — refreshBrainStatus = async (workspaceId?: string)
+- handleBrainSync · function · L114-L131 — handleBrainSync = async ()
+- formatTimestamp · function · L133-L134 — formatTimestamp = (timestamp?: number)
+- refreshStatus · function · L136-L146 — refreshStatus = async ()
+- handleTestConnection · function · L148-L163 — handleTestConnection = async ()
+- parseScopes · function · L165-L169 — parseScopes = (value: string)
+- handleBoxOAuth · function · L171-L213 — handleBoxOAuth = async ()

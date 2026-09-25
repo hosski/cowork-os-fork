@@ -1,0 +1,28 @@
+# src/electron/chronicle/ChronicleCaptureService.ts
+
+- Any · type · L28-L28 — type Any = any;
+- ChronicleCaptureDeps · type · L30-L41 — type ChronicleCaptureDeps = { now: () => number; userDataDir: () => string; isHeadless: () => boolean; getDesktopCapturer: () => Any; getScreen: () => Any; getScreenCaptureStatus: () => ChronicleCaptureStatus["screenCaptureStatus"]; isAccessibilityTrusted: () => boolean; runOcr: (imagePath: string, maxChars: number) => Promise<string | null>; detectFrontmostContext: () => Promise<ChronicleFrontmostContext>; isOcrAvailable: () => Promise<boolean>; };
+- defaultDeps · function · L46-L77 — function defaultDeps(): ChronicleCaptureDeps
+- fileExists · function · L79-L86 — async function fileExists(targetPath: string): Promise<boolean>
+- fileSize · function · L88-L95 — async function fileSize(targetPath: string): Promise<number>
+- ChronicleCaptureService · class · L97-L440 — class ChronicleCaptureService
+- constructor · method · L103-L103 — constructor(private readonly deps: ChronicleCaptureDeps = defaultDeps())
+- getInstance · method · L105-L110 — static getInstance(): ChronicleCaptureService
+- applySettings · method · L112-L123 — async applySettings(next: ChronicleSettings): Promise<void>
+- start · method · L125-L140 — start(): void
+- stop · method · L142-L150 — async stop(options: { clearRawBuffer?: boolean } = {}): Promise<void>
+- canExposeTool · method · L152-L154 — canExposeTool(): boolean
+- getStatus · method · L156-L197 — async getStatus(): Promise<ChronicleCaptureStatus>
+- queryRecentContext · method · L199-L224 — async queryRecentContext(options: ChronicleQueryOptions): Promise<ChronicleResolvedContext[]>
+- captureOnce · method · L226-L234 — async captureOnce(): Promise<ChronicleBufferedFrame | null>
+- captureFallbackFrame · method · L236-L239 — private async captureFallbackFrame(): Promise<ChronicleBufferedFrame | null>
+- captureFrames · method · L241-L317 — private async captureFrames(options: { usedFallback: boolean; }): Promise<ChronicleBufferedFrame[]>
+- enrichFramesForQuery · method · L319-L345 — private async enrichFramesForQuery( frames: ChronicleBufferedFrame[], ): Promise<ChronicleBufferedFrame[]>
+- loadFrames · method · L347-L373 — private async loadFrames(): Promise<ChronicleBufferedFrame[]>
+- pruneBuffer · method · L375-L394 — private async pruneBuffer(): Promise<void>
+- clearRawBuffer · method · L396-L404 — private async clearRawBuffer(): Promise<void>
+- resolveTargetDisplays · method · L406-L416 — private resolveTargetDisplays(electronScreen: Any): Any[]
+- metaPathForImage · method · L418-L420 — private metaPathForImage(imagePath: string): string
+- getChronicleRoot · method · L422-L424 — private getChronicleRoot(): string
+- canRun · method · L426-L433 — private canRun(): boolean
+- isSupportedRuntime · method · L435-L439 — private isSupportedRuntime(): boolean

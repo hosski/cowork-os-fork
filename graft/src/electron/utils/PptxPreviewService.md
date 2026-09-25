@@ -1,0 +1,30 @@
+# src/electron/utils/PptxPreviewService.ts
+
+- PptxPreviewRenderMode · type · L18-L18 — type PptxPreviewRenderMode = "fast" | "full";
+- PptxPreviewRenderStatus · type · L19-L19 — type PptxPreviewRenderStatus = "cached" | "rendering" | "rendered" | "text_only" | "failed";
+- PptxPreviewSlide · interface · L21-L28 — interface PptxPreviewSlide
+- PptxPresentationPreview · interface · L30-L36 — interface PptxPresentationPreview
+- CommandRunner · type · L38-L42 — type CommandRunner = ( command: string, args: string[], options: { timeout: number; maxBuffer?: number; cwd?: string }, ) => Promise<unknown>;
+- ArtifactToolRunner · type · L44-L51 — type ArtifactToolRunner = ( input: { sourcePath: string; outputDir: string; maxSlides: number; }, options: { timeout: number }, ) => Promise<void>;
+- PptxPreviewServiceOptions · interface · L53-L60 — interface PptxPreviewServiceOptions
+- CachedRenderManifest · interface · L62-L68 — interface CachedRenderManifest
+- PreviewImage · type · L70-L73 — type PreviewImage = { imageUrl?: string; imageDataUrl?: string; };
+- PptxPreviewService · class · L75-L427 — class PptxPreviewService
+- constructor · method · L87-L100 — constructor(options: PptxPreviewServiceOptions = {})
+- buildPreview · method · L102-L141 — async buildPreview(input: { filePath: string; workspaceRoot?: string; renderMode?: PptxPreviewRenderMode; }): Promise<PptxPresentationPreview>
+- extractStructuredContent · method · L143-L163 — private async extractStructuredContent( resolvedPath: string, renderedSlideCount: number, ): Promise<PptxStructuredExtract>
+- toPreview · method · L165-L193 — private toPreview( structured: PptxStructuredExtract, images: Map<number, PreviewImage>, renderStatus: PptxPreviewRenderStatus, renderMessage?: string, ): PptxPresentationPreview
+- getCacheDir · method · L195-L201 — private getCacheDir(resolvedPath: string, stats: { size: number; mtimeMs: number }): string
+- readCachedImages · method · L203-L230 — private async readCachedImages( cacheDir: string, resolvedPath: string, stats: { size: number; mtimeMs: number }, ): Promise<Map<number, PreviewImage>>
+- renderSlideImages · method · L232-L248 — private async renderSlideImages( resolvedPath: string, stats: { size: number; mtimeMs: number }, cacheDir: string, ): Promise<{ images: Map<number, PreviewImage>; message?: string }>
+- renderSlideImagesUncached · method · L250-L279 — private async renderSlideImagesUncached( resolvedPath: string, stats: { size: number; mtimeMs: number }, cacheDir: string, ): Promise<{ images: Map<number, PreviewImage>; message?: string }>
+- renderSlideImagesWithArtifactTool · method · L281-L327 — private async renderSlideImagesWithArtifactTool( resolvedPath: string, stats: { size: number; mtimeMs: number }, cacheDir: string, ): Promise<{ images: Map<number, PreviewImage>; message?: string }>
+- renderSlideImagesWithLibreOffice · method · L329-L381 — private async renderSlideImagesWithLibreOffice( resolvedPath: string, stats: { size: number; mtimeMs: number }, cacheDir: string, ): Promise<{ images: Map<number, PreviewImage>; message?: string }>
+- writeRenderManifest · method · L383-L401 — private async writeRenderManifest( cacheDir: string, resolvedPath: string, stats: { size: number; mtimeMs: number }, imageFiles: Array<{ index: number; path: string }>, renderer: CachedRenderManifest["renderer"], ): Promise<void>
+- readRenderedImages · method · L403-L412 — private async readRenderedImages( imageFiles: Array<{ index: number; path: string }>, ): Promise<Map<number, PreviewImage>>
+- readPreviewImage · method · L414-L426 — private async readPreviewImage(imagePath: string): Promise<PreviewImage | null>
+- runArtifactToolPptxRenderer · function · L429-L470 — async function runArtifactToolPptxRenderer( commandRunner: CommandRunner, input: { sourcePath: string; outputDir: string; maxSlides: number; }, options: { timeout: number }, ): Promise<void>
+- isPathInside · function · L472-L478 — function isPathInside(targetPath: string, rootPath: string): boolean
+- findConvertedPdf · function · L480-L490 — async function findConvertedPdf(tempDir: string, sourcePath: string): Promise<string | null>
+- listRenderedSlideFiles · function · L492-L509 — async function listRenderedSlideFiles( cacheDir: string, maxRenderedSlides: number, ): Promise<Array<{ index: number; path: string }>>
+- readPngDataUrl · function · L511-L518 — async function readPngDataUrl(imagePath: string): Promise<string | null>

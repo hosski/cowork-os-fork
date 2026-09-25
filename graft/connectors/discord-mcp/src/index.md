@@ -1,0 +1,60 @@
+# connectors/discord-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L35 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L37-L46 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L48-L55 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- DiscordConfig · type · L80-L84 — type DiscordConfig = { botToken?: string; applicationId?: string; defaultGuildId?: string; };
+- RateLimitInfo · type · L86-L90 — type RateLimitInfo = { limit: number; remaining: number; resetAt?: string; };
+- RequestMeta · type · L92-L97 — type RequestMeta = { durationMs: number; rateLimit?: RateLimitInfo; vendorRequestId?: string; apiVersion: string; };
+- RequestResult · type · L99-L103 — type RequestResult = { data: any; meta: RequestMeta; nextCursor?: string; };
+- DiscordClient · class · L105-L328 — class DiscordClient
+- constructor · method · L108-L110 — constructor(config: DiscordConfig)
+- health · method · L112-L114 — async health(): Promise<RequestResult>
+- listGuilds · method · L116-L122 — async listGuilds(limit?: number, after?: string): Promise<RequestResult>
+- getGuild · method · L124-L126 — async getGuild(guildId: string): Promise<RequestResult>
+- listChannels · method · L128-L130 — async listChannels(guildId: string): Promise<RequestResult>
+- getChannel · method · L132-L134 — async getChannel(channelId: string): Promise<RequestResult>
+- createChannel · method · L136-L138 — async createChannel(guildId: string, payload: Record<string, any>): Promise<RequestResult>
+- editChannel · method · L140-L142 — async editChannel(channelId: string, payload: Record<string, any>): Promise<RequestResult>
+- deleteChannel · method · L144-L146 — async deleteChannel(channelId: string): Promise<RequestResult>
+- sendMessage · method · L148-L150 — async sendMessage(channelId: string, payload: Record<string, any>): Promise<RequestResult>
+- getMessages · method · L152-L167 — async getMessages( channelId: string, limit?: number, before?: string, after?: string, ): Promise<RequestResult>
+- createThread · method · L169-L171 — async createThread(channelId: string, payload: Record<string, any>): Promise<RequestResult>
+- createMessageThread · method · L173-L183 — async createMessageThread( channelId: string, messageId: string, payload: Record<string, any>, ): Promise<RequestResult>
+- listRoles · method · L185-L187 — async listRoles(guildId: string): Promise<RequestResult>
+- createRole · method · L189-L191 — async createRole(guildId: string, payload: Record<string, any>): Promise<RequestResult>
+- editRole · method · L193-L203 — async editRole( guildId: string, roleId: string, payload: Record<string, any>, ): Promise<RequestResult>
+- deleteRole · method · L205-L210 — async deleteRole(guildId: string, roleId: string): Promise<RequestResult>
+- addReaction · method · L212-L218 — async addReaction(channelId: string, messageId: string, emoji: string): Promise<RequestResult>
+- createWebhook · method · L220-L222 — async createWebhook(channelId: string, payload: Record<string, any>): Promise<RequestResult>
+- listWebhooks · method · L224-L226 — async listWebhooks(channelId: string): Promise<RequestResult>
+- listMembers · method · L228-L237 — async listMembers(guildId: string, limit?: number, after?: string): Promise<RequestResult>
+- getToken · method · L239-L244 — private getToken(): string
+- requestJson · method · L246-L311 — private async requestJson( method: string, path: string, body?: any, retryCount = 0, ): Promise<RequestResult>
+- extractErrorMessage · method · L313-L327 — private async extractErrorMessage(res: Response): Promise<string>
+- parseRateLimit · function · L332-L344 — function parseRateLimit(headers: Headers): RateLimitInfo | undefined
+- numberHeader · function · L346-L350 — function numberHeader(value: string | null): number | undefined
+- ToolProvider · type · L354-L357 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L359-L541 — class StdioMCPServer
+- constructor · method · L363-L366 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L368-L380 — start(): void
+- stop · method · L382-L388 — stop(): void
+- handleLine · method · L390-L400 — private handleLine(line: string): void
+- handleMessage · method · L402-L411 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L413-L446 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L448-L454 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L456-L470 — private handleInitialize(_params: any): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsList · method · L472-L474 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L476-L503 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L505-L508 — private handleShutdown(): Record<string, never>
+- sendResult · method · L510-L513 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L515-L522 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L524-L526 — private sendMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- requireInitialized · method · L528-L532 — private requireInitialized(): void
+- createError · method · L534-L540 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }
+- buildEnvelope · function · L1073-L1087 — function buildEnvelope(result: RequestResult, requestId?: string, warnings: string[] = []): any
+- resolveGuildId · function · L1089-L1095 — function resolveGuildId(explicitId?: string): string

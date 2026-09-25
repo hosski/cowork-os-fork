@@ -1,0 +1,32 @@
+# src/renderer/components/MainContent/welcome-suggestions.ts
+
+- WelcomeTaskSuggestionSource · type · L17-L17 — type WelcomeTaskSuggestionSource = "heartbeat" | "memory" | "insight";
+- WelcomeTaskSuggestionModule · type · L18-L24 — type WelcomeTaskSuggestionModule = | "Memory" | "Heartbeat" | "Reflection" | "Recent work" | "Inbox" | "Project";
+- WelcomeTaskSuggestionAction · type · L26-L30 — type WelcomeTaskSuggestionAction = | { type: "prompt"; prompt: string } | { type: "task"; taskId: string; focus: "input_request" } | { type: "settings"; tab: SettingsTab } | { type: "url"; url: string };
+- WelcomeTaskSuggestion · interface · L32-L49 — interface WelcomeTaskSuggestion
+- ActiveWelcomeSuggestionDraft · interface · L51-L55 — interface ActiveWelcomeSuggestionDraft
+- normalizeSuggestionText · function · L57-L59 — function normalizeSuggestionText(value: unknown): string
+- truncateSuggestionText · function · L61-L68 — function truncateSuggestionText( value: string, maxLength = WELCOME_SUGGESTION_TEXT_MAX, ): string
+- getWorkspaceStatusFolderLabel · function · L70-L78 — function getWorkspaceStatusFolderLabel(workspace?: Workspace | null): string
+- asRecord · function · L80-L84 — function asRecord(value: unknown): Record<string, unknown> | null
+- getRecordString · function · L86-L92 — function getRecordString(record: Record<string, unknown>, keys: string[]): string
+- getRecordNumber · function · L94-L100 — function getRecordNumber(record: Record<string, unknown>, keys: string[]): number | undefined
+- isConcreteMemorySignal · function · L102-L109 — function isConcreteMemorySignal(value: string): boolean
+- formatProfileFactSignal · function · L111-L128 — function formatProfileFactSignal(fact: UserProfile["facts"][number]): string | null
+- getRecentMemorySignal · function · L130-L138 — function getRecentMemorySignal(item: unknown): string | null
+- buildEvidencePrompt · function · L140-L147 — function buildEvidencePrompt(args: { opening: string; evidence: string[]; instruction: string; }): string
+- extractFirstUrl · function · L149-L152 — function extractFirstUrl(value: string): string | null
+- resolveSettingsActionFromSuggestionText · function · L154-L177 — function resolveSettingsActionFromSuggestionText(value: string): SettingsTab | null
+- buildSuggestionAction · function · L179-L192 — function buildSuggestionAction(args: { title?: string; description?: string; prompt: string; }): WelcomeTaskSuggestionAction
+- labelForWelcomeAction · function · L194-L199 — function labelForWelcomeAction(action: WelcomeTaskSuggestionAction): string
+- iconForWelcomeAction · function · L201-L208 — function iconForWelcomeAction(suggestion: WelcomeTaskSuggestion): LucideIcon
+- formatWelcomeModules · function · L210-L214 — function formatWelcomeModules( modules: WelcomeTaskSuggestionModule[], ): WelcomeTaskSuggestionModule[]
+- modulesForProactiveSuggestion · function · L216-L235 — function modulesForProactiveSuggestion( suggestion: ProactiveSuggestion, ): WelcomeTaskSuggestionModule[]
+- whyNowForProactiveSuggestion · function · L237-L252 — function whyNowForProactiveSuggestion(suggestion: ProactiveSuggestion): string
+- buildHeartbeatWelcomeSuggestion · function · L254-L288 — function buildHeartbeatWelcomeSuggestion( suggestion: ProactiveSuggestion, index: number, ): WelcomeTaskSuggestion | null
+- buildCompanionNotificationWelcomeSuggestion · function · L290-L331 — function buildCompanionNotificationWelcomeSuggestion( notification: AppNotification, matchingSuggestion?: ProactiveSuggestion, ): WelcomeTaskSuggestion | null
+- buildMemoryCommitmentSuggestion · function · L333-L360 — function buildMemoryCommitmentSuggestion( item: unknown, index: number, ): WelcomeTaskSuggestion | null
+- buildProfileWelcomeSuggestion · function · L362-L414 — function buildProfileWelcomeSuggestion( profile: UserProfile | null, recentMemories: unknown[], ): WelcomeTaskSuggestion | null
+- buildRecentMemorySuggestion · function · L416-L445 — function buildRecentMemorySuggestion( item: unknown, index: number, ): WelcomeTaskSuggestion | null
+- buildInputRequestWelcomeSuggestion · function · L447-L467 — function buildInputRequestWelcomeSuggestion( request: InputRequest, index: number, ): WelcomeTaskSuggestion | null
+- dedupeWelcomeTaskSuggestions · function · L469-L485 — function dedupeWelcomeTaskSuggestions( suggestions: WelcomeTaskSuggestion[], ): WelcomeTaskSuggestion[]

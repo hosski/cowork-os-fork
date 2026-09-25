@@ -1,0 +1,122 @@
+# src/shared/mailbox.ts
+
+- MailboxProvider · type · L1-L1 — type MailboxProvider = "gmail" | "imap" | "outlook_graph" | "agentmail";
+- MailboxThreadSortOrder · type · L3-L3 — type MailboxThreadSortOrder = "priority" | "recent";
+- MailboxThreadMailboxView · type · L4-L4 — type MailboxThreadMailboxView = "inbox" | "sent" | "all";
+- MailboxProviderCapability · type · L6-L24 — type MailboxProviderCapability = | "sync" | "provider_search" | "realtime" | "send" | "provider_drafts" | "reply_all" | "forward" | "attachments_download" | "attachments_upload" | "archive" | "trash" | "mark_read" | "mark_unread" | "labels" | "folders" | "move" | "snooze" | "undo_send";
+- MailboxProviderBackend · type · L26-L26 — type MailboxProviderBackend = "gmail_api" | "microsoft_graph" | "imap_smtp" | "agentmail";
+- MailboxQueuedActionStatus · type · L28-L35 — type MailboxQueuedActionStatus = | "queued" | "running" | "sending" | "succeeded" | "sent" | "failed" | "cancelled";
+- MailboxQueuedActionType · type · L37-L48 — type MailboxQueuedActionType = | "send" | "archive" | "trash" | "mark_read" | "mark_unread" | "move" | "apply_label" | "remove_label" | "snooze" | "waiting_on" | "undo";
+- MailboxComposeMode · type · L50-L50 — type MailboxComposeMode = "new" | "reply" | "reply_all" | "forward";
+- MailboxComposeDraftStatus · type · L52-L60 — type MailboxComposeDraftStatus = | "local" | "provider" | "queued" | "scheduled" | "sending" | "sent" | "discarded" | "failed";
+- MailboxRemoteContentPolicy · type · L62-L62 — type MailboxRemoteContentPolicy = "load" | "block" | "ask";
+- MailboxFolderRole · type · L64-L72 — type MailboxFolderRole = | "inbox" | "sent" | "drafts" | "scheduled" | "archive" | "trash" | "spam" | "custom";
+- MailboxTodayBucket · type · L74-L78 — type MailboxTodayBucket = | "needs_action" | "happening_today" | "good_to_know" | "more_to_browse";
+- MailboxDomainCategory · type · L80-L94 — type MailboxDomainCategory = | "travel" | "packages" | "receipts" | "bills" | "shopping" | "newsletters" | "events" | "finance" | "customer" | "hiring" | "approvals" | "ops" | "personal" | "other";
+- MailboxThreadCategory · type · L96-L103 — type MailboxThreadCategory = | "priority" | "calendar" | "follow_up" | "promotions" | "updates" | "personal" | "other";
+- MailboxClassificationState · type · L105-L105 — type MailboxClassificationState = "pending" | "backfill_pending" | "classified" | "error";
+- MailboxPriorityBand · type · L107-L107 — type MailboxPriorityBand = "critical" | "high" | "medium" | "low";
+- MailboxProposalType · type · L109-L117 — type MailboxProposalType = | "reply" | "archive" | "trash" | "mark_read" | "label" | "schedule" | "follow_up" | "cleanup";
+- MailboxProposalStatus · type · L119-L119 — type MailboxProposalStatus = "suggested" | "approved" | "applied" | "dismissed";
+- MailboxCommitmentState · type · L121-L121 — type MailboxCommitmentState = "suggested" | "accepted" | "done" | "dismissed";
+- MailboxAutomationKind · type · L123-L123 — type MailboxAutomationKind = "rule" | "schedule" | "reminder" | "forward";
+- MailboxAutomationStatus · type · L125-L125 — type MailboxAutomationStatus = "active" | "paused" | "error" | "deleted";
+- MailboxConditionOperator · type · L127-L136 — type MailboxConditionOperator = | "equals" | "not_equals" | "contains" | "not_contains" | "matches" | "starts_with" | "ends_with" | "gt" | "lt";
+- MailboxDirection · type · L138-L138 — type MailboxDirection = "incoming" | "outgoing";
+- ContactIdentityHandleType · type · L140-L147 — type ContactIdentityHandleType = | "email" | "slack_user_id" | "teams_user_id" | "whatsapp_e164" | "signal_e164" | "imessage_handle" | "crm_contact_id";
+- ContactIdentitySuggestionStatus · type · L149-L153 — type ContactIdentitySuggestionStatus = | "suggested" | "confirmed" | "rejected" | "auto_linked";
+- RelationshipTimelineSource · type · L155-L165 — type RelationshipTimelineSource = | "email" | "slack" | "teams" | "whatsapp" | "signal" | "imessage" | "crm" | "commitment" | "automation" | "handoff";
+- MailboxEventType · type · L167-L176 — type MailboxEventType = | "sync_completed" | "thread_classified" | "thread_summarized" | "draft_created" | "commitments_extracted" | "commitment_updated" | "action_applied" | "contact_researched" | "mission_control_handoff_created";
+- MailboxParticipant · interface · L178-L181 — interface MailboxParticipant
+- MailboxAccount · interface · L183-L193 — interface MailboxAccount
+- MailboxSyncHealth · interface · L195-L208 — interface MailboxSyncHealth
+- MailboxFolder · interface · L210-L220 — interface MailboxFolder
+- MailboxLabel · interface · L222-L232 — interface MailboxLabel
+- MailboxIdentity · interface · L234-L244 — interface MailboxIdentity
+- MailboxSignature · interface · L246-L255 — interface MailboxSignature
+- MailboxSyncStatus · interface · L257-L271 — interface MailboxSyncStatus
+- MailboxSyncProgress · interface · L273-L285 — interface MailboxSyncProgress
+- MailboxSummaryCard · interface · L287-L293 — interface MailboxSummaryCard
+- MailboxDraftSuggestion · interface · L295-L305 — interface MailboxDraftSuggestion
+- MailboxActionProposal · interface · L307-L317 — interface MailboxActionProposal
+- MailboxCommitment · interface · L319-L331 — interface MailboxCommitment
+- MailboxContactMemory · interface · L333-L354 — interface MailboxContactMemory
+- ContactIdentityHandle · interface · L356-L369 — interface ContactIdentityHandle
+- ContactIdentity · interface · L371-L382 — interface ContactIdentity
+- ContactIdentityCandidate · interface · L384-L401 — interface ContactIdentityCandidate
+- ContactIdentityResolution · interface · L403-L408 — interface ContactIdentityResolution
+- ContactIdentitySearchResult · interface · L410-L425 — interface ContactIdentitySearchResult
+- ContactIdentityReplyTarget · interface · L427-L438 — interface ContactIdentityReplyTarget
+- RelationshipTimelineEvent · interface · L440-L453 — interface RelationshipTimelineEvent
+- RelationshipTimelineQuery · interface · L455-L462 — interface RelationshipTimelineQuery
+- ChannelPreferenceSummary · interface · L464-L479 — interface ChannelPreferenceSummary
+- ContactIdentityCoverageStats · interface · L481-L492 — interface ContactIdentityCoverageStats
+- MailboxMessage · interface · L494-L509 — interface MailboxMessage
+- MailboxAttachmentSummary · interface · L511-L518 — interface MailboxAttachmentSummary
+- MailboxThreadListItem · interface · L520-L546 — interface MailboxThreadListItem
+- MailboxResearchResult · interface · L548-L573 — interface MailboxResearchResult
+- MailboxThreadDetail · interface · L575-L583 — interface MailboxThreadDetail extends MailboxThreadListItem
+- MailboxSensitiveContent · interface · L585-L589 — interface MailboxSensitiveContent
+- MailboxEvent · interface · L591-L604 — interface MailboxEvent
+- MailboxRuleRecipe · interface · L606-L624 — interface MailboxRuleRecipe
+- MailboxScheduleRecipe · interface · L626-L636 — interface MailboxScheduleRecipe
+- MailboxForwardRecipe · interface · L638-L662 — interface MailboxForwardRecipe
+- MailboxAutomationRecord · interface · L664-L685 — interface MailboxAutomationRecord
+- MailboxCompanyCandidate · interface · L687-L694 — interface MailboxCompanyCandidate
+- MailboxOperatorRecommendation · interface · L696-L703 — interface MailboxOperatorRecommendation
+- MailboxMissionControlHandoffRecord · interface · L705-L721 — interface MailboxMissionControlHandoffRecord
+- MailboxMissionControlHandoffPreview · interface · L723-L736 — interface MailboxMissionControlHandoffPreview
+- MailboxMissionControlHandoffRequest · interface · L738-L744 — interface MailboxMissionControlHandoffRequest
+- MailboxDigest · interface · L746-L765 — interface MailboxDigest
+- MailboxDigestSnapshot · interface · L767-L770 — interface MailboxDigestSnapshot extends MailboxDigest
+- MailboxTodayDigest · interface · L772-L786 — interface MailboxTodayDigest
+- MailboxAttachmentRecord · interface · L788-L798 — interface MailboxAttachmentRecord extends MailboxAttachmentSummary
+- MailboxAskInput · interface · L800-L805 — interface MailboxAskInput
+- MailboxAskRunEvent · interface · L807-L816 — interface MailboxAskRunEvent
+- MailboxAskResult · interface · L818-L838 — interface MailboxAskResult
+- MailboxSenderCleanupDigest · interface · L840-L854 — interface MailboxSenderCleanupDigest
+- MailboxSnippetRecord · interface · L856-L864 — interface MailboxSnippetRecord
+- MailboxSnippetInput · interface · L866-L870 — interface MailboxSnippetInput
+- MailboxSavedViewRecord · interface · L872-L881 — interface MailboxSavedViewRecord
+- MailboxSavedViewPreviewResult · interface · L883-L888 — interface MailboxSavedViewPreviewResult
+- MailboxQuickReplySuggestionsResult · interface · L890-L894 — interface MailboxQuickReplySuggestionsResult
+- MailboxListThreadsInput · interface · L896-L919 — interface MailboxListThreadsInput
+- MailboxSyncResult · interface · L921-L926 — interface MailboxSyncResult
+- MailboxRecipientInput · interface · L928-L931 — interface MailboxRecipientInput
+- MailboxComposeDraft · interface · L933-L964 — interface MailboxComposeDraft
+- MailComposeInlineFrameOrigin · type · L966-L966 — type MailComposeInlineFrameOrigin = "assistant_generated" | "mailbox_thread" | "user_prompt";
+- MailComposeInlineFrame · interface · L968-L976 — interface MailComposeInlineFrame
+- ChatInlineFrame · type · L978-L978 — type ChatInlineFrame = MailComposeInlineFrame;
+- MailboxDraftAttachmentInput · interface · L980-L984 — interface MailboxDraftAttachmentInput
+- MailboxComposeDraftInput · interface · L986-L998 — interface MailboxComposeDraftInput
+- MailboxComposeDraftSeed · type · L1000-L1003 — type MailboxComposeDraftSeed = Pick< MailboxComposeDraftInput, "mode" | "subject" | "bodyText" | "to" >;
+- normalizeComposePrompt · function · L1005-L1007 — function normalizeComposePrompt(prompt: string): string
+- isMailboxComposePrompt · function · L1009-L1020 — function isMailboxComposePrompt(prompt: string): boolean
+- titleCasePhrase · function · L1022-L1034 — function titleCasePhrase(value: string): string
+- sentenceCasePhrase · function · L1036-L1040 — function sentenceCasePhrase(value: string): string
+- stripPromptLeadIn · function · L1042-L1049 — function stripPromptLeadIn(prompt: string): string
+- extractPromptRecipient · function · L1051-L1067 — function extractPromptRecipient(prompt: string): { name?: string; email?: string; }
+- extractPromptRequest · function · L1069-L1103 — function extractPromptRequest(prompt: string): { primary: string; includes: string[]; asks: string[]; }
+- buildPromptSubject · function · L1105-L1119 — function buildPromptSubject( prompt: string, request: ReturnType<typeof extractPromptRequest>, ): string
+- normalizeEmailClause · function · L1121-L1127 — function normalizeEmailClause(value: string): string
+- buildPromptBody · function · L1129-L1160 — function buildPromptBody(prompt: string, recipientName: string | undefined): string
+- buildMailboxComposeDraftInputFromPrompt · function · L1162-L1177 — function buildMailboxComposeDraftInputFromPrompt( prompt: string, ): MailboxComposeDraftSeed | null
+- extractMailboxComposeDraftInputFromText · function · L1179-L1217 — function extractMailboxComposeDraftInputFromText( assistantMessage: string, sourceUserMessage = "", ): MailboxComposeDraftSeed | null
+- MailboxClientSettingsPatch · interface · L1219-L1225 — interface MailboxClientSettingsPatch
+- MailboxComposeDraftPatch · interface · L1227-L1237 — interface MailboxComposeDraftPatch
+- MailboxOutgoingMessage · interface · L1239-L1250 — interface MailboxOutgoingMessage
+- MailboxQueuedAction · interface · L1252-L1266 — interface MailboxQueuedAction
+- MailboxClientState · interface · L1268-L1285 — interface MailboxClientState
+- MailboxReclassifyResult · interface · L1287-L1291 — interface MailboxReclassifyResult
+- MailboxReclassifyInput · interface · L1293-L1298 — interface MailboxReclassifyInput
+- MailboxDraftOptions · interface · L1300-L1304 — interface MailboxDraftOptions
+- MailboxSentFollowupDraft · interface · L1306-L1312 — interface MailboxSentFollowupDraft
+- MailboxSentFollowupDraftInput · interface · L1314-L1317 — interface MailboxSentFollowupDraftInput
+- MailboxSentFollowupDraftResult · interface · L1319-L1325 — interface MailboxSentFollowupDraftResult
+- MailboxBulkReviewInput · interface · L1327-L1330 — interface MailboxBulkReviewInput
+- MailboxBulkReviewResult · interface · L1332-L1336 — interface MailboxBulkReviewResult
+- MailboxApplyActionInput · interface · L1338-L1374 — interface MailboxApplyActionInput
+- stripMailboxSummaryHtmlArtifacts · function · L1382-L1397 — function stripMailboxSummaryHtmlArtifacts(text: string): string
+- normalizeMailboxEmailAddress · function · L1399-L1404 — function normalizeMailboxEmailAddress(value?: string | null): string
+- isMailboxNoReplyAddress · function · L1406-L1411 — function isMailboxNoReplyAddress(value?: string | null): boolean
+- getMailboxNoReplySender · function · L1413-L1439 — function getMailboxNoReplySender( messages: Array<Pick<MailboxMessage, "direction" | "from">>, participants: Array<Pick<MailboxParticipant, "email" | "name">> = [], ): MailboxParticipant | null

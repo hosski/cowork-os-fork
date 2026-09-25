@@ -1,0 +1,97 @@
+# src/cli/direct-run.ts
+
+- Any · type · L52-L52 — type Any = Record<string, any>;
+- DirectRunArgs · interface · L54-L172 — interface DirectRunArgs
+- main · function · L174-L406 — async function main(argv = process.argv.slice(2)): Promise<number>
+- onSignal · function · L335-L346 — function onSignal(signal?: NodeJS.Signals): void
+- cancelActiveTask · function · L348-L360 — async function cancelActiveTask(): Promise<void>
+- startCliHeartbeat · function · L362-L367 — function startCliHeartbeat(): void
+- stopCliHeartbeat · function · L369-L374 — function stopCliHeartbeat(): void
+- updateActiveCliOwnership · function · L376-L392 — async function updateActiveCliOwnership(updates: Partial<CliTaskOwnership>): Promise<void>
+- shutdownRuntime · function · L394-L405 — async function shutdownRuntime(): Promise<void>
+- resolveWorkspace · function · L408-L420 — async function resolveWorkspace(daemon: AgentDaemon, args: DirectRunArgs)
+- waitForTerminalTask · function · L422-L450 — async function waitForTerminalTask( daemon: AgentDaemon, taskId: string, args: DirectRunArgs, ): Promise<Task["status"]>
+- parseDirectRunArgs · function · L452-L843 — function parseDirectRunArgs(argv: string[]): DirectRunArgs
+- runLocalMetadataCommand · function · L845-L1178 — async function runLocalMetadataCommand( dbManager: DatabaseManager, args: DirectRunArgs, ): Promise<number | null>
+- listSessions · function · L1180-L1191 — function listSessions(sessionRetention: SessionRetentionService, args: DirectRunArgs): number
+- showSession · function · L1193-L1216 — function showSession( sessionRetention: SessionRetentionService, sessionMetadata: TaskSessionMetadataRepository, args: DirectRunArgs, ): number
+- exportSession · function · L1218-L1238 — async function exportSession( sessionRetention: SessionRetentionService, args: DirectRunArgs, ): Promise<number>
+- renameSession · function · L1240-L1251 — function renameSession(sessionRetention: SessionRetentionService, args: DirectRunArgs): number
+- archiveSession · function · L1253-L1272 — function archiveSession(sessionRetention: SessionRetentionService, args: DirectRunArgs): number
+- buildSessionRetentionFilters · function · L1274-L1316 — function buildSessionRetentionFilters(args: DirectRunArgs): SessionRetentionFilters
+- formatSessionSummaryLine · function · L1318-L1324 — function formatSessionSummaryLine(session: TaskSessionSummary): string
+- pruneSessions · function · L1326-L1360 — async function pruneSessions( sessionRetention: SessionRetentionService, taskEvents: TaskEventRepository, args: DirectRunArgs, ): Promise<number>
+- listCliTasks · function · L1362-L1374 — function listCliTasks(taskRepo: TaskRepository, args: DirectRunArgs): number
+- cancelCliTask · function · L1376-L1402 — function cancelCliTask( taskRepo: TaskRepository, eventRepo: TaskEventRepository, args: DirectRunArgs, ): number
+- attachCliTask · function · L1404-L1444 — async function attachCliTask( taskRepo: TaskRepository, eventRepo: TaskEventRepository, args: DirectRunArgs, ): Promise<number>
+- printNewEvents · function · L1414-L1423 — printNewEvents = ()
+- onSignal · function · L1437-L1440 — onSignal = ()
+- listStaleCliTasks · function · L1446-L1454 — function listStaleCliTasks(taskRepo: TaskRepository, args: DirectRunArgs): number
+- cleanupStaleCliTasks · function · L1456-L1486 — function cleanupStaleCliTasks( taskRepo: TaskRepository, eventRepo: TaskEventRepository, args: DirectRunArgs, ): number
+- logsCommand · function · L1488-L1516 — async function logsCommand(args: DirectRunArgs): Promise<number>
+- toolsCommand · function · L1518-L1581 — function toolsCommand(args: DirectRunArgs): number
+- mcpSettingsCommand · function · L1583-L1649 — function mcpSettingsCommand(args: DirectRunArgs): number
+- mcpTestCommand · function · L1651-L1680 — async function mcpTestCommand(args: DirectRunArgs): Promise<number>
+- skillsCommand · function · L1682-L1726 — async function skillsCommand(skillRepo: SkillRepository, args: DirectRunArgs): Promise<number>
+- modelsCommand · function · L1728-L1751 — function modelsCommand(modelRepo: LLMModelRepository, args: DirectRunArgs): number
+- providerFallbackCommand · function · L1753-L1801 — function providerFallbackCommand(args: DirectRunArgs): number
+- createBackup · function · L1803-L1849 — async function createBackup(dbManager: DatabaseManager, args: DirectRunArgs): Promise<number>
+- restoreBackup · function · L1851-L1892 — async function restoreBackup(args: DirectRunArgs): Promise<number>
+- securityAuditCommand · function · L1894-L1926 — function securityAuditCommand(db: Database.Database, args: DirectRunArgs): number
+- securityRulesListCommand · function · L1928-L1949 — function securityRulesListCommand(db: Database.Database, args: DirectRunArgs): number
+- securityRulesRemoveCommand · function · L1951-L1970 — function securityRulesRemoveCommand(db: Database.Database, args: DirectRunArgs): number
+- agentSecurityCommand · function · L1972-L2136 — async function agentSecurityCommand(db: Database.Database, args: DirectRunArgs): Promise<number>
+- formatAgentSecurityInventory · function · L2138-L2149 — function formatAgentSecurityInventory( inventory: ReturnType<NumbatService["listInventory"]>, ): string
+- promptCommand · function · L2151-L2177 — function promptCommand(args: DirectRunArgs): number
+- configureLocalProvider · function · L2179-L2287 — function configureLocalProvider(args: DirectRunArgs): { providerType: string; model?: string }
+- ensureNode · function · L2202-L2207 — ensureNode = (key: string): Any
+- normalizeProviderType · function · L2289-L2300 — function normalizeProviderType(providerType: string): string
+- shouldImportEnvForCommand · function · L2302-L2304 — function shouldImportEnvForCommand(command: DirectRunArgs["command"]): boolean
+- getCliOwnership · function · L2306-L2310 — function getCliOwnership(task: Task | undefined | null): CliTaskOwnership | undefined
+- findStaleCliTasks · function · L2312-L2323 — function findStaleCliTasks(taskRepo: TaskRepository, limit: number): Task[]
+- markTaskCancelled · function · L2325-L2372 — function markTaskCancelled( taskRepo: TaskRepository, eventRepo: TaskEventRepository, task: Task, message: string, exitCode: number, ): void
+- terminateCliOwner · function · L2374-L2383 — function terminateCliOwner(task: Task): void
+- isPidAlive · function · L2385-L2394 — function isPidAlive(pid: unknown): boolean
+- formatCliTaskLine · function · L2396-L2401 — function formatCliTaskLine(task: Task): string
+- requireSessionId · function · L2403-L2407 — function requireSessionId(args: DirectRunArgs): string
+- SessionMetadata · type · L2409-L2409 — type SessionMetadata = Record<string, { name?: string; updatedAt?: number; archivedAt?: number }>;
+- migrateLegacySessionMetadata · function · L2411-L2435 — async function migrateLegacySessionMetadata( metadataRepo: TaskSessionMetadataRepository, ): Promise<void>
+- readSessionMetadata · function · L2437-L2445 — async function readSessionMetadata(): Promise<SessionMetadata>
+- sessionMetadataPath · function · L2447-L2449 — function sessionMetadataPath(): string
+- countTasksByStatus · function · L2451-L2462 — function countTasksByStatus(db: Database.Database): Record<string, number>
+- formatCountMap · function · L2464-L2469 — function formatCountMap(counts: Record<string, number>): string
+- formatDate · function · L2471-L2475 — function formatDate(value: unknown): string
+- writeDetachedReadyFile · function · L2477-L2493 — async function writeDetachedReadyFile(file: string, task: Task): Promise<void>
+- readPackageInfo · function · L2495-L2506 — async function readPackageInfo(): Promise<{ name: string; version: string }>
+- findPackageRoot · function · L2508-L2524 — async function findPackageRoot(): Promise<string>
+- normalizeMcpTransport · function · L2526-L2538 — function normalizeMcpTransport(value: string): "stdio" | "sse" | "websocket" | "streamable-http"
+- splitCommandLine · function · L2540-L2575 — function splitCommandLine(input: string): string[]
+- redactObject · function · L2577-L2590 — function redactObject(value: unknown, redact: boolean): unknown
+- sanitizeTasksForBackup · function · L2592-L2612 — function sanitizeTasksForBackup(tasks: Task[], includeSensitiveContent: boolean): unknown[]
+- sanitizeApprovalsForBackup · function · L2614-L2632 — function sanitizeApprovalsForBackup( approvals: unknown[], includeSensitiveContent: boolean, ): unknown[]
+- sanitizeMcpForBackup · function · L2634-L2646 — function sanitizeMcpForBackup(settings: unknown, includeSensitiveContent: boolean): unknown
+- CliSkillEntry · interface · L2648-L2657 — interface CliSkillEntry
+- readOnlySkillStatus · function · L2659-L2685 — async function readOnlySkillStatus(args: DirectRunArgs): Promise<{ skills: CliSkillEntry[]; summary: { total: number; bundled: number; managed: number; workspace: number; disabled: number }; }>
+- scanSkillDir · function · L2687-L2738 — async function scanSkillDir( dir: string, source: CliSkillEntry["source"], ): Promise<CliSkillEntry[]>
+- parseSkillMarkdownFrontmatter · function · L2740-L2752 — function parseSkillMarkdownFrontmatter(text: string): Record<string, string>
+- validateBuiltinToolsSettings · function · L2754-L2793 — function validateBuiltinToolsSettings( value: unknown, ): ReturnType<typeof BuiltinToolsSettingsManager.loadSettings>
+- disableRestoredMcpServers · function · L2795-L2806 — function disableRestoredMcpServers(settings: Any): Any
+- sanitizeLimit · function · L2808-L2812 — function sanitizeLimit(raw: unknown): number | undefined
+- sanitizeDays · function · L2814-L2818 — function sanitizeDays(raw: unknown): number | undefined
+- sanitizeNonNegativeNumber · function · L2820-L2824 — function sanitizeNonNegativeNumber(raw: unknown): number | undefined
+- parseDurationMs · function · L2826-L2846 — function parseDurationMs(raw: unknown): number | undefined
+- parseTimestampMs · function · L2848-L2856 — function parseTimestampMs(raw: unknown): number | undefined
+- formatDoctor · function · L2858-L2873 — function formatDoctor(payload: Record<string, unknown>): string
+- formatTaskEventLine · function · L2875-L2885 — function formatTaskEventLine(event: { timestamp?: number; ts?: number; type: string; legacyType?: string; payload?: unknown; }): string
+- summarizeEventPayload · function · L2887-L2908 — function summarizeEventPayload(payload: unknown): string
+- truncate · function · L2910-L2912 — function truncate(value: string, max: number): string
+- writeLine · function · L2914-L2922 — function writeLine(args: DirectRunArgs, message: string): void
+- writeEvent · function · L2924-L2930 — function writeEvent(args: DirectRunArgs, event: Record<string, unknown>, text: string): void
+- writeError · function · L2932-L2940 — function writeError(args: DirectRunArgs, message: string, taskId?: string): void
+- stringifyMessage · function · L2942-L2946 — function stringifyMessage(value: unknown): string
+- hasProviderEnv · function · L2948-L2955 — function hasProviderEnv(): boolean
+- formatError · function · L2957-L2963 — function formatError(error: unknown): string
+- installCliLogFilter · function · L2965-L3017 — function installCliLogFilter(): () => void
+- shouldSuppress · function · L2994-L3000 — shouldSuppress = (items: unknown[]): boolean
+- formatLogItem · function · L3019-L3026 — function formatLogItem(item: unknown): string
+- shouldRunEntrypoint · function · L3028-L3032 — function shouldRunEntrypoint(): boolean
