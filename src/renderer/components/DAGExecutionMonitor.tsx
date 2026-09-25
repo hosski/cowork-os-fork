@@ -38,28 +38,24 @@ export const DAGExecutionMonitor: React.FC = () => {
       const persisted = localStorage.getItem(`workflow-execution-${activeWorkflowId}`);
       if (persisted) {
         lastExecution = JSON.parse(persisted);
-        console.log('[DAGExecutionMonitor] Loaded persisted execution from localStorage:', lastExecution);
       }
     } catch (e) {
       console.error('[DAGExecutionMonitor] Failed to parse localStorage:', e);
     }
   }
-
+  
   // Debug: log the workflow object structure
   if (activeWorkflowId && workflows[activeWorkflowId]) {
     console.log('[DAGExecutionMonitor] Workflow object:', {
       id: workflows[activeWorkflowId].id,
       name: workflows[activeWorkflowId].name,
       hasExecutionResult: !!workflows[activeWorkflowId].executionResult,
-      executionResult: workflows[activeWorkflowId].executionResult,
     });
   }
 
   // Auto-show stats when execution completes
   useEffect(() => {
-    console.log('[DAGExecutionMonitor useEffect firing]', { hasLastExecution: !!lastExecution, showLastStats });
     if (lastExecution && !showLastStats) {
-      console.log('[DAGExecutionMonitor] ✅ Setting showLastStats to true, result:', lastExecution);
       setShowLastStats(true);
     }
     
@@ -68,7 +64,6 @@ export const DAGExecutionMonitor: React.FC = () => {
       try {
         const persisted = localStorage.getItem(`workflow-execution-${activeWorkflowId}`);
         if (persisted) {
-          console.log('[DAGExecutionMonitor] Found persisted execution result in localStorage');
           setShowLastStats(true);
         }
       } catch (e) {
@@ -76,15 +71,6 @@ export const DAGExecutionMonitor: React.FC = () => {
       }
     }
   }, [lastExecution, activeWorkflowId]);
-
-  console.log('[DAGExecutionMonitor] Rendered:', {
-    activeWorkflowId,
-    hasWorkflow: !!workflows[activeWorkflowId],
-    lastExecution: lastExecution ? `{dagId: ${lastExecution.dagId}, tiers: ${lastExecution.totalTiers}}` : 'NULL',
-    showLastStats,
-    willRenderStats: showLastStats && lastExecution,
-    workflowKeys: Object.keys(workflows),
-  });
 
   const progress = useMemo(() => {
     if (!execution) return null;
@@ -104,9 +90,7 @@ export const DAGExecutionMonitor: React.FC = () => {
   }, [execution]);
 
   // Show completion message with stats from last execution
-  console.log('[DAGExecutionMonitor] About to render - checking:', { shouldShowStats: showLastStats && lastExecution });
   if (showLastStats && lastExecution) {
-    console.log('[DAGExecutionMonitor] ✅✅✅ RENDERING GREEN STATS BOX ✅✅✅');
     return (
       <div className="dag-monitor" style={{ position: 'relative', zIndex: 1000 }}>
         <div className="empty-state" style={{ 
@@ -168,8 +152,9 @@ export const DAGExecutionMonitor: React.FC = () => {
 
   // Fallback: always show something while waiting
   return (
-    <div className="dag-monitor" style={{ padding: '2rem', textAlign: 'center', border: '2px solid orange' }}>
-      <p>⏳ Waiting for workflow... (showLastStats={showLastStats}, lastExecution={!!lastExecution})</p>
+    <div className="dag-monitor" style={{ padding: '2rem', textAlign: 'center' }}>
+      <p style={{ fontSize: '1rem', color: '#666' }}>⏳ Waiting for workflow execution...</p>
+      <p style={{ fontSize: '0.875rem', color: '#999' }}>Execution will display here when complete</p>
     </div>
   );
 
