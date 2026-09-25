@@ -1,0 +1,12 @@
+{
+  "executor": {
+    "url": "http://localhost:3100",
+    "apiKey": ""
+  },
+  "exchanges": {},
+  "llm": {},
+  "viking": {
+    "url": "http://localhost:6789",
+    "authenticated": false
+  }
+}
