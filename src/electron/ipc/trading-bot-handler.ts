@@ -10,6 +10,7 @@ import { createTradingBotWorkflow } from '../agent/orchestration/trading-bot-wor
 
 export function registerTradingBotWorkflowHandler() {
   ipcMain.handle('trading:create-workflow', async (event, { botName, exchange, tradingPair, initialBalance }) => {
+    console.log(`[TradingWorkflow] Creating workflow: ${botName} on ${exchange}`);
     try {
       const dag = createTradingBotWorkflow({
         botName,
@@ -17,7 +18,9 @@ export function registerTradingBotWorkflowHandler() {
         tradingPair: tradingPair || 'BTC/USDT',
         initialBalance: initialBalance || 1000,
       });
+      console.log(`[TradingWorkflow] DAG created with ID: ${dag.id}`);
       const dagJSON = dag.toJSON();
+      console.log(`[TradingWorkflow] DAG serialized, returning response`);
 
       return {
         success: true,

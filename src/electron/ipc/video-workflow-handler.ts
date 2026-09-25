@@ -11,9 +11,12 @@ import { createVideoWorkflow, createFullSeasonWorkflow } from '../agent/orchestr
 export function registerVideoWorkflowHandler() {
   // Create single episode workflow
   ipcMain.handle('video:create-workflow', async (event, { episodeNumber, seriesName }) => {
+    console.log(`[VideoWorkflow] Creating workflow: ${seriesName} Ep${episodeNumber}`);
     try {
       const dag = createVideoWorkflow({ episodeNumber, seriesName });
+      console.log(`[VideoWorkflow] DAG created with ID: ${dag.id}`);
       const dagJSON = dag.toJSON();
+      console.log(`[VideoWorkflow] DAG serialized, returning response`);
 
       return {
         success: true,
