@@ -1,0 +1,90 @@
+# src/electron/gateway/index.ts
+
+- GatewayConfig · interface · L87-L94 — interface GatewayConfig
+- ChannelConnectOptions · interface · L102-L104 — interface ChannelConnectOptions
+- withTimeout · function · L106-L122 — function withTimeout<T>( promise: Promise<T>, timeoutMs: number | undefined, message: string, ): Promise<T>
+- ChannelGateway · class · L127-L2486 — class ChannelGateway
+- constructor · method · L144-L163 — constructor(db: Database.Database, config: GatewayConfig = {})
+- getMessageContext · method · L168-L185 — private getMessageContext(): ChannelMessageContext
+- setupAgentDaemonListeners · method · L190-L608 — private setupAgentDaemonListeners(agentDaemon: AgentDaemon): void
+- onUserMessage · function · L201-L204 — onUserMessage = (data: { taskId: string; message?: string })
+- onAssistantMessage · function · L208-L226 — onAssistantMessage = (data: { taskId: string; message?: string })
+- onTaskQueued · function · L228-L241 — onTaskQueued = (data: { taskId: string; message?: string; position?: number; reason?: string; })
+- onTaskDequeued · function · L243-L246 — onTaskDequeued = (data: { taskId: string; message?: string })
+- onTaskCompleted · function · L249-L291 — onTaskCompleted = (data: { taskId: string; resultSummary?: string; verificationVerdict?: string; verificationReport?: string; message?: string; })
+- onTaskCancelled · function · L294-L299 — onTaskCancelled = (data: { taskId: string; message?: string })
+- onError · function · L303-L308 — onError = (data: { taskId: string; error?: string; message?: string })
+- onToolError · function · L311-L330 — onToolError = (data: { taskId: string; tool?: string; error?: string })
+- onFollowUpCompleted · function · L333-L354 — onFollowUpCompleted = async (data: { taskId: string })
+- onFollowUpFailed · function · L357-L377 — onFollowUpFailed = async (data: { taskId: string; error?: string })
+- onTaskPaused · function · L382-L393 — onTaskPaused = async (data: { taskId: string; message?: string; reason?: string })
+- onApprovalRequested · function · L396-L401 — onApprovalRequested = (data: { taskId: string; approval: Any })
+- onArtifactCreated · function · L403-L409 — onArtifactCreated = (data: { taskId: string; path?: string; label?: string })
+- onKeyClaimEvidenceAttached · function · L411-L451 — onKeyClaimEvidenceAttached = (data: { taskId: string; keyClaims?: string[]; evidenceRefs?: Array<{ sourceUrlOrPath?: string; snippet?: string }>; })
+- timelineBridgeHandler · function · L453-L589 — timelineBridgeHandler = (timelineType: string)
+- initialize · method · L613-L635 — async initialize(mainWindow?: BrowserWindow): Promise<void>
+- connectEnabledChannels · method · L641-L647 — async connectEnabledChannels(options: ChannelConnectOptions = {}): Promise<void>
+- setMainWindow · method · L652-L654 — setMainWindow(window: BrowserWindow): void
+- getDiscordSupervisorService · method · L656-L666 — getDiscordSupervisorService(): DiscordSupervisorService | undefined
+- shutdown · method · L671-L685 — async shutdown(): Promise<void>
+- fetchDiscordMessages · method · L691-L697 — async fetchDiscordMessages(chatId: string, limit = 100): Promise<DiscordMessage[]>
+- downloadDiscordAttachment · method · L703-L713 — async downloadDiscordAttachment( chatId: string, messageId: string, ): Promise<DiscordDownloadedAttachment[]>
+- getStartupStats · method · L715-L724 — getStartupStats(): { loaded: number; enabled: number; connected: number }
+- startPendingCleanup · method · L726-L739 — private startPendingCleanup(): void
+- stopPendingCleanup · method · L741-L746 — private stopPendingCleanup(): void
+- cleanupPendingUsers · method · L748-L756 — private cleanupPendingUsers(): void
+- cleanupIdleSessions · method · L758-L760 — private cleanupIdleSessions(): void
+- emitUsersUpdated · method · L762-L770 — private emitUsersUpdated(channel: Channel): void
+- addTelegramChannel · method · L777-L812 — async addTelegramChannel( name: string, botToken: string, options?: { groupRoutingMode?: "all" | "mentionsOnly" | "mentionsOrCommands" | "commandsOnly"; allowedGroupChatIds?: string[]; }, securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addDiscordChannel · method · L817-L847 — async addDiscordChannel( name: string, botToken: string, applicationId: string, guildIds?: string[], supervisor?: _DiscordConfig["supervisor"], securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addSlackChannel · method · L852-L876 — async addSlackChannel( name: string, botToken: string, appToken: string, signingSecret?: string, progressRelayMode: "minimal" | "curated" = "minimal", securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addWhatsAppChannel · method · L881-L942 — async addWhatsAppChannel( name: string, allowedNumbers?: string[], securityMode: "open" | "allowlist" | "pairing" = "pairing", selfChatMode: boolean = true, responsePrefix: string = "🤖", opts?: { ambientMode?: boolean; silentUnauthorized?: boolean; ingestNonSelfChatsInSelfChatMode?: boolean; trustedGroupMemoryOptIn?: boolean; sendReadReceipts?: boolean; deduplicationEnabled?: boolean; groupRoutingMode?: "all" | "mentionsOnly" | "mentionsOrCommands" | "commandsOnly"; }, ): Promise<Channel>
+- addImessageChannel · method · L947-L993 — async addImessageChannel( name: string, cliPath?: string, dbPath?: string, allowedContacts?: string[], securityMode: "open" | "allowlist" | "pairing" = "pairing", dmPolicy: "open" | "allowlist" | "pairing" | "disabled" = "pairing", groupPolicy: "open" | "allowlist" | "disabled" = "allowlist", opts?: { ambientMode?: boolean; silentUnauthorized?: boolean; captureSelfMessages?: boolean; }, ): Promise<Channel>
+- addSignalChannel · method · L998-L1044 — async addSignalChannel( name: string, phoneNumber: string, dataDir?: string, securityMode: "open" | "allowlist" | "pairing" = "pairing", mode: "native" | "daemon" = "native", trustMode: "tofu" | "always" | "manual" = "tofu", dmPolicy: "open" | "allowlist" | "pairing" | "disabled" = "pairing", groupPolicy: "open" | "allowlist" | "disabled" = "allowlist", allowedNumbers?: string[], sendReadReceipts: boolean = true, sendTypingIndicators: boolean = true, ): Promise<Channel>
+- addMattermostChannel · method · L1049-L1083 — async addMattermostChannel( name: string, serverUrl: string, token: string, teamId?: string, securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addMatrixChannel · method · L1088-L1126 — async addMatrixChannel( name: string, homeserver: string, userId: string, accessToken: string, deviceId?: string, roomIds?: string[], securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addTwitchChannel · method · L1131-L1167 — async addTwitchChannel( name: string, username: string, oauthToken: string, channels: string[], allowWhispers: boolean = false, securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addLineChannel · method · L1172-L1206 — async addLineChannel( name: string, channelAccessToken: string, channelSecret: string, webhookPort: number = 3100, securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addBlueBubblesChannel · method · L1211-L1257 — async addBlueBubblesChannel( name: string, serverUrl: string, password: string, webhookPort: number = 3101, allowedContacts?: string[], securityMode: "open" | "allowlist" | "pairing" = "pairing", opts?: { ambientMode?: boolean; silentUnauthorized?: boolean; captureSelfMessages?: boolean; webhookSecret?: string; }, ): Promise<Channel>
+- addGoogleChatChannel · method · L1262-L1298 — async addGoogleChatChannel( name: string, serviceAccountKeyPath: string, projectId?: string, webhookPort: number = 3979, webhookPath: string = "/googlechat/webhook", webhookSecret?: string, securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addEmailChannel · method · L1303-L1407 — async addEmailChannel( name: string, email: string | undefined, password: string | undefined, imapHost: string | undefined, smtpHost: string | undefined, displayName?: string, allowedSenders?: string[], subjectFilter?: string, _securityMode: "open" | "allowlist" | "pairing" = "open", options?: { protocol?: "imap-smtp" | "loom"; authMethod?: "password" | "oauth"; oauthProvider?: "microsoft"; oauthClientId?: string; oauthClientSecret?: string; oauthTenant?: string; accessToken?: string; refreshToken?: string; tokenExpiresAt?: number; scopes?: string[]; imapPort?: number; smtpPort?: number; loomBaseUrl?: string; loomAccessToken?: string; loomIdentity?: string; loomMailboxFolder?: string; loomPollInterval?: number; }, ): Promise<Channel>
+- addFeishuChannel · method · L1412-L1450 — async addFeishuChannel( name: string, appId: string, appSecret: string, verificationToken?: string, encryptKey?: string, webhookPort: number = 3980, webhookPath: string = "/feishu/webhook", securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addWeComChannel · method · L1455-L1495 — async addWeComChannel( name: string, corpId: string, agentId: number, secret: string, token: string, encodingAESKey?: string, webhookPort: number = 3981, webhookPath: string = "/wecom/webhook", securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- addXChannel · method · L1500-L1538 — async addXChannel( name: string, options?: { commandPrefix?: string; allowedAuthors?: string[]; pollIntervalSec?: number; fetchCount?: number; outboundEnabled?: boolean; }, securityMode: "open" | "allowlist" | "pairing" = "pairing", ): Promise<Channel>
+- updateChannel · method · L1543-L1567 — updateChannel(channelId: string, updates: Partial<Channel>): void
+- enableChannel · method · L1572-L1600 — async enableChannel(channelId: string): Promise<void>
+- disableChannel · method · L1605-L1621 — async disableChannel(channelId: string): Promise<void>
+- enableWhatsAppWithQRForwarding · method · L1627-L1680 — async enableWhatsAppWithQRForwarding(channelId: string): Promise<void>
+- getWhatsAppInfo · method · L1685-L1701 — async getWhatsAppInfo(): Promise<{ qrCode?: string; phoneNumber?: string; status?: string }>
+- whatsAppLogout · method · L1706-L1722 — async whatsAppLogout(): Promise<void>
+- removeChannel · method · L1727-L1747 — async removeChannel(channelId: string): Promise<void>
+- testChannel · method · L1752-L1788 — async testChannel( channelId: string, ): Promise<{ success: boolean; error?: string; botUsername?: string }>
+- getChannels · method · L1793-L1795 — getChannels(): Channel[]
+- getChannel · method · L1800-L1802 — getChannel(channelId: string): Channel | undefined
+- getChannelByType · method · L1807-L1809 — getChannelByType(type: string): Channel | undefined
+- generatePairingCode · method · L1816-L1822 — generatePairingCode(channelId: string, userId?: string, displayName?: string): string
+- grantUserAccess · method · L1827-L1829 — grantUserAccess(channelId: string, userId: string, displayName?: string): void
+- revokeUserAccess · method · L1834-L1836 — revokeUserAccess(channelId: string, userId: string): void
+- getChannelUsers · method · L1842-L1845 — getChannelUsers(channelId: string): ReturnType<typeof this.userRepo.findByChannelId>
+- sendMessage · method · L1852-L1874 — async sendMessage( channelType: ChannelType, chatId: string, text: string, options?: { channelDbId?: string; replyTo?: string; parseMode?: "text" | "markdown" | "html"; idempotencyKey?: string; }, ): Promise<string>
+- sendMessageToSession · method · L1879-L1906 — async sendMessageToSession( sessionId: string, text: string, options?: { replyTo?: string; parseMode?: "text" | "markdown" | "html" }, ): Promise<string | null>
+- getDistinctChatIds · method · L1911-L1916 — getDistinctChatIds( channelId: string, limit = 50, ): Array<{ chatId: string; lastTimestamp: number }>
+- onEvent · method · L1923-L1925 — onEvent(handler: GatewayEventHandler): void
+- sendTaskUpdate · method · L1932-L1934 — async sendTaskUpdate(taskId: string, text: string): Promise<void>
+- handleTaskCompletion · method · L1939-L1941 — async handleTaskCompletion(taskId: string, result?: string): Promise<void>
+- handleTaskFailure · method · L1946-L1948 — async handleTaskFailure(taskId: string, error: string): Promise<void>
+- getHookIngress · method · L1952-L1964 — private getHookIngress(): HookAgentIngress | null
+- resolveWhatsAppAuthDir · method · L1966-L1972 — private resolveWhatsAppAuthDir(channel?: Channel): string
+- clearWhatsAppAuthDir · method · L1974-L1983 — private clearWhatsAppAuthDir(channel?: Channel): void
+- loadChannels · method · L1988-L2003 — private async loadChannels(): Promise<void>
+- attachDiscordSupervisorHandler · method · L2005-L2012 — private attachDiscordSupervisorHandler(adapter: ChannelAdapter): void
+- isMicrosoftEmailOAuthChannel · method · L2014-L2020 — private isMicrosoftEmailOAuthChannel(channel: Channel): boolean
+- getMicrosoftEmailIdentity · method · L2022-L2025 — private getMicrosoftEmailIdentity(channel: Channel): string | undefined
+- connectMicrosoftEmailGraphChannels · method · L2027-L2045 — private async connectMicrosoftEmailGraphChannels( options: ChannelConnectOptions = {}, ): Promise<void>
+- connectMicrosoftEmailGraphChannel · method · L2047-L2065 — private async connectMicrosoftEmailGraphChannel( channel: Channel, options: ChannelConnectOptions = {}, ): Promise<void>
+- validateMicrosoftEmailGraphReadAccess · method · L2067-L2128 — private async validateMicrosoftEmailGraphReadAccess( channel: Channel, options: ChannelConnectOptions = {}, ): Promise<void>
+- probeMicrosoftGraphReadAccess · method · L2130-L2167 — private async probeMicrosoftGraphReadAccess( accessToken: string, options: ChannelConnectOptions = {}, ): Promise<void>
+- getEmailOAuthAccessToken · method · L2169-L2220 — private async getEmailOAuthAccessToken(channelId: string): Promise<string>
+- createAdapterForChannel · method · L2225-L2475 — private createAdapterForChannel(channel: Channel): ChannelAdapter
+- assertChannelConfigAvailable · method · L2477-L2481 — private assertChannelConfigAvailable(channel: Channel): void
+- getLoomStatePath · method · L2483-L2485 — private getLoomStatePath(channelId: string): string

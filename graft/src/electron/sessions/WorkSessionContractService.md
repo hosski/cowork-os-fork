@@ -1,0 +1,36 @@
+# src/electron/sessions/WorkSessionContractService.ts
+
+- eventType · function · L49-L59 — function eventType(event: TaskEvent): string
+- payloadRecord · function · L61-L66 — function payloadRecord(event: TaskEvent): Record<string, unknown>
+- text · function · L68-L72 — function text(value: unknown, max = 16_000): string | undefined
+- waitRequestId · function · L74-L95 — function waitRequestId(payload: Record<string, unknown>): string | undefined
+- waitPayload · function · L97-L99 — function waitPayload(type: string, payload: Record<string, unknown>): Record<string, unknown>
+- waitReason · function · L101-L117 — function waitReason(type: string, payload: Record<string, unknown>): string
+- taskOutcome · function · L119-L129 — function taskOutcome( task: Pick<Task, "status" | "terminalStatus" | "verificationVerdict">, ): "complete" | "partial" | "failed" | undefined
+- childStatusForTask · function · L131-L149 — function childStatusForTask( task: Pick<Task, "status" | "terminalStatus" | "verificationVerdict">, ): "pending" | "running" | "completed" | "partial" | "failed" | "cancelled"
+- normalizeWaitStatus · function · L151-L157 — function normalizeWaitStatus( status: WaitStateStatus, ): Extract<WaitStateStatus, "resolved" | "expired" | "cancelled">
+- WorkSessionContractTaskResult · interface · L159-L163 — interface WorkSessionContractTaskResult
+- WorkSessionTaskTerminalResult · interface · L165-L168 — interface WorkSessionTaskTerminalResult
+- WorkSessionContractService · class · L170-L782 — class WorkSessionContractService
+- constructor · method · L178-L188 — constructor( private readonly db: Database.Database, protocol?: WorkSessionProtocolService, )
+- getRepository · method · L190-L192 — getRepository(): WorkSessionContractRepository
+- getProtocolService · method · L194-L196 — getProtocolService(): WorkSessionProtocolService
+- ensureForTask · method · L198-L246 — ensureForTask( task: Pick< Task, | "id" | "workspaceId" | "sessionId" | "status" | "prompt" | "successCriteria" | "parentTaskId" | "agentConfig" | "assignedAgentRoleId" | "workerRole" >, ): WorkSessionContractTaskResult
+- getForTask · method · L248-L252 — getForTask(taskId: string): WorkSessionContractTaskResult | undefined
+- getForSession · method · L254-L256 — getForSession(sessionId: string): WorkSessionContractAggregate
+- recordConstraint · method · L258-L268 — recordConstraint( taskId: string, input: Omit<ConstraintLedgerEntry, "id" | "sessionId" | "createdAt" | "updatedAt">, ): ConstraintLedgerEntry | undefined
+- recordEvidence · method · L270-L280 — recordEvidence( taskId: string, input: Omit<EvidenceManifestEntryInput, "sessionId">, ): EvidenceManifestEntry | undefined
+- recordArtifact · method · L282-L302 — recordArtifact( taskId: string, artifact: Artifact, metadata?: Record<string, unknown>, idempotencyKey?: string, ): ArtifactRevision | undefined
+- recordArtifactByPath · method · L304-L323 — recordArtifactByPath( taskId: string, path: string, metadata?: Record<string, unknown>, idempotencyKey?: string, ): ArtifactRevision | undefined
+- beginWait · method · L325-L344 — beginWait( taskId: string, input: Omit<WaitStateInput, "sessionId" | "taskId">, ): WaitState | undefined
+- resolveWait · method · L346-L363 — resolveWait( taskId: string, kind: WaitStateKind, requestId: string | undefined, status: Extract<WaitStateStatus, "resolved" | "expired" | "cancelled"> = "resolved", payload?: Record<string, unknown>, ): WaitState | undefined
+- recordTaskEvent · method · L365-L499 — recordTaskEvent(taskId: string, event: TaskEvent): void
+- recordTaskTerminal · method · L501-L585 — recordTaskTerminal( taskOrId: | Pick< Task, "id" | "status" | "terminalStatus" | "verificationVerdict" | "resultSummary" | "error" > | string, event?: TaskEvent, ): WorkSessionTaskTerminalResult
+- ensureChildSession · method · L587-L617 — ensureChildSession(parentTask: Task, childTask: Task): WorkSessionChildLink | undefined
+- appendProtocolWaitItem · method · L619-L639 — private appendProtocolWaitItem( sessionId: string, turnId: string, wait: WaitState, idempotencyKey: string, ): WorkSessionItem
+- sessionIdForTask · method · L641-L643 — private sessionIdForTask(task: Pick<Task, "id" | "sessionId">): string
+- buildRequirements · method · L645-L676 — private buildRequirements( task: Pick<Task, "successCriteria">, ): OutcomeContractRequirementInput[]
+- seedTaskConstraints · method · L678-L703 — private seedTaskConstraints(task: Pick<Task, "id" | "agentConfig">, session: WorkSession): void
+- reconcilePersistedWaits · method · L706-L729 — private reconcilePersistedWaits(taskId: string, sessionId: string): void
+- recordEvidenceFromEvent · method · L731-L767 — private recordEvidenceFromEvent( task: Task, event: TaskEvent, payload: Record<string, unknown>, eventKey: string, ): void
+- buildInheritedPolicySnapshot · method · L769-L781 — private buildInheritedPolicySnapshot(parentTask: Task, childTask: Task): Record<string, unknown>

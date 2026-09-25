@@ -1,0 +1,25 @@
+# src/renderer/utils/task-status-projection.ts
+
+- ActivityBlockSource · interface · L19-L24 — interface ActivityBlockSource
+- EventSource · interface · L26-L29 — interface EventSource
+- ActivityProjectionSource · type · L31-L31 — type ActivityProjectionSource = ActivityBlockSource | EventSource;
+- asObject · function · L33-L37 — function asObject(value: unknown): Record<string, unknown>
+- numericRevision · function · L39-L46 — function numericRevision(event: TaskEvent): number | null
+- compareEventOrder · function · L48-L59 — function compareEventOrder( a: { event: TaskEvent; index: number }, b: { event: TaskEvent; index: number }, ): number
+- normalizePlanStep · function · L61-L83 — function normalizePlanStep(value: unknown, fallbackId: string): PlanStep | null
+- applyPlanDelta · function · L85-L123 — function applyPlanDelta(current: PlanStep[], event: TaskEvent, eventIndex: number): PlanStep[]
+- deriveRevisionAwarePlanSteps · function · L126-L202 — function deriveRevisionAwarePlanSteps(events: TaskEvent[]): PlanStep[]
+- planStepLabel · function · L208-L212 — function planStepLabel(description: string | undefined): string
+- labelsAreEquivalent · function · L215-L223 — function labelsAreEquivalent(a: string | undefined, b: string | undefined): boolean
+- normalize · function · L216-L220 — normalize = (value: string | undefined)
+- activityLabel · function · L225-L256 — function activityLabel(event: TaskEvent, running: boolean): string
+- eventIsFailure · function · L258-L268 — function eventIsFailure(event: TaskEvent): boolean
+- eventIsBlocked · function · L270-L275 — function eventIsBlocked(event: TaskEvent): boolean
+- resolveGroupPlanStepId · function · L277-L288 — function resolveGroupPlanStepId(events: TaskEvent[], planSteps: PlanStep[]): string | undefined
+- deriveActivityGroups · function · L290-L404 — function deriveActivityGroups(args: { timelineItems: ActivityProjectionSource[]; fallbackEvents?: TaskEvent[]; planSteps: PlanStep[]; task?: Task | null; isReplayMode?: boolean; }): ActivityGroupViewModel[]
+- humanizeIdentifier · function · L406-L409 — function humanizeIdentifier(value: string): string
+- deriveBlockingState · function · L411-L452 — function deriveBlockingState(events: TaskEvent[]): { state: "approval" | "input"; label: string; eventId: string; } | null
+- stripState · function · L454-L463 — function stripState(task: Task | null | undefined): TaskStatusStripState
+- toneForState · function · L465-L473 — function toneForState(state: TaskStatusStripState): TaskStatusStripViewModel["tone"]
+- verificationLabel · function · L475-L484 — function verificationLabel(events: TaskEvent[]): string | undefined
+- deriveTaskStatusStrip · function · L486-L572 — function deriveTaskStatusStrip(args: { task?: Task | null; events: TaskEvent[]; planSteps: PlanStep[]; activityGroups: ActivityGroupViewModel[]; outcomeMetrics: TaskImpactMetric[]; outputSummary: TaskOutputSummary | null; }): TaskStatusStripViewModel

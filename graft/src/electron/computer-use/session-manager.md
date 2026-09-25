@@ -1,0 +1,24 @@
+# src/electron/computer-use/session-manager.ts
+
+- ComputerUseSessionEndReason · type · L11-L11 — type ComputerUseSessionEndReason = "completed" | "aborted" | "manual";
+- ComputerUseSessionEvent · type · L13-L19 — type ComputerUseSessionEvent = | { type: "session_started"; taskId: string } | { type: "session_ended"; taskId: string; reason: ComputerUseSessionEndReason; };
+- ComputerUseDaemonLike · interface · L22-L31 — interface ComputerUseDaemonLike
+- ComputerUseSessionManager · class · L33-L158 — class ComputerUseSessionManager
+- getInstance · method · L36-L41 — static getInstance(): ComputerUseSessionManager
+- resetForTesting · method · L43-L45 — static resetForTesting(): void
+- constructor · method · L54-L54 — private constructor()
+- setMainWindowGetter · method · L56-L58 — setMainWindowGetter(getter: () => BrowserWindow | null): void
+- setNotifyHandler · method · L60-L62 — setNotifyHandler(handler: ((e: ComputerUseSessionEvent) => void) | null): void
+- getActiveTaskId · method · L64-L66 — getActiveTaskId(): string | null
+- getAppPermissionManagerOrNull · method · L68-L70 — getAppPermissionManagerOrNull(): null
+- isAborted · method · L72-L74 — isAborted(): boolean
+- acquire · method · L76-L98 — acquire(taskId: string, daemon: ComputerUseDaemonLike): void
+- updateActionStatus · method · L100-L100 — updateActionStatus(_label: string): void
+- checkNotAborted · method · L102-L106 — checkNotAborted(): void
+- refreshIsolation · method · L108-L108 — async refreshIsolation(): Promise<void>
+- onAppPermissionGranted · method · L110-L110 — async onAppPermissionGranted(): Promise<void>
+- endSessionIfOwner · method · L112-L115 — endSessionIfOwner(taskId: string, reason: ComputerUseSessionEndReason = "completed"): void
+- abortSession · method · L117-L122 — async abortSession(taskId: string): Promise<void>
+- endSessionManual · method · L124-L129 — async endSessionManual(): Promise<void>
+- emitNotify · method · L131-L137 — private emitNotify(event: ComputerUseSessionEvent): void
+- cleanupInternal · method · L139-L157 — private async cleanupInternal( taskId: string, reason: ComputerUseSessionEndReason, ): Promise<void>

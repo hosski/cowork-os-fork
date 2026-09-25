@@ -1,0 +1,31 @@
+# src/electron/agent/runtime/ToolScheduler.ts
+
+- SchedulableToolCall · interface · L10-L13 — interface SchedulableToolCall
+- buildRejectedToolArgumentResult · function · L20-L33 — function buildRejectedToolArgumentResult(toolUse: LLMToolUse): LLMToolResult
+- ToolSchedulerHook · type · L35-L35 — type ToolSchedulerHook = "prepare" | "post_execution_effect" | "finalize" | "summarize_batch";
+- describeSchedulerError · function · L37-L41 — function describeSchedulerError(error: unknown, fallback: string): string
+- buildCancelledToolResult · function · L43-L53 — function buildCancelledToolResult(toolUse: LLMToolUse): LLMToolResult
+- buildSchedulerHookFailureMetadata · function · L55-L63 — function buildSchedulerHookFailureMetadata( hook: ToolSchedulerHook, error: unknown, ): Record<string, unknown>
+- buildSchedulerHookFailureResult · function · L65-L79 — function buildSchedulerHookFailureResult( call: SchedulableToolCall, hook: ToolSchedulerHook, error: unknown, ): LLMToolResult
+- ToolScheduleRawExecutionOutcome · interface · L81-L87 — interface ToolScheduleRawExecutionOutcome
+- ToolScheduledExecutionOutcome · interface · L89-L92 — interface ToolScheduledExecutionOutcome
+- PreparedSchedulableToolCall · interface · L94-L104 — interface PreparedSchedulableToolCall extends SchedulableToolCall
+- ScheduledToolBatch · interface · L106-L111 — interface ScheduledToolBatch
+- ToolScheduleCallReport · interface · L113-L121 — interface ToolScheduleCallReport
+- ToolScheduleOutcome · interface · L123-L133 — interface ToolScheduleOutcome
+- ToolSchedulerPrepareResult · type · L135-L146 — type ToolSchedulerPrepareResult = | { status: "scheduled"; call: PreparedSchedulableToolCall; } | { status: "immediate"; call: SchedulableToolCall; effectiveToolName?: string; outcome: ToolScheduledExecutionOutcome; stopAfter?: boolean; };
+- ToolSchedulerExecuteBatchParams · interface · L148-L162 — interface ToolSchedulerExecuteBatchParams
+- ToolScheduler · class · L164-L633 — class ToolScheduler
+- executeBatch · method · L165-L517 — async executeBatch(params: ToolSchedulerExecuteBatchParams): Promise<ToolScheduleOutcome>
+- canContinue · function · L169-L173 — canContinue = (): boolean
+- recordFatalError · function · L265-L269 — recordFatalError = (error: unknown, fallback: string): unknown
+- addImmediateEntry · function · L271-L281 — addImmediateEntry = (entry: ToolSchedulerPrepareResult): void
+- createDispatchFailureOutcome · function · L283-L292 — createDispatchFailureOutcome = ( error: unknown, skipped: boolean, ): ToolScheduleRawExecutionOutcome
+- finalizeDispatchSkippedEntry · function · L294-L323 — finalizeDispatchSkippedEntry = async ( entry: Extract<ToolSchedulerPrepareResult, { status: "scheduled" }>, error: unknown, ): Promise<void>
+- getBatchMode · method · L519-L527 — private getBatchMode(call: PreparedSchedulableToolCall): "parallel" | "serial"
+- canShareParallelBatch · method · L529-L562 — private canShareParallelBatch( currentBatch: PreparedSchedulableToolCall[], candidate: PreparedSchedulableToolCall, ): boolean
+- getScopeKeys · method · L564-L573 — private getScopeKeys(call: PreparedSchedulableToolCall): ToolExecutionScopeKey[]
+- runSerialBatch · method · L575-L584 — private async runSerialBatch( batch: ScheduledToolBatch, shouldContinue?: () => boolean, ): Promise<ToolScheduleRawExecutionOutcome[]>
+- runParallelBatch · method · L586-L608 — private async runParallelBatch( batch: ScheduledToolBatch, maxParallel = batch.calls.length, shouldContinue?: () => boolean, ): Promise<ToolScheduleRawExecutionOutcome[]>
+- worker · function · L595-L604 — worker = async ()
+- runCall · method · L610-L632 — private async runCall( call: PreparedSchedulableToolCall, shouldContinue?: () => boolean, ): Promise<ToolScheduleRawExecutionOutcome>

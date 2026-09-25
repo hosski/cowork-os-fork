@@ -1,0 +1,93 @@
+# src/electron/subconscious/SubconsciousLoopService.ts
+
+- Any · type · L71-L71 — type Any = any;
+- SubconsciousLoopServiceDeps · interface · L74-L90 — interface SubconsciousLoopServiceDeps
+- ReflectionPolicyEvaluation · interface · L92-L99 — interface ReflectionPolicyEvaluation
+- now · function · L101-L103 — function now(): number
+- stableHash · function · L105-L107 — function stableHash(value: unknown): string
+- pick · function · L109-L111 — function pick<T>(values: T[]): T | undefined
+- limit · function · L113-L115 — function limit<T>(values: T[], max: number): T[]
+- uniqueBy · function · L117-L127 — function uniqueBy<T>(items: T[], getKey: (value: T) => string): T[]
+- clamp · function · L129-L131 — function clamp(value: number, min: number, max: number): number
+- hashNumber · function · L133-L135 — function hashNumber(value: string): number
+- toDispatchPolicyKey · function · L137-L146 — function toDispatchPolicyKey( kind: SubconsciousDispatchKind, ): keyof SubconsciousSettings["perExecutorPolicy"] | "codeChangeTask"
+- humanizeDispatchKind · function · L148-L155 — function humanizeDispatchKind(kind?: SubconsciousDispatchKind): string
+- isSelfGeneratedSubconsciousTask · function · L157-L159 — function isSelfGeneratedSubconsciousTask(row: Any): boolean
+- isActionableHeartbeatPulseResult · function · L161-L163 — function isActionableHeartbeatPulseResult(value: unknown): boolean
+- isLowSignalHeartbeatSummary · function · L165-L175 — function isLowSignalHeartbeatSummary(value: unknown): boolean
+- isActionableHeartbeatRun · function · L177-L187 — function isActionableHeartbeatRun(row: Any): boolean
+- isActionableEvidenceSignal · function · L189-L210 — function isActionableEvidenceSignal(evidence: SubconsciousEvidence): boolean
+- scoreEvidenceUsefulness · function · L212-L242 — function scoreEvidenceUsefulness(evidence: SubconsciousEvidence[]): number
+- CodeWorkspaceTargetCandidate · interface · L246-L253 — interface CodeWorkspaceTargetCandidate
+- normalizeRepoIdentity · function · L255-L260 — function normalizeRepoIdentity(value?: string | null): string | undefined
+- isCoworkRepoIdentity · function · L262-L264 — function isCoworkRepoIdentity(value?: string | null): boolean
+- buildCodeTargetKey · function · L266-L273 — function buildCodeTargetKey( candidate: Pick<CodeWorkspaceTargetCandidate, "repoRoot" | "repoIdentity">, ): string
+- normalizeComparablePath · function · L275-L281 — async function normalizeComparablePath(value: string): Promise<string>
+- SubconsciousLoopService · class · L283-L2615 — class SubconsciousLoopService
+- constructor · method · L301-L318 — constructor( private readonly db: Database.Database, private readonly deps: SubconsciousLoopServiceDeps = {}, )
+- finalizeCoreLearning · method · L320-L332 — private async finalizeCoreLearning( traceId: string, target?: SubconsciousTargetRef, sourceRunId?: string, ): Promise<void>
+- start · method · L334-L348 — async start(agentDaemon: AgentDaemon): Promise<void>
+- stop · method · L350-L354 — stop(): void
+- getSettings · method · L356-L358 — getSettings(): SubconsciousSettings
+- saveSettings · method · L360-L363 — saveSettings(settings: SubconsciousSettings): SubconsciousSettings
+- getBrainSummary · method · L365-L386 — getBrainSummary(): SubconsciousBrainSummary
+- listTargets · method · L388-L390 — listTargets(workspaceId?: string): SubconsciousTargetSummary[]
+- listRuns · method · L392-L394 — listRuns(targetKey?: string): SubconsciousRun[]
+- getTargetDetail · method · L396-L414 — async getTargetDetail(targetKey: string): Promise<SubconsciousTargetDetail | null>
+- refreshTargets · method · L416-L465 — async refreshTargets(): Promise<SubconsciousRefreshResult>
+- pruneStaleMapEntries · method · L467-L480 — private pruneStaleMapEntries(): void
+- runNow · method · L482-L872 — async runNow(targetKey?: string): Promise<SubconsciousRun | null>
+- runFromHeartbeat · method · L874-L886 — async runFromHeartbeat(workspaceId?: string): Promise<SubconsciousRun | null>
+- resolveAutomationProfileForTarget · method · L888-L897 — private resolveAutomationProfileForTarget(target: SubconsciousTargetRef)
+- retryRun · method · L899-L903 — async retryRun(runId: string): Promise<SubconsciousRun | null>
+- reviewRun · method · L905-L924 — async reviewRun( runId: string, reviewStatus: "accepted" | "dismissed", ): Promise<SubconsciousRun | undefined>
+- dismissTarget · method · L926-L937 — dismissTarget(targetKey: string): SubconsciousTargetSummary | undefined
+- resetHistory · method · L939-L963 — async resetHistory(): Promise<SubconsciousHistoryResetResult>
+- getImprovementCompatibilitySettings · method · L965-L990 — getImprovementCompatibilitySettings(): ImprovementLoopSettings
+- getImprovementEligibility · method · L992-L1004 — getImprovementEligibility(): ImprovementEligibility
+- listImprovementCandidates · method · L1006-L1037 — listImprovementCandidates(workspaceId?: string): ImprovementCandidate[]
+- listImprovementCampaigns · method · L1039-L1081 — listImprovementCampaigns(workspaceId?: string): ImprovementCampaign[]
+- resetImprovementCompatibilityHistory · method · L1083-L1096 — async resetImprovementCompatibilityHistory(): Promise<ImprovementHistoryResetResult>
+- pruneSessionOnlyState · method · L1098-L1107 — private pruneSessionOnlyState(): void
+- computeJitterMs · method · L1109-L1113 — private computeJitterMs(targetKey: string, cadenceMinutes: number): number
+- computeNextEligibleAt · method · L1115-L1117 — private computeNextEligibleAt(target: SubconsciousTargetSummary, completedAt: number): number
+- hasFreshActionableEvidence · method · L1119-L1130 — private hasFreshActionableEvidence(target: SubconsciousTargetSummary): boolean
+- computeExpiryAt · method · L1132-L1135 — private computeExpiryAt(latestEvidenceAt?: number): number | undefined
+- completeSleepRun · method · L1137-L1152 — private completeSleepRun(run: SubconsciousRun, reason: string): SubconsciousRun
+- normalizeLegacyOutcomeVocabulary · method · L1154-L1170 — private normalizeLegacyOutcomeVocabulary(): void
+- appendJournal · method · L1172-L1181 — private async appendJournal( input: Omit<SubconsciousJournalEntry, "id" | "createdAt"> & { createdAt?: number }, ): Promise<void>
+- evaluatePolicy · method · L1183-L1242 — private evaluatePolicy( target: SubconsciousTargetSummary, decision: SubconsciousDecision, evidence: SubconsciousEvidence[], dispatchKind?: SubconsciousDispatchKind, ): ReflectionPolicyEvaluation
+- shouldNotify · method · L1244-L1262 — private shouldNotify(intent?: SubconsciousNotificationIntent): boolean
+- shouldAutoDispatchDecision · method · L1264-L1284 — private async shouldAutoDispatchDecision(input: { settings: SubconsciousSettings; target: SubconsciousTargetSummary; dispatchKind?: SubconsciousDispatchKind; policy: ReflectionPolicyEvaluation; evidence: SubconsciousEvidence[]; }): Promise<boolean>
+- countAcceptedSuggestionPatterns · method · L1286-L1298 — private async countAcceptedSuggestionPatterns(workspaceId: string): Promise<number>
+- notifyForRun · method · L1300-L1335 — private async notifyForRun( target: SubconsciousTargetRef, run: SubconsciousRun, decision?: SubconsciousDecision, dispatchRecord?: SubconsciousDispatchRecord | null, ): Promise<void>
+- finalizeTargetAfterRun · method · L1337-L1375 — private async finalizeTargetAfterRun( target: SubconsciousTargetSummary, run: SubconsciousRun, decision: SubconsciousDecision | undefined, dispatchRecord: SubconsciousDispatchRecord | null, evidence: SubconsciousEvidence[], ): Promise<void>
+- maybeRunDream · method · L1377-L1445 — private async maybeRunDream(target?: SubconsciousTargetRef): Promise<void>
+- resolveGlobalRoot · method · L1447-L1452 — private resolveGlobalRoot(): string
+- resolveDefaultWorkspace · method · L1454-L1458 — private resolveDefaultWorkspace()
+- resolveWorkspacePath · method · L1460-L1465 — private resolveWorkspacePath(workspaceId?: string): string | undefined
+- choosePrimaryCodeWorkspace · method · L1467-L1483 — private choosePrimaryCodeWorkspace( candidates: CodeWorkspaceTargetCandidate[], ): CodeWorkspaceTargetCandidate
+- collectCodeWorkspaceTargets · method · L1485-L1558 — private async collectCodeWorkspaceTargets( workspaces: Workspace[], ): Promise<Map<string, SubconsciousTargetRef>>
+- mergeTargetSummaries · method · L1560-L1599 — private mergeTargetSummaries( target: SubconsciousTargetRef, current: SubconsciousTargetSummary | undefined, legacy: SubconsciousTargetSummary | undefined, ): SubconsciousTargetSummary
+- rekeyTargetRecords · method · L1601-L1635 — private rekeyTargetRecords(oldKey: string, nextTarget: SubconsciousTargetRef): void
+- collectTargets · method · L1637-L2020 — private async collectTargets(enabledKinds: SubconsciousTargetKind[])
+- ensure · function · L1642-L1648 — ensure = (target: SubconsciousTargetRef)
+- pushEvidence · function · L1649-L1660 — pushEvidence = ( target: SubconsciousTargetRef, evidence: Omit<SubconsciousEvidence, "id" | "targetKey">, )
+- buildTargetSummary · method · L2022-L2067 — private buildTargetSummary( target: SubconsciousTargetRef, evidence: SubconsciousEvidence[], backlogCount: number, current?: SubconsciousTargetSummary, ): SubconsciousTargetSummary
+- isTargetActionable · method · L2069-L2075 — private isTargetActionable(target: SubconsciousTargetSummary): boolean
+- scoreTargetForRun · method · L2077-L2092 — private scoreTargetForRun(target: SubconsciousTargetSummary): number
+- listEligibleTargetsForRun · method · L2094-L2112 — private listEligibleTargetsForRun(workspaceId?: string): SubconsciousTargetSummary[]
+- pickTargetForRun · method · L2114-L2116 — private pickTargetForRun(workspaceId?: string): SubconsciousTargetSummary | undefined
+- generateHypotheses · method · L2118-L2171 — private generateHypotheses( target: SubconsciousTargetRef, evidence: SubconsciousEvidence[], maxHypotheses: number, ): SubconsciousHypothesis[]
+- generateCritiques · method · L2173-L2204 — private generateCritiques( target: SubconsciousTargetRef, evidence: SubconsciousEvidence[], hypotheses: SubconsciousHypothesis[], ): SubconsciousCritique[]
+- synthesizeDecision · method · L2206-L2249 — private synthesizeDecision( target: SubconsciousTargetRef, evidence: SubconsciousEvidence[], hypotheses: SubconsciousHypothesis[], critiques: SubconsciousCritique[], ): SubconsciousDecision
+- materializeBacklog · method · L2251-L2268 — private materializeBacklog( targetKey: string, decision: SubconsciousDecision, executorKind?: SubconsciousDispatchKind, ): SubconsciousBacklogItem[]
+- resolveDispatchKind · method · L2270-L2288 — private resolveDispatchKind( target: SubconsciousTargetRef, evidence?: SubconsciousEvidence[], ): SubconsciousDispatchKind | undefined
+- resolveDispatchWorkspace · method · L2290-L2335 — private async resolveDispatchWorkspace( target: SubconsciousTargetRef, ): Promise<Workspace | undefined>
+- dispatchSuggestionForReview · method · L2337-L2379 — private async dispatchSuggestionForReview( target: SubconsciousTargetRef, decision: SubconsciousDecision, evidence: SubconsciousEvidence[], ): Promise<SubconsciousDispatchRecord | null>
+- dispatchDecision · method · L2381-L2552 — private async dispatchDecision( target: SubconsciousTargetRef, decision: SubconsciousDecision, evidence: SubconsciousEvidence[], ): Promise<SubconsciousDispatchRecord | null>
+- completedDispatch · method · L2554-L2572 — private completedDispatch( decision: SubconsciousDecision, target: SubconsciousTargetRef, kind: SubconsciousDispatchKind, input: { taskId?: string; externalRefId?: string; summary: string }, ): SubconsciousDispatchRecord
+- skippedDispatch · method · L2574-L2590 — private skippedDispatch( decision: SubconsciousDecision, target: SubconsciousTargetRef, kind: SubconsciousDispatchKind, summary: string, ): SubconsciousDispatchRecord
+- advanceRun · method · L2592-L2598 — private async advanceRun( id: string, updates: Partial<SubconsciousRun>, ): Promise<SubconsciousRun>
+- safeJsonParseRecord · method · L2600-L2607 — private safeJsonParseRecord(value: unknown): Record<string, any> | undefined
+- hasTable · method · L2609-L2614 — private hasTable(name: string): boolean

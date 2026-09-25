@@ -1,0 +1,36 @@
+# src/electron/agent/executor-tool-execution-utils.ts
+
+- NormalizedToolFailureReason · interface · L5-L10 — interface NormalizedToolFailureReason
+- ToolInputValidationResult · interface · L12-L18 — interface ToolInputValidationResult
+- deriveSearchQueryFromContext · function · L122-L136 — function deriveSearchQueryFromContext(context: string): string
+- safeJsonParseValue · function · L138-L144 — function safeJsonParseValue(value: string): Any | null
+- compactStringValue · function · L146-L153 — function compactStringValue( value: string, maxChars = LOCAL_MODEL_JSON_STRING_VALUE_MAX_CHARS, ): string
+- compactHeadersForLocalModel · function · L155-L175 — function compactHeadersForLocalModel(headers: unknown): Record<string, string>
+- compactJsonValueForLocalModel · function · L177-L229 — function compactJsonValueForLocalModel(value: Any, depth = 0): Any
+- compactTextForLocalModel · function · L231-L249 — function compactTextForLocalModel(text: string): string
+- compactNetworkBodyForLocalModel · function · L251-L260 — function compactNetworkBodyForLocalModel(body: string): string
+- compactNetworkEnvelopeForLocalModel · function · L262-L320 — function compactNetworkEnvelopeForLocalModel(source: Record<string, Any>): Record<string, Any>
+- compactNetworkToolResultForLocalModel · function · L322-L350 — function compactNetworkToolResultForLocalModel(opts: { toolName: string; result: Any; rawResult: string; }): string
+- preflightValidateAndRepairToolInput · function · L352-L462 — function preflightValidateAndRepairToolInput(opts: { toolName: string; input: Any; contextText?: string; }): ToolInputValidationResult
+- formatToolInputForLog · function · L464-L471 — function formatToolInputForLog(input: Any, maxLength = 200): string
+- prependRunCommandTerminationContext · function · L473-L495 — function prependRunCommandTerminationContext(sanitizedResult: string, result: Any): string
+- normalizeImageMimeType · function · L497-L513 — function normalizeImageMimeType(value: unknown): LLMImageMimeType | null
+- buildComputerUseCompanionContent · function · L515-L580 — function buildComputerUseCompanionContent( toolName: string, result: Any, ): { compactResult: string; companionUserContent: LLMToolResultCompanionContent[] } | null
+- buildNormalizedToolResult · function · L582-L636 — function buildNormalizedToolResult(opts: { toolName: string; toolUseId: string; result: Any; rawResult: string; sanitizeToolResult: (toolName: string, resultText: string) => string; getToolFailureReason: (result: Any, fallback: string) => string; includeRunCommandTerminationContext?: boolean; compactForLocalModel?: boolean; }): { toolResult: LLMToolResult; resultIsError: boolean; toolFailureReason: string }
+- normalizeToolUseName · function · L638-L655 — function normalizeToolUseName(opts: { toolName: string; normalizeToolName: (toolName: string) => { name: string; original: string; modified: boolean; }; emitParameterInference: (tool: string, inference: string) => void; }): string
+- inferAndNormalizeToolInput · function · L657-L676 — function inferAndNormalizeToolInput(opts: { toolName: string; input: Any; inferMissingParameters: ( toolName: string, input: Any, ) => { modified: boolean; input: Any; inference?: string }; emitParameterInference: (tool: string, inference: string) => void; }): Any
+- buildDisabledToolResult · function · L678-L694 — function buildDisabledToolResult(opts: { toolName: string; toolUseId: string; lastError?: string; }): LLMToolResult
+- buildUnavailableToolResult · function · L696-L722 — function buildUnavailableToolResult(opts: { toolName: string; toolUseId: string; hint?: string; alternatives?: string[]; }): LLMToolResult
+- buildInvalidInputToolResult · function · L724-L739 — function buildInvalidInputToolResult(opts: { toolUseId: string; validationError: string; }): LLMToolResult
+- buildDuplicateToolResult · function · L741-L777 — function buildDuplicateToolResult(opts: { toolName: string; toolUseId: string; duplicateCheck: { reason?: string; cachedResult?: string }; isIdempotentTool: (toolName: string) => boolean; suggestion: string; }): { toolResult: LLMToolResult; hasDuplicateAttempt: boolean }
+- isReadOnlyCloudAction · function · L801-L809 — function isReadOnlyCloudAction(action: string): boolean
+- isEffectivelyIdempotentToolCall · function · L811-L823 — function isEffectivelyIdempotentToolCall(opts: { toolName: string; input: Any; isIdempotentTool: (toolName: string) => boolean; }): boolean
+- buildCancellationToolResult · function · L825-L837 — function buildCancellationToolResult(opts: { toolUseId: string; cancelled: boolean; }): LLMToolResult
+- buildRedundantFileOperationToolResult · function · L839-L866 — function buildRedundantFileOperationToolResult(opts: { toolUseId: string; fileOpCheck: { cachedResult?: string; reason?: string; suggestion?: string }; }): LLMToolResult
+- buildWatchSkipBlockedArtifactToolResult · function · L868-L884 — function buildWatchSkipBlockedArtifactToolResult(opts: { toolName: string; toolUseId: string; }): LLMToolResult
+- recordToolFailureOutcome · function · L886-L907 — function recordToolFailureOutcome(opts: { toolName: string; failureReason: string; result: Any; persistentToolFailures: Map<string, number>; recordFailure: (toolName: string, error: string) => boolean; isHardToolFailure: (toolName: string, result: Any, reason: string) => boolean; }): { shouldDisable: boolean; isHardFailure: boolean; failureCount: number; }
+- getToolInputValidationError · function · L909-L977 — function getToolInputValidationError(toolName: string, input: Any): string | null
+- isHardToolFailure · function · L979-L1016 — function isHardToolFailure(toolName: string, result: Any, failureReason = ""): boolean
+- isAdvisoryToolFailureResult · function · L1018-L1024 — function isAdvisoryToolFailureResult(result: Any): boolean
+- getToolFailureReason · function · L1026-L1028 — function getToolFailureReason(result: Any, fallback: string): string
+- normalizeToolFailureReason · function · L1030-L1090 — function normalizeToolFailureReason( result: Any, fallback: string, ): NormalizedToolFailureReason

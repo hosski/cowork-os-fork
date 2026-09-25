@@ -1,0 +1,25 @@
+# src/electron/documents/DocumentEditorSessionService.ts
+
+- SessionRecord · type · L32-L40 — type SessionRecord = { id: string; workspaceId: string; workspacePath?: string; basePath: string; currentPath: string; fileType: "pdf" | "docx"; sourceTaskId?: string; };
+- PdfRegionEditInput · type · L42-L48 — type PdfRegionEditInput = { sourcePath: string; destPath: string; pageIndex: number; bbox: { x: number; y: number; w: number; h: number }; instruction: string; };
+- PdfRegionEditor · type · L50-L52 — type PdfRegionEditor = { edit: (input: PdfRegionEditInput & { selectionText?: string }) => Promise<void>; };
+- getFileType · function · L58-L63 — function getFileType(filePath: string): "pdf" | "docx" | null
+- normalizeVersionBase · function · L65-L74 — function normalizeVersionBase(filePath: string): { dir: string; ext: string; stem: string }
+- versionSortKey · function · L76-L79 — function versionSortKey(filePath: string): number
+- DocumentEditorSessionService · class · L81-L577 — class DocumentEditorSessionService
+- constructor · method · L87-L93 — constructor( private workspaceRepo: WorkspaceRepository, private taskRepo: TaskRepository, private artifactRepo: ArtifactRepository, private agentDaemon: AgentDaemon, private pdfRegionEditor: PdfRegionEditor = defaultPdfRegionEditor, )
+- resolvePath · method · L95-L109 — private resolvePath(filePath: string, workspacePath?: string): string
+- assertDocumentPathAccess · method · L111-L117 — private assertDocumentPathAccess( workspace: Workspace, filePath: string, operation: "read" | "write", ): string
+- findWorkspaceById · method · L119-L127 — private findWorkspaceById(workspaceId: string): Workspace | undefined
+- listVersions · method · L129-L166 — listVersions(filePath: string, workspacePath?: string): DocumentVersionEntry[]
+- visiblePath · function · L132-L139 — visiblePath = (candidate: string): boolean
+- buildNextVersionPath · method · L168-L174 — private buildNextVersionPath(currentPath: string): string
+- resolveWorkspaceForPath · method · L176-L203 — private resolveWorkspaceForPath(filePath: string, preferredWorkspacePath?: string): Workspace
+- getEffectiveWorkspace · method · L205-L218 — private getEffectiveWorkspace(workspace: Workspace, task?: Task): Workspace
+- ensureDirectPdfAccess · method · L220-L260 — private async ensureDirectPdfAccess( task: Task, workspace: Workspace, sourcePath: string, destPath: string, ): Promise<void>
+- createDirectDocumentTask · method · L262-L298 — private createDirectDocumentTask(params: { session: SessionRecord; workspace: Workspace; title: string; prompt: string; instruction: string; }): Task
+- failDirectTask · method · L300-L309 — private failDirectTask( taskId: string, message: string, failureClass: Task["failureClass"] = "tool_error", ): void
+- runDirectPdfEditTask · method · L311-L395 — private async runDirectPdfEditTask(params: { task: Task; sourcePath: string; destPath: string; selection: PdfRegionSelection; instruction: string; }): Promise<void>
+- openSession · method · L397-L477 — async openSession(filePath: string, workspacePath?: string): Promise<DocumentEditorSession>
+- selectionPrompt · method · L479-L496 — private selectionPrompt(selection: PdfRegionSelection | DocxBlockSelection): string
+- startEditTask · method · L498-L576 — async startEditTask(request: DocumentEditRequest): Promise<Task>

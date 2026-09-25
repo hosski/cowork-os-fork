@@ -1,0 +1,21 @@
+# src/electron/agent/step-contract.ts
+
+- StepContractMode · type · L3-L3 — type StepContractMode = "mutation_required" | "artifact_presence_required" | "analysis_only";
+- StepContractEnforcementLevel · type · L4-L4 — type StepContractEnforcementLevel = "strict" | "standard" | "advisory";
+- normalizeWithLeadingDot · function · L79-L85 — function normalizeWithLeadingDot(extension: string): string
+- getCanonicalArtifactExtensions · function · L87-L89 — function getCanonicalArtifactExtensions(): string[]
+- hasArtifactExtensionMention · function · L91-L93 — function hasArtifactExtensionMention(text: string): boolean
+- extractArtifactExtensionsFromText · function · L95-L121 — function extractArtifactExtensionsFromText(text: string): string[]
+- isLikelyCommandSnippet · function · L123-L130 — function isLikelyCommandSnippet(text: string): boolean
+- isArtifactPathLikeToken · function · L132-L144 — function isArtifactPathLikeToken(text: string): boolean
+- extractArtifactPathCandidates · function · L146-L186 — function extractArtifactPathCandidates(text: string): string[]
+- descriptionHasWriteIntent · function · L188-L213 — function descriptionHasWriteIntent(text: string): boolean
+- descriptionHasStrongWriteIntent · function · L215-L218 — function descriptionHasStrongWriteIntent(text: string): boolean
+- descriptionHasProtectiveConstraintIntent · function · L220-L232 — function descriptionHasProtectiveConstraintIntent(text: string): boolean
+- descriptionHasReadOnlyIntent · function · L234-L242 — function descriptionHasReadOnlyIntent(text: string): boolean
+- descriptionHasDiscoveryIntent · function · L244-L253 — function descriptionHasDiscoveryIntent(text: string): boolean
+- descriptionHasSummaryCue · function · L255-L258 — function descriptionHasSummaryCue(text: string): boolean
+- descriptionHasScaffoldIntent · function · L260-L265 — function descriptionHasScaffoldIntent(text: string): boolean
+- descriptionHasArtifactCue · function · L267-L272 — function descriptionHasArtifactCue(text: string): boolean
+- descriptionHasChecklistReportCue · function · L274-L278 — function descriptionHasChecklistReportCue(text: string): boolean
+- deriveStepContractMode · function · L280-L330 — function deriveStepContractMode(opts: { description: string; requiresMutation: boolean; requiresArtifactEvidence: boolean; requiresWriteByArtifactMode: boolean; hasReadOnlyConstraint?: boolean; }): { mode: StepContractMode; enforcementLevel: StepContractEnforcementLevel; contractReason: string; }

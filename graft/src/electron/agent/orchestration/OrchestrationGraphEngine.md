@@ -1,0 +1,30 @@
+# src/electron/agent/orchestration/OrchestrationGraphEngine.ts
+
+- AgentRoleLike · interface · L18-L26 — interface AgentRoleLike
+- OrchestrationGraphNodeInput · interface · L28-L46 — interface OrchestrationGraphNodeInput
+- OrchestrationGraphCreateInput · interface · L48-L56 — interface OrchestrationGraphCreateInput
+- OrchestrationGraphEngineDeps · interface · L58-L85 — interface OrchestrationGraphEngineDeps
+- isTerminalNodeStatus · function · L87-L91 — function isTerminalNodeStatus(status: OrchestrationGraphNode["status"]): boolean
+- summarizeTask · function · L93-L101 — function summarizeTask(task: Task): string
+- notificationToPayload · function · L103-L123 — function notificationToPayload( notification: OrchestrationNodeNotification, ): Record<string, unknown>
+- OrchestrationGraphEngine · class · L125-L768 — class OrchestrationGraphEngine extends EventEmitter
+- constructor · method · L131-L137 — constructor( db: import("better-sqlite3").Database, private readonly deps: OrchestrationGraphEngineDeps, )
+- getRepository · method · L139-L141 — getRepository(): OrchestrationGraphRepository
+- start · method · L143-L148 — start(): void
+- stop · method · L150-L155 — stop(): void
+- createRun · method · L157-L216 — async createRun(input: OrchestrationGraphCreateInput): Promise<OrchestrationGraphSnapshot>
+- appendNodes · method · L218-L278 — async appendNodes(input: { runId: string; nodes: OrchestrationGraphNodeInput[]; edges?: Array<{ fromNodeId?: string; fromNodeKey?: string; toNodeId?: string; toNodeKey?: string; }>; }): Promise<OrchestrationGraphSnapshot | undefined>
+- resumeRunningRuns · method · L280-L285 — async resumeRunningRuns(): Promise<void>
+- tickRun · method · L287-L330 — async tickRun(runId: string): Promise<OrchestrationGraphSnapshot | undefined>
+- resolveHandle · method · L332-L334 — resolveHandle(rootTaskId: string, handle: string): OrchestrationGraphNode | undefined
+- waitForHandle · method · L336-L393 — async waitForHandle( rootTaskId: string, handle: string, timeoutSeconds: number, ): Promise<{ success: boolean; status: string; message: string; resultSummary?: string; error?: string; node?: OrchestrationGraphNode; }>
+- cancelHandle · method · L395-L414 — async cancelHandle(rootTaskId: string, handle: string): Promise<boolean>
+- computeReadyNodes · method · L416-L445 — private computeReadyNodes(snapshot: OrchestrationGraphSnapshot): OrchestrationGraphNode[]
+- dispatchNode · method · L447-L511 — private async dispatchNode( run: OrchestrationGraphRun, node: OrchestrationGraphNode, ): Promise<void>
+- markNodeRunning · method · L513-L538 — private markNodeRunning( run: OrchestrationGraphRun, node: OrchestrationGraphNode, taskId: string, ): void
+- dispatchRemoteAcpNode · method · L540-L597 — private async dispatchRemoteAcpNode( run: OrchestrationGraphRun, node: OrchestrationGraphNode, ): Promise<void>
+- reconcileActiveNodes · method · L599-L678 — private async reconcileActiveNodes(snapshot: OrchestrationGraphSnapshot): Promise<void>
+- finalizeRunIfTerminal · method · L680-L707 — private async finalizeRunIfTerminal(snapshot: OrchestrationGraphSnapshot): Promise<void>
+- buildNotification · method · L709-L730 — private buildNotification( runId: string, node: OrchestrationGraphNode, status: OrchestrationNodeNotification["status"], ): OrchestrationNodeNotification
+- emitRootEvent · method · L732-L739 — private emitRootEvent( rootTaskId: string, eventType: string, payload: Record<string, unknown>, ): void
+- buildPromptWithDependencyContext · method · L741-L767 — private buildPromptWithDependencyContext(runId: string, node: OrchestrationGraphNode): string

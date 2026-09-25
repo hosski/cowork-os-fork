@@ -1,0 +1,21 @@
+# src/electron/agent/tools/apple-reminders-tools.ts
+
+- RemindersAction · type · L12-L19 — type RemindersAction = | "list_lists" | "list_reminders" | "get_reminder" | "create_reminder" | "update_reminder" | "complete_reminder" | "delete_reminder";
+- AppleRemindersActionInput · interface · L21-L33 — interface AppleRemindersActionInput
+- ParsedList · type · L35-L38 — type ParsedList = { list_id: string; name: string; };
+- ParsedReminder · type · L40-L48 — type ParsedReminder = { reminder_id: string; list_id: string; list_name: string; title?: string; notes?: string; due?: string; completed?: boolean; };
+- parseEpochSeconds · function · L53-L60 — function parseEpochSeconds(iso?: string): number | null
+- epochToIso · function · L62-L67 — function epochToIso(epochSeconds: string | number | undefined): string | undefined
+- parseBool · function · L69-L74 — function parseBool(value: string | undefined): boolean | undefined
+- splitRecords · function · L76-L80 — function splitRecords(output: string): string[]
+- splitFields · function · L82-L84 — function splitFields(record: string): string[]
+- AppleRemindersTools · class · L382-L603 — class AppleRemindersTools
+- constructor · method · L383-L387 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L389-L391 — setWorkspace(workspace: Workspace): void
+- isAvailable · method · L393-L395 — static isAvailable(): boolean
+- requireApproval · method · L397-L407 — private async requireApproval(summary: string, details: Record<string, unknown>): Promise<void>
+- runAppleScript · method · L409-L425 — private async runAppleScript(argv: string[]): Promise<string>
+- formatPermissionHint · method · L427-L438 — private formatPermissionHint(message: string): string | null
+- parseLists · method · L440-L449 — private parseLists(output: string): ParsedList[]
+- parseReminders · method · L451-L469 — private parseReminders(output: string): ParsedReminder[]
+- executeAction · method · L471-L602 — async executeAction(input: AppleRemindersActionInput): Promise<Any>

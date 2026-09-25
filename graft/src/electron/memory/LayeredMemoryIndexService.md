@@ -1,0 +1,24 @@
+# src/electron/memory/LayeredMemoryIndexService.ts
+
+- LayeredMemoryTopicSnippet · interface · L10-L16 — interface LayeredMemoryTopicSnippet
+- LayeredMemorySnapshot · interface · L18-L23 — interface LayeredMemorySnapshot
+- FilesystemWriteGuard · type · L25-L25 — type FilesystemWriteGuard = (candidatePath: string) => boolean;
+- guardAllows · function · L27-L37 — function guardAllows( guard: ((candidatePath: string) => boolean) | undefined, candidatePath: string, )
+- memoryRoot · function · L39-L41 — function memoryRoot(workspacePath: string): string
+- topicsDir · function · L43-L45 — function topicsDir(workspacePath: string): string
+- locksDir · function · L47-L49 — function locksDir(workspacePath: string): string
+- memoryIndexPath · function · L51-L53 — function memoryIndexPath(workspacePath: string): string
+- lockPath · function · L55-L57 — function lockPath(workspacePath: string): string
+- slugify · function · L59-L65 — function slugify(value: string): string
+- summarizeSnippet · function · L67-L70 — function summarizeSnippet(value: unknown): string
+- scoreTopicMatch · function · L72-L83 — function scoreTopicMatch(query: string, title: string, content: string): number
+- topicTitleFromResult · function · L85-L90 — function topicTitleFromResult(entry: MemorySearchResult, fallback: string): string
+- topicPath · function · L92-L95 — function topicPath(workspacePath: string, title: string): string
+- searchPromptRecallSafe · function · L97-L107 — async function searchPromptRecallSafe( workspaceId: string, taskPrompt: string, limit: number, ): Promise<MemorySearchResult[]>
+- LayeredMemoryIndexService · class · L109-L309 — class LayeredMemoryIndexService
+- resolveMemoryIndexPath · method · L110-L112 — static resolveMemoryIndexPath(workspacePath: string): string
+- resolveLockPath · method · L114-L116 — static resolveLockPath(workspacePath: string): string
+- ensureLayout · method · L118-L136 — static async ensureLayout( workspacePath: string, writeGuard?: FilesystemWriteGuard, ): Promise<boolean>
+- refreshIndex · method · L138-L255 — static async refreshIndex(params: { workspaceId: string; workspacePath: string; taskPrompt: string; topicLimit?: number; readGuard?: MarkdownMemoryReadGuard; writeGuard?: FilesystemWriteGuard; }): Promise<LayeredMemorySnapshot>
+- readMemoryIndex · method · L257-L263 — static async readMemoryIndex(workspacePath: string): Promise<string>
+- loadRelevantTopicSnippets · method · L265-L308 — static async loadRelevantTopicSnippets(params: { workspaceId: string; workspacePath: string; query: string; limit?: number; readGuard?: MarkdownMemoryReadGuard; writeGuard?: FilesystemWriteGuard; }): Promise<LayeredMemoryTopicSnippet[]>

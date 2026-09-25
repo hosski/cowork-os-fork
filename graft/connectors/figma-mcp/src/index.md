@@ -1,0 +1,36 @@
+# connectors/figma-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L35 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L37-L46 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L48-L55 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- FigmaClient · class · L80-L167 — class FigmaClient
+- constructor · method · L81-L81 — constructor(private token: string | undefined)
+- getAuthHeader · method · L83-L88 — private getAuthHeader(): string
+- request · method · L90-L111 — private async request<T>(path: string, params?: Record<string, string>): Promise<T>
+- health · method · L113-L124 — async health(): Promise<{ ok: boolean; data: any }>
+- getFile · method · L126-L136 — async getFile(fileKey: string, ids?: string, depth?: number): Promise<any>
+- getFileNodes · method · L138-L148 — async getFileNodes(fileKey: string, ids: string): Promise<any>
+- getFileComponents · method · L150-L157 — async getFileComponents(fileKey: string): Promise<any>
+- getFileStyles · method · L159-L166 — async getFileStyles(fileKey: string): Promise<any>
+- ToolProvider · type · L171-L174 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L176-L345 — class StdioMCPServer
+- constructor · method · L180-L183 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L185-L197 — start(): void
+- stop · method · L199-L205 — stop(): void
+- handleLine · method · L207-L217 — private handleLine(line: string): void
+- handleMessage · method · L219-L228 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L230-L263 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L265-L269 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L271-L280 — private handleInitialize(_params: any): any
+- handleToolsList · method · L282-L284 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L286-L313 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L315-L318 — private handleShutdown(): Record<string, never>
+- sendResult · method · L320-L322 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L324-L326 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L328-L330 — private sendMessage(message: any): void
+- requireInitialized · method · L332-L336 — private requireInitialized(): void
+- createError · method · L338-L344 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }

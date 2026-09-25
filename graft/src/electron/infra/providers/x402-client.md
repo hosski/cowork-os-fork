@@ -1,0 +1,25 @@
+# src/electron/infra/providers/x402-client.ts
+
+- X402FetchWithPaymentOptions · interface · L24-L29 — interface X402FetchWithPaymentOptions
+- Eip3009Extra · type · L46-L46 — type Eip3009Extra = Record<(typeof EIP3009_EXTRA_KEYS)[number], string>;
+- isRecord · function · L48-L49 — isRecord = (value: unknown): value is Record<string, unknown>
+- isAddress · function · L51-L52 — isAddress = (value: unknown): value is string
+- isAtomicAmount · function · L54-L55 — isAtomicAmount = (value: unknown): value is string
+- getChainId · function · L57-L62 — getChainId = (network: string): number | null
+- getEip3009Extra · function · L64-L77 — getEip3009Extra = (requirement: X402PaymentRequirement): Eip3009Extra | null
+- isSupportedRequirement · function · L79-L98 — isSupportedRequirement = (requirement: unknown): requirement is X402PaymentRequirement
+- copyRequirement · function · L100-L103 — copyRequirement = (requirement: X402PaymentRequirement): X402PaymentRequirement
+- isResourceInfo · function · L105-L106 — isResourceInfo = (value: unknown): value is X402ResourceInfo
+- isPaymentRequired · function · L108-L113 — isPaymentRequired = (value: unknown): value is X402PaymentRequired
+- toPaymentDetails · function · L115-L133 — toPaymentDetails = (required: X402PaymentRequired): X402PaymentDetails | undefined
+- parseHeaderJson · function · L135-L148 — parseHeaderJson = (header: string): unknown
+- X402Client · class · L150-L347 — class X402Client
+- setWallet · method · L154-L157 — setWallet(privateKey: string, address: string): void
+- hasWallet · method · L159-L161 — hasWallet(): boolean
+- check · method · L166-L189 — async check(url: string): Promise<X402CheckResult>
+- fetchWithPayment · method · L194-L259 — async fetchWithPayment( url: string, opts?: X402FetchWithPaymentOptions, ): Promise<X402FetchResult>
+- discover · method · L264-L278 — async discover(baseUrl: string): Promise<{ endpoints: string[] }>
+- parsePaymentHeader · method · L282-L285 — private parsePaymentHeader(header: string): X402PaymentDetails | undefined
+- signPayment · method · L287-L326 — private async signPayment(details: X402PaymentDetails): Promise<string>
+- responseHeadersToRecord · method · L328-L334 — private responseHeadersToRecord(headers: Headers): Record<string, string>
+- sanitizeRequestHeaders · method · L336-L346 — private sanitizeRequestHeaders(headers?: Record<string, string>): Record<string, string>

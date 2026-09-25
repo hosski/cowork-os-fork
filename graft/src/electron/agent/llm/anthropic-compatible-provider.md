@@ -1,0 +1,21 @@
+# src/electron/agent/llm/anthropic-compatible-provider.ts
+
+- joinUrl · function · L26-L30 — function joinUrl(baseUrl: string, path: string): string
+- resolveMessagesUrl · function · L32-L45 — function resolveMessagesUrl(baseUrl: string): string
+- resolveModelsUrl · function · L47-L57 — function resolveModelsUrl(baseUrl: string): string
+- isNanoGptBaseUrl · function · L59-L66 — function isNanoGptBaseUrl(baseUrl: string): boolean
+- extractProviderErrorMessage · function · L68-L77 — function extractProviderErrorMessage(errorData: Any): string
+- AnthropicCompatibleProviderOptions · interface · L79-L85 — interface AnthropicCompatibleProviderOptions
+- AnthropicCompatibleProvider · class · L87-L477 — class AnthropicCompatibleProvider implements LLMProvider
+- constructor · method · L97-L105 — constructor(options: AnthropicCompatibleProviderOptions)
+- normalizeModelForEndpoint · method · L107-L113 — private normalizeModelForEndpoint(model: string): string
+- createMessage · method · L115-L170 — async createMessage(request: LLMRequest): Promise<LLMResponse>
+- testConnection · method · L172-L210 — async testConnection(): Promise<{ success: boolean; error?: string }>
+- getAvailableModels · method · L212-L269 — async getAvailableModels(): Promise<Array<{ id: string; name: string }>>
+- convertMessages · method · L271-L318 — private convertMessages(messages: LLMMessage[]): Array<{ role: string; content: Any }>
+- sendRequest · method · L320-L386 — private async sendRequest(args: { request: LLMRequest; normalizedMessages: LLMMessage[]; tools: Array<{ name: string; description: string; input_schema: Any }> | undefined; model: string; promptCache: LLMRequest["promptCache"] | undefined; }): Promise<LLMResponse>
+- buildSystemPayload · method · L388-L409 — private buildSystemPayload( request: Pick<LLMRequest, "system" | "systemBlocks">, promptCache: LLMRequest["promptCache"] | undefined, ): | string | Array<{ type: "text"; text: string; cache_control?: { type: "ephemeral"; ttl?: "1h" } }>
+- buildMessagesPayload · method · L411-L426 — private buildMessagesPayload( messages: LLMMessage[], promptCache: LLMRequest["promptCache"] | undefined, ): Array<{ role: string; content: Any }>
+- convertTools · method · L428-L436 — private convertTools( tools: LLMTool[], ): Array<{ name: string; description: string; input_schema: Any }>
+- convertResponse · method · L438-L461 — private convertResponse(response: Any): LLMResponse
+- mapStopReason · method · L463-L476 — private mapStopReason(reason?: string): LLMResponse["stopReason"]

@@ -1,0 +1,26 @@
+# src/electron/gateway/infrastructure.ts
+
+- InfrastructureConfig · interface · L36-L51 — interface InfrastructureConfig
+- GatewayInfrastructure · class · L56-L654 — class GatewayInfrastructure
+- constructor · method · L71-L87 — constructor(db: Database.Database, config: InfrastructureConfig = {})
+- registerAdapter · method · L92-L94 — registerAdapter(adapter: ChannelAdapter): void
+- start · method · L99-L119 — start(): void
+- stop · method · L124-L139 — stop(): void
+- enqueue · method · L148-L171 — enqueue( channelType: ChannelType, chatId: string, message: OutgoingMessage, options: { priority?: number; maxAttempts?: number; scheduledAt?: number } = {}, ): QueuedMessage
+- processQueue · method · L176-L240 — private async processQueue(): Promise<void>
+- getQueueStatus · method · L245-L254 — getQueueStatus(): { pending: number; processing: number; sent: number; failed: number }
+- schedule · method · L263-L286 — schedule( channelType: ChannelType, chatId: string, message: OutgoingMessage, scheduledAt: Date | number, ): ScheduledMessageRecord
+- cancelScheduled · method · L291-L307 — cancelScheduled(id: string): boolean
+- getScheduledMessages · method · L312-L314 — getScheduledMessages(channelType: ChannelType, chatId: string): ScheduledMessageRecord[]
+- processScheduled · method · L319-L359 — private async processScheduled(): Promise<void>
+- trackDelivery · method · L368-L376 — trackDelivery(channelType: ChannelType, chatId: string, messageId: string): DeliveryRecord
+- updateDeliveryStatus · method · L381-L400 — updateDeliveryStatus( messageId: string, status: "delivered" | "read" | "failed", error?: string, ): void
+- getDeliveryStatus · method · L405-L407 — getDeliveryStatus(messageId: string): DeliveryRecord | undefined
+- getDeliveryHistory · method · L412-L414 — getDeliveryHistory(channelType: ChannelType, chatId: string, limit = 50): DeliveryRecord[]
+- checkRateLimit · method · L424-L448 — checkRateLimit(channelType: ChannelType, userId: string, limit?: number): boolean
+- recordMessage · method · L454-L507 — recordMessage(channelType: ChannelType, userId: string, limit?: number): boolean
+- getRateLimitStatus · method · L512-L533 — getRateLimitStatus( channelType: ChannelType, userId: string, ): { isLimited: boolean; remaining: number; resetsAt?: Date }
+- broadcast · method · L542-L590 — async broadcast(config: BroadcastConfig): Promise<BroadcastResult>
+- audit · method · L599-L617 — audit( action: string, options: { channelType?: ChannelType | string; userId?: string; chatId?: string; details?: Record<string, unknown>; severity?: AuditLogEntry["severity"]; } = {}, ): AuditLogEntry
+- searchAuditLogs · method · L622-L634 — searchAuditLogs(options: { action?: string; channelType?: string; userId?: string; chatId?: string; fromTimestamp?: number; toTimestamp?: number; severity?: AuditLogEntry["severity"]; limit?: number; offset?: number; }): AuditLogEntry[]
+- cleanup · method · L643-L653 — private async cleanup(): Promise<void>

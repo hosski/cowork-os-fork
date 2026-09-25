@@ -1,0 +1,25 @@
+# src/electron/agent/runtime/composer-draft-attachment-store.ts
+
+- PutComposerDraftAttachmentInput · interface · L18-L25 — interface PutComposerDraftAttachmentInput
+- LiveComposerDraftAttachment · interface · L27-L31 — interface LiveComposerDraftAttachment
+- ComposerDraftAttachmentUsage · interface · L33-L36 — interface ComposerDraftAttachmentUsage
+- AttachmentMetadata · interface · L38-L41 — interface AttachmentMetadata extends DraftAttachmentRef
+- ComposerDraftAttachmentStore · class · L43-L391 — class ComposerDraftAttachmentStore
+- constructor · method · L47-L49 — constructor(rootDir: string)
+- put · method · L51-L65 — async put(input: PutComposerDraftAttachmentInput): Promise<DraftAttachmentRef>
+- putUnlocked · method · L67-L120 — private async putUnlocked(input: PutComposerDraftAttachmentInput): Promise<DraftAttachmentRef>
+- resolve · method · L122-L139 — async resolve( draftKey: string, workspaceId: string, refId: string, ): Promise<{ ref: DraftAttachmentRef; path: string } | null>
+- release · method · L141-L158 — async release(draftKey: string, workspaceId: string, refId: string): Promise<boolean>
+- releaseDraft · method · L160-L177 — async releaseDraft(draftKey: string, workspaceId: string): Promise<number>
+- getDraftUsage · method · L179-L200 — async getDraftUsage( draftKey: string, workspaceId: string, ): Promise<ComposerDraftAttachmentUsage>
+- reconcile · method · L203-L251 — async reconcile(liveAttachments: Iterable<LiveComposerDraftAttachment>): Promise<number>
+- rekeyDraft · method · L257-L296 — async rekeyDraft( sourceDraftKey: string, destinationDraftKey: string, workspaceId: string, ): Promise<number>
+- readMetadata · method · L298-L324 — private async readMetadata( draftKey: string, workspaceId: string, refId: string, ): Promise<AttachmentMetadata | null>
+- replaceMetadata · method · L326-L341 — private async replaceMetadata( directory: string, refId: string, metadata: AttachmentMetadata, ): Promise<void>
+- workspaceDirectory · method · L343-L346 — private workspaceDirectory(workspaceId: string): string
+- readInputBytes · method · L348-L390 — private async readInputBytes(input: PutComposerDraftAttachmentInput): Promise<Buffer>
+- attachmentKey · function · L393-L395 — function attachmentKey(workspaceId: string, draftKey: string, refId: string): string
+- unlinkIfPresent · function · L397-L405 — async function unlinkIfPresent(filePath: string): Promise<boolean>
+- readMetadataFile · function · L407-L415 — async function readMetadataFile(filePath: string): Promise<AttachmentMetadata | null>
+- parseAttachmentMetadata · function · L417-L447 — function parseAttachmentMetadata(raw: string): AttachmentMetadata | null
+- requireText · function · L449-L453 — function requireText(value: unknown, field: string): string

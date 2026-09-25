@@ -1,0 +1,51 @@
+# src/renderer/state/task-event-scheduler.ts
+
+- TaskEventSource · type · L13-L13 — type TaskEventSource = "local" | "remote";
+- TaskEventTarget · interface · L15-L20 — interface TaskEventTarget
+- TaskEventSchedulerInput · interface · L22-L27 — interface TaskEventSchedulerInput
+- TaskEventSchedulerOptions · interface · L29-L44 — interface TaskEventSchedulerOptions
+- TaskEventSchedulerSnapshot · interface · L46-L51 — interface TaskEventSchedulerSnapshot
+- Listener · type · L53-L53 — type Listener = () => void;
+- TimerHandle · type · L54-L54 — type TimerHandle = ReturnType<typeof setTimeout>;
+- SurfaceState · interface · L56-L59 — interface SurfaceState
+- BufferState · interface · L61-L73 — interface BufferState
+- clamp · function · L88-L91 — function clamp(value: number, minimum: number, maximum: number): number
+- normalizeTarget · function · L93-L100 — function normalizeTarget(target: TaskEventTarget): TaskEventTarget
+- getTaskEventTargetKey · function · L102-L110 — function getTaskEventTargetKey(target: TaskEventTarget): string
+- getSurfaceKey · function · L112-L114 — function getSurfaceKey(surfaceId: string): string
+- getEventIdentityKeys · function · L116-L124 — function getEventIdentityKeys(event: TaskEvent): string[]
+- findIdentityMatch · function · L126-L131 — function findIdentityMatch(events: TaskEvent[], incoming: TaskEvent): number
+- dedupeEvents · function · L133-L155 — function dedupeEvents(events: TaskEvent[]): TaskEvent[]
+- sameEventArray · function · L157-L160 — function sameEventArray(left: TaskEvent[], right: TaskEvent[]): boolean
+- estimatePayloadBytes · function · L162-L168 — function estimatePayloadBytes(value: unknown): number
+- truncateString · function · L170-L174 — function truncateString(value: string, maxChars: number): string
+- truncatePayloadStrings · function · L176-L193 — function truncatePayloadStrings(value: unknown, maxChars: number): unknown
+- enforcePayloadByteBound · function · L195-L229 — function enforcePayloadByteBound(event: TaskEvent, maxPayloadBytes: number): TaskEvent
+- boundEvent · function · L231-L235 — function boundEvent(event: TaskEvent, maxPayloadBytes: number): TaskEvent
+- mergeRetainedEvents · function · L237-L252 — function mergeRetainedEvents( previous: TaskEvent[], incoming: TaskEvent[], maxEventsPerBuffer: number, maxPayloadBytes: number, ): TaskEvent[]
+- TaskEventScheduler · class · L254-L595 — class TaskEventScheduler
+- constructor · method · L267-L292 — constructor(options: TaskEventSchedulerOptions = {})
+- switchTarget · method · L295-L323 — switchTarget(target: TaskEventTarget): number
+- switchSurface · method · L326-L328 — switchSurface(target: TaskEventTarget): number
+- activate · method · L330-L332 — activate(target: TaskEventTarget): number
+- getGeneration · method · L334-L336 — getGeneration(surfaceId: string): number
+- getPendingCount · method · L338-L340 — getPendingCount(target: TaskEventTarget): number
+- enqueue · method · L342-L382 — enqueue(input: TaskEventSchedulerInput): boolean
+- ingest · method · L384-L386 — ingest(input: TaskEventSchedulerInput): boolean
+- flush · method · L388-L400 — flush(target?: TaskEventTarget): TaskEvent[]
+- flushAll · method · L402-L404 — flushAll(): TaskEvent[]
+- unsubscribe · method · L407-L419 — unsubscribe(target: TaskEventTarget): TaskEvent[]
+- getSnapshot · method · L421-L432 — getSnapshot(target: TaskEventTarget): TaskEventSchedulerSnapshot
+- subscribe · method · L436-L447 — subscribe(targetOrListener: TaskEventTarget | Listener, maybeListener?: Listener): () => void
+- dispose · method · L449-L457 — dispose(): void
+- getSurface · method · L459-L466 — private getSurface(surfaceKey: string): SurfaceState
+- getOrCreateBuffer · method · L468-L492 — private getOrCreateBuffer(target: TaskEventTarget): BufferState
+- evictBufferIfNeeded · method · L494-L508 — private evictBufferIfNeeded(): void
+- queuePending · method · L510-L532 — private queuePending(buffer: BufferState, event: TaskEvent): void
+- schedule · method · L534-L547 — private schedule(buffer: BufferState): void
+- takePending · method · L549-L554 — private takePending(buffer: BufferState): TaskEvent[]
+- flushBuffer · method · L556-L560 — private flushBuffer(buffer: BufferState): TaskEvent[]
+- commit · method · L562-L578 — private commit(buffer: BufferState, incoming: TaskEvent[]): TaskEvent[]
+- clearTimers · method · L580-L589 — private clearTimers(buffer: BufferState): void
+- notify · method · L591-L594 — private notify(buffer: BufferState): void
+- createTaskEventScheduler · function · L597-L601 — function createTaskEventScheduler( options: TaskEventSchedulerOptions = {}, ): TaskEventScheduler

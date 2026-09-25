@@ -1,0 +1,32 @@
+# src/electron/agent/tools/canvas-tools.ts
+
+- CanvasTools · class · L29-L992 — class CanvasTools
+- constructor · method · L34-L40 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setSessionCutoff · method · L46-L48 — setSessionCutoff(cutoff: number | null): void
+- getLatestActiveSessionForTask · method · L50-L68 — getLatestActiveSessionForTask( excludeSessionId?: string, ): { id: string; sessionDir: string } | null
+- resolveSessionId · method · L70-L98 — private resolveSessionId(sessionId?: string): string | null
+- getOrCreatePushSession · method · L100-L121 — private async getOrCreatePushSession(sessionId?: string): Promise<string>
+- enforceSessionCutoff · method · L123-L137 — private enforceSessionCutoff(sessionId: string, action: "canvas_push" | "canvas_open_url"): void
+- setWorkspace · method · L142-L144 — setWorkspace(workspace: Workspace): void
+- createCanvas · method · L149-L179 — async createCanvas(title?: string): Promise<{ sessionId: string; sessionDir: string; }>
+- pushContent · method · L184-L295 — async pushContent( sessionId?: string, content?: string, filename: string = "index.html", ): Promise<{ success: boolean }>
+- shouldInlineWorkspaceStylesheets · method · L297-L301 — private shouldInlineWorkspaceStylesheets(content: string, filename: string): boolean
+- isExternalCanvasAssetRef · method · L303-L321 — private isExternalCanvasAssetRef(ref: string): boolean
+- stripAssetQueryAndHash · method · L323-L327 — private stripAssetQueryAndHash(ref: string): string
+- resolveWorkspaceAssetPath · method · L329-L351 — private resolveWorkspaceAssetPath(ref: string): string | null
+- inlineWorkspaceStylesheetsForCanvas · method · L353-L400 — private async inlineWorkspaceStylesheetsForCanvas( content: string, filename: string, sessionId: string, ): Promise<string>
+- isCanvasPlaceholderContent · method · L402-L406 — private isCanvasPlaceholderContent(content: string): boolean
+- sanitizeForCanvasText · method · L408-L415 — private sanitizeForCanvasText(raw: string): string
+- normalizeCanvasPayload · method · L417-L432 — private normalizeCanvasPayload(content: string): string
+- buildCanvasFallbackHtml · method · L434-L439 — private buildCanvasFallbackHtml(sessionId: string, reason: string): string
+- openUrl · method · L444-L500 — async openUrl( sessionId: string, url: string, show: boolean = true, ): Promise<{ success: boolean; url: string }>
+- showCanvas · method · L505-L528 — async showCanvas(sessionId: string): Promise<{ success: boolean }>
+- hideCanvas · method · L533-L556 — hideCanvas(sessionId: string): { success: boolean }
+- closeCanvas · method · L561-L584 — async closeCanvas(sessionId: string): Promise<{ success: boolean }>
+- evalScript · method · L589-L613 — async evalScript(sessionId: string, script: string): Promise<{ result: unknown }>
+- takeSnapshot · method · L618-L651 — async takeSnapshot(sessionId: string): Promise<{ imageBase64: string; width: number; height: number; }>
+- saveCheckpoint · method · L656-L688 — async saveCheckpoint( sessionId: string, label?: string, ): Promise<{ checkpointId: string; label: string; fileCount: number }>
+- restoreCheckpoint · method · L693-L721 — async restoreCheckpoint( sessionId: string, checkpointId: string, ): Promise<{ success: boolean; label: string }>
+- listCheckpoints · method · L726-L741 — listCheckpoints(sessionId: string): { checkpoints: Array<{ id: string; label: string; createdAt: number; }>; }
+- listSessions · method · L746-L763 — listSessions(): { sessions: Array<{ id: string; title?: string; status: string; createdAt: number; }>; }
+- getToolDefinitions · method · L768-L991 — static getToolDefinitions(): LLMTool[]

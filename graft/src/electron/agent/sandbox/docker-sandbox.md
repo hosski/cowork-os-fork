@@ -1,0 +1,34 @@
+# src/electron/agent/sandbox/docker-sandbox.ts
+
+- DockerSandboxConfig · interface · L36-L47 — interface DockerSandboxConfig
+- DockerPathMapping · interface · L83-L87 — interface DockerPathMapping
+- shellQuote · function · L89-L91 — function shellQuote(value: string): string
+- DockerSandbox · class · L96-L970 — class DockerSandbox implements ISandbox
+- constructor · method · L102-L111 — constructor(workspace: Workspace, config?: DockerSandboxConfig)
+- initialize · method · L116-L129 — async initialize(): Promise<void>
+- execute · method · L134-L280 — async execute( command: string, args: string[] = [], options: SandboxOptions = {}, imageOverride?: string, ): Promise<SandboxResult>
+- spawnProcess · method · L283-L330 — spawnProcess( command: string, args: string[] = [], options: SandboxOptions = {}, ): SandboxedProcess
+- cleanup · function · L320-L325 — cleanup = ()
+- executeCode · method · L335-L358 — async executeCode(code: string, language: "python" | "javascript"): Promise<SandboxResult>
+- getUnsupportedWorkspaceDenyRule · method · L366-L382 — private getUnsupportedWorkspaceDenyRule(): string | undefined
+- cleanup · method · L387-L389 — cleanup(): void
+- checkDockerAvailable · method · L394-L415 — private async checkDockerAvailable(): Promise<boolean>
+- pullImageIfNeeded · method · L420-L452 — private async pullImageIfNeeded(): Promise<void>
+- imageExists · method · L457-L471 — private async imageExists(image: string): Promise<boolean>
+- buildDockerArgs · method · L476-L642 — private buildDockerArgs(options: SandboxOptions): string[]
+- addMount · function · L505-L511 — addMount = (hostPath: string, containerPath: string, mode: "ro" | "rw"): void
+- resolveContainerCwd · method · L644-L680 — private resolveContainerCwd(rawCwd?: string): string
+- isPathInsideWorkspace · method · L682-L684 — private isPathInsideWorkspace(candidatePath: string): boolean
+- isRuntimeTemporaryPath · method · L686-L690 — private isRuntimeTemporaryPath(candidatePath: string): boolean
+- isSandboxPathAllowed · method · L692-L708 — private isSandboxPathAllowed( rawPath: string, operation: "read" | "write" | "delete", options?: SandboxOptions, ): boolean
+- assertSandboxPath · method · L710-L720 — private assertSandboxPath( rawPath: string, operation: "read" | "write", options?: SandboxOptions, ): string
+- isExplicitTemporaryOptionPath · method · L722-L741 — private isExplicitTemporaryOptionPath( candidatePath: string, options: SandboxOptions | undefined, operation: "read" | "write" | "delete", ): boolean
+- isExplicitReadOnlyOptionPath · method · L748-L779 — private isExplicitReadOnlyOptionPath( candidatePath: string, options: SandboxOptions | undefined, ): boolean
+- collectPathMappings · method · L781-L842 — private collectPathMappings(options: SandboxOptions): DockerPathMapping[]
+- add · function · L790-L811 — add = ( rawPath: string, operation: "read" | "write", approvalOptions?: SandboxOptions, ): void
+- findExternalMountRoot · method · L844-L865 — private findExternalMountRoot(candidatePath: string): string | undefined
+- mapHostArgumentToContainer · method · L867-L892 — private mapHostArgumentToContainer(arg: string, options: SandboxOptions): string
+- getNetworkAccessError · method · L894-L905 — private getNetworkAccessError(allowNetwork: boolean): string | undefined
+- convertToDockerPath · method · L911-L928 — private convertToDockerPath(hostPath: string): string
+- getContainerMountPath · method · L933-L939 — private getContainerMountPath(hostPath: string): string
+- killContainer · method · L947-L969 — private killContainer(_parentPid: number | undefined): void

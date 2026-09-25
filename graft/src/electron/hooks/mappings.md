@@ -1,0 +1,21 @@
+# src/electron/hooks/mappings.ts
+
+- HookTransformResult · type · L26-L50 — type HookTransformResult = Partial<{ kind: HookAction["kind"]; text: string; mode: "now" | "next-heartbeat"; message: string; taskId: string; wakeMode: "now" | "next-heartbeat"; name: string; sessionKey: string; deliver: boolean; allowUnsafeExternalContent: boolean; channel: HookMessageChannel; to: string; workspaceId: string; agentConfig: AgentConfig; model: string; thinking: string; timeoutSeconds: number; metadata: Record<string, string>; response: { statusCode?: number; message?: string; includeTaskId?: boolean; }; }> | null;
+- HookTransformFn · type · L52-L54 — type HookTransformFn = ( ctx: HookMappingContext, ) => HookTransformResult | Promise<HookTransformResult>;
+- normalizeHooksPath · function · L59-L64 — function normalizeHooksPath(raw?: string): string
+- resolveHookMappings · function · L69-L116 — function resolveHookMappings(hooks?: HooksConfig): HookMappingResolved[]
+- applyHookMappings · function · L121-L146 — async function applyHookMappings( mappings: HookMappingResolved[], ctx: HookMappingContext, ): Promise<HookMappingResult | null>
+- findHookMapping · function · L148-L158 — function findHookMapping( mappings: HookMappingResolved[], ctx: HookMappingContext, ): HookMappingResolved | null
+- normalizeHookMapping · function · L163-L207 — function normalizeHookMapping( mapping: HookMappingConfig, index: number, transformsDir: string, ): HookMappingResolved
+- mappingMatches · function · L212-L225 — function mappingMatches(mapping: HookMappingResolved, ctx: HookMappingContext): boolean
+- buildActionFromMapping · function · L230-L294 — function buildActionFromMapping( mapping: HookMappingResolved, ctx: HookMappingContext, ): HookMappingResult
+- mergeAction · function · L299-L374 — function mergeAction( base: HookAction, override: HookTransformResult, defaultAction: "wake" | "agent" | "task_message" | "workflow", ): HookMappingResult
+- validateAction · function · L379-L401 — function validateAction(action: HookAction): HookMappingResult
+- loadTransform · function · L406-L415 — async function loadTransform(transform: HookMappingTransformResolved): Promise<HookTransformFn>
+- resolveTransformFn · function · L420-L426 — function resolveTransformFn(mod: Record<string, unknown>, exportName?: string): HookTransformFn
+- resolvePath · function · L431-L435 — function resolvePath(baseDir: string, target: string): string
+- normalizeMatchPath · function · L440-L445 — function normalizeMatchPath(raw?: string): string | undefined
+- renderOptional · function · L450-L454 — function renderOptional(value: string | undefined, ctx: HookMappingContext): string | undefined
+- renderTemplate · function · L459-L468 — function renderTemplate(template: string, ctx: HookMappingContext): string
+- resolveTemplateExpr · function · L473-L492 — function resolveTemplateExpr(expr: string, ctx: HookMappingContext): unknown
+- getByPath · function · L497-L522 — function getByPath(input: Record<string, unknown>, pathExpr: string): unknown

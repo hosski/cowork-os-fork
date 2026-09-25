@@ -1,0 +1,23 @@
+# src/electron/routines/workflow/google-starter-watcher.ts
+
+- StarterCursor · type · L14-L19 — type StarterCursor = { lastCheckedAt?: number; gmailPageToken?: string; gmailWindowEndAt?: number; drivePageToken?: string; };
+- GoogleWorkspaceWorkflowStarterWatcher · class · L21-L359 — class GoogleWorkspaceWorkflowStarterWatcher
+- constructor · method · L25-L31 — constructor( private readonly db: Any, private readonly routineService: RoutineService, private readonly pollIntervalMs = DEFAULT_POLL_INTERVAL_MS, )
+- start · method · L33-L37 — start(): void
+- stop · method · L39-L42 — stop(): void
+- poll · method · L44-L81 — async poll(): Promise<void>
+- pollGmail · method · L83-L146 — private async pollGmail(routine: Routine, starter: RoutineWorkflowNode): Promise<void>
+- pollDriveChanges · method · L148-L221 — private async pollDriveChanges(routine: Routine, starter: RoutineWorkflowNode): Promise<void>
+- driveChangeMatches · method · L223-L262 — private driveChangeMatches(starter: RoutineWorkflowNode, change: Any): boolean
+- pollMeetingRelative · method · L264-L315 — private async pollMeetingRelative(routine: Routine, starter: RoutineWorkflowNode): Promise<void>
+- getCursor · method · L317-L329 — private getCursor(routineId: string, starterNodeId: string): StarterCursor
+- setCursor · method · L331-L339 — private setCursor(routineId: string, starterNodeId: string, cursor: StarterCursor): void
+- ensureSchema · method · L341-L351 — private ensureSchema(): void
+- googleSettingsFor · method · L353-L358 — private googleSettingsFor(routine: Routine)
+- literalString · function · L361-L364 — function literalString(value: WorkflowInputValue | undefined): string
+- literalBoolean · function · L366-L368 — function literalBoolean(value: WorkflowInputValue | undefined): boolean
+- quoteGmailSearch · function · L370-L372 — function quoteGmailSearch(value: string): string
+- summarizeGmailMessage · function · L374-L395 — function summarizeGmailMessage(message: Any): Record<string, Any>
+- extractGmailBody · function · L397-L415 — function extractGmailBody(payload: Any): string
+- collectGmailAttachments · function · L417-L426 — function collectGmailAttachments(payload: Any): Array<Record<string, unknown>>
+- flattenGmailParts · function · L428-L431 — function flattenGmailParts(payload: Any): Any[]

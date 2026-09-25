@@ -1,0 +1,29 @@
+# src/electron/health/apple-health-bridge.ts
+
+- AppleHealthBridgeStatus · interface · L11-L26 — interface AppleHealthBridgeStatus
+- AppleHealthBridgeSyncResult · interface · L28-L52 — interface AppleHealthBridgeSyncResult
+- AppleHealthBridgeAuthorizationResult · interface · L54-L60 — interface AppleHealthBridgeAuthorizationResult
+- AppleHealthBridgeWriteResult · interface · L62-L65 — interface AppleHealthBridgeWriteResult
+- BridgeRequest · type · L67-L91 — type BridgeRequest = | { method: "status"; sourceMode: HealthSourceConnectionMode; } | { method: "authorize"; sourceMode: HealthSourceConnectionMode; readTypes: HealthWritebackType[]; writeTypes: HealthWritebackType[]; } | { method: "sync"; sourceId: string; sourceMode: HealthSourceConnectionMode; readTypes: HealthWritebackType[]; writeTypes: HealthWritebackType[]; since?: number; } | { method: "write"; sourceId: string; sourceMode: HealthSourceConnectionMode; items: HealthWritebackItem[]; };
+- BridgeResponse · type · L93-L95 — type BridgeResponse<T> = | { ok: true; data: T } | { ok: false; error: { code?: string; message: string; details?: unknown } };
+- isMac · function · L97-L99 — function isMac(): boolean
+- candidateBridgePaths · function · L101-L135 — function candidateBridgePaths(): string[]
+- candidateBridgeBundles · function · L137-L145 — function candidateBridgeBundles(): string[]
+- resolveBridgeExecutable · function · L147-L158 — function resolveBridgeExecutable(): string | null
+- resolveBridgeBundle · function · L160-L171 — function resolveBridgeBundle(): string | null
+- parseResponse · function · L173-L175 — function parseResponse<T>(raw: string): BridgeResponse<T>
+- embeddedProvisioningProfilePath · function · L177-L179 — function embeddedProvisioningProfilePath(bundlePath: string): string
+- hasEmbeddedProvisioningProfile · function · L181-L183 — function hasEmbeddedProvisioningProfile(bundlePath: string): boolean
+- extractBundleIdentifierFromPlist · function · L185-L195 — function extractBundleIdentifierFromPlist(plistPath: string): string | undefined
+- readLocalBundleIdentifier · function · L197-L210 — function readLocalBundleIdentifier(): string | undefined
+- resolveProvisioningBundleIdentifier · function · L212-L226 — function resolveProvisioningBundleIdentifier(bundlePath?: string): string
+- provisioningErrorMessage · function · L228-L234 — function provisioningErrorMessage(bundlePath?: string): string
+- normalizeBridgeLaunchError · function · L236-L246 — function normalizeBridgeLaunchError(raw: string, bundlePath?: string): string
+- runBridge · function · L248-L384 — function runBridge<T>(request: BridgeRequest): Promise<BridgeResponse<T>>
+- AppleHealthBridge · class · L386-L467 — class AppleHealthBridge
+- isAvailable · method · L387-L389 — static isAvailable(): boolean
+- getExecutablePath · method · L391-L393 — static getExecutablePath(): string | null
+- getStatus · method · L395-L411 — static async getStatus(sourceMode: HealthSourceConnectionMode): Promise<AppleHealthBridgeStatus>
+- authorize · method · L413-L434 — static async authorize( sourceMode: HealthSourceConnectionMode, readTypes: HealthWritebackType[], writeTypes: HealthWritebackType[], ): Promise<AppleHealthBridgeAuthorizationResult>
+- sync · method · L436-L452 — static async sync( sourceId: string, sourceMode: HealthSourceConnectionMode, readTypes: HealthWritebackType[], writeTypes: HealthWritebackType[], since?: number, ): Promise<AppleHealthBridgeSyncResult | null>
+- write · method · L454-L466 — static async write( sourceId: string, sourceMode: HealthSourceConnectionMode, items: HealthWritebackItem[], ): Promise<AppleHealthBridgeWriteResult | null>

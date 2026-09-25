@@ -1,0 +1,44 @@
+# src/electron/agent/llm/openai-provider.ts
+
+- isToolResult · function · L66-L67 — isToolResult = (item: LLMContent | LLMToolResult): item is LLMToolResult
+- isToolUse · function · L68-L69 — isToolUse = (item: LLMContent | LLMToolResult): item is LLMToolUse
+- isTextContent · function · L70-L71 — isTextContent = (item: LLMContent | LLMToolResult): item is LLMTextContent
+- isImageContent · function · L72-L73 — isImageContent = (item: LLMContent | LLMToolResult): item is LLMImageContent
+- OpenAIProviderErrorPhase · type · L75-L75 — type OpenAIProviderErrorPhase = "api_key" | "oauth";
+- OpenAIProviderError · class · L77-L81 — class OpenAIProviderError extends Error
+- OpenAIProvider · class · L89-L1307 — class OpenAIProvider implements LLMProvider
+- constructor · method · L101-L144 — constructor(config: LLMProviderConfig)
+- createMessage · method · L146-L152 — async createMessage(request: LLMRequest): Promise<LLMResponse>
+- isTransientInterruptionMessage · method · L154-L166 — private isTransientInterruptionMessage(message: string): boolean
+- isRetryableProviderMessage · method · L168-L180 — private isRetryableProviderMessage(message: string, code?: string): boolean
+- toStructuredProviderError · method · L182-L201 — private toStructuredProviderError(error: Any, phase: OpenAIProviderErrorPhase): Error
+- persistOAuthTokens · method · L203-L210 — private async persistOAuthTokens(tokens: OpenAIOAuthTokens | undefined): Promise<void>
+- normalizeCodexModelId · method · L212-L221 — private normalizeCodexModelId(modelId: string): string
+- createCodexModel · method · L223-L251 — private createCodexModel(modelId: string, availableModels: Array<Model<Any>>): Model<Any>
+- createMessageWithApiKey · method · L256-L320 — private async createMessageWithApiKey(request: LLMRequest): Promise<LLMResponse>
+- shouldUseResponsesApi · method · L322-L329 — private shouldUseResponsesApi(modelId: string | undefined): boolean
+- getOpenAIReasoningEffort · method · L331-L336 — private getOpenAIReasoningEffort(request: LLMRequest): OpenAIReasoningEffort | undefined
+- getOpenAITextVerbosity · method · L338-L340 — private getOpenAITextVerbosity(request: LLMRequest): LLMTextVerbosity | undefined
+- buildResponsesInput · method · L342-L425 — private buildResponsesInput( messages: LLMMessage[], system?: string, systemBlocks?: LLMSystemBlock[], ): Any[]
+- toResponsesTools · method · L427-L436 — private toResponsesTools( tools: LLMTool[], ): Array<{ type: "function"; name: string; description: string; parameters: Any }>
+- sanitizeResponsesSchema · method · L438-L455 — private sanitizeResponsesSchema(schema: Any): Any
+- buildResponsesBody · method · L457-L485 — private buildResponsesBody(request: LLMRequest): Record<string, Any>
+- createResponsesMessageWithApiKey · method · L487-L520 — private async createResponsesMessageWithApiKey(request: LLMRequest): Promise<LLMResponse>
+- convertResponsesResponse · method · L522-L582 — private convertResponsesResponse(response: Any): LLMResponse
+- mapToCodexModel · method · L587-L605 — private mapToCodexModel(modelId: string): string
+- createMessageWithOAuth · method · L610-L739 — private async createMessageWithOAuth(request: LLMRequest): Promise<LLMResponse>
+- testConnection · method · L741-L804 — async testConnection(): Promise<{ success: boolean; error?: string }>
+- getAvailableModels · method · L811-L887 — async getAvailableModels(): Promise<Array<{ id: string; name: string; description: string }>>
+- priority · function · L840-L843 — priority = (id: string)
+- priority · function · L868-L876 — priority = (id: string)
+- getDefaultModels · method · L889-L903 — private getDefaultModels(): Array<{ id: string; name: string; description: string }>
+- getDefaultCodexModels · method · L905-L962 — private getDefaultCodexModels(): Array<{ id: string; name: string; description: string }>
+- formatModelName · method · L964-L998 — private formatModelName(modelId: string): string
+- getModelDescription · method · L1000-L1027 — private getModelDescription(modelId: string): string
+- convertMessagesToPiAi · method · L1032-L1163 — private convertMessagesToPiAi(messages: LLMMessage[], supportsImages = true): PiAiMessage[]
+- convertToolsToPiAi · method · L1168-L1174 — private convertToolsToPiAi(tools: LLMTool[]): PiAiTool[]
+- convertPiAiResponse · method · L1179-L1222 — private convertPiAiResponse(response: Any): LLMResponse
+- convertMessages · method · L1227-L1236 — private convertMessages( messages: LLMMessage[], system?: string, systemBlocks?: LLMSystemBlock[], ): OpenAI.ChatCompletionMessageParam[]
+- convertTools · method · L1238-L1247 — private convertTools(tools: LLMTool[]): OpenAI.ChatCompletionTool[]
+- convertResponse · method · L1249-L1289 — private convertResponse(response: OpenAI.ChatCompletion): LLMResponse
+- mapStopReason · method · L1291-L1306 — private mapStopReason( reason: OpenAI.ChatCompletion.Choice["finish_reason"], ): LLMResponse["stopReason"]

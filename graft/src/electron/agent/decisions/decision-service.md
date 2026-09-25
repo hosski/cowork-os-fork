@@ -1,0 +1,24 @@
+# src/electron/agent/decisions/decision-service.ts
+
+- DecisionServiceStatus · type · L10-L15 — type DecisionServiceStatus = | "success" | "unavailable" | "cancelled" | "budget_exhausted" | "circuit_open";
+- DecisionServiceResult · interface · L17-L26 — interface DecisionServiceResult
+- DecisionServiceOptions · interface · L28-L46 — interface DecisionServiceOptions
+- DecisionServiceCallOptions · interface · L48-L55 — interface DecisionServiceCallOptions extends Pick< DecisionRequestOptions, "signal" | "timeoutMs" | "maxRetries" | "retryDelayMs" >
+- CacheEntry · interface · L57-L60 — interface CacheEntry
+- clampPositive · function · L69-L72 — function clampPositive(value: number | undefined, fallback: number, max: number): number
+- clampNonNegative · function · L74-L77 — function clampNonNegative(value: number | undefined, fallback: number, max: number): number
+- questionCount · function · L79-L81 — function questionCount(request: JevRequest): number
+- stateBytes · function · L83-L89 — function stateBytes(request: JevRequest): number
+- responseMetadata · function · L91-L99 — function responseMetadata(result: DecisionServiceResult): Partial<DecisionTelemetryEvent>
+- DecisionService · class · L105-L396 — class DecisionService
+- constructor · method · L127-L156 — constructor(options: DecisionServiceOptions)
+- getTelemetry · method · L158-L160 — getTelemetry(): DecisionTelemetry
+- getProvider · method · L163-L165 — getProvider(): DecisionProvider
+- getModel · method · L167-L169 — getModel(): string | undefined
+- getUsage · method · L171-L177 — getUsage(): { calls: number; activeCalls: number; circuitOpen: boolean }
+- reset · method · L179-L185 — reset(): void
+- decide · method · L187-L345 — async decide( request: JevRequest, options: DecisionServiceCallOptions = {}, ): Promise<DecisionServiceResult>
+- abortForwarder · function · L280-L284 — abortForwarder = (): void
+- finish · method · L347-L373 — private finish( base: { purpose: string; stateDigest: string; stateBytes: number; questionCount: number; sourceId?: string; }, startedAt: number, result: DecisionServiceResult, ): DecisionServiceResult
+- recordPersistentTelemetry · method · L375-L395 — private recordPersistentTelemetry( result: DecisionServiceResult, purpose: string, sourceId?: string, ): void
+- createDecisionService · function · L398-L403 — function createDecisionService( provider: DecisionProvider, options: Omit<DecisionServiceOptions, "provider"> = {}, ): DecisionService

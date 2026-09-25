@@ -1,0 +1,30 @@
+# src/electron/database/SecureSettingsRepository.ts
+
+- LoadStatus · type · L23-L28 — type LoadStatus = | "success" | "not_found" | "decryption_failed" | "checksum_mismatch" | "os_encryption_unavailable";
+- LoadResult · interface · L31-L35 — interface LoadResult<T>
+- SettingsCategory · type · L38-L91 — type SettingsCategory = | "skills" | "acp" | "voice" | "memory" | "chronicle" | "llm" | "search" | "appearance" | "personality" | "guardrails" | "permissions" | "protected-credentials" | "hooks" | "mcp" | "secure-mcp-tunnels" | "controlplane" | "channels" | "builtintools" | "tailscale" | "claude-auth" | "queue" | "tray" | "x" | "notion" | "box" | "onedrive" | "google-drive" | "dropbox" | "sharepoint" | "health" | "user-profile" | "relationship-memory" | "conway" | "conway-wallet" | "infra" | "infra-wallet" | "proactive-suggestions-state" | "improvement-loop" | "improvement-owner" | "improvement-history" | "worktree" | "subconscious-loop" | "subconscious-migration-v1" | "webaccess" | "browser-use" | "adaptive-style-engine" | "routine-workflow-secrets" | "awareness-state" | "autonomy-chief-of-staff" | "supermemory" | "pulse" | "plugin-packs" | `plugin:${string}`;
+- SecureSettingsRow · interface · L93-L100 — interface SecureSettingsRow
+- SecureSettingsRepository · class · L109-L684 — class SecureSettingsRepository
+- constructor · method · L116-L136 — constructor(private db: Database.Database)
+- initializeMachineId · method · L142-L165 — private initializeMachineId(): void
+- getInstance · method · L171-L178 — static getInstance(): SecureSettingsRepository
+- isInitialized · method · L183-L185 — static isInitialized(): boolean
+- save · method · L190-L222 — save<T extends object>(category: SettingsCategory, settings: T): void
+- load · method · L228-L231 — load<T extends object>(category: SettingsCategory): T | undefined
+- loadWithStatus · method · L237-L341 — loadWithStatus<T extends object>( category: SettingsCategory, options: { logErrors?: boolean } = {}, ): LoadResult<T>
+- checkHealth · method · L347-L349 — checkHealth(category: SettingsCategory, options: { logErrors?: boolean } = {}): LoadStatus
+- delete · method · L354-L359 — delete(category: SettingsCategory): boolean
+- exists · method · L364-L368 — exists(category: SettingsCategory): boolean
+- listCategories · method · L373-L377 — listCategories(): SettingsCategory[]
+- getMetadata · method · L382-L388 — getMetadata(category: SettingsCategory): { createdAt: number; updatedAt: number } | undefined
+- createBackup · method · L396-L430 — createBackup(backupPath: string): { success: boolean; categoriesBackedUp: string[]; error?: string; }
+- restoreBackup · method · L437-L476 — restoreBackup( backupPath: string, overwrite = false, ): { success: boolean; categoriesRestored: string[]; error?: string }
+- deleteCorrupted · method · L483-L494 — deleteCorrupted(category: SettingsCategory): boolean
+- reEncryptAll · method · L500-L522 — reEncryptAll(): { success: boolean; categoriesProcessed: string[]; errors: string[] }
+- findByCategory · method · L526-L529 — private findByCategory(category: SettingsCategory): SecureSettingsRow | undefined
+- encrypt · method · L535-L570 — private encrypt(data: string): string
+- decrypt · method · L575-L632 — private decrypt(encryptedData: string): string
+- deriveAppKeyV2 · method · L641-L643 — private deriveAppKeyV2(machineId: string, salt: Buffer): Buffer
+- deriveLegacyAppKey · method · L649-L653 — private deriveLegacyAppKey(): Buffer
+- getLegacyMachineIdentifier · method · L662-L676 — private getLegacyMachineIdentifier(): string
+- computeChecksum · method · L681-L683 — private computeChecksum(data: string): string

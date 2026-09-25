@@ -1,0 +1,46 @@
+# src/electron/mailbox/MailboxForwardingService.ts
+
+- MailboxForwardingServiceDeps · type · L20-L23 — type MailboxForwardingServiceDeps = { db: Database.Database; log?: (...args: unknown[]) => void; };
+- ForwardingAttachment · type · L25-L30 — type ForwardingAttachment = { filename: string; mimeType: string; attachmentId?: string; inlineData?: string; };
+- ForwardingMessage · type · L32-L43 — type ForwardingMessage = { id: string; threadId: string; subject: string; fromRaw?: string; fromEmail?: string; internalDate: number; textBody: string; htmlBody?: string; attachments: ForwardingAttachment[]; labelIds: string[]; };
+- MessageForwardOutcome · type · L45-L47 — type MessageForwardOutcome = | { status: "sent" | "already_sent" | "dry_run"; messageId: string } | { status: "failed"; messageId: string; error: string };
+- ThreadEvaluation · type · L49-L52 — type ThreadEvaluation = { threadId: string; targets: ForwardingMessage[]; };
+- RunSummary · type · L54-L63 — type RunSummary = { matchedThreads: number; matchedMessages: number; sentMessages: number; alreadySentMessages: number; rejectedThreads: number; failedMessages: number; dryRun: boolean; summary: string; };
+- normalizeString · function · L65-L69 — function normalizeString(value: unknown): string | undefined
+- normalizeEmail · function · L71-L76 — function normalizeEmail(value: unknown): string | undefined
+- normalizeDomain · function · L78-L87 — function normalizeDomain(value: string | undefined): string | undefined
+- formatGmailAfterDate · function · L89-L95 — function formatGmailAfterDate(timestampMs: number): string
+- base64UrlDecode · function · L97-L101 — function base64UrlDecode(data: string): string
+- encodeBase64Lines · function · L103-L107 — function encodeBase64Lines(data: Uint8Array): string
+- encodeMessage · function · L109-L115 — function encodeMessage(raw: string): string
+- escapeHeader · function · L117-L119 — function escapeHeader(value: string): string
+- extractPlainText · function · L121-L142 — function extractPlainText(payload: Any): string
+- extractHtml · function · L144-L157 — function extractHtml(payload: Any): string | undefined
+- collectAttachments · function · L159-L178 — function collectAttachments(payload: Any): ForwardingAttachment[]
+- extractHeaders · function · L180-L191 — function extractHeaders(headers: Any[]): Record<string, string>
+- matchesAnyKeyword · function · L193-L197 — function matchesAnyKeyword(text: string, keywords: string[] | undefined): boolean
+- matchesAttachmentKeywords · function · L199-L205 — function matchesAttachmentKeywords( attachments: ForwardingAttachment[], keywords: string[] | undefined, ): boolean
+- attachmentMatchesExtensions · function · L207-L214 — function attachmentMatchesExtensions( attachment: ForwardingAttachment, allowedExtensions: string[] | undefined, ): boolean
+- attachmentListMatches · function · L216-L229 — function attachmentListMatches( attachments: ForwardingAttachment[], recipe: MailboxForwardRecipe, ): ForwardingAttachment[]
+- buildForwardedMime · function · L231-L278 — function buildForwardedMime(params: { to: string; subject: string; body: string; originalFrom?: string; originalSubject?: string; originalDate?: number; originalMessageId: string; attachments: Array<{ filename: string; mimeType: string; data: Uint8Array }>; }): string
+- MailboxForwardingService · class · L280-L881 — class MailboxForwardingService
+- constructor · method · L285-L287 — constructor(private deps: MailboxForwardingServiceDeps)
+- start · method · L289-L292 — start(): void
+- stop · method · L294-L300 — stop(): void
+- refresh · method · L302-L305 — async refresh(): Promise<void>
+- runNow · method · L307-L317 — async runNow(automationId: string): Promise<string>
+- ensureSchema · method · L319-L340 — private ensureSchema(): void
+- armTimer · method · L342-L373 — private armTimer(): void
+- processDueAutomations · method · L375-L399 — private async processDueAutomations(): Promise<void>
+- runAutomation · method · L401-L454 — private async runAutomation( automation: MailboxAutomationRecord, manual: boolean, ): Promise<RunSummary>
+- executeForwardingRun · method · L456-L559 — private async executeForwardingRun(automation: MailboxAutomationRecord): Promise<RunSummary>
+- computeEarliestTimestamp · method · L561-L577 — private computeEarliestTimestamp( automation: MailboxAutomationRecord, lastSuccessfulScanAt?: number, ): number
+- listCandidateThreadIds · method · L579-L618 — private async listCandidateThreadIds( settings: Any, recipe: MailboxForwardRecipe, earliestTimestamp: number, ): Promise<string[]>
+- getLastSuccessfulScanAt · method · L620-L630 — private getLastSuccessfulScanAt(automationId: string): number | undefined
+- setLastSuccessfulScanAt · method · L632-L643 — private setLastSuccessfulScanAt(automationId: string, timestamp: number): void
+- evaluateThread · method · L645-L687 — private evaluateThread( threadResult: GmailRequestResult, recipe: MailboxForwardRecipe, earliestTimestamp: number, ): ThreadEvaluation | null
+- normalizeForwardingMessage · method · L689-L713 — private normalizeForwardingMessage(rawMessage: Any): ForwardingMessage | null
+- getOrCreateLabels · method · L715-L762 — private async getOrCreateLabels( settings: Any, recipe: MailboxForwardRecipe, ): Promise<{ forwarded: string; rejected: string; candidate: string; }>
+- ensure · function · L737-L755 — ensure = async (name: string): Promise<string>
+- applyThreadLabels · method · L764-L780 — private async applyThreadLabels( settings: Any, threadId: string, input: { add?: string[]; remove?: string[] }, ): Promise<void>
+- forwardMessage · method · L782-L880 — private async forwardMessage( settings: Any, automationId: string, recipe: MailboxForwardRecipe, message: ForwardingMessage, ): Promise<MessageForwardOutcome>

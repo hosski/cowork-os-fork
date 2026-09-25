@@ -1,0 +1,29 @@
+# src/electron/terminal/TerminalPtyManager.ts
+
+- TerminalPtyOutputListener · type · L7-L12 — type TerminalPtyOutputListener = (event: { stream: "stdout"; output: string; cwd: string; status: ShellSessionInfo["status"]; }) => void;
+- TerminalPtyRuntime · type · L14-L23 — type TerminalPtyRuntime = { info: ShellSessionInfo; process: pty.IPty | null; listeners: Map<string, TerminalPtyOutputListener>; buffer: string; cols: number; rows: number; closeRequested: boolean; cwdParseBuffer: string; };
+- resolveTerminalShellExecutable · function · L33-L44 — function resolveTerminalShellExecutable(): string
+- getTerminalShellArgs · function · L46-L51 — function getTerminalShellArgs(shell: string): string[]
+- buildTerminalEnv · function · L53-L72 — function buildTerminalEnv(): Record<string, string>
+- shellSingleQuote · function · L74-L76 — function shellSingleQuote(value: string): string
+- buildZshSourceLine · function · L78-L80 — function buildZshSourceLine(filePath: string): string
+- buildZshPromptSetup · function · L82-L98 — function buildZshPromptSetup(): string
+- ensureTerminalZdotdir · function · L100-L116 — function ensureTerminalZdotdir(): string
+- ensureNodePtySpawnHelperExecutable · function · L118-L136 — function ensureNodePtySpawnHelperExecutable(): void
+- resolveOsc7Cwd · function · L138-L147 — function resolveOsc7Cwd(rawValue: string): string | null
+- appendBuffer · function · L149-L153 — function appendBuffer(buffer: string, output: string): string
+- TerminalPtyManager · class · L155-L389 — class TerminalPtyManager
+- getInstance · method · L159-L164 — static getInstance(): TerminalPtyManager
+- createTab · method · L166-L218 — createTab(params: { workspaceId: string; workspacePath: string; cwd?: string; title?: string; cols?: number; rows?: number; }): ShellSessionInfo
+- listTabs · method · L220-L224 — listTabs(workspaceId?: string): ShellSessionInfo[]
+- stopTabsForWorkspace · method · L227-L244 — stopTabsForWorkspace(workspaceId: string, reason = "Shell access revoked"): number
+- attachTerminalTabOutput · method · L246-L266 — attachTerminalTabOutput( tabId: string, listenerKey: string, listener: TerminalPtyOutputListener, ): ShellSessionInfo
+- writeToTab · method · L268-L280 — writeToTab(tabId: string, input: string): ShellSessionInfo
+- resizeTab · method · L282-L293 — resizeTab(tabId: string, cols: number, rows: number): ShellSessionInfo
+- stopTab · method · L295-L303 — stopTab(tabId: string): ShellSessionInfo | null
+- closeTab · method · L305-L314 — closeTab(tabId: string): ShellSessionInfo | null
+- runCommandInTab · method · L316-L326 — runCommandInTab(tabId: string, command: string): ShellSessionInfo
+- getRuntime · method · L328-L332 — private getRuntime(tabId: string): TerminalPtyRuntime
+- spawn · method · L334-L367 — private spawn(runtime: TerminalPtyRuntime): void
+- updateInfo · method · L369-L375 — private updateInfo(runtime: TerminalPtyRuntime, patch: Partial<ShellSessionInfo>): void
+- consumeCwd · method · L377-L388 — private consumeCwd(runtime: TerminalPtyRuntime, output: string): void

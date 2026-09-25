@@ -1,0 +1,79 @@
+# src/electron/agent/tools/file-tools.ts
+
+- ReadWindow · interface · L56-L60 — interface ReadWindow
+- ReadWindowOptions · interface · L62-L65 — interface ReadWindowOptions
+- WriteFileOptions · interface · L67-L70 — interface WriteFileOptions
+- ResolvedFilesystemPath · interface · L72-L75 — interface ResolvedFilesystemPath
+- MutationPathBinding · interface · L77-L83 — interface MutationPathBinding extends ResolvedFilesystemPath
+- getElectronShell · function · L85-L96 — function getElectronShell(): Any | null
+- FileTools · class · L101-L2403 — class FileTools
+- constructor · method · L104-L110 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L115-L118 — setWorkspace(workspace: Workspace): void
+- ensurePrivatePathsExcluded · method · L120-L129 — private ensurePrivatePathsExcluded(): void
+- setWorkspacePathAliasPolicy · method · L131-L133 — setWorkspacePathAliasPolicy(policy: WorkspacePathAliasPolicy | undefined): void
+- resolveWorkspacePathAliasPolicy · method · L135-L140 — private resolveWorkspacePathAliasPolicy(value: unknown): WorkspacePathAliasPolicy
+- buildReadProvenance · method · L142-L144 — private buildReadProvenance(absolutePath: string): SensitiveSourceRef
+- applyReadProvenance · method · L146-L152 — private applyReadProvenance(content: string, provenance: SensitiveSourceRef): string
+- isProtectedPath · method · L157-L159 — private isProtectedPath(absolutePath: string): boolean
+- isPathAllowed · method · L164-L172 — private isPathAllowed( absolutePath: string, operation: AccessFilesystemOperation = "read", ): boolean
+- assertAccessProfilePathAllowed · method · L174-L202 — private assertAccessProfilePathAllowed( absolutePath: string, operation: AccessFilesystemOperation, externalApprovalGranted = false, ): void
+- remapStaleAbsolutePathToWorkspace · method · L209-L231 — private remapStaleAbsolutePathToWorkspace( absolutePath: string, normalizedWorkspace: string, ): string | null
+- remapWorkspaceAliasAbsolutePathToWorkspace · method · L233-L261 — private remapWorkspaceAliasAbsolutePathToWorkspace( absolutePath: string, normalizedWorkspace: string, operation: "read" | "write" | "delete", ): string | null
+- getWorkspaceReadRecoveryCandidates · method · L263-L287 — private getWorkspaceReadRecoveryCandidates( absolutePath: string, normalizedWorkspace: string, ): string[]
+- pushCandidate · function · L268-L273 — pushCandidate = (candidate: string | null): void
+- resolveExistingWorkspaceReadRecoveryPath · method · L289-L312 — private resolveExistingWorkspaceReadRecoveryPath( absolutePath: string, normalizedWorkspace: string, ): string | null
+- resolvePath · method · L319-L447 — private resolvePath( inputPath: string, operation: "read" | "write" | "delete" = "read", externalApprovalGranted = false, ): string
+- finish · function · L326-L329 — finish = (resolvedPath: string): string
+- resolvePathWithExternalApproval · method · L455-L510 — private async resolvePathWithExternalApproval( inputPath: string, operation: "read" | "write" | "delete", label: string, ): Promise<ResolvedFilesystemPath>
+- resolvePathsWithExternalApproval · method · L512-L543 — private async resolvePathsWithExternalApproval( requests: Array<{ inputPath: string; operation: "read" | "write" | "delete"; label: string; }>, ): Promise<ResolvedFilesystemPath[]>
+- normalizeWorkspaceBoundaryReadPath · method · L545-L604 — private normalizeWorkspaceBoundaryReadPath( inputPath: string, toolName: "list_directory" | "list_directory_with_sizes" | "search_files", ): string
+- expandHomeShortcutPath · method · L606-L612 — private expandHomeShortcutPath(inputPath: string): string
+- checkPermission · method · L617-L627 — private checkPermission(operation: "read" | "write" | "delete"): void
+- enforceProjectAccess · method · L629-L647 — private async enforceProjectAccess(absolutePath: string): Promise<void>
+- isInsideWorkspace · method · L649-L654 — private isInsideWorkspace(absolutePath: string): boolean
+- isInsideWorkspaceRealpathAware · method · L656-L671 — private isInsideWorkspaceRealpathAware(absolutePath: string): boolean
+- assertResolvedPathAllowed · method · L673-L696 — private assertResolvedPathAllowed( absolutePath: string, operation: AccessFilesystemOperation, context: "target" | "parent", externalApprovalGranted = false, ): void
+- realpathIfExists · method · L698-L705 — private async realpathIfExists(p: string): Promise<string | null>
+- realpathNearestExistingAncestor · method · L707-L716 — private async realpathNearestExistingAncestor(p: string): Promise<string | null>
+- getCurrentTask · method · L718-L722 — private getCurrentTask(): Task | null
+- maybeRedirectAutomatedOutputPath · method · L724-L765 — private async maybeRedirectAutomatedOutputPath( requestedPath: string, ): Promise<{ requestedPath: string; redirectedFrom?: string }>
+- enforceSymlinkSafeAccess · method · L771-L787 — private async enforceSymlinkSafeAccess( absolutePath: string, operation: AccessFilesystemOperation, externalApprovalGranted = false, ): Promise<void>
+- statIfExists · method · L789-L796 — private async statIfExists(absolutePath: string): Promise<fsSync.Stats | null>
+- hasSameFilesystemIdentity · method · L798-L807 — private hasSameFilesystemIdentity( expected: fsSync.Stats | null, actual: fsSync.Stats | null, ): boolean
+- bindMutationPath · method · L809-L844 — private async bindMutationPath( resolved: ResolvedFilesystemPath, operation: AccessFilesystemOperation, ): Promise<MutationPathBinding>
+- revalidateMutationPath · method · L846-L903 — private async revalidateMutationPath( binding: MutationPathBinding, phase: string, allowParentGrowth = false, ): Promise<void>
+- writeBoundFile · method · L905-L929 — private async writeBoundFile( binding: MutationPathBinding, content: string, signal?: AbortSignal, ): Promise<void>
+- copyBoundFile · method · L931-L972 — private async copyBoundFile( source: MutationPathBinding, destination: MutationPathBinding, ): Promise<void>
+- readTextFileRaw · method · L980-L1068 — async readTextFileRaw( relativePath: string, options?: { maxBytes?: number }, ): Promise<{ content: string; size: number; truncated: boolean }>
+- readFile · method · L1074-L1230 — async readFile( relativePath: string, options?: { startChar?: number; maxChars?: number }, ): Promise<{ content: string; size: number; truncated?: boolean; format?: string; path: string; window?: ReadWindow; provenance?: SensitiveSourceRef; }>
+- toWorkspaceRelative · function · L1140-L1146 — toWorkspaceRelative = (base: string, target: string): string | null
+- isNotFoundError · method · L1232-L1237 — private isNotFoundError(error: unknown): boolean
+- resolveCaseInsensitivePath · method · L1243-L1277 — private async resolveCaseInsensitivePath(relativePath: string): Promise<string | null>
+- pathLooksLikeReadableFile · method · L1279-L1286 — private async pathLooksLikeReadableFile(candidatePath: string): Promise<boolean>
+- resolveStaleAbsoluteReadPath · method · L1288-L1310 — private async resolveStaleAbsoluteReadPath( absolutePath: string, currentResolvedPath: string, ): Promise<string | null>
+- normalizeReadWindowOptions · method · L1312-L1329 — private normalizeReadWindowOptions(options?: { startChar?: number; maxChars?: number; }): ReadWindowOptions
+- sliceContentWindow · method · L1331-L1349 — private sliceContentWindow( content: string, readWindow: ReadWindowOptions, ): { content: string; truncated: boolean; window: ReadWindow; }
+- readDocxFile · method · L1354-L1390 — private async readDocxFile( fullPath: string, size: number, readWindow: ReadWindowOptions, ): Promise<{ content: string; size: number; truncated?: boolean; format: string; window: ReadWindow; }>
+- readPdfFile · method · L1395-L1454 — private async readPdfFile( fullPath: string, size: number, readWindow: ReadWindowOptions, ): Promise<{ content: string; size: number; truncated?: boolean; format: string; window: ReadWindow; pdf_extraction: { status: "complete" | "recovered" | "ocr" | "preview" | "empty"; mode: string; used_fallback: boolean; preview_limited: boolean; note: string; page_count: number; }; }>
+- readPptxFile · method · L1459-L1498 — private async readPptxFile( fullPath: string, size: number, readWindow: ReadWindowOptions, ): Promise<{ content: string; size: number; truncated?: boolean; format: string; window: ReadWindow; }>
+- writeFile · method · L1503-L1633 — async writeFile( relativePath: string, content: string, options: WriteFileOptions = {}, ): Promise<{ success: boolean; path: string }>
+- runWriteFilePhase · method · L1635-L1703 — private async runWriteFilePhase<T>( phase: string, requestedPath: string, options: WriteFileOptions, operation: (signal: AbortSignal) => Promise<T>, ): Promise<T>
+- getWriteFilePhaseTimeoutMs · method · L1705-L1717 — private getWriteFilePhaseTimeoutMs(toolTimeoutMs: number | undefined): number | undefined
+- enforceRootPackageFileSafety · method · L1719-L1729 — private async enforceRootPackageFileSafety(fullPath: string, content: string): Promise<void>
+- enforceRootPackageJsonSafety · method · L1731-L1773 — private async enforceRootPackageJsonSafety(fullPath: string, content: string): Promise<void>
+- enforceRootPackageLockSafety · method · L1775-L1795 — private async enforceRootPackageLockSafety(fullPath: string, content: string): Promise<void>
+- readJsonObjectIfPresent · method · L1797-L1807 — private async readJsonObjectIfPresent(fullPath: string): Promise<Any | null>
+- hasCriticalPackageScripts · method · L1809-L1813 — private hasCriticalPackageScripts(value: Any): boolean
+- isPlainObject · method · L1815-L1817 — private isPlainObject(value: unknown): value is Record<string, unknown>
+- isNonEmptyString · method · L1819-L1821 — private isNonEmptyString(value: unknown): value is string
+- listDirectory · method · L1826-L1882 — async listDirectory(relativePath: string = "."): Promise<{ files: Array<{ name: string; type: "file" | "directory"; size: number }>; totalCount: number; truncated?: boolean; }>
+- listDirectoryWithSizes · method · L1888-L1951 — async listDirectoryWithSizes(relativePath: string = "."): Promise<{ output: string; files: Array<{ name: string; type: "file" | "directory"; size: number }>; totalCount: number; truncated?: boolean; combinedSize: number; }>
+- getFileInfo · method · L1956-L1989 — async getFileInfo(relativePath: string): Promise<{ size: number; created: string; modified: string; accessed: string; isDirectory: boolean; isFile: boolean; permissions: string; }>
+- renameFile · method · L1994-L2047 — async renameFile(oldPath: string, newPath: string): Promise<{ success: boolean }>
+- copyFile · method · L2052-L2111 — async copyFile( sourcePath: string, destPath: string, ): Promise<{ success: boolean; path: string }>
+- deleteFile · method · L2120-L2212 — async deleteFile(relativePath: string): Promise<{ success: boolean; movedToTrash?: boolean }>
+- createDirectory · method · L2217-L2251 — async createDirectory(relativePath: string): Promise<{ success: boolean }>
+- searchFiles · method · L2256-L2363 — async searchFiles( query: string, relativePath: string = ".", ): Promise<{ matches: Array<{ path: string; type: "filename" | "content" }>; totalFound: number; truncated?: boolean; }>
+- searchRecursive · function · L2281-L2351 — searchRecursive = async (dir: string)
+- formatDirectoryListing · method · L2368-L2389 — private formatDirectoryListing( entries: Array<{ name: string; type: "file" | "directory"; size: number }>, combinedSize: number, ): string
+- formatBytes · method · L2394-L2402 — private formatBytes(bytes: number): string

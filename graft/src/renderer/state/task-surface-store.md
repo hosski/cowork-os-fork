@@ -1,0 +1,23 @@
+# src/renderer/state/task-surface-store.ts
+
+- TaskSurfaceListener · type · L15-L15 — type TaskSurfaceListener = () => void;
+- TaskSurfaceSwitchResult · interface · L17-L22 — interface TaskSurfaceSwitchResult
+- TaskSurfaceStore · class · L24-L148 — class TaskSurfaceStore
+- constructor · method · L30-L32 — constructor(cache = new TaskViewCache())
+- getActiveKey · method · L39-L41 — getActiveKey(): TaskSurfaceKey | null
+- getSelectionGeneration · method · L43-L45 — getSelectionGeneration(): number
+- getSnapshot · method · L47-L50 — getSnapshot(key: TaskSurfaceKey | string | null): TaskViewSnapshot | null
+- getActiveSnapshot · method · L52-L54 — getActiveSnapshot(): TaskViewSnapshot | null
+- switchTo · method · L56-L70 — switchTo(key: TaskSurfaceKey): TaskSurfaceSwitchResult
+- clearActive · method · L72-L76 — clearActive(): void
+- isCurrent · method · L78-L85 — isCurrent(key: TaskSurfaceKey, generation: number): boolean
+- update · method · L87-L101 — update( key: TaskSurfaceKey, updater: (snapshot: TaskViewSnapshot) => TaskViewSnapshot, options: { generation?: number; notify?: boolean } = {}, ): TaskViewSnapshot | null
+- setTask · method · L103-L105 — setTask(key: TaskSurfaceKey, task: Task | null, generation?: number): TaskViewSnapshot | null
+- setTimeline · method · L107-L132 — setTimeline( key: TaskSurfaceKey, input: { events: TaskEvent[]; cursor: TaskTimelinePageCursor | null; hasMoreHistory: boolean; replace?: boolean; }, generation?: number, ): TaskViewSnapshot | null
+- setDraft · method · L134-L136 — setDraft(key: TaskSurfaceKey, composerDraft: ComposerDraft | undefined): TaskViewSnapshot | null
+- setProjection · method · L138-L143 — setProjection( key: TaskSurfaceKey, projection: SharedTaskEventUiState | undefined, ): TaskViewSnapshot | null
+- emit · method · L145-L147 — private emit(): void
+- getTaskSurfaceEventIdentity · function · L150-L152 — function getTaskSurfaceEventIdentity(event: TaskEvent): string
+- mergeTaskSurfaceEvents · function · L154-L163 — function mergeTaskSurfaceEvents(existing: TaskEvent[], incoming: TaskEvent[]): TaskEvent[]
+- compareTaskSurfaceEvents · function · L165-L171 — function compareTaskSurfaceEvents(left: TaskEvent, right: TaskEvent): number
+- useTaskSurface · function · L173-L183 — function useTaskSurface( store: TaskSurfaceStore, key: TaskSurfaceKey | null, ): TaskViewSnapshot | null

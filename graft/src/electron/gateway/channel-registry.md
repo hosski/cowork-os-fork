@@ -1,0 +1,31 @@
+# src/electron/gateway/channel-registry.ts
+
+- ChannelMetadata · interface · L67-L94 — interface ChannelMetadata
+- ChannelCapabilities · interface · L99-L120 — interface ChannelCapabilities
+- ChannelConfigSchema · interface · L125-L138 — interface ChannelConfigSchema
+- ChannelAdapterFactory · type · L143-L143 — type ChannelAdapterFactory = (config: ChannelConfig) => ChannelAdapter;
+- RegisteredChannel · interface · L148-L151 — interface RegisteredChannel
+- ChannelRegistryEventType · type · L156-L159 — type ChannelRegistryEventType = | "channel:registered" | "channel:unregistered" | "channel:updated";
+- ChannelRegistry · class · L164-L1691 — class ChannelRegistry extends EventEmitter
+- constructor · method · L173-L177 — private constructor()
+- getInstance · method · L182-L187 — static getInstance(): ChannelRegistry
+- registerBuiltinChannels · method · L192-L1395 — private registerBuiltinChannels(): void
+- register · method · L1400-L1417 — register(entry: RegisteredChannel): void
+- unregister · method · L1422-L1436 — unregister(type: string): boolean
+- getChannelTypes · method · L1441-L1443 — getChannelTypes(): string[]
+- getMetadata · method · L1448-L1450 — getMetadata(type: string): ChannelMetadata | undefined
+- getAllMetadata · method · L1455-L1457 — getAllMetadata(): ChannelMetadata[]
+- getBuiltinChannels · method · L1462-L1466 — getBuiltinChannels(): ChannelMetadata[]
+- getPluginChannels · method · L1471-L1475 — getPluginChannels(): ChannelMetadata[]
+- hasChannel · method · L1480-L1482 — hasChannel(type: string): boolean
+- isSupported · method · L1487-L1498 — isSupported(type: string): boolean
+- createAdapter · method · L1503-L1510 — createAdapter(type: string, config: ChannelConfig): ChannelAdapter
+- validateConfig · method · L1515-L1628 — validateConfig(type: string, config: ChannelConfig): { valid: boolean; errors: string[] }
+- getChannelsByCapability · method · L1633-L1637 — getChannelsByCapability(capability: keyof ChannelCapabilities): ChannelMetadata[]
+- getCapabilities · method · L1642-L1644 — getCapabilities(type: string): ChannelCapabilities | undefined
+- setActiveAdapter · method · L1649-L1651 — setActiveAdapter(type: string, adapter: ChannelAdapter): void
+- getActiveAdapter · method · L1656-L1658 — getActiveAdapter(type: string): ChannelAdapter | undefined
+- removeActiveAdapter · method · L1663-L1665 — removeActiveAdapter(type: string): void
+- getActiveAdapters · method · L1670-L1672 — getActiveAdapters(): Map<string, ChannelAdapter>
+- getStatusSummary · method · L1677-L1690 — getStatusSummary(): Array<{ type: string; displayName: string; status: ChannelStatus }>
+- getChannelRegistry · function · L1694-L1694 — getChannelRegistry = (): ChannelRegistry

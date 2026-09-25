@@ -1,0 +1,22 @@
+# src/electron/database/WorkSessionProjectionRepository.ts
+
+- DbRow · type · L10-L10 — type DbRow = Record<string, unknown>;
+- WorkSessionProjectionReducer · type · L12-L12 — type WorkSessionProjectionReducer<State> = (state: State, item: WorkSessionItem) => State;
+- WorkSessionProjectionOptions · interface · L14-L21 — interface WorkSessionProjectionOptions<State>
+- WorkSessionProjectionRebuild · interface · L23-L28 — interface WorkSessionProjectionRebuild<State>
+- requiredId · function · L36-L40 — function requiredId(value: unknown, label: string): string
+- projectionName · function · L42-L48 — function projectionName(value: unknown): string
+- parseJson · function · L50-L57 — function parseJson<T>(value: unknown, fallback: T): T
+- canonicalize · function · L59-L69 — function canonicalize(value: unknown): unknown
+- workSessionProjectionChecksum · function · L71-L75 — function workSessionProjectionChecksum(value: unknown): string
+- boundedStateJson · function · L77-L83 — function boundedStateJson(value: unknown): string
+- mapItem · function · L85-L118 — function mapItem(row: DbRow): WorkSessionItem
+- WorkSessionProjectionRepository · class · L125-L361 — class WorkSessionProjectionRepository
+- constructor · method · L129-L138 — constructor( private readonly db: Database.Database, options?: { batchSize?: number; now?: () => number }, )
+- getCursor · method · L140-L151 — getCursor<State = Record<string, unknown>>( sessionId: string, projection: string, ): WorkSessionProjectionCursor<State> | undefined
+- readItemsAfterSequence · method · L154-L166 — readItemsAfterSequence(sessionId: string, afterSequence: number): WorkSessionItem[]
+- getLastSequence · method · L168-L175 — getLastSequence(sessionId: string): number
+- projectIncremental · method · L177-L293 — projectIncremental<State>( sessionId: string, options: WorkSessionProjectionOptions<State>, ): WorkSessionProjectionUpdate<State>
+- rebuild · method · L295-L323 — rebuild<State>( sessionId: string, options: Pick< WorkSessionProjectionOptions<State>, "initialState" | "reduce" | "projectionName" >, ): WorkSessionProjectionRebuild<State>
+- compareFullRebuild · method · L325-L339 — compareFullRebuild<State>( sessionId: string, options: Pick< WorkSessionProjectionOptions<State>, "initialState" | "reduce" | "projectionName" >, ): { incrementalChecksum?: string; fullRebuildChecksum: string; matches: boolean }
+- mapCursor · method · L341-L360 — private mapCursor<State>(row: DbRow): WorkSessionProjectionCursor<State>

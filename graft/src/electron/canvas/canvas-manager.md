@@ -1,0 +1,44 @@
+# src/electron/canvas/canvas-manager.ts
+
+- getElectronRuntime · function · L33-L50 — function getElectronRuntime(): { BrowserWindow: Any; screen: Any; shell: Any } | null
+- requireElectronRuntime · function · L52-L60 — function requireElectronRuntime(): { BrowserWindow: Any; screen: Any; shell: Any }
+- CanvasManager · class · L118-L1132 — class CanvasManager
+- constructor · method · L135-L135 — private constructor()
+- getSessionMode · method · L137-L139 — private getSessionMode(session: CanvasSession): CanvasSessionMode
+- getCanvasUrl · method · L141-L143 — private getCanvasUrl(sessionId: string): string
+- normalizeUrl · method · L145-L168 — private normalizeUrl(rawUrl: string): string
+- getInstance · method · L173-L178 — static getInstance(): CanvasManager
+- setMainWindow · method · L183-L185 — setMainWindow(window: BrowserWindow): void
+- setEventCallback · method · L190-L192 — setEventCallback(callback: (event: CanvasEvent) => void): void
+- setA2UICallback · method · L197-L199 — setA2UICallback(callback: (action: CanvasA2UIAction) => void): void
+- restoreSessions · method · L205-L222 — async restoreSessions(): Promise<void>
+- persistSessions · method · L227-L235 — async persistSessions(): Promise<void>
+- createSession · method · L240-L286 — async createSession( taskId: string, workspaceId: string, title?: string, options?: { mode?: CanvasSessionMode; url?: string }, ): Promise<CanvasSession>
+- getSession · method · L291-L293 — getSession(sessionId: string): CanvasSession | undefined
+- getSessionFromWindow · method · L298-L300 — getSessionFromWindow(window: BrowserWindow): string | undefined
+- listSessionsForTask · method · L305-L307 — listSessionsForTask(taskId: string): CanvasSession[]
+- listAllSessions · method · L312-L314 — listAllSessions(): CanvasSession[]
+- pushContent · method · L319-L385 — async pushContent( sessionId: string, content: string, filename: string = "index.html", ): Promise<void>
+- openUrl · method · L390-L435 — async openUrl(sessionId: string, rawUrl: string, options?: { show?: boolean }): Promise<string>
+- ensureWindowForSnapshots · method · L442-L555 — private async ensureWindowForSnapshots(sessionId: string): Promise<BrowserWindow>
+- showCanvas · method · L560-L613 — async showCanvas(sessionId: string): Promise<void>
+- hideCanvas · method · L618-L623 — hideCanvas(sessionId: string): void
+- closeSession · method · L628-L658 — async closeSession(sessionId: string): Promise<void>
+- evalScript · method · L663-L671 — async evalScript(sessionId: string, script: string): Promise<unknown>
+- takeSnapshot · method · L676-L692 — async takeSnapshot(sessionId: string): Promise<CanvasSnapshot>
+- exportAsHTML · method · L698-L714 — async exportAsHTML(sessionId: string): Promise<{ content: string; filename: string }>
+- exportToFolder · method · L719-L750 — async exportToFolder( sessionId: string, targetDir: string, ): Promise<{ files: string[]; targetDir: string }>
+- openInBrowser · method · L755-L778 — async openInBrowser(sessionId: string): Promise<{ success: boolean; path: string }>
+- getSessionDir · method · L783-L786 — getSessionDir(sessionId: string): string | null
+- handleA2UIAction · method · L791-L822 — handleA2UIAction( windowId: number, action: { actionName: string; componentId?: string; context?: Record<string, unknown> }, ): void
+- startWatcher · method · L827-L847 — private startWatcher(sessionId: string, sessionDir: string, window: BrowserWindow): void
+- stopWatcher · method · L852-L858 — private stopWatcher(sessionId: string): void
+- emitEvent · method · L863-L873 — private emitEvent(event: CanvasEvent): void
+- saveCheckpoint · method · L881-L950 — async saveCheckpoint(sessionId: string, label?: string): Promise<CanvasCheckpoint>
+- restoreCheckpoint · method · L956-L1021 — async restoreCheckpoint(sessionId: string, checkpointId: string): Promise<CanvasCheckpoint>
+- listCheckpoints · method · L1026-L1031 — listCheckpoints(sessionId: string): CanvasCheckpoint[]
+- deleteCheckpoint · method · L1036-L1045 — deleteCheckpoint(sessionId: string, checkpointId: string): boolean
+- diffCheckpoints · method · L1050-L1072 — diffCheckpoints( sessionId: string, fromCheckpointId: string, toCheckpointId: string, ): { added: string[]; removed: string[]; modified: string[] } | null
+- findCheckpointByLabel · method · L1077-L1081 — findCheckpointByLabel(sessionId: string, label: string): CanvasCheckpoint | undefined
+- getSessionContent · method · L1089-L1111 — async getSessionContent(sessionId: string): Promise<Record<string, string>>
+- cleanup · method · L1116-L1131 — async cleanup(): Promise<void>

@@ -1,0 +1,26 @@
+# src/shared/agent-security.ts
+
+- AgentSecurityMode · type · L4-L4 — type AgentSecurityMode = "monitor" | "enforce";
+- AgentSecurityFailurePolicy · type · L5-L5 — type AgentSecurityFailurePolicy = "open" | "deny_high_risk";
+- AgentSecurityRuleProfile · type · L6-L6 — type AgentSecurityRuleProfile = "builtin" | "recommended" | "custom";
+- AgentSecurityPolicy · interface · L8-L23 — interface AgentSecurityPolicy
+- AgentSecurityHookEventName · type · L42-L51 — type AgentSecurityHookEventName = | "SessionStart" | "SessionEnd" | "UserPromptSubmit" | "PermissionRequested" | "PermissionApproved" | "PermissionDenied" | "PreToolUse" | "PostToolUse" | "PostToolUseFailure";
+- AgentSecurityToolClass · type · L53-L61 — type AgentSecurityToolClass = | "shell" | "file_read" | "file_write" | "file_delete" | "network" | "mcp" | "computer_use" | "generic";
+- AgentSecurityAction · interface · L63-L71 — interface AgentSecurityAction
+- AgentSecurityHookPayload · interface · L73-L108 — interface AgentSecurityHookPayload
+- AgentSecurityDecision · type · L110-L110 — type AgentSecurityDecision = "no_override" | "deny";
+- AgentSecurityHealth · type · L111-L111 — type AgentSecurityHealth = "disabled" | "ok" | "degraded" | "unavailable";
+- AgentSecurityHookResponse · interface · L113-L119 — interface AgentSecurityHookResponse
+- AgentSecurityEvaluationResult · interface · L121-L128 — interface AgentSecurityEvaluationResult
+- AgentSecurityFindingStatus · type · L130-L130 — type AgentSecurityFindingStatus = "open" | "acknowledged" | "resolved" | "false_positive";
+- AgentSecurityFinding · interface · L132-L150 — interface AgentSecurityFinding
+- AgentSecurityEnforcement · interface · L152-L167 — interface AgentSecurityEnforcement
+- AgentSecurityDiagnostic · interface · L169-L176 — interface AgentSecurityDiagnostic
+- AgentSecurityRuntimeStatus · interface · L178-L188 — interface AgentSecurityRuntimeStatus
+- AgentSecurityFindingQuery · interface · L190-L196 — interface AgentSecurityFindingQuery
+- AgentSecurityInventoryItem · interface · L198-L205 — interface AgentSecurityInventoryItem
+- AgentSecurityScanResult · interface · L207-L210 — interface AgentSecurityScanResult
+- AgentSecurityRulesCheckResult · interface · L212-L215 — interface AgentSecurityRulesCheckResult
+- AgentSecurityHookManagementResult · interface · L217-L219 — interface AgentSecurityHookManagementResult
+- AgentSecurityCaseBuildResult · interface · L221-L227 — interface AgentSecurityCaseBuildResult
+- AgentSecurityCaseVerifyResult · interface · L229-L234 — interface AgentSecurityCaseVerifyResult

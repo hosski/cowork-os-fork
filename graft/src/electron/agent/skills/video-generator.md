@@ -1,0 +1,49 @@
+# src/electron/agent/skills/video-generator.ts
+
+- VideoProvider · type · L14-L14 — type VideoProvider = "openai" | "azure" | "gemini" | "vertex" | "kling";
+- VideoGenerationMode · type · L16-L20 — type VideoGenerationMode = | "text_to_video" | "image_to_video" | "video_to_video" | "extend_video";
+- VideoAspectRatio · type · L22-L22 — type VideoAspectRatio = "16:9" | "9:16" | "1:1";
+- VideoResolution · type · L23-L23 — type VideoResolution = "480p" | "720p" | "1080p";
+- VideoGenerationRequest · interface · L27-L40 — interface VideoGenerationRequest
+- VideoGenerationJobStatus · interface · L42-L49 — interface VideoGenerationJobStatus
+- VideoGenerationResult · interface · L51-L65 — interface VideoGenerationResult
+- AdapterArgs · interface · L69-L75 — interface AdapterArgs
+- OutputPathGuard · type · L77-L77 — type OutputPathGuard = (outputPath: string) => void;
+- NetworkPolicyGuard · type · L78-L78 — type NetworkPolicyGuard = (url: string, toolName?: string) => void;
+- AdapterResult · interface · L80-L87 — interface AdapterResult
+- generateWithOpenAI · function · L91-L158 — async function generateWithOpenAI(args: AdapterArgs): Promise<AdapterResult>
+- pollOpenAIJob · function · L160-L201 — async function pollOpenAIJob( jobId: string, apiKey: string, outputDir: string, filename?: string, outputPathGuard?: OutputPathGuard, networkPolicyGuard?: NetworkPolicyGuard, ): Promise<VideoGenerationJobStatus & { outputPaths?: string[] }>
+- mapOpenAIStatus · function · L203-L209 — function mapOpenAIStatus(s?: string): VideoGenerationJobStatus["status"]
+- aspectRatioToSoraSize · function · L211-L215 — function aspectRatioToSoraSize(ar: VideoAspectRatio): string
+- normalizeAzureBaseEndpoint · function · L235-L239 — function normalizeAzureBaseEndpoint(endpoint: string): string
+- normalizeAzureVideoModel · function · L241-L257 — function normalizeAzureVideoModel( model?: string, configuredModel?: string, ): "sora-2" | "sora-2-pro"
+- normalizeAzureVideoApiVersion · function · L259-L267 — function normalizeAzureVideoApiVersion(apiVersion?: string): string
+- aspectRatioAndResolutionToAzureVideoSize · function · L269-L297 — function aspectRatioAndResolutionToAzureVideoSize( aspectRatio: VideoAspectRatio, resolution?: VideoResolution, ): | "480x480" | "720x720" | "1080x1080" | "480x854" | "854x480" | "720x1280" | "1280x720" | "1080x1920" | "1920x1080"
+- normalizeAzureVideoSeconds · function · L299-L304 — function normalizeAzureVideoSeconds(seconds?: number): "4" | "8" | "12"
+- mapAzureVideoStatus · function · L306-L311 — function mapAzureVideoStatus(status?: string): VideoGenerationJobStatus["status"]
+- generateWithAzure · function · L313-L382 — async function generateWithAzure(args: AdapterArgs): Promise<AdapterResult>
+- pollAzureJob · function · L384-L446 — async function pollAzureJob( jobId: string, settings: ReturnType<typeof LLMProviderFactory.loadSettings>, outputDir: string, filename?: string, outputPathGuard?: OutputPathGuard, networkPolicyGuard?: NetworkPolicyGuard, ): Promise<VideoGenerationJobStatus & { outputPaths?: string[] }>
+- generateWithGemini · function · L450-L537 — async function generateWithGemini(args: AdapterArgs): Promise<AdapterResult>
+- pollGeminiOperation · function · L545-L603 — async function pollGeminiOperation( operationName: string, apiKey: string, outputDir: string, filename?: string, outputPathGuard?: OutputPathGuard, networkPolicyGuard?: NetworkPolicyGuard, ): Promise<VideoGenerationJobStatus & { outputPaths?: string[] }>
+- generateWithVertex · function · L607-L671 — async function generateWithVertex(args: AdapterArgs): Promise<AdapterResult>
+- pollVertexOperation · function · L673-L747 — async function pollVertexOperation( operationName: string, accessToken: string, outputDir: string, filename?: string, outputPathGuard?: OutputPathGuard, networkPolicyGuard?: NetworkPolicyGuard, location = "us-central1", ): Promise<VideoGenerationJobStatus & { outputPaths?: string[] }>
+- generateWithKling · function · L751-L818 — async function generateWithKling(args: AdapterArgs): Promise<AdapterResult>
+- pollKlingJob · function · L820-L881 — async function pollKlingJob( taskId: string, kCfg: NonNullable<ReturnType<typeof LLMProviderFactory.loadSettings>["videoGeneration"]>["kling"], outputDir: string, filename?: string, outputPathGuard?: OutputPathGuard, networkPolicyGuard?: NetworkPolicyGuard, ): Promise<VideoGenerationJobStatus & { outputPaths?: string[] }>
+- downloadVideoItems · function · L885-L906 — async function downloadVideoItems( items: Array<{ url?: string; b64_json?: string }>, outputDir: string, filename?: string, outputPathGuard?: OutputPathGuard, networkPolicyGuard?: NetworkPolicyGuard, ): Promise<string[]>
+- downloadUrlToFile · function · L908-L921 — async function downloadUrlToFile( url: string, outputPath: string, outputPathGuard?: OutputPathGuard, networkPolicyGuard?: NetworkPolicyGuard, ): Promise<void>
+- buildOutputPath · function · L923-L948 — function buildOutputPath(outputDir: string, filename?: string, ext = "mp4"): string
+- buildSetupHint · function · L950-L964 — function buildSetupHint(provider: VideoProvider): { type: string; label: string; target: string }
+- getConfiguredVideoProviders · function · L968-L986 — function getConfiguredVideoProviders( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): VideoProvider[]
+- selectVideoProviderOrder · function · L988-L1019 — function selectVideoProviderOrder( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, providerOverride?: VideoProvider | "auto", ): VideoProvider[]
+- pushConfigured · function · L997-L1000 — pushConfigured = (provider?: VideoProvider)
+- VideoGenerator · class · L1027-L1341 — class VideoGenerator
+- constructor · method · L1028-L1031 — constructor( private workspace: Workspace, private filesystemApprovalHandlers: WorkspaceFilesystemApprovalHandlers = {}, )
+- assertNetworkAccess · method · L1034-L1045 — private assertNetworkAccess(url: string, toolName = "generate_video"): void
+- getProviderNetworkEndpoint · method · L1047-L1071 — private getProviderNetworkEndpoint( provider: VideoProvider, settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): string | null
+- normalizeReferencePaths · method · L1073-L1094 — private async normalizeReferencePaths( request: VideoGenerationRequest, ): Promise<VideoGenerationRequest>
+- validateReferencePath · method · L1096-L1126 — private async validateReferencePath( workspace: Workspace, rawPath: string, label: string, maxBytes: number, ): Promise<string>
+- assertOutputPathAllowed · method · L1128-L1141 — private assertOutputPathAllowed(outputPath: string): void
+- generate · method · L1143-L1213 — async generate(request: VideoGenerationRequest): Promise<VideoGenerationResult>
+- pollJob · method · L1215-L1306 — async pollJob( jobId: string, provider: VideoProvider, filename?: string, ): Promise<VideoGenerationJobStatus & { outputPaths?: string[] }>
+- cancelJob · method · L1308-L1335 — async cancelJob( jobId: string, provider: VideoProvider, ): Promise<{ success: boolean; error?: string }>
+- isAvailable · method · L1337-L1340 — static isAvailable(): boolean

@@ -1,0 +1,27 @@
+# src/electron/mcp/client/transports/StreamableHttpTransport.ts
+
+- StreamableMessage · type · L25-L25 — type StreamableMessage = JSONRPCResponse | JSONRPCNotification;
+- OutgoingMessage · type · L26-L26 — type OutgoingMessage = JSONRPCRequest | JSONRPCNotification;
+- isRecord · function · L28-L30 — function isRecord(value: Any): value is Record<string, Any>
+- isResponse · function · L32-L34 — function isResponse(value: Any): value is JSONRPCResponse
+- isNotification · function · L36-L38 — function isNotification(value: Any): value is JSONRPCNotification
+- parseJsonBody · function · L40-L43 — function parseJsonBody(body: string): Any[]
+- parseSseBody · function · L45-L67 — function parseSseBody(body: string): Any[]
+- parseResponseBody · function · L69-L85 — function parseResponseBody(body: string, contentType: string): Any[]
+- formatHttpError · function · L87-L97 — function formatHttpError(status: number, statusText: string, body: string): Error
+- StreamableHttpTransport · class · L99-L482 — class StreamableHttpTransport extends EventEmitter implements MCPTransport
+- constructor · method · L112-L115 — constructor(config: MCPServerConfig)
+- connect · method · L117-L133 — async connect(): Promise<void>
+- disconnect · method · L135-L161 — async disconnect(): Promise<void>
+- sendRequest · method · L163-L180 — async sendRequest(method: string, params?: Record<string, Any>): Promise<Any>
+- send · method · L182-L188 — async send(message: JSONRPCRequest | JSONRPCNotification): Promise<void>
+- onMessage · method · L190-L192 — onMessage(handler: (message: JSONRPCResponse | JSONRPCNotification) => void): void
+- onClose · method · L194-L196 — onClose(handler: (error?: Error) => void): void
+- onError · method · L198-L200 — onError(handler: (error: Error) => void): void
+- isConnected · method · L202-L204 — isConnected(): boolean
+- postMessage · method · L206-L288 — private async postMessage( message: OutgoingMessage, expectsResponse: boolean, allowSessionRecovery = true, ): Promise<Any | undefined>
+- buildHeaders · method · L290-L312 — private buildHeaders(message?: OutgoingMessage): Record<string, string>
+- addAuthHeaders · method · L314-L337 — private addAuthHeaders(headers: Record<string, string>): void
+- ensureFreshToken · method · L339-L442 — private async ensureFreshToken(): Promise<void>
+- rememberNegotiatedProtocol · method · L444-L457 — private rememberNegotiatedProtocol(message: OutgoingMessage, response: JSONRPCResponse): void
+- fetchWithTimeout · method · L459-L481 — private async fetchWithTimeout( input: string, init: RequestInit & { method: string }, ): Promise<Response>

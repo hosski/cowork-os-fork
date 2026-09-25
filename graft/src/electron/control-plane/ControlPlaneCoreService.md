@@ -1,0 +1,71 @@
+# src/electron/control-plane/ControlPlaneCoreService.ts
+
+- safeJsonParse · function · L33-L40 — function safeJsonParse<T>(value: string | null | undefined, fallback: T): T
+- normalizeArrayFilter · function · L42-L45 — function normalizeArrayFilter<T extends string>(value?: T | T[]): T[]
+- currentMonthWindow · function · L47-L52 — function currentMonthWindow(now = Date.now()): { start: number; end: number }
+- ControlPlaneCoreService · class · L54-L1831 — class ControlPlaneCoreService
+- constructor · method · L61-L68 — constructor(private db: Database.Database)
+- listCompanies · method · L70-L75 — listCompanies(): Company[]
+- getCompany · method · L77-L80 — getCompany(id: string): Company | undefined
+- getDefaultCompany · method · L82-L90 — getDefaultCompany(): Company
+- createCompany · method · L92-L148 — createCompany(input: CompanyCreateInput): Company
+- updateCompany · method · L150-L197 — updateCompany(id: string, updates: CompanyUpdate): Company | undefined
+- listGoals · method · L199-L206 — listGoals(companyId?: string): Goal[]
+- getGoal · method · L208-L211 — getGoal(id: string): Goal | undefined
+- createGoal · method · L213-L244 — createGoal(input: Partial<Goal> & Pick<Goal, "title">): Goal
+- updateGoal · method · L246-L274 — updateGoal(id: string, updates: GoalUpdate): Goal | undefined
+- listProjects · method · L276-L298 — listProjects(input?: { companyId?: string; goalId?: string; includeArchived?: boolean; }): Project[]
+- getProject · method · L300-L303 — getProject(id: string): Project | undefined
+- createProject · method · L305-L353 — createProject(input: ProjectCreateInput): Project
+- updateProject · method · L355-L391 — updateProject(id: string, updates: ProjectUpdate): Project | undefined
+- listProjectWorkspaces · method · L393-L404 — listProjectWorkspaces(projectId: string): ProjectWorkspaceLink[]
+- linkProjectWorkspace · method · L406-L462 — linkProjectWorkspace(input: { projectId: string; workspaceId: string; isPrimary?: boolean; }): ProjectWorkspaceLink
+- unlinkProjectWorkspace · method · L464-L469 — unlinkProjectWorkspace(projectId: string, workspaceId: string): boolean
+- setPrimaryProjectWorkspace · method · L471-L493 — setPrimaryProjectWorkspace( projectId: string, workspaceId: string, ): ProjectWorkspaceLink | undefined
+- listIssues · method · L495-L532 — listIssues(filters?: IssueFilters): Issue[]
+- getIssue · method · L534-L537 — getIssue(id: string): Issue | undefined
+- createIssue · method · L539-L600 — createIssue(input: Partial<Issue> & Pick<Issue, "title">): Issue
+- updateIssue · method · L602-L674 — updateIssue(id: string, updates: IssueUpdate): Issue | undefined
+- listIssueComments · method · L676-L681 — listIssueComments(issueId: string): IssueComment[]
+- createIssueComment · method · L683-L712 — createIssueComment(input: Omit<IssueComment, "id" | "createdAt" | "updatedAt">): IssueComment
+- listAssignedIssues · method · L714-L729 — listAssignedIssues(agentRoleId: string, workspaceId?: string): Issue[]
+- checkoutIssue · method · L731-L821 — checkoutIssue(input: { issueId: string; agentRoleId?: string; workspaceId?: string; taskId?: string; resumedFromRunId?: string; }): { issue: Issue; run: HeartbeatRun }
+- attachTaskToRun · method · L823-L881 — attachTaskToRun(runId: string, taskId: string): { issue: Issue; run: HeartbeatRun; task: Task }
+- releaseIssue · method · L883-L927 — releaseIssue(input: { issueId: string; runId?: string; status: HeartbeatRun["status"]; summary?: string; error?: string; }): { issue?: Issue; run?: HeartbeatRun }
+- listRuns · method · L929-L969 — listRuns(filters?: RunFilters): HeartbeatRun[]
+- getRun · method · L971-L974 — getRun(id: string): HeartbeatRun | undefined
+- getRunEvents · method · L976-L981 — getRunEvents(runId: string): HeartbeatRunEvent[]
+- syncTaskLifecycle · method · L983-L1104 — syncTaskLifecycle( taskId: string, overrides?: { status?: Task["status"]; resultSummary?: string; error?: string }, ): void
+- summarizeCosts · method · L1106-L1174 — summarizeCosts(input: { scopeType: CostSummary["scopeType"]; scopeId: string; windowStart?: number; windowEnd?: number; }): CostSummary
+- summarizeCostsByAgent · method · L1176-L1187 — summarizeCostsByAgent( agentRoleId: string, windowStart?: number, windowEnd?: number, ): CostSummary
+- summarizeCostsByProject · method · L1189-L1200 — summarizeCostsByProject( projectId: string, windowStart?: number, windowEnd?: number, ): CostSummary
+- enforceAgentBudgets · method · L1202-L1225 — enforceAgentBudgets(agentRoleIds?: string[]): AgentRole[]
+- exportCompanyTemplate · method · L1227-L1268 — exportCompanyTemplate(companyId: string): CompanyTemplateExport
+- importCompanyTemplate · method · L1270-L1461 — importCompanyTemplate(template: CompanyTemplateExport): CompanyImportResult
+- createImportedCompany · method · L1463-L1500 — private createImportedCompany(source: Company): Company
+- resolveImportedCompanyName · method · L1502-L1504 — private resolveImportedCompanyName(baseName: string): string
+- resolveImportedCompanySlug · method · L1506-L1510 — private resolveImportedCompanySlug(baseSlug: string): string
+- resolveAvailableCompanyName · method · L1512-L1521 — private resolveAvailableCompanyName(baseName: string): string
+- resolveAvailableCompanySlug · method · L1523-L1532 — private resolveAvailableCompanySlug(baseSlug: string): string
+- normalizeCompanySlug · method · L1534-L1541 — private normalizeCompanySlug(value?: string): string
+- resolveImportedProjectName · method · L1543-L1555 — private resolveImportedProjectName(companyId: string, baseName: string): string
+- resolveImportedAgentRoleName · method · L1557-L1565 — private resolveImportedAgentRoleName(baseName: string): string
+- resolveImportedTeamName · method · L1567-L1575 — private resolveImportedTeamName(workspaceId: string, baseName: string): string
+- getPrimaryWorkspaceIdForProject · method · L1577-L1591 — private getPrimaryWorkspaceIdForProject(projectId?: string): string | undefined
+- mapRunStatusToIssueStatus · method · L1593-L1598 — private mapRunStatusToIssueStatus(status: HeartbeatRun["status"]): Issue["status"]
+- insertRunEvent · method · L1600-L1609 — private insertRunEvent(runId: string, type: string, payload: Any): void
+- mapCompany · method · L1611-L1626 — private mapCompany(row: Any): Company
+- ensureCompanyDefaultWorkspace · method · L1628-L1666 — private ensureCompanyDefaultWorkspace(company: Company): Company
+- backfillCompanyProjectWorkspaces · method · L1668-L1678 — private backfillCompanyProjectWorkspaces(companyId: string, workspaceId: string): void
+- buildCompanyWorkspacePath · method · L1680-L1686 — private buildCompanyWorkspacePath(slugOrName: string): string
+- ensureDefaultCompanySeeded · method · L1688-L1699 — private ensureDefaultCompanySeeded(): void
+- ensureCompanyWorkspaceStructure · method · L1701-L1706 — private ensureCompanyWorkspaceStructure(workspacePath: string): void
+- ensureDefaultWorkspacesProvisioned · method · L1708-L1714 — private ensureDefaultWorkspacesProvisioned(): void
+- provisionCompanyDefaultWorkspaces · method · L1716-L1725 — private provisionCompanyDefaultWorkspaces(): void
+- mapGoal · method · L1727-L1738 — private mapGoal(row: Any): Goal
+- mapProject · method · L1740-L1754 — private mapProject(row: Any): Project
+- mapProjectWorkspaceLink · method · L1756-L1765 — private mapProjectWorkspaceLink(row: Any): ProjectWorkspaceLink
+- mapIssue · method · L1767-L1790 — private mapIssue(row: Any): Issue
+- mapIssueComment · method · L1792-L1802 — private mapIssueComment(row: Any): IssueComment
+- mapRun · method · L1804-L1820 — private mapRun(row: Any): HeartbeatRun
+- mapRunEvent · method · L1822-L1830 — private mapRunEvent(row: Any): HeartbeatRunEvent

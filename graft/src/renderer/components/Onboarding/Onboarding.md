@@ -1,0 +1,39 @@
+# src/renderer/components/Onboarding/Onboarding.tsx
+
+- OnboardingProps · interface · L24-L27 — interface OnboardingProps
+- OnboardingAmbientAudio · interface · L29-L54 — interface OnboardingAmbientAudio
+- midiToFrequency · function · L103-L103 — midiToFrequency = (midi: number)
+- createReverbImpulse · function · L105-L119 — createReverbImpulse = (context: AudioContext, duration = 4.2, decay = 2.8): AudioBuffer
+- createNoiseBuffer · function · L121-L135 — createNoiseBuffer = (context: AudioContext, duration = 3.5): AudioBuffer
+- OnboardingUiDraft · interface · L137-L146 — interface OnboardingUiDraft
+- clearOnboardingUiDraft · function · L150-L158 — clearOnboardingUiDraft = (): void
+- buildConfidenceResponse · function · L163-L181 — buildConfidenceResponse = ( prompt: string, data: { assistantName: string; workStyle: "planner" | "flexible" | null; memoryEnabled: boolean; }, ): string
+- Onboarding · function · L183-L2171 — function Onboarding({ onComplete, workspaceId }: OnboardingProps)
+- applyChord · function · L482-L503 — applyChord = (index: number)
+- unlockAudio · function · L617-L619 — unlockAudio = ()
+- resumeOnFocus · function · L621-L623 — resumeOnFocus = ()
+- handleKeyDown · function · L742-L747 — handleKeyDown = (e: React.KeyboardEvent)
+- handleVoiceClick · function · L750-L757 — handleVoiceClick = ()
+- getOpenSettingsErrorMessage · function · L770-L778 — getOpenSettingsErrorMessage = (error: unknown, fallback: string): string
+- renderVoiceRecoveryHelp · function · L817-L850 — renderVoiceRecoveryHelp = ()
+- getOrbState · function · L853-L859 — getOrbState = ()
+- renderSelectionCards · function · L905-L929 — renderSelectionCards = <T extends string>( options: Array<{ id: T; title: string; description: string }>, selectedIds: T[], onToggle: (id: T) => void, )
+- renderAssistantTraitStep · function · L931-L947 — renderAssistantTraitStep = ()
+- renderUserProfileStep · function · L949-L980 — renderUserProfileStep = ()
+- renderTimeDrainsStep · function · L982-L1013 — renderTimeDrainsStep = ()
+- renderPrioritiesStep · function · L1015-L1046 — renderPrioritiesStep = ()
+- renderToolsStep · function · L1048-L1079 — renderToolsStep = ()
+- renderResponseStyleStep · function · L1081-L1110 — renderResponseStyleStep = ()
+- renderAdditionalGuidanceStep · function · L1112-L1133 — renderAdditionalGuidanceStep = ()
+- renderWorkStyleButtons · function · L1136-L1153 — renderWorkStyleButtons = ()
+- renderVoiceOptions · function · L1155-L1183 — renderVoiceOptions = ()
+- renderCapabilityPillars · function · L1185-L1205 — renderCapabilityPillars = ()
+- renderMemoryTrustStep · function · L1211-L1243 — renderMemoryTrustStep = ()
+- renderStyleImplications · function · L1246-L1274 — renderStyleImplications = ()
+- renderPersonalizedRecap · function · L1276-L1512 — renderPersonalizedRecap = ()
+- renderEditButton · function · L1315-L1326 — renderEditButton = ( label: string, target: Parameters<typeof onboarding.editRecapSection>[0], )
+- renderFinalTryPrompt · function · L1514-L1627 — renderFinalTryPrompt = ()
+- renderOllamaDetection · function · L1630-L1669 — renderOllamaDetection = ()
+- renderProviders · function · L1672-L1743 — renderProviders = ()
+- renderApiKeyInput · function · L1746-L1819 — renderApiKeyInput = ()
+- renderNameInput · function · L1822-L1940 — renderNameInput = ()

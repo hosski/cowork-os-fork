@@ -1,0 +1,31 @@
+# resources/skills/unbroker/scripts/pdd.py
+
+- _out · function · L50-L51 — def _out(obj) -> None
+- _require_subject · function · L54-L58 — def _require_subject(subject_id: str) -> dict
+- cmd_setup · function · L61-L91 — def cmd_setup(args) -> None
+- _migrate_subjects · function · L94-L111 — def _migrate_subjects() -> int
+- _check_writable · function · L114-L122 — def _check_writable(path) -> bool
+- cmd_doctor · function · L125-L244 — def cmd_doctor(args) -> None
+- _age_days · function · L213-L217 — def _age_days(p) -> float | None
+- cmd_cdp · function · L247-L301 — def cmd_cdp(args) -> None
+- cmd_intake · function · L304-L351 — def cmd_intake(args) -> None
+- cmd_brokers · function · L354-L361 — def cmd_brokers(args) -> None
+- cmd_refresh_brokers · function · L364-L381 — def cmd_refresh_brokers(args) -> None
+- cmd_registry · function · L384-L403 — def cmd_registry(args) -> None
+- cmd_drop · function · L406-L438 — def cmd_drop(args) -> None
+- cmd_plan · function · L441-L450 — def cmd_plan(args) -> None
+- cmd_fanout · function · L453-L494 — def cmd_fanout(args) -> None
+- cmd_record · function · L497-L514 — def cmd_record(args) -> None
+- _email_request · function · L517-L546 — def _email_request(d: dict, b: dict, kind: str, listings, identifiers) -> tuple[dict, list[str]]
+- cmd_render_email · function · L549-L562 — def cmd_render_email(args) -> None
+- cmd_send_email · function · L565-L619 — def cmd_send_email(args) -> None
+- cmd_verify_link · function · L622-L642 — def cmd_verify_link(args) -> None
+- cmd_poll_verification · function · L645-L684 — def cmd_poll_verification(args) -> None
+- cmd_next · function · L687-L692 — def cmd_next(args) -> None
+- cmd_tasks · function · L695-L697 — def cmd_tasks(args) -> None
+- cmd_due · function · L700-L706 — def cmd_due(args) -> None
+- cmd_show · function · L709-L719 — def cmd_show(args) -> None
+- cmd_status · function · L722-L724 — def cmd_status(args) -> None
+- cmd_report · function · L727-L732 — def cmd_report(args) -> None
+- build_parser · function · L735-L903 — def build_parser() -> argparse.ArgumentParser
+- main · function · L906-L911 — def main(argv=None) -> None

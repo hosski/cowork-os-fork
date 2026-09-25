@@ -1,0 +1,21 @@
+# src/electron/sessions/SessionProgressService.ts
+
+- ProgressRow · type · L54-L58 — type ProgressRow = { task_id?: string; state_json?: string; updated_at?: number; };
+- boundedText · function · L60-L67 — function boundedText(value: unknown, maxLength = MAX_HEADLINE_LENGTH): string | undefined
+- eventType · function · L69-L76 — function eventType(event: TaskEvent): string
+- payloadRecord · function · L78-L82 — function payloadRecord(event: TaskEvent): Record<string, unknown>
+- stepFromPayload · function · L84-L99 — function stepFromPayload(payload: Record<string, unknown>): SessionProgressStep | undefined
+- extractEventHeadline · function · L101-L119 — function extractEventHeadline(event: TaskEvent): string | undefined
+- mapArtifact · function · L121-L129 — function mapArtifact(artifact: Artifact | undefined): SessionProgressArtifact | undefined
+- mapApproval · function · L131-L144 — function mapApproval(approval: { id: string; type: ApprovalType; description: string; requestedAt: number; }): SessionProgressApproval
+- mapInputRequest · function · L146-L154 — function mapInputRequest(request: InputRequest): SessionProgressInputRequest
+- defaultHeadline · function · L156-L179 — function defaultHeadline(task: Task): string
+- SessionProgressService · class · L181-L420 — class SessionProgressService
+- constructor · method · L188-L194 — constructor(private readonly db: Database.Database)
+- get · method · L196-L215 — get(taskId: string): SessionProgressState | undefined
+- rebuild · method · L217-L224 — rebuild(taskId: string): SessionProgressState | undefined
+- updateFromEvent · method · L226-L230 — updateFromEvent(event: TaskEvent): SessionProgressState | undefined
+- search · method · L232-L248 — search( query: string, options?: { workspaceId?: string; limit?: number }, ): Array<{ task: Task; progress: SessionProgressState; }>
+- derive · method · L250-L364 — private derive(task: Task, events: TaskEvent[]): SessionProgressState
+- deriveWaiting · method · L366-L407 — private deriveWaiting( task: Task, approvals: SessionProgressApproval[], inputRequests: SessionProgressInputRequest[], ): SessionProgressState["waiting"]
+- persist · method · L409-L419 — private persist(state: SessionProgressState): void

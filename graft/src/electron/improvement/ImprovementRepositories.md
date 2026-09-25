@@ -1,0 +1,52 @@
+# src/electron/improvement/ImprovementRepositories.ts
+
+- safeJsonParse · function · L17-L24 — function safeJsonParse<T>(jsonString: string | null, defaultValue: T): T
+- ImprovementCandidateRepository · class · L26-L229 — class ImprovementCandidateRepository
+- constructor · method · L27-L27 — constructor(private db: Database.Database)
+- create · method · L29-L90 — create( input: Omit<ImprovementCandidate, "id" | "firstSeenAt" | "lastSeenAt"> & { id?: string; firstSeenAt?: number; lastSeenAt?: number; }, ): ImprovementCandidate
+- update · method · L92-L128 — update(id: string, updates: Partial<ImprovementCandidate>): void
+- findById · method · L130-L133 — findById(id: string): ImprovementCandidate | undefined
+- findByFingerprint · method · L135-L142 — findByFingerprint(workspaceId: string, fingerprint: string): ImprovementCandidate | undefined
+- delete · method · L144-L146 — delete(id: string): void
+- list · method · L148-L175 — list(params?: { workspaceId?: string; status?: ImprovementCandidate["status"] | ImprovementCandidate["status"][]; limit?: number; }): ImprovementCandidate[]
+- getTopRunnableCandidate · method · L177-L195 — getTopRunnableCandidate( workspaceId: string, maxOpenCandidates = 25, ): ImprovementCandidate | undefined
+- mapCandidate · method · L197-L228 — private mapCandidate(row: Any): ImprovementCandidate
+- ImprovementRunRepository · class · L231-L386 — class ImprovementRunRepository
+- constructor · method · L232-L232 — constructor(private db: Database.Database)
+- create · method · L234-L276 — create( input: Omit<ImprovementRun, "id" | "createdAt"> & { id?: string; createdAt?: number }, ): ImprovementRun
+- update · method · L278-L298 — update(id: string, updates: Partial<ImprovementRun>): void
+- findById · method · L300-L303 — findById(id: string): ImprovementRun | undefined
+- findByTaskId · method · L305-L310 — findByTaskId(taskId: string): ImprovementRun | undefined
+- reassignCandidate · method · L312-L316 — reassignCandidate(fromCandidateId: string, toCandidateId: string): void
+- list · method · L318-L335 — list(params?: { workspaceId?: string; candidateId?: string; status?: ImprovementRun["status"] | ImprovementRun["status"][]; reviewStatus?: ImprovementRun["reviewStatus"] | ImprovementRun["reviewStatus"][]; limit?: number; }): ImprovementRun[]
+- countActive · method · L337-L346 — countActive(): number
+- mapRun · method · L348-L376 — private mapRun(row: Any): ImprovementRun
+- updateTable · method · L378-L385 — private updateTable( table: string, id: string, updates: Record<string, unknown>, mapped: Record<string, string>, )
+- ImprovementCampaignRepository · class · L388-L599 — class ImprovementCampaignRepository
+- constructor · method · L389-L389 — constructor(private db: Database.Database)
+- create · method · L391-L453 — create( input: Omit<ImprovementCampaign, "id" | "createdAt" | "variants" | "judgeVerdict"> & { id?: string; createdAt?: number; variants?: ImprovementVariantRun[]; judgeVerdict?: ImprovementJudgeVerdict; }, ): ImprovementCampaign
+- update · method · L455-L488 — update(id: string, updates: Partial<ImprovementCampaign>): void
+- findById · method · L490-L493 — findById(id: string): ImprovementCampaign | undefined
+- findByWinnerVariantId · method · L495-L500 — findByWinnerVariantId(variantId: string): ImprovementCampaign | undefined
+- findByTaskId · method · L502-L516 — findByTaskId(taskId: string): ImprovementCampaign | undefined
+- list · method · L518-L535 — list(params?: { workspaceId?: string; candidateId?: string; status?: ImprovementCampaign["status"] | ImprovementCampaign["status"][]; reviewStatus?: ImprovementCampaign["reviewStatus"] | ImprovementCampaign["reviewStatus"][]; limit?: number; }): ImprovementCampaign[]
+- countActive · method · L537-L544 — countActive(): number
+- mapCampaign · method · L546-L598 — private mapCampaign(row: Any): ImprovementCampaign
+- ImprovementVariantRunRepository · class · L601-L732 — class ImprovementVariantRunRepository
+- constructor · method · L602-L602 — constructor(private db: Database.Database)
+- create · method · L604-L643 — create( input: Omit<ImprovementVariantRun, "id" | "createdAt"> & { id?: string; createdAt?: number }, ): ImprovementVariantRun
+- update · method · L645-L662 — update(id: string, updates: Partial<ImprovementVariantRun>): void
+- findById · method · L664-L669 — findById(id: string): ImprovementVariantRun | undefined
+- findByTaskId · method · L671-L678 — findByTaskId(taskId: string): ImprovementVariantRun | undefined
+- list · method · L680-L696 — list(params?: { campaignId?: string; workspaceId?: string; candidateId?: string; status?: ImprovementVariantRun["status"] | ImprovementVariantRun["status"][]; }): ImprovementVariantRun[]
+- listByCampaignId · method · L698-L700 — listByCampaignId(campaignId: string): ImprovementVariantRun[]
+- mapVariant · method · L702-L731 — private mapVariant(row: Any): ImprovementVariantRun
+- ImprovementJudgeVerdictRepository · class · L734-L800 — class ImprovementJudgeVerdictRepository
+- constructor · method · L735-L735 — constructor(private db: Database.Database)
+- upsert · method · L737-L776 — upsert( input: Omit<ImprovementJudgeVerdict, "id"> & { id?: string; }, ): ImprovementJudgeVerdict
+- findByCampaignId · method · L778-L783 — findByCampaignId(campaignId: string): ImprovementJudgeVerdict | undefined
+- mapVerdict · method · L785-L799 — private mapVerdict(row: Any): ImprovementJudgeVerdict
+- clearImprovementHistoryData · function · L802-L829 — function clearImprovementHistoryData( db: Database.Database, ): ImprovementHistoryResetResult["deleted"]
+- countTable · function · L805-L810 — countTable = (table: string): number
+- buildFilterSql · function · L831-L854 — function buildFilterSql( params: Record<string, unknown> | undefined, mapped: Record<string, string>, ): { where: string; values: unknown[]; limitSql: string }
+- updateJsonAwareTable · function · L856-L896 — function updateJsonAwareTable( db: Database.Database, table: string, id: string, updates: Record<string, unknown>, mapped: Record<string, string>, ): void

@@ -1,0 +1,26 @@
+# src/electron/agent/sandbox/runner.ts
+
+- SandboxOptions · interface · L49-L64 — interface SandboxOptions
+- SandboxResult · interface · L69-L76 — interface SandboxResult
+- SandboxRunner · class · L94-L690 — class SandboxRunner
+- constructor · method · L99-L101 — constructor(workspace: Workspace)
+- initialize · method · L106-L109 — async initialize(): Promise<void>
+- execute · method · L114-L252 — async execute( command: string, args: string[] = [], options: SandboxOptions = {}, ): Promise<SandboxResult>
+- executeCode · method · L257-L274 — async executeCode(code: string, language: "python" | "javascript"): Promise<SandboxResult>
+- cleanup · method · L279-L290 — cleanup(): void
+- isPathAllowed · method · L295-L343 — private isPathAllowed(targetPath: string, mode: "read" | "write"): boolean
+- buildSafeEnvironment · method · L348-L385 — private buildSafeEnvironment(passthrough: string[]): Record<string, string | undefined>
+- generateSandboxProfile · method · L390-L560 — private generateSandboxProfile( allowNetwork = this.workspace.permissions.network === true, options: SandboxOptions = {}, ): string
+- writeTempProfile · method · L565-L568 — private writeTempProfile(): { profilePath: string; cleanup: () => void }
+- resolvePolicyPath · method · L570-L572 — private resolvePolicyPath(rawPath: string): string
+- hasBoundedFilesystemScope · method · L580-L586 — private hasBoundedFilesystemScope(): boolean
+- getRuntimeTempDirIfScoped · method · L588-L590 — private getRuntimeTempDirIfScoped(): string
+- getRuntimeTempDir · method · L592-L597 — private getRuntimeTempDir(): string
+- createRuntimeCodeFile · method · L599-L626 — private createRuntimeCodeFile( extension: string, content: string, ): { filePath: string; cleanup: () => void }
+- isExplicitTemporaryOptionPath · method · L628-L642 — private isExplicitTemporaryOptionPath( targetPath: string, candidates: readonly string[] | undefined, ): boolean
+- isRuntimeTemporaryPath · method · L644-L648 — private isRuntimeTemporaryPath(targetPath: string): boolean
+- getPathAliases · method · L650-L662 — private getPathAliases(targetPath: string): string[]
+- appendReadRules · method · L664-L669 — private appendReadRules(profile: string, pathsToAllow: string[]): string
+- appendWriteRules · method · L671-L676 — private appendWriteRules(profile: string, pathsToAllow: string[]): string
+- getNetworkAccessError · method · L678-L689 — private getNetworkAccessError(allowNetwork: boolean): string | undefined
+- createSandboxRunner · function · L695-L699 — async function createSandboxRunner(workspace: Workspace): Promise<SandboxRunner>

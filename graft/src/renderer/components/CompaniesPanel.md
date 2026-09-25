@@ -1,0 +1,24 @@
+# src/renderer/components/CompaniesPanel.tsx
+
+- CompaniesPanelProps · interface · L28-L31 — interface CompaniesPanelProps
+- CompaniesMode · type · L33-L33 — type CompaniesMode = "library" | "org" | "ops";
+- ImportTargetMode · type · L34-L34 — type ImportTargetMode = "selected" | "new";
+- CompanyDraft · interface · L44-L48 — interface CompanyDraft
+- emptyDraft · function · L50-L56 — function emptyDraft(): CompanyDraft
+- companyStatusBadgeClass · function · L58-L69 — function companyStatusBadgeClass(status: Company["status"]): string
+- formatWhen · function · L71-L74 — function formatWhen(timestamp?: number): string
+- actionBadgeClass · function · L76-L82 — function actionBadgeClass(action: string): string
+- syncBadgeClass · function · L84-L89 — function syncBadgeClass(status: string): string
+- nodeIcon · function · L91-L108 — function nodeIcon(kind: string)
+- sortNodes · function · L110-L132 — function sortNodes(nodes: CompanyGraphNode[]): CompanyGraphNode[]
+- weight · function · L111-L128 — weight = (kind: CompanyGraphNode["kind"])
+- buildTree · function · L134-L149 — function buildTree(nodes: CompanyGraphNode[])
+- buildAgentHierarchy · function · L151-L173 — function buildAgentHierarchy(nodes: CompanyGraphNode[], edges: CompanyGraphEdge[])
+- summarizeRuntimeCounts · function · L175-L197 — function summarizeRuntimeCounts(nodes: CompanyGraphNode[], states: CompanySyncState[])
+- renderAgentChartNode · function · L199-L226 — function renderAgentChartNode( node: CompanyGraphNode, children: Map<string, CompanyGraphNode[]>, selectedNodeId: string | null, setSelectedNodeId: (value: string) => void, )
+- CompaniesPanel · function · L228-L1681 — function CompaniesPanel({ onOpenMissionControl, onOpenDigitalTwins }: CompaniesPanelProps)
+- handleCreateCompany · function · L399-L422 — handleCreateCompany = async ()
+- handlePreviewImport · function · L424-L452 — handlePreviewImport = async ()
+- handleImportPackage · function · L454-L471 — handleImportPackage = async ()
+- handleLinkRole · function · L473-L492 — handleLinkRole = async (nodeId: string)
+- OrgTreeNode · function · L1683-L1723 — function OrgTreeNode({ node, childrenMap, selectedNodeId, setSelectedNodeId, }: { node: CompanyGraphNode; childrenMap: Map<string, CompanyGraphNode[]>; selectedNodeId: string | null; setSelectedNodeId: (value: string) => void; })

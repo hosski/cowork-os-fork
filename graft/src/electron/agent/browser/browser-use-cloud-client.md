@@ -1,0 +1,26 @@
+# src/electron/agent/browser/browser-use-cloud-client.ts
+
+- FetchLike · type · L3-L3 — type FetchLike = typeof fetch;
+- BrowserUseCloudClientOptions · type · L5-L10 — type BrowserUseCloudClientOptions = { baseUrl?: string; fetchImpl?: FetchLike; sleep?: (delayMs: number) => Promise<void>; maxRetries?: number; };
+- BrowserUseCloudSettings · interface · L12-L19 — interface BrowserUseCloudSettings
+- BrowserUseCreateBrowserInput · interface · L21-L29 — interface BrowserUseCreateBrowserInput
+- BrowserUseBrowserSession · interface · L31-L43 — interface BrowserUseBrowserSession
+- BrowserUseApiError · class · L45-L55 — class BrowserUseApiError extends Error
+- constructor · method · L46-L54 — constructor( message: string, readonly status: number, readonly retryable: boolean, readonly retryAfterMs?: number, )
+- BrowserUseCloudClient · class · L57-L161 — class BrowserUseCloudClient
+- constructor · method · L58-L61 — constructor( private readonly apiKey: string, private readonly options: BrowserUseCloudClientOptions = {}, )
+- loadSettings · method · L63-L71 — static loadSettings(): BrowserUseCloudSettings
+- resolveApiKey · method · L73-L80 — static resolveApiKey( settings: BrowserUseCloudSettings = BrowserUseCloudClient.loadSettings(), ): string
+- fromEnvironmentOrSettings · method · L82-L85 — static fromEnvironmentOrSettings(): BrowserUseCloudClient | null
+- createBrowserSession · method · L87-L98 — async createBrowserSession( input: BrowserUseCreateBrowserInput, ): Promise<BrowserUseBrowserSession>
+- stopBrowserSession · method · L100-L110 — async stopBrowserSession(sessionId: string): Promise<BrowserUseBrowserSession>
+- request · method · L112-L160 — private async request<T>(path: string, init: RequestInit): Promise<T>
+- isRetryableBrowserUseStatus · function · L163-L165 — function isRetryableBrowserUseStatus(status: number): boolean
+- parseRetryAfterMs · function · L167-L192 — function parseRetryAfterMs( headers: Pick<Headers, "get">, now = Date.now(), ): number | undefined
+- normalizeBrowserUseProxyCountryCode · function · L194-L205 — function normalizeBrowserUseProxyCountryCode(value: unknown): string | null | undefined
+- normalizeBrowserUseTimeoutMinutes · function · L207-L214 — function normalizeBrowserUseTimeoutMinutes( value: unknown, fallback?: number, ): number | undefined
+- isPrivateOrLocalBrowserTarget · function · L216-L248 — function isPrivateOrLocalBrowserTarget(rawUrl: unknown): boolean
+- redactBrowserUseUrl · function · L250-L254 — function redactBrowserUseUrl(value: unknown): string
+- redactBrowserUseErrorText · function · L256-L269 — function redactBrowserUseErrorText(value: unknown): string
+- normalizeString · function · L271-L273 — function normalizeString(value: unknown): string
+- stripUndefined · function · L275-L281 — function stripUndefined<T extends object>(input: T): Partial<T>

@@ -1,0 +1,25 @@
+# src/electron/agent/llm/xai-oauth.ts
+
+- XAIOAuthTokens · interface · L16-L22 — interface XAIOAuthTokens
+- DiscoveryResult · interface · L24-L27 — interface DiscoveryResult
+- getElectronShell · function · L29-L37 — function getElectronShell(): { openExternal?: (url: string) => Promise<void> | void } | null
+- base64Url · function · L39-L41 — function base64Url(buffer: Buffer): string
+- createCodeVerifier · function · L43-L45 — function createCodeVerifier(): string
+- createCodeChallenge · function · L47-L49 — function createCodeChallenge(verifier: string): string
+- validateXAIEndpoint · function · L51-L61 — function validateXAIEndpoint(value: string, field: string): string
+- discoverXAIEndpoints · function · L63-L80 — async function discoverXAIEndpoints(): Promise<DiscoveryResult>
+- parseTokenExpiry · function · L82-L96 — function parseTokenExpiry(accessToken: string, fallbackExpiresIn?: unknown): number | undefined
+- isXAIAccessTokenExpiring · function · L98-L106 — function isXAIAccessTokenExpiring(accessToken?: string, expiresAt?: number): boolean
+- buildAuthorizeUrl · function · L108-L128 — function buildAuthorizeUrl( discovery: DiscoveryResult, redirectUri: string, codeChallenge: string, state: string, nonce: string, ): string
+- writeCallbackResponse · function · L130-L136 — function writeCallbackResponse(res: Any, ok: boolean): void
+- startCallbackServer · function · L138-L261 — function startCallbackServer( expectedState: string, timeoutMs = 180_000, ): Promise<{ redirectUri: string; waitForCode: Promise<string>; close: () => Promise<void>; }>
+- close · function · L148-L155 — close = ()
+- resolveCode · function · L158-L158 — resolveCode: (code: string) => void = ()
+- rejectCode · function · L159-L159 — rejectCode: (error: Error) => void = ()
+- settle · function · L169-L172 — settle = (fn: () => void)
+- listen · function · L234-L246 — listen = (port: number)
+- onListenError · function · L248-L257 — onListenError = (error: NodeJS.ErrnoException)
+- exchangeXAIToken · function · L263-L294 — async function exchangeXAIToken( tokenEndpoint: string, body: Record<string, string>, ): Promise<XAIOAuthTokens>
+- XAIOAuth · class · L296-L337 — class XAIOAuth
+- authenticate · method · L297-L327 — async authenticate(): Promise<XAIOAuthTokens>
+- refreshTokens · method · L329-L336 — static async refreshTokens(tokens: XAIOAuthTokens): Promise<XAIOAuthTokens>

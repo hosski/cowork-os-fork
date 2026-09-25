@@ -1,0 +1,36 @@
+# connectors/vercel-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L35 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L37-L46 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L48-L55 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- VercelClient · class · L80-L174 — class VercelClient
+- constructor · method · L81-L81 — constructor(private token: string | undefined)
+- getAuthHeader · method · L83-L88 — private getAuthHeader(): string
+- request · method · L90-L111 — private async request<T>(path: string, params?: Record<string, string>): Promise<T>
+- health · method · L113-L123 — async health(): Promise<{ ok: boolean; data: any }>
+- listProjects · method · L125-L135 — async listProjects(limit?: number, teamId?: string): Promise<any>
+- getProject · method · L137-L146 — async getProject(projectId: string, teamId?: string): Promise<any>
+- listDeployments · method · L148-L159 — async listDeployments(projectId?: string, limit?: number, teamId?: string): Promise<any>
+- getDeployment · method · L161-L173 — async getDeployment(deploymentId: string, teamId?: string): Promise<any>
+- ToolProvider · type · L178-L181 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L183-L352 — class StdioMCPServer
+- constructor · method · L187-L190 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L192-L204 — start(): void
+- stop · method · L206-L212 — stop(): void
+- handleLine · method · L214-L224 — private handleLine(line: string): void
+- handleMessage · method · L226-L235 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L237-L270 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L272-L276 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L278-L287 — private handleInitialize(_params: any): any
+- handleToolsList · method · L289-L291 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L293-L320 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L322-L325 — private handleShutdown(): Record<string, never>
+- sendResult · method · L327-L329 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L331-L333 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L335-L337 — private sendMessage(message: any): void
+- requireInitialized · method · L339-L343 — private requireInitialized(): void
+- createError · method · L345-L351 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }

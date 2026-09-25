@@ -1,0 +1,41 @@
+# src/electron/routines/workflow/repository.ts
+
+- WorkflowVersionStatus · type · L10-L10 — type WorkflowVersionStatus = "draft" | "active" | "archived";
+- WorkflowVersionRecord · interface · L12-L21 — interface WorkflowVersionRecord
+- WorkflowEventStatus · type · L23-L23 — type WorkflowEventStatus = "pending" | "processing" | "completed" | "failed" | "cancelled";
+- WorkflowEventRecord · interface · L25-L35 — interface WorkflowEventRecord extends Required< Omit<RoutineWorkflowEventEnvelope, "summary"> >
+- RoutineWorkflowRepository · class · L37-L720 — class RoutineWorkflowRepository
+- constructor · method · L38-L43 — constructor( private readonly db: Any, private readonly now: () => number = () => Date.now(), )
+- createVersion · method · L45-L95 — createVersion( routineId: string, definition: RoutineWorkflowDefinition, status: WorkflowVersionStatus = "draft", ): WorkflowVersionRecord
+- insert · function · L68-L92 — insert = ()
+- getVersion · method · L97-L100 — getVersion(id: string): WorkflowVersionRecord | null
+- getActiveVersion · method · L102-L109 — getActiveVersion(routineId: string): WorkflowVersionRecord | null
+- listVersions · method · L111-L119 — listVersions(routineId: string): WorkflowVersionRecord[]
+- activateVersion · method · L121-L138 — activateVersion(routineId: string, versionId: string): WorkflowVersionRecord | null
+- createRun · method · L140-L185 — createRun(input: { routineId: string; workflowVersionId: string; triggerNodeId: string; eventId?: string; idempotencyKey?: string; context: Record<string, unknown>; }): RoutineWorkflowRunRecord
+- getRun · method · L187-L190 — getRun(id: string): RoutineWorkflowRunRecord | null
+- listRuns · method · L192-L203 — listRuns(routineId?: string, limit = 50): RoutineWorkflowRunRecord[]
+- listRecoverableRuns · method · L205-L213 — listRecoverableRuns(): RoutineWorkflowRunRecord[]
+- requeueProcessingEvents · method · L215-L225 — requeueProcessingEvents(): number
+- pruneExpiredData · method · L227-L272 — pruneExpiredData( retentionDaysForVersion: (workflowVersionId: string) => number, defaultRetentionDays = 30, ): { runsSanitized: number; eventsDeleted: number; samplesDeleted: number }
+- updateRun · method · L274-L303 — updateRun( id: string, patch: Partial< Pick< RoutineWorkflowRunRecord, "status" | "context" | "output" | "error" | "startedAt" | "finishedAt" > >, ): RoutineWorkflowRunRecord | null
+- findRunByIdempotencyKey · method · L305-L315 — findRunByIdempotencyKey( routineId: string, idempotencyKey: string, ): RoutineWorkflowRunRecord | null
+- initializeSteps · method · L317-L333 — initializeSteps( runId: string, routineId: string, nodes: Array<{ id: string; operation: string }>, ): void
+- listSteps · method · L335-L341 — listSteps(runId: string): RoutineWorkflowStepRecord[]
+- getStep · method · L343-L346 — getStep(id: string): RoutineWorkflowStepRecord | null
+- findStep · method · L348-L353 — findStep(runId: string, nodeId: string): RoutineWorkflowStepRecord | null
+- updateStep · method · L355-L394 — updateStep( id: string, patch: Partial< Pick< RoutineWorkflowStepRecord, | "status" | "attemptCount" | "input" | "output" | "error" | "approvalId" | "startedAt" | "finishedAt" > >, ): RoutineWorkflowStepRecord | null
+- enqueueEvent · method · L396-L441 — enqueueEvent(envelope: RoutineWorkflowEventEnvelope): WorkflowEventRecord
+- claimNextEvent · method · L443-L464 — claimNextEvent(): WorkflowEventRecord | null
+- updateEvent · method · L466-L487 — updateEvent( id: string, patch: { status: WorkflowEventStatus; runId?: string; error?: string; availableAt?: number }, ): WorkflowEventRecord | null
+- listEvents · method · L489-L500 — listEvents(routineId?: string, limit = 50): WorkflowEventRecord[]
+- recordEventSample · method · L502-L514 — recordEventSample(source: string, payload: Record<string, unknown>, summary?: string): void
+- listEventSamples · method · L516-L542 — listEventSamples( source?: string, limit = 20, ): Array<{ id: string; source: string; payload: Record<string, unknown>; summary?: string; createdAt: number; }>
+- deleteRoutineData · method · L544-L551 — deleteRoutineData(routineId: string): void
+- ensureSchema · method · L553-L642 — private ensureSchema(): void
+- mapVersion · method · L644-L660 — private mapVersion(row: Any): WorkflowVersionRecord
+- mapRun · method · L662-L679 — private mapRun(row: Any): RoutineWorkflowRunRecord
+- mapStep · method · L681-L699 — private mapStep(row: Any): RoutineWorkflowStepRecord
+- mapEvent · method · L701-L719 — private mapEvent(row: Any): WorkflowEventRecord
+- parseJson · function · L722-L729 — function parseJson<T>(value: unknown, fallback: T): T
+- clampRetentionDays · function · L731-L734 — function clampRetentionDays(value: number, fallback: number): number

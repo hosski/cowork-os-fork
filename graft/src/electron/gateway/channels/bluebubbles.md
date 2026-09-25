@@ -1,0 +1,30 @@
+# src/electron/gateway/channels/bluebubbles.ts
+
+- BlueBubblesAdapter · class · L37-L507 — class BlueBubblesAdapter implements ChannelAdapter
+- constructor · method · L64-L73 — constructor(config: BlueBubblesConfig)
+- status · method · L75-L77 — get status(): ChannelStatus
+- botUsername · method · L79-L81 — get botUsername(): string | undefined
+- connect · method · L86-L151 — async connect(): Promise<void>
+- disconnect · method · L156-L183 — async disconnect(): Promise<void>
+- scheduleReconnect · method · L188-L214 — private scheduleReconnect(): void
+- sendMessage · method · L219-L233 — async sendMessage(message: OutgoingMessage): Promise<string>
+- editMessage · method · L238-L240 — async editMessage(_chatId: string, _messageId: string, _text: string): Promise<void>
+- deleteMessage · method · L245-L247 — async deleteMessage(_chatId: string, _messageId: string): Promise<void>
+- sendDocument · method · L252-L254 — async sendDocument(_chatId: string, _filePath: string, _caption?: string): Promise<string>
+- sendPhoto · method · L259-L261 — async sendPhoto(_chatId: string, _filePath: string, _caption?: string): Promise<string>
+- onMessage · method · L266-L268 — onMessage(handler: MessageHandler): void
+- onError · method · L273-L275 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L280-L282 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L287-L299 — async getInfo(): Promise<ChannelInfo>
+- getChats · method · L308-L313 — async getChats(limit = 25): Promise<BlueBubblesChat[]>
+- sendToAddress · method · L318-L335 — async sendToAddress( address: string, text: string, service: "iMessage" | "SMS" = "iMessage", ): Promise<string>
+- markAsRead · method · L340-L345 — async markAsRead(chatGuid: string): Promise<void>
+- sendTyping · method · L350-L355 — async sendTyping(chatGuid: string): Promise<void>
+- handleIncomingMessage · method · L364-L439 — private async handleIncomingMessage(bbMessage: BlueBubblesMessage): Promise<void>
+- isMessageProcessed · method · L444-L446 — private isMessageProcessed(messageId: string): boolean
+- markMessageProcessed · method · L451-L458 — private markMessageProcessed(messageId: string): void
+- startDedupCleanup · method · L463-L467 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L472-L479 — private cleanupDedupCache(): void
+- handleError · method · L484-L492 — private handleError(error: Error, context?: string): void
+- setStatus · method · L497-L506 — private setStatus(status: ChannelStatus, error?: Error): void
+- createBlueBubblesAdapter · function · L512-L520 — function createBlueBubblesAdapter(config: BlueBubblesConfig): BlueBubblesAdapter

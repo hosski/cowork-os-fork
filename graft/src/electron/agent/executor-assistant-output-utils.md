@@ -1,0 +1,3 @@
+# src/electron/agent/executor-assistant-output-utils.ts
+
+- processAssistantResponseText · function · L3-L50 — function processAssistantResponseText(opts: { responseContent: Array<{ type?: string; text?: unknown }> | undefined; eventPayload?: Record<string, unknown>; updateLastAssistantText?: boolean; sanitizeAssistantText?: (text: string) => string; emitAssistantMessage: (payload: Record<string, unknown>) => void; checkOutput: (text: string) => ComplianceCheckResult | null | undefined; onSuspiciousOutput: (text: string, outputCheck: ComplianceCheckResult) => void; isAskingQuestion: (text: string) => boolean; setLastAssistantText?: (text: string) => void; }): { assistantText: string; assistantAskedQuestion: boolean; hasMeaningfulText: boolean }

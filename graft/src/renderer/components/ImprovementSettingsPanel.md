@@ -1,0 +1,26 @@
+# src/renderer/components/ImprovementSettingsPanel.tsx
+
+- getWorkspaceModeMeta · function · L55-L82 — function getWorkspaceModeMeta(workspace: Workspace | undefined)
+- formatPercent · function · L84-L86 — function formatPercent(value: number): string
+- formatTimestamp · function · L88-L91 — function formatTimestamp(value?: number): string
+- isProviderFailure · function · L93-L95 — function isProviderFailure(value?: string): boolean
+- getProviderHealthSummary · function · L97-L148 — function getProviderHealthSummary( campaigns: ImprovementCampaign[], candidates: ImprovementCandidate[], ): { status: "healthy" | "degraded" | "blocked"; label: string; details: string; incidents: Array<{ id: string; title: string; detail: string; at?: number }>; }
+- ImprovementSettingsPanel · function · L150-L1194 — function ImprovementSettingsPanel(props?: { initialWorkspaceId?: string; onOpenTask?: (taskId: string) => void; })
+- loadAll · function · L276-L319 — loadAll = async ()
+- refreshWorkspaceData · function · L321-L329 — refreshWorkspaceData = async (workspaceId: string)
+- saveSettings · function · L331-L355 — saveSettings = async (updates: Partial<ImprovementLoopSettings>)
+- saveOwnerEnrollment · function · L357-L381 — saveOwnerEnrollment = async ()
+- clearOwnerEnrollment · function · L383-L400 — clearOwnerEnrollment = async ()
+- refreshCandidates · function · L402-L419 — refreshCandidates = async ()
+- runNextExperiment · function · L421-L444 — runNextExperiment = async ()
+- dismissCandidate · function · L446-L458 — dismissCandidate = async (candidateId: string)
+- reviewCampaign · function · L460-L472 — reviewCampaign = async (campaignId: string, reviewStatus: "accepted" | "dismissed")
+- retryCampaign · function · L474-L495 — retryCampaign = async (campaignId: string)
+- resetHistory · function · L497-L525 — resetHistory = async ()
+- HintBlock · function · L1196-L1204 — function HintBlock(props: { title: string; children: ReactNode })
+- SectionTitle · function · L1206-L1215 — function SectionTitle(props: { title: string; hint: string })
+- MetricCard · function · L1217-L1238 — function MetricCard(props: { label: string; value: string; hint: string; tone: string })
+- CampaignCard · function · L1240-L1388 — function CampaignCard(props: { campaign: ImprovementCampaign; workspaceNameById: Map<string, string>; showWorkspace: boolean; onOpenTask?: (taskId: string) => void; primaryActionLabel?: string; onPrimaryAction?: () => void; onSecondaryAction?: () => void; showRetry?: boolean; onRetry?: () => void; busy?: boolean; })
+- ToggleRow · function · L1390-L1418 — function ToggleRow(props: { label: string; description: string; checked: boolean; disabled?: boolean; onChange: (checked: boolean) => void; })
+- NumberRow · function · L1420-L1442 — function NumberRow(props: { label: string; value: number; min: number; max: number; disabled?: boolean; onChange: (value: number) => void; })
+- SelectRow · function · L1444-L1468 — function SelectRow(props: { label: string; value: string; options: Array<{ value: string; label: string }>; disabled?: boolean; onChange: (value: string) => void; })

@@ -1,0 +1,35 @@
+# src/electron/hooks/server.ts
+
+- HooksServerConfig · interface · L39-L43 — interface HooksServerConfig
+- HooksServerHandlers · interface · L45-L102 — interface HooksServerHandlers
+- resolveHooksConfig · function · L107-L142 — function resolveHooksConfig(config: HooksConfig): HooksConfigResolved | null
+- HooksServer · class · L144-L991 — class HooksServer
+- constructor · method · L151-L153 — constructor(config: HooksServerConfig)
+- setHooksConfig · method · L158-L161 — setHooksConfig(config: HooksConfig): void
+- setHandlers · method · L166-L168 — setHandlers(handlers: HooksServerHandlers): void
+- start · method · L173-L205 — async start(): Promise<void>
+- stop · method · L210-L221 — async stop(): Promise<void>
+- isRunning · method · L226-L228 — isRunning(): boolean
+- getAddress · method · L233-L238 — getAddress(): { host: string; port: number } | null
+- handleRequest · method · L243-L339 — private async handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+- handleWake · method · L344-L370 — private async handleWake(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+- handleAgent · method · L375-L423 — private async handleAgent(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+- handleTaskMessage · method · L428-L476 — private async handleTaskMessage( req: http.IncomingMessage, res: http.ServerResponse, ): Promise<void>
+- handleApprovalRespond · method · L481-L518 — private async handleApprovalRespond( req: http.IncomingMessage, res: http.ServerResponse, ): Promise<void>
+- handleMapped · method · L523-L716 — private async handleMapped( req: http.IncomingMessage, res: http.ServerResponse, url: URL, hookPath: string, ): Promise<void>
+- extractHookToken · method · L721-L743 — private extractHookToken( req: http.IncomingMessage, url: URL, ): { token: string | undefined; fromQuery: boolean }
+- verifyToken · method · L748-L758 — private verifyToken(provided: string | undefined, override?: string): boolean
+- verifyAnyToken · method · L760-L766 — private verifyAnyToken( provided: string | undefined, overrides?: Array<string | undefined>, ): boolean
+- findMappedTokenCandidates · method · L768-L785 — private findMappedTokenCandidates( hookPath: string, method: string, ): Array<string | undefined> | undefined
+- findMappingsByPath · method · L787-L791 — private findMappingsByPath(hookPath: string): HookMappingResolved[]
+- normalizeHeaders · method · L796-L806 — private normalizeHeaders(req: http.IncomingMessage): Record<string, string>
+- parseTextBody · method · L811-L860 — private parseTextBody(req: http.IncomingMessage): Promise<string | null>
+- cleanup · function · L829-L831 — cleanup = ()
+- parseJsonBody · method · L865-L869 — private async parseJsonBody<T>(req: http.IncomingMessage): Promise<T | null>
+- parseJsonFromText · method · L871-L881 — private parseJsonFromText<T>(raw: string): T | null
+- verifyResendSignature · method · L887-L939 — private verifyResendSignature(headers: Record<string, string>, rawBody: string): boolean
+- isReplayResendMessage · method · L941-L948 — private isReplayResendMessage(svixId: string, nowSeconds: number): boolean
+- pruneResendReplayCache · method · L950-L969 — private pruneResendReplayCache(nowSeconds: number): void
+- sendJsonResponse · method · L974-L977 — private sendJsonResponse(res: http.ServerResponse, status: number, data: unknown): void
+- emitEvent · method · L982-L990 — private emitEvent(event: HookServerEvent): void
+- buildHookSuccessBody · function · L993-L1006 — function buildHookSuccessBody(params: { taskId?: string; message?: string; includeTaskId?: boolean; }): Record<string, unknown>

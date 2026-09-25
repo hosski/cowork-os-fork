@@ -1,0 +1,31 @@
+# src/electron/gateway/channels/bluebubbles-client.ts
+
+- BlueBubblesMessage · interface · L31-L76 — interface BlueBubblesMessage
+- BlueBubblesAttachment · interface · L81-L96 — interface BlueBubblesAttachment
+- BlueBubblesChat · interface · L101-L118 — interface BlueBubblesChat
+- BlueBubblesClientOptions · interface · L123-L138 — interface BlueBubblesClientOptions
+- BlueBubblesClientEvents · interface · L143-L149 — interface BlueBubblesClientEvents
+- BlueBubblesClient · class · L154-L658 — class BlueBubblesClient extends EventEmitter
+- constructor · method · L161-L171 — constructor(options: BlueBubblesClientOptions)
+- checkConnection · method · L176-L190 — async checkConnection(): Promise<{ success: boolean; serverVersion?: string; error?: string }>
+- startReceiving · method · L195-L227 — async startReceiving(): Promise<void>
+- startWebhookServer · method · L232-L270 — private async startWebhookServer(): Promise<void>
+- handleWebhook · method · L275-L305 — private handleWebhook(req: http.IncomingMessage, res: http.ServerResponse): void
+- verifyWebhookRequest · method · L307-L314 — private verifyWebhookRequest(req: http.IncomingMessage): boolean
+- processWebhookEvent · method · L319-L350 — private processWebhookEvent(data: Record<string, unknown>): void
+- startPolling · method · L355-L373 — private startPolling(): void
+- pollMessages · method · L378-L395 — private async pollMessages(): Promise<void>
+- normalizeMessage · method · L400-L405 — private normalizeMessage(msg: BlueBubblesMessage): BlueBubblesMessage
+- stopReceiving · method · L410-L429 — async stopReceiving(): Promise<void>
+- sendMessage · method · L434-L447 — async sendMessage( chatGuid: string, message: string, options?: { subject?: string; method?: "private-api" | "apple-script" }, ): Promise<BlueBubblesMessage>
+- sendMessageToAddress · method · L452-L470 — async sendMessageToAddress( address: string, message: string, service: "iMessage" | "SMS" = "iMessage", ): Promise<BlueBubblesMessage>
+- getChats · method · L475-L484 — async getChats(options?: { limit?: number; offset?: number }): Promise<BlueBubblesChat[]>
+- getChat · method · L489-L495 — async getChat(chatGuid: string): Promise<BlueBubblesChat>
+- getMessages · method · L500-L514 — async getMessages( chatGuid: string, options?: { limit?: number; offset?: number; after?: number; before?: number }, ): Promise<BlueBubblesMessage[]>
+- markChatRead · method · L519-L521 — async markChatRead(chatGuid: string): Promise<void>
+- sendTypingIndicator · method · L526-L528 — async sendTypingIndicator(chatGuid: string): Promise<void>
+- getAttachment · method · L533-L538 — async getAttachment(attachmentGuid: string): Promise<Buffer>
+- apiRequest · method · L543-L608 — private async apiRequest( method: string, path: string, body?: Record<string, unknown>, ): Promise<Record<string, unknown>>
+- apiRequestBinary · method · L613-L643 — private async apiRequestBinary(method: string, path: string): Promise<Buffer>
+- isConnected · method · L648-L650 — isConnected(): boolean
+- getServerUrl · method · L655-L657 — getServerUrl(): string

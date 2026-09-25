@@ -1,0 +1,51 @@
+# src/renderer/components/MainContent/timeline-event-rendering.tsx
+
+- Any · type · L71-L71 — type Any = Record<string, any>;
+- getEvidenceSiteLabel · function · L80-L87 — function getEvidenceSiteLabel(hostname: string): string
+- getWebEvidenceDisplay · function · L89-L107 — function getWebEvidenceDisplay( source: string, snippet: string, ): { siteLabel: string; label: string; } | null
+- ClickableFilePath · function · L109-L164 — function ClickableFilePath({ path, workspacePath, className = "", onOpenViewer, }: { path: string; workspacePath?: string; className?: string; onOpenViewer?: (path: string) => void; })
+- handleClick · function · L120-L139 — handleClick = async (e: React.MouseEvent)
+- handleContextMenu · function · L141-L149 — handleContextMenu = async (e: React.MouseEvent)
+- formatSignedScore · function · L166-L170 — function formatSignedScore(value: number): string
+- describeLoopRisk · function · L172-L177 — function describeLoopRisk(loopRisk: number): "low" | "medium" | "high"
+- truncateForDisplay · function · L182-L185 — function truncateForDisplay(text: string, maxLength: number = 2000): string
+- coerceStepFailureText · function · L187-L189 — function coerceStepFailureText(value: unknown): string
+- normalizeStepFailureTextForComparison · function · L191-L197 — function normalizeStepFailureTextForComparison(value: string): string
+- unwrapTaskFailureText · function · L199-L205 — function unwrapTaskFailureText(reason: string): string
+- formatCompletionGuardFailureTitle · function · L207-L217 — function formatCompletionGuardFailureTitle(reason: string): string | null
+- formatTimelineErrorTitleForDisplay · function · L219-L221 — function formatTimelineErrorTitleForDisplay(message: string): string
+- formatStepFailedTitleForDisplay · function · L223-L243 — function formatStepFailedTitleForDisplay(payload: Any): string
+- formatStepContractEscalatedMessage · function · L245-L261 — function formatStepContractEscalatedMessage(reason: string): string
+- getSummaryStageLabel · function · L263-L278 — function getSummaryStageLabel(stage: string): string | null
+- CompactionDetailsPayload · interface · L280-L300 — interface CompactionDetailsPayload
+- readFiniteNumber · function · L302-L308 — function readFiniteNumber(payload: Record<string, unknown>, keys: string[]): number | undefined
+- readTrimmedString · function · L310-L316 — function readTrimmedString(payload: Record<string, unknown>, keys: string[]): string | undefined
+- readBoolean · function · L318-L324 — function readBoolean(payload: Record<string, unknown>, keys: string[]): boolean | undefined
+- getCompactionDetailsPayload · function · L326-L354 — function getCompactionDetailsPayload(event: TaskEvent): CompactionDetailsPayload
+- formatCompactionTokenCount · function · L356-L358 — function formatCompactionTokenCount(value: number): string
+- formatCompactionRatio · function · L360-L363 — function formatCompactionRatio(value: number): string
+- formatCompactionDuration · function · L365-L368 — function formatCompactionDuration(value: number): string
+- renderCompactionDetails · function · L370-L440 — function renderCompactionDetails(event: TaskEvent): React.ReactNode
+- getApprovalPayload · function · L442-L451 — function getApprovalPayload(event: TaskEvent): Any | null
+- getApprovalDescription · function · L453-L456 — function getApprovalDescription(approval: Any | null): string
+- extractApprovalCommand · function · L458-L472 — function extractApprovalCommand(approval: Any | null): string | null
+- isRunCommandApproval · function · L474-L477 — function isRunCommandApproval(approval: Any | null): boolean
+- shouldHideApprovalEventInStepFeed · function · L479-L483 — function shouldHideApprovalEventInStepFeed(event: TaskEvent): boolean
+- getTimelineEventStepId · function · L485-L504 — function getTimelineEventStepId(event: TaskEvent): string | null
+- getParallelGroupOwnerStepId · function · L506-L513 — function getParallelGroupOwnerStepId(groupId: string | null | undefined): string | null
+- canStepEventOwnParallelChildren · function · L515-L521 — function canStepEventOwnParallelChildren(event: TaskEvent): boolean
+- readPayloadText · function · L539-L542 — function readPayloadText(payload: Record<string, unknown>, key: string): string
+- getSpawnAgentLabel · function · L544-L553 — function getSpawnAgentLabel(event: TaskEvent, fallback?: string): string
+- getSpawnInstructions · function · L555-L560 — function getSpawnInstructions(event: TaskEvent): string
+- isDispatchFailureEvent · function · L562-L565 — function isDispatchFailureEvent(event: TaskEvent): boolean
+- getAgentRecipientLabel · function · L567-L570 — function getAgentRecipientLabel(event: TaskEvent): string
+- withRecapDetail · function · L573-L576 — function withRecapDetail(lead: string, detail: string): string
+- getAgentLifecycleRecapLine · function · L583-L633 — function getAgentLifecycleRecapLine(event: TaskEvent): string | null
+- renderEventTitle · function · L635-L1079 — function renderEventTitle( event: TaskEvent, workspacePath?: string, onOpenViewer?: (path: string) => void, agentCtx?: AgentContext, options?: { summaryMode?: boolean; }, ): React.ReactNode
+- getStepStartedDetail · function · L665-L690 — getStepStartedDetail = (): string
+- describeEvery · function · L874-L898 — describeEvery = (ms: number): string
+- describeScheduleShort · function · L900-L912 — describeScheduleShort = (schedule: Any): string | null
+- renderEventDetails · function · L1081-L2457 — function renderEventDetails( event: TaskEvent, voiceEnabled: boolean, markdownComponents: Any, options?: { workspacePath?: string; onOpenViewer?: (path: string) => void; onOpenSpreadsheetArtifact?: (path: string) => void; onOpenDocumentArtifact?: (path: string) => void; onOpenPresentationArtifact?: (path: string) => void; onOpenWebArtifact?: (path: string) => void; onQuoteAssistantMessage?: (quote: QuotedAssistantMessage) => void; onForkTaskSession?: (event: TaskEvent) => void; isLastAssistantMessage?: boolean; events?: TaskEvent[]; onViewOutputs?: (taskId: string, primaryOutputPath?: string) => void; hideVerificationSteps?: boolean; summaryMode?: boolean; task?: Task | null; childTasks?: Task[]; onOpenAgent?: (taskId: string) => void; commandOutputSessions?: CommandOutputSession[]; renderCommandOutput?: (sessions: CommandOutputSession[]) => React.ReactNode; deferEndOfTaskArtifactCards?: boolean; }, )
+- renderOpenLinkedAgent · function · L1132-L1141 — renderOpenLinkedAgent = ()
+- shouldRenderOpenArtifactCard · function · L1144-L1158 — shouldRenderOpenArtifactCard = (artifactPath: string)
+- renderLinkedArtifactCards · function · L1159-L1214 — renderLinkedArtifactCards = (text: string)

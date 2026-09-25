@@ -1,0 +1,36 @@
+# src/electron/agent/tools/x-tools.ts
+
+- XAction · type · L15-L27 — type XAction = | "whoami" | "read" | "thread" | "replies" | "search" | "user_tweets" | "mentions" | "home" | "tweet" | "reply" | "follow" | "unfollow";
+- XWriteAction · type · L29-L29 — type XWriteAction = "tweet" | "reply" | "follow" | "unfollow";
+- XActionInput · interface · L31-L41 — interface XActionInput
+- BrowserFallbackTweetItem · interface · L43-L49 — interface BrowserFallbackTweetItem
+- XTools · class · L54-L1453 — class XTools
+- constructor · method · L158-L168 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L170-L173 — setWorkspace(workspace: Workspace): void
+- normalizeToTweetUrl · method · L175-L204 — private static normalizeToTweetUrl(value: string): string
+- pause · method · L206-L208 — private async pause(ms: number): Promise<void>
+- isRetryableCommandError · method · L210-L213 — private isRetryableCommandError(message: string): boolean
+- getBrowserFallbackUrl · method · L215-L242 — private getBrowserFallbackUrl(action: XAction, input: XActionInput): string
+- isWriteAction · method · L244-L246 — private isWriteAction(action: XAction): action is XWriteAction
+- isLikelyBlockingError · method · L248-L262 — private isLikelyBlockingError(message: string): boolean
+- isLikelyAuthBlockingError · method · L264-L273 — private isLikelyAuthBlockingError(message: string): boolean
+- trimTextForPrompt · method · L275-L279 — private trimTextForPrompt(value?: string): string | undefined
+- isLikelyBrowserBlocked · method · L281-L284 — private isLikelyBrowserBlocked(text?: string): boolean
+- getFallbackCandidateSelectors · method · L286-L309 — private getFallbackCandidateSelectors(action: XAction): string[]
+- waitForBrowserReadiness · method · L311-L352 — private async waitForBrowserReadiness(action: XAction): Promise<boolean>
+- waitForBrowserWriteReadiness · method · L354-L421 — private async waitForBrowserWriteReadiness(action: XWriteAction): Promise<boolean>
+- shouldRetryCommand · method · L423-L425 — private shouldRetryCommand(action: XAction): boolean
+- extractBrowserReadableContent · method · L427-L557 — private async extractBrowserReadableContent( action: XAction, ): Promise<BrowserFallbackTweetItem[]>
+- buildFallbackMessage · method · L559-L564 — private buildFallbackMessage(action: XAction, reason: string): string
+- buildFallbackDetails · method · L566-L599 — private buildFallbackDetails(action: XAction, input: XActionInput)
+- runBrowserScript · method · L601-L631 — private async runBrowserScript( script: string, ): Promise<{ success: boolean; result?: Any; error?: string }>
+- openBrowserFallbackPage · method · L633-L665 — private async openBrowserFallbackPage( url: string, ): Promise<{ navResult?: Any; browserChannel: "chromium" | "chrome" | "brave"; error?: string }>
+- tryComposeInBrowser · method · L667-L736 — private async tryComposeInBrowser( text: string, mode: "tweet" | "reply", ): Promise<{ success: boolean; draft: boolean; submitted: boolean; details?: { editorSelector?: string; buttonSelector?: string; reason?: string; writtenText?: string; }; error?: string; }>
+- tryToggleFollowButton · method · L738-L814 — private async tryToggleFollowButton( action: "follow" | "unfollow", userHandle?: string, ): Promise<{ success: boolean; details?: { selector?: string; changed?: boolean; beforeText?: string; afterText?: string; attempts?: number; reason?: string; }; error?: string; }>
+- runBrowserWriteFallback · method · L816-L1013 — private async runBrowserWriteFallback( action: XWriteAction, input: XActionInput, reason: string, ): Promise<Any>
+- runBrowserFallback · method · L1015-L1127 — private async runBrowserFallback( action: XAction, input: XActionInput, reason: string, ): Promise<Any>
+- isEnabled · method · L1129-L1131 — static isEnabled(): boolean
+- normalizeHandle · method · L1133-L1211 — private normalizeHandle(handle?: string): string | undefined
+- resolveMediaPaths · method · L1213-L1248 — private async resolveMediaPaths(media?: string[]): Promise<string[]>
+- requireApproval · method · L1250-L1261 — private async requireApproval(summary: string, details: Record<string, unknown>): Promise<void>
+- executeAction · method · L1263-L1452 — async executeAction(input: XActionInput): Promise<Any>

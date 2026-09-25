@@ -1,0 +1,26 @@
+# src/electron/tunnels/settings.ts
+
+- SecureMcpTunnelSettingsManager · class · L29-L259 — class SecureMcpTunnelSettingsManager
+- initialize · method · L32-L35 — static initialize(): void
+- loadSettings · method · L37-L46 — static loadSettings(): SecureMcpTunnelSettings
+- getSettingsForDisplay · method · L48-L52 — static getSettingsForDisplay(): SecureMcpTunnelDisplaySettings
+- addTunnel · method · L54-L78 — static addTunnel(input: SecureMcpTunnelCreateInput): SecureMcpTunnelDisplayConfig
+- updateTunnel · method · L80-L121 — static updateTunnel( id: string, updates: SecureMcpTunnelUpdateInput, ): SecureMcpTunnelDisplayConfig | null
+- removeTunnel · method · L123-L132 — static removeTunnel(id: string): boolean
+- getTunnel · method · L134-L136 — static getTunnel(id: string): SecureMcpTunnelConfig | undefined
+- markConnected · method · L138-L140 — static markConnected(id: string): void
+- markError · method · L142-L144 — static markError(id: string, lastError: string): void
+- saveSettings · method · L146-L154 — static saveSettings(settings: SecureMcpTunnelSettings): void
+- patchRuntimeState · method · L156-L165 — private static patchRuntimeState( id: string, patch: Pick<Partial<SecureMcpTunnelConfig>, "lastConnectedAt" | "lastError">, ): void
+- normalizeSettings · method · L167-L182 — private static normalizeSettings(settings: SecureMcpTunnelSettings): SecureMcpTunnelSettings
+- toDisplayConfig · method · L184-L191 — private static toDisplayConfig(tunnel: SecureMcpTunnelConfig): SecureMcpTunnelDisplayConfig
+- encryptSettings · method · L193-L201 — private static encryptSettings(settings: SecureMcpTunnelSettings): SecureMcpTunnelSettings
+- decryptSettings · method · L203-L211 — private static decryptSettings(settings: SecureMcpTunnelSettings): SecureMcpTunnelSettings
+- loadFromRepository · method · L213-L226 — private static loadFromRepository(): SecureMcpTunnelSettings | null
+- saveToRepository · method · L228-L239 — private static saveToRepository(settings: SecureMcpTunnelSettings): boolean
+- loadFromFile · method · L241-L252 — private static loadFromFile(): SecureMcpTunnelSettings | null
+- saveToFile · method · L254-L258 — private static saveToFile(settings: SecureMcpTunnelSettings): void
+- generateTunnelToken · function · L261-L263 — function generateTunnelToken(prefix = "ctun"): string
+- sanitizeAllowedTools · function · L265-L272 — function sanitizeAllowedTools(value: unknown): string[]
+- encryptSecret · function · L274-L292 — function encryptSecret(value?: string): string | undefined
+- decryptSecret · function · L294-L307 — function decryptSecret(value?: string): string | undefined

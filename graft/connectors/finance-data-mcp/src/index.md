@@ -1,0 +1,35 @@
+# connectors/finance-data-mcp/src/index.ts
+
+- JSONRPCId · type · L3-L3 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L5-L10 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L12-L16 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- MCPToolProperty · type · L18-L26 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L28-L37 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- ProviderId · type · L39-L50 — type ProviderId = | "daloopa" | "morningstar" | "spglobal" | "factset" | "moodys" | "mtnewswires" | "aiera" | "lseg" | "pitchbook" | "chronograph" | "egnyte";
+- ProviderConfig · type · L52-L65 — type ProviderConfig = { id: ProviderId; displayName: string; envPrefix: string; tools: Array< | "health" | "search" | "get_company_profile" | "get_financials" | "get_market_data" | "get_news" | "get_documents" >; };
+- getProviderFromArgs · function · L168-L183 — function getProviderFromArgs(): ProviderConfig
+- envValue · function · L185-L187 — function envValue(provider: ProviderConfig, suffix: string): string | undefined
+- FinanceDataClient · class · L189-L273 — class FinanceDataClient
+- constructor · method · L190-L190 — constructor(private readonly provider: ProviderConfig)
+- baseUrl · method · L192-L200 — private get baseUrl(): string
+- credential · method · L202-L213 — private get credential(): string
+- authHeaders · method · L215-L221 — private authHeaders(): Record<string, string>
+- endpoint · method · L223-L227 — private endpoint(tool: string): string
+- request · method · L229-L261 — private async request(tool: string, params: Record<string, any>): Promise<any>
+- execute · method · L263-L272 — async execute(toolName: string, args: Record<string, any>): Promise<any>
+- FinanceToolProvider · class · L275-L310 — class FinanceToolProvider
+- constructor · method · L278-L280 — constructor(private readonly provider: ProviderConfig)
+- getTools · method · L282-L305 — getTools(): MCPTool[]
+- executeTool · method · L307-L309 — async executeTool(name: string, args: Record<string, any>): Promise<any>
+- StdioMCPServer · class · L312-L431 — class StdioMCPServer
+- constructor · method · L316-L319 — constructor( private readonly toolProvider: FinanceToolProvider, private readonly provider: ProviderConfig, )
+- start · method · L321-L331 — start(): void
+- stop · method · L333-L339 — stop(): void
+- handleLine · method · L341-L349 — private handleLine(line: string): void
+- handleMessage · method · L351-L359 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L361-L397 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L399-L401 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleToolsCall · method · L403-L417 — private async handleToolsCall(params: any): Promise<any>
+- requireInitialized · method · L419-L422 — private requireInitialized(): void
+- sendResult · method · L424-L426 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L428-L430 — private sendError(id: JSONRPCId, code: number, message: string): void

@@ -1,0 +1,38 @@
+# src/electron/control-plane/SymphonyService.ts
+
+- AnyRecord · type · L22-L22 — type AnyRecord = Record<string, unknown>;
+- parseJson · function · L42-L49 — function parseJson<T>(value: string | null | undefined, fallback: T): T
+- expandHome · function · L51-L55 — function expandHome(value: string): string
+- parseScalar · function · L57-L71 — function parseScalar(value: string): unknown
+- parseSimpleYaml · function · L73-L97 — function parseSimpleYaml(frontMatter: string): AnyRecord
+- loadSymphonyWorkflow · function · L99-L136 — function loadSymphonyWorkflow(input: { workspacePath: string; workflowPath?: string; }): SymphonyWorkflowDefinition
+- normalizeIssueStatuses · function · L138-L153 — function normalizeIssueStatuses(value: unknown, fallback: Issue["status"][]): Issue["status"][]
+- getSymphonyMetadata · function · L155-L158 — function getSymphonyMetadata(issue: Issue): AnyRecord
+- setSymphonyMetadata · function · L160-L168 — function setSymphonyMetadata(issue: Issue, updates: AnyRecord): Record<string, unknown>
+- renderTemplate · function · L170-L172 — function renderTemplate(template: string, values: Record<string, string>): string
+- getRecord · function · L174-L178 — function getRecord(value: unknown): AnyRecord | undefined
+- normalizeRuntimeMode · function · L180-L186 — function normalizeRuntimeMode(value: unknown): "native" | "acpx" | undefined
+- normalizeRuntimeAgent · function · L188-L194 — function normalizeRuntimeAgent(value: unknown): ExternalRuntimeAgent | undefined
+- SymphonyService · class · L196-L812 — class SymphonyService
+- constructor · method · L205-L216 — constructor( private readonly deps: { db: Database.Database; agentDaemon?: AgentDaemon; log?: (...args: unknown[]) => void; }, )
+- start · method · L218-L228 — start(): void
+- stop · method · L230-L237 — stop(): void
+- getConfig · method · L239-L276 — getConfig(): SymphonyConfig
+- updateConfig · method · L278-L353 — updateConfig(updates: SymphonyConfigUpdate): SymphonyConfig
+- getStatus · method · L355-L403 — getStatus(): SymphonyStatus
+- runOnce · method · L405-L461 — async runOnce(_trigger: "manual" | "schedule" = "manual"): Promise<SymphonyStatus>
+- dispatchIssue · method · L463-L513 — private async dispatchIssue( issue: Issue, workspaceId: string, workflow: SymphonyWorkflowDefinition, config: SymphonyConfig, ): Promise<void>
+- applyWorkflowConfig · method · L515-L537 — private applyWorkflowConfig( config: SymphonyConfig, workflow: SymphonyWorkflowDefinition, ): SymphonyConfig
+- releaseDispatchFailure · method · L539-L575 — private releaseDispatchFailure( issueId: string, runId: string, config: SymphonyConfig, error: unknown, ): void
+- buildAgentConfig · method · L577-L601 — private buildAgentConfig(config: SymphonyConfig): AgentConfig
+- buildPrompt · method · L603-L650 — private buildPrompt( issue: Issue, workflow: SymphonyWorkflowDefinition, config: SymphonyConfig, runId: string, ): string
+- formatComments · method · L652-L658 — private formatComments(comments: IssueComment[]): string
+- attachDaemonListeners · method · L660-L679 — private attachDaemonListeners(): void
+- handler · function · L662-L670 — handler = (event: { taskId?: string; payload?: { status?: string } })
+- handleTerminalTask · method · L681-L727 — private handleTerminalTask(taskId: string): void
+- toStatusIssueRef · method · L729-L741 — private toStatusIssueRef(issue: Issue): SymphonyStatusIssueRef
+- resolveWorkspace · method · L743-L751 — private resolveWorkspace( config: SymphonyConfig, ): ReturnType<WorkspaceRepository["findById"]> | undefined
+- insertDefaultConfig · method · L753-L786 — private insertDefaultConfig(): SymphonyConfig
+- ensureSchema · method · L788-L811 — private ensureSchema(): void
+- setSymphonyService · function · L816-L818 — function setSymphonyService(service: SymphonyService | null): void
+- getSymphonyService · function · L820-L822 — function getSymphonyService(): SymphonyService | null

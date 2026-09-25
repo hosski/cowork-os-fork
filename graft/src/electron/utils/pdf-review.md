@@ -1,0 +1,24 @@
+# src/electron/utils/pdf-review.ts
+
+- ExtractedTextItem · type · L21-L26 — type ExtractedTextItem = { str?: unknown; transform: number[]; width?: number; height?: number; };
+- PdfReviewOptions · type · L28-L35 — type PdfReviewOptions = { maxPages?: number; maxCharsPerPage?: number; pageTextThreshold?: number; maxOcrPages?: number; renderScale?: number; includeOcr?: boolean; };
+- NativePageText · type · L37-L42 — type NativePageText = { pageIndex: number; text: string; charCount: number; wordCount: number; };
+- PdfCoverageReport · type · L44-L54 — type PdfCoverageReport = { totalPages: number; pageLimit: number; nativeTextPages: number; totalNativeChars: number; totalNativeWords: number; coverageRatio: number; averageCharsPerPage: number; averageWordsPerPage: number; imageHeavy: boolean; };
+- PdfReviewData · type · L56-L59 — type PdfReviewData = PdfReviewSummary & { fullText: string; content: string; };
+- normalizeWhitespace · function · L78-L85 — function normalizeWhitespace(value: string): string
+- groupTextLines · function · L87-L105 — function groupTextLines(items: Array<{ str: string; x: number; y: number }>): string
+- truncateText · function · L107-L115 — function truncateText(value: string, maxChars: number): { text: string; truncated: boolean }
+- loadPdfJs · function · L117-L119 — async function loadPdfJs()
+- isOcrmypdfInstalled · function · L121-L136 — async function isOcrmypdfInstalled(): Promise<boolean>
+- runOcrmypdf · function · L138-L156 — async function runOcrmypdf(pdfPath: string): Promise<Buffer | null>
+- renderPdfPageForOcr · function · L158-L183 — async function renderPdfPageForOcr(pdfPath: string, pageNumber: number, renderScale: number)
+- runPdfPageOcr · function · L185-L204 — async function runPdfPageOcr(imagePath: string): Promise<string | null>
+- extractPageText · function · L206-L221 — async function extractPageText(page: Any): Promise<string>
+- buildReviewBlock · function · L223-L230 — function buildReviewBlock(pageIndex: number, text: string, usedOcr: boolean): string
+- countWords · function · L232-L236 — function countWords(text: string): number
+- assessPdfCoverage · function · L238-L266 — function assessPdfCoverage( nativePages: NativePageText[], totalPages: number, pageLimit: number, ): PdfCoverageReport
+- decidePdfExtractionMode · function · L268-L286 — function decidePdfExtractionMode(params: { includeOcr: boolean; ocrmypdfAvailable: boolean; coverage: PdfCoverageReport; }): { extractionMode: PdfReviewExtractionMode; useDocumentOcr: boolean; forcePageOcr: boolean; }
+- collectNativePageTexts · function · L288-L301 — async function collectNativePageTexts(document: Any, pageLimit: number): Promise<NativePageText[]>
+- buildPdfReviewFromDocument · function · L303-L422 — async function buildPdfReviewFromDocument( pdfPath: string, document: Any, nativePages: NativePageText[], coverage: PdfCoverageReport, options: PdfReviewOptions, extractionMode: PdfReviewExtractionMode, forcePageOcr: boolean, ): Promise<PdfReviewData>
+- extractPdfReviewDataImpl · function · L424-L534 — async function extractPdfReviewDataImpl( pdfPath: string, buffer: Buffer, options: PdfReviewOptions = {}, allowDocumentOcr = true, ): Promise<PdfReviewData>
+- extractPdfReviewData · function · L536-L542 — async function extractPdfReviewData( pdfPath: string, options: PdfReviewOptions = {}, ): Promise<PdfReviewData>

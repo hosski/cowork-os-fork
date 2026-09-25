@@ -1,0 +1,26 @@
+# src/electron/mcp/oauth/connector-oauth.ts
+
+- sanitizeOAuthError · function · L12-L20 — function sanitizeOAuthError(text: string): string
+- ConnectorOAuthProvider · type · L22-L35 — type ConnectorOAuthProvider = | "box" | "salesforce" | "jira" | "hubspot" | "zendesk" | "google-calendar" | "google-drive" | "gmail" | "google-workspace" | "docusign" | "outreach" | "slack" | "microsoft-email";
+- ConnectorOAuthRequest · interface · L37-L48 — interface ConnectorOAuthRequest
+- JiraResource · interface · L50-L55 — interface JiraResource
+- ConnectorOAuthResult · interface · L57-L66 — interface ConnectorOAuthResult
+- getElectronShell · function · L71-L82 — function getElectronShell(): Any | null
+- openExternalUrl · function · L84-L90 — async function openExternalUrl(url: string): Promise<void>
+- startConnectorOAuth · function · L92-L122 — async function startConnectorOAuth( request: ConnectorOAuthRequest, ): Promise<ConnectorOAuthResult>
+- startMicrosoftEmailConnectorOAuth · function · L124-L148 — async function startMicrosoftEmailConnectorOAuth( request: ConnectorOAuthRequest, ): Promise<ConnectorOAuthResult>
+- createCodeVerifier · function · L150-L152 — function createCodeVerifier(): string
+- createCodeChallenge · function · L154-L157 — function createCodeChallenge(verifier: string): string
+- base64Url · function · L159-L161 — function base64Url(buffer: Buffer): string
+- startOAuthCallbackServer · function · L163-L260 — async function startOAuthCallbackServer(timeoutMs = DEFAULT_TIMEOUT_MS): Promise<{ redirectUri: string; state: string; waitForCode: () => Promise<{ code: string; state: string }>; }>
+- resolveCode · function · L173-L173 — resolveCode: (value: { code: string; state: string }) => void = ()
+- rejectCode · function · L174-L174 — rejectCode: (error: Error) => void = ()
+- startSalesforceOAuth · function · L262-L325 — async function startSalesforceOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>
+- startBoxOAuth · function · L327-L387 — async function startBoxOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>
+- startJiraOAuth · function · L389-L483 — async function startJiraOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>
+- startHubSpotOAuth · function · L485-L546 — async function startHubSpotOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>
+- startZendeskOAuth · function · L548-L610 — async function startZendeskOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>
+- startGoogleOAuth · function · L624-L713 — async function startGoogleOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>
+- startDocusignOAuth · function · L717-L778 — async function startDocusignOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>
+- startOutreachOAuth · function · L782-L842 — async function startOutreachOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>
+- startSlackOAuth · function · L846-L909 — async function startSlackOAuth(request: ConnectorOAuthRequest): Promise<ConnectorOAuthResult>

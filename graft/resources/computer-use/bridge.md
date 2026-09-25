@@ -1,0 +1,95 @@
+# resources/computer-use/bridge.swift
+
+- BridgeFailure · struct · L6-L9 — struct BridgeFailure: Error
+- AXRefStore · class · L11-L37 — final class AXRefStore
+- storeWindow · method · L16-L21 — func storeWindow(_ window: AXUIElement) -> String
+- storeElement · method · L23-L28 — func storeElement(_ element: AXUIElement) -> String
+- window · method · L30-L32 — func window(for ref: String) -> AXUIElement?
+- element · method · L34-L36 — func element(for ref: String) -> AXUIElement?
+- CGWindowCandidate · struct · L39-L44 — private struct CGWindowCandidate
+- Box · class · L46-L51 — final class Box<T>
+- Box · method · L48-L50 — init(_ value: T)
+- Bridge · class · L53-L1566 — final class Bridge
+- run · method · L57-L68 — func run()
+- processBufferedInput · method · L70-L80 — private func processBufferedInput()
+- handleLine · method · L82-L141 — private func handleLine(_ line: String)
+- send · method · L143-L154 — private func send(_ payload: [String: Any])
+- handleRequest · method · L156-L211 — private func handleRequest(_ request: [String: Any]) throws -> Any
+- stringArg · method · L213-L218 — private func stringArg(_ request: [String: Any], _ key: String) throws -> String
+- intArg · method · L220-L231 — private func intArg(_ request: [String: Any], _ key: String) throws -> Int
+- optionalIntArg · method · L233-L244 — private func optionalIntArg(_ request: [String: Any], _ key: String) -> Int?
+- doubleArg · method · L246-L257 — private func doubleArg(_ request: [String: Any], _ key: String) throws -> Double
+- stringArrayArg · method · L259-L268 — private func stringArrayArg(_ request: [String: Any], _ key: String) throws -> [String]
+- checkPermissions · method · L270-L282 — private func checkPermissions() -> [String: Any]
+- openPermissionPane · method · L284-L300 — private func openPermissionPane(_ request: [String: Any]) throws -> [String: Any]
+- listApps · method · L302-L316 — private func listApps() -> [[String: Any]]
+- getFrontmost · method · L318-L340 — private func getFrontmost() throws -> [String: Any]
+- scoreWindow · method · L342-L350 — private func scoreWindow(_ window: [String: Any]) -> Int
+- listWindows · method · L352-L392 — private func listWindows(pid: Int32) throws -> [[String: Any]]
+- screenshot · method · L394-L397 — private func screenshot(_ request: [String: Any]) throws -> [String: Any]
+- mouseButtonSpec · method · L399-L414 — private func mouseButtonSpec(_ name: String) throws -> (button: CGMouseButton, down: CGEventType, up: CGEventType)
+- mouseClick · method · L416-L431 — private func mouseClick(_ request: [String: Any]) throws -> [String: Any]
+- mouseMove · method · L433-L445 — private func mouseMove(_ request: [String: Any]) throws -> [String: Any]
+- mouseDrag · method · L447-L473 — private func mouseDrag(_ request: [String: Any]) throws -> [String: Any]
+- scrollAtPoint · method · L475-L489 — private func scrollAtPoint(_ request: [String: Any]) throws -> [String: Any]
+- axPressAtPoint · method · L491-L512 — private func axPressAtPoint(_ request: [String: Any]) throws -> [String: Any]
+- axDescribeAtPoint · method · L514-L529 — private func axDescribeAtPoint(_ request: [String: Any]) throws -> [String: Any]
+- axFindTextInput · method · L531-L553 — private func axFindTextInput(_ request: [String: Any]) throws -> [String: Any]
+- axFocusTextInput · method · L555-L578 — private func axFocusTextInput(_ request: [String: Any]) throws -> [String: Any]
+- axFindFocusableElement · method · L580-L611 — private func axFindFocusableElement(_ request: [String: Any]) throws -> [String: Any]
+- axFindActionableElement · method · L613-L632 — private func axFindActionableElement(_ request: [String: Any]) throws -> [String: Any]
+- axFocusAtPoint · method · L634-L650 — private func axFocusAtPoint(_ request: [String: Any]) throws -> [String: Any]
+- focusedElement · method · L652-L691 — private func focusedElement(_ request: [String: Any]) throws -> [String: Any]
+- setValue · method · L693-L705 — private func setValue(_ request: [String: Any]) throws -> [String: Any]
+- typeText · method · L707-L714 — private func typeText(_ request: [String: Any]) throws -> [String: Any]
+- keyPress · method · L716-L725 — private func keyPress(_ request: [String: Any]) throws -> [String: Any]
+- activateApp · method · L727-L734 — private func activateApp(_ request: [String: Any]) throws -> [String: Any]
+- raiseWindow · method · L736-L760 — private func raiseWindow(_ request: [String: Any]) throws -> [String: Any]
+- unminimizeWindow · method · L762-L774 — private func unminimizeWindow(_ request: [String: Any]) throws -> [String: Any]
+- hitTestElement · method · L776-L782 — private func hitTestElement(at point: CGPoint) -> AXUIElement?
+- performActionOrAncestor · method · L784-L805 — private func performActionOrAncestor(startingAt element: AXUIElement, action: CFString, targetPid: Int32) -> [String: Any]
+- describeElementOrAncestor · method · L807-L841 — private func describeElementOrAncestor(startingAt element: AXUIElement, targetPid: Int32) -> [String: Any]
+- focusElementOrAncestor · method · L843-L866 — private func focusElementOrAncestor(startingAt element: AXUIElement, targetPid: Int32) -> [String: Any]
+- windowElement · method · L868-L884 — private func windowElement(pid: Int32, windowId: UInt32?) -> AXUIElement?
+- findDescendant · method · L886-L888 — private func findDescendant(startingAt root: AXUIElement, maxDepth: Int, predicate: (AXUIElement) -> Bool) -> AXUIElement?
+- collectDescendants · method · L890-L905 — private func collectDescendants(startingAt root: AXUIElement, maxDepth: Int) -> [AXUIElement]
+- scoreTextInputElement · method · L907-L926 — private func scoreTextInputElement(_ element: AXUIElement, role: String) -> Double
+- scoreFocusableElement · method · L928-L954 — private func scoreFocusableElement( _ element: AXUIElement, role: String, canFocus: Bool, canPress: Bool, preferredRoles: Set<String> ) -> Double
+- scoreActionableElement · method · L956-L983 — private func scoreActionableElement( _ element: AXUIElement, role: String, actions: [String], preferredRoles: Set<String> ) -> Double
+- rankedElementPayload · method · L985-L992 — private func rankedElementPayload(best: (AXUIElement, Double), ranked: [(AXUIElement, Double)], key: String) -> [String: Any]
+- confidenceLabel · method · L994-L1001 — private func confidenceLabel(_ ranked: [(AXUIElement, Double)]) -> String
+- candidateSummary · method · L1003-L1020 — private func candidateSummary(element: AXUIElement, score: Double) -> [String: Any]
+- elementPayload · method · L1022-L1053 — private func elementPayload(element: AXUIElement, key: String, score: Double? = nil) -> [String: Any]
+- frameForElement · method · L1055-L1060 — private func frameForElement(_ element: AXUIElement) -> CGRect?
+- pidForElement · method · L1062-L1067 — private func pidForElement(_ element: AXUIElement) -> Int32?
+- parentElement · method · L1069-L1074 — private func parentElement(_ element: AXUIElement) -> AXUIElement?
+- supportsAction · method · L1076-L1078 — private func supportsAction(_ element: AXUIElement, action: CFString) -> Bool
+- supportsPressAction · method · L1080-L1082 — private func supportsPressAction(_ element: AXUIElement) -> Bool
+- actionNames · method · L1084-L1090 — private func actionNames(_ element: AXUIElement) -> [String]
+- copyAttribute · method · L1092-L1097 — private func copyAttribute(_ element: AXUIElement, attribute: CFString) -> AnyObject?
+- boolAttribute · method · L1099-L1108 — private func boolAttribute(_ element: AXUIElement, attribute: CFString) -> Bool?
+- stringAttribute · method · L1110-L1112 — private func stringAttribute(_ element: AXUIElement, attribute: CFString) -> String?
+- axElementArray · method · L1114-L1123 — private func axElementArray(_ element: AXUIElement, attribute: CFString) -> [AXUIElement]
+- asAXElement · method · L1125-L1129 — private func asAXElement(_ value: AnyObject) -> AXUIElement?
+- pointAttribute · method · L1131-L1140 — private func pointAttribute(_ element: AXUIElement, attribute: CFString) -> CGPoint?
+- sizeAttribute · method · L1142-L1151 — private func sizeAttribute(_ element: AXUIElement, attribute: CFString) -> CGSize?
+- frameForWindow · method · L1153-L1157 — private func frameForWindow(_ window: AXUIElement) -> CGRect
+- cgWindowCandidates · method · L1159-L1187 — private func cgWindowCandidates(pid: Int32) -> [CGWindowCandidate]
+- bestCandidate · method · L1189-L1225 — private func bestCandidate( frame: CGRect, title: String, candidates: [CGWindowCandidate], usedIds: Set<UInt32> ) -> CGWindowCandidate?
+- displayScaleFactor · method · L1227-L1258 — private func displayScaleFactor(for frame: CGRect) -> Double
+- captureWindow · method · L1260-L1320 — private func captureWindow(windowId: UInt32) throws -> [String: Any]
+- screenshotPayload · method · L1322-L1336 — private func screenshotPayload(image: CGImage, windowId: UInt32) throws -> [String: Any]
+- systemScreenshotWindow · method · L1338-L1351 — private func systemScreenshotWindow(windowId: UInt32) throws -> [String: Any]?
+- currentWindowBounds · method · L1353-L1366 — private func currentWindowBounds(windowId: UInt32) -> CGRect?
+- currentWindowBoundsViaScreenCaptureKit · method · L1368-L1393 — @available(macOS 14.0, *) private func currentWindowBoundsViaScreenCaptureKit(windowId: UInt32) -> CGRect?
+- mapWindowPoint · method · L1395-L1411 — private func mapWindowPoint( windowId: UInt32, x: Double, y: Double, captureWidth: Double, captureHeight: Double ) throws -> CGPoint
+- modifierFlags · method · L1413-L1432 — private func modifierFlags(_ modifiers: [String]) throws -> CGEventFlags
+- postEvent · method · L1434-L1436 — private func postEvent(_ event: CGEvent, pid: Int32)
+- postMouseMove · method · L1438-L1443 — private func postMouseMove(to point: CGPoint, pid: Int32) throws
+- postMouseClick · method · L1445-L1469 — private func postMouseClick( at point: CGPoint, pid: Int32, button: CGMouseButton, downType: CGEventType, upType: CGEventType, clickCount: Int ) throws
+- postMouseDrag · method · L1471-L1493 — private func postMouseDrag(through points: [CGPoint], pid: Int32) throws
+- postScroll · method · L1495-L1508 — private func postScroll(at point: CGPoint, pid: Int32, scrollX: Int, scrollY: Int) throws
+- postUnicodeText · method · L1510-L1524 — private func postUnicodeText(_ text: String, pid: Int32) throws
+- postKeyPress · method · L1526-L1557 — private func postKeyPress(pid: Int32, keyCode: Int?, keyText: String?, modifiers: [String]) throws
+- setUnicodeString · method · L1559-L1565 — private func setUnicodeString(event: CGEvent, text: String)
+- bridge · variable · L1568-L1568 — let bridge = Bridge()

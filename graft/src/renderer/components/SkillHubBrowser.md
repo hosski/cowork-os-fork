@@ -1,0 +1,28 @@
+# src/renderer/components/SkillHubBrowser.tsx
+
+- isLikelyGitSkillSource · function · L17-L40 — function isLikelyGitSkillSource(rawValue: string): boolean
+- formatCompactCount · function · L42-L47 — function formatCompactCount(value?: number): string | null
+- isClawHubSkillSource · function · L49-L71 — function isClawHubSkillSource(rawValue: string): boolean
+- getClawHubSlug · function · L73-L102 — function getClawHubSlug(rawValue: string): string | null
+- SkillHubBrowserProps · interface · L104-L107 — interface SkillHubBrowserProps
+- SkillHubBrowser · function · L109-L895 — function SkillHubBrowser({ onSkillInstalled, onClose }: SkillHubBrowserProps)
+- loadSkillStatus · function · L134-L164 — loadSkillStatus = async (showRefreshing = false)
+- handleRefresh · function · L166-L168 — handleRefresh = ()
+- installMessageForOutcome · function · L170-L188 — installMessageForOutcome = ( outcome: InstallSecurityOutcome | undefined, fallback: string, ): string
+- getSecurityBadge · function · L190-L201 — getSecurityBadge = (report?: CapabilitySecurityReport)
+- renderStatsLine · function · L252-L269 — renderStatsLine = (skill: SkillRegistryEntry)
+- installSucceeded · function · L271-L275 — installSucceeded = async (skill: CustomSkill)
+- handleInstall · function · L277-L296 — handleInstall = async (skillId: string)
+- handleClawHubInstall · function · L298-L317 — handleClawHubInstall = async (skillId: string)
+- handleExternalInstall · function · L319-L350 — handleExternalInstall = async ()
+- handleUninstall · function · L352-L379 — handleUninstall = async (skillId: string)
+- handleOpenFolder · function · L381-L383 — handleOpenFolder = async ()
+- handleRetryQuarantined · function · L385-L399 — handleRetryQuarantined = async (recordId: string)
+- handleRemoveQuarantined · function · L401-L415 — handleRemoveQuarantined = async (recordId: string)
+- getStatusBadge · function · L417-L428 — getStatusBadge = (entry: SkillStatusEntry)
+- renderSearchResults · function · L430-L489 — renderSearchResults = ( results: SkillRegistryEntry[], onInstall: (skillId: string) => void, )
+- renderExternalImportCard · function · L491-L520 — renderExternalImportCard = ()
+- renderBrowseTab · function · L522-L558 — renderBrowseTab = ()
+- renderClawHubTab · function · L560-L620 — renderClawHubTab = ()
+- renderInstalledTab · function · L622-L759 — renderInstalledTab = ()
+- renderStatusTab · function · L761-L818 — renderStatusTab = ()

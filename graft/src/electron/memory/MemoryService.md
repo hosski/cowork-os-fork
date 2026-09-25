@@ -1,0 +1,115 @@
+# src/electron/memory/MemoryService.ts
+
+- MemoryCaptureOrigin · type · L94-L103 — type MemoryCaptureOrigin = | "task" | "heartbeat" | "tool" | "chronicle" | "playbook" | "proactive" | "import" | "system" | "unknown";
+- MemoryCompressionPriority · type · L105-L105 — type MemoryCompressionPriority = "low" | "normal" | "high";
+- MemoryCaptureOptions · interface · L107-L123 — interface MemoryCaptureOptions
+- CompressionQueueEntry · interface · L125-L131 — interface CompressionQueueEntry
+- CompressionDiagnostics · interface · L133-L143 — interface CompressionDiagnostics
+- PromptRecallDiagnostics · interface · L145-L153 — interface PromptRecallDiagnostics
+- MemoryService · class · L155-L2793 — class MemoryService
+- initialize · method · L211-L230 — static initialize(dbManager: DatabaseManager): void
+- initFtsWorker · method · L232-L234 — static initFtsWorker(worker: import("../database/FtsWorkerClient").FtsWorkerClient): void
+- syncWorkspaceMarkdown · method · L240-L249 — static async syncWorkspaceMarkdown( workspaceId: string, workspacePath: string, force = false, readGuard?: MarkdownMemoryReadGuard, ): Promise<void>
+- searchWorkspaceMarkdown · method · L255-L269 — static searchWorkspaceMarkdown( workspaceId: string, workspacePath: string, query: string, limit = 10, readGuard?: MarkdownMemoryReadGuard, ): MemorySearchResult[]
+- getRecentWorkspaceMarkdownSnippets · method · L271-L284 — static getRecentWorkspaceMarkdownSnippets( workspaceId: string, workspacePath: string, limit = 3, readGuard?: MarkdownMemoryReadGuard, ): MemorySearchResult[]
+- onMemoryChanged · method · L289-L294 — static onMemoryChanged( callback: (data: { type: string; workspaceId: string }) => void, ): () => void
+- capture · method · L299-L482 — static async capture( workspaceId: string, taskId: string | undefined, type: MemoryType, content: string, isPrivate = false, options?: MemoryCaptureOptions, ): Promise<Memory | null>
+- captureCoreMemory · method · L484-L498 — static async captureCoreMemory( workspaceId: string, taskId: string | undefined, type: MemoryType, content: string, isPrivate = false, options?: MemoryCaptureOptions, ): Promise<Memory | null>
+- search · method · L504-L514 — static search(workspaceId: string, query: string, limit = 20): MemorySearchResult[]
+- searchInternal · method · L516-L624 — private static searchInternal( workspaceId: string, query: string, limit = 20, ): MemorySearchResult[]
+- mapCaptureOriginToWriteOrigin · method · L626-L643 — private static mapCaptureOriginToWriteOrigin(origin: MemoryCaptureOrigin): MemoryWriteOrigin
+- summarizeCaptureOptions · method · L645-L661 — private static summarizeCaptureOptions( options: MemoryCaptureOptions | undefined, ): Record<string, unknown> | undefined
+- mergeLexicalOnly · method · L663-L683 — private static mergeLexicalOnly( local: MemorySearchResult[], imported: MemorySearchResult[], limit: number, ): MemorySearchResult[]
+- ensureEmbeddingsLoaded · method · L685-L706 — private static ensureEmbeddingsLoaded(workspaceId: string): void
+- cacheEmbedding · method · L708-L720 — private static cacheEmbedding( workspaceId: string, memoryId: string, embedding: number[], updatedAt: number, ): void
+- kickoffEmbeddingBackfill · method · L722-L732 — private static kickoffEmbeddingBackfill(workspaceId: string): void
+- runEmbeddingBackfill · method · L734-L756 — private static async runEmbeddingBackfill(workspaceId: string): Promise<void>
+- normalizeForEmbedding · method · L758-L765 — private static normalizeForEmbedding(summary: string | undefined, content: string): string
+- extractFirstCodeBlock · method · L767-L771 — private static extractFirstCodeBlock(text: string): string | null
+- extractTextImportEntries · method · L773-L813 — private static extractTextImportEntries(pastedText: string): string[]
+- ensureImportedEmbeddingsLoaded · method · L815-L833 — private static ensureImportedEmbeddingsLoaded(): void
+- kickoffImportedEmbeddingBackfill · method · L835-L843 — private static kickoffImportedEmbeddingBackfill(): void
+- runImportedEmbeddingBackfill · method · L845-L867 — private static async runImportedEmbeddingBackfill(): Promise<void>
+- getTimelineContext · method · L873-L876 — static getTimelineContext(memoryId: string, windowSize = 5): MemoryTimelineEntry[]
+- getFullDetails · method · L882-L885 — static getFullDetails(ids: string[]): Memory[]
+- getByTask · method · L890-L893 — static getByTask(taskId: string): Memory[]
+- getRecent · method · L898-L901 — static getRecent(workspaceId: string, limit = 20): Memory[]
+- getRecentForPromptRecall · method · L903-L912 — static getRecentForPromptRecall(workspaceId: string, limit = 20): Memory[]
+- searchForPromptRecall · method · L914-L935 — static searchForPromptRecall( workspaceId: string, query: string, limit = 20, ): MemorySearchResult[]
+- searchForPromptRecallFast · method · L941-L959 — static searchForPromptRecallFast( workspaceId: string, query: string, limit = 5, ): MemorySearchResult[]
+- searchForPromptRecallAsync · method · L961-L967 — static async searchForPromptRecallAsync( workspaceId: string, query: string, limit = 20, ): Promise<MemorySearchResult[]>
+- searchForPromptRecallFastAsync · method · L969-L1013 — static async searchForPromptRecallFastAsync( workspaceId: string, query: string, limit = 5, ): Promise<MemorySearchResult[]>
+- getPromptRecallCacheKey · method · L1015-L1021 — private static getPromptRecallCacheKey(workspaceId: string, query: string): string
+- filterPromptRecallRows · method · L1023-L1043 — private static filterPromptRecallRows( rawResults: Array<MemorySearchResult & { content?: string }>, limit: number, ): MemorySearchResult[]
+- rememberPromptRecallResults · method · L1045-L1054 — private static rememberPromptRecallResults( cacheKey: string, results: MemorySearchResult[], ): void
+- clearPromptRecallCache · method · L1056-L1058 — static clearPromptRecallCache(): void
+- getPromptRecallDiagnostics · method · L1060-L1062 — static getPromptRecallDiagnostics(): PromptRecallDiagnostics
+- recordPromptRecallDiagnostic · method · L1064-L1073 — private static recordPromptRecallDiagnostic( field: "workerUnavailable" | "workerFailures" | "workerEmptyResults" | "workerHits", failureMessage?: string, ): void
+- searchByContentMarker · method · L1080-L1087 — static searchByContentMarker( workspaceId: string, marker: string, limit = 50, ): MemorySearchResult[]
+- searchByContentMarkerAsync · method · L1089-L1104 — static async searchByContentMarkerAsync( workspaceId: string, marker: string, limit = 50, ): Promise<MemorySearchResult[]>
+- searchAsync · method · L1106-L1127 — static async searchAsync( workspaceId: string, query: string, limit = 20, ): Promise<MemorySearchResult[]>
+- getContextForInjectionAsync · method · L1129-L1187 — static async getContextForInjectionAsync( workspaceId: string, taskPrompt: string, ): Promise<string>
+- isImportedMemoryContent · method · L1189-L1192 — private static isImportedMemoryContent(content: string): boolean
+- isPromptRecallIgnoredContent · method · L1194-L1196 — private static isPromptRecallIgnoredContent(content: string): boolean
+- stripPromptRecallIgnoreMarker · method · L1198-L1205 — private static stripPromptRecallIgnoreMarker(content: string): string
+- applyPromptRecallIgnoreMarker · method · L1207-L1211 — private static applyPromptRecallIgnoreMarker(content: string): string
+- containsNoMemoryDirective · method · L1213-L1215 — private static containsNoMemoryDirective(content: string): boolean
+- applyInlinePrivacy · method · L1217-L1227 — private static applyInlinePrivacy(content: string): { content: string; hadPrivateBlock: boolean; }
+- getContextForInjection · method · L1233-L1297 — static getContextForInjection(workspaceId: string, taskPrompt: string): string
+- getSettings · method · L1302-L1305 — static getSettings(workspaceId: string): MemorySettings
+- updateSettings · method · L1310-L1317 — static updateSettings( workspaceId: string, updates: Partial<Omit<MemorySettings, "workspaceId">>, ): void
+- getStats · method · L1322-L1325 — static getStats(workspaceId: string): MemoryStats
+- getImportedStats · method · L1330-L1333 — static getImportedStats(workspaceId: string): { count: number; totalTokens: number }
+- findImported · method · L1338-L1341 — static findImported(workspaceId: string, limit = 50, offset = 0): Memory[]
+- deleteImportedEntry · method · L1343-L1365 — static deleteImportedEntry(workspaceId: string, memoryId: string): boolean
+- setImportedPromptRecallIgnored · method · L1367-L1401 — static setImportedPromptRecallIgnored( workspaceId: string, memoryId: string, ignored: boolean, ): Memory | null
+- deleteImported · method · L1406-L1426 — static deleteImported(workspaceId: string): number
+- importFromText · method · L1428-L1534 — static importFromText(options: { workspaceId: string; provider: string; pastedText: string; forcePrivate?: boolean; }): { success: boolean; entriesDetected: number; memoriesCreated: number; duplicatesSkipped: number; truncated: number; errors: string[]; }
+- clearWorkspace · method · L1539-L1558 — static clearWorkspace(workspaceId: string): void
+- deleteEntries · method · L1560-L1577 — static deleteEntries(workspaceId: string, ids: string[]): number
+- replaceMemory · method · L1587-L1653 — static replaceMemory( workspaceId: string, memoryId: string, content: string, summary?: string, ): Memory | null
+- clearCompressionStateForWorkspace · method · L1655-L1668 — private static clearCompressionStateForWorkspace(workspaceId: string): void
+- getCompressionDiagnostics · method · L1670-L1695 — static getCompressionDiagnostics(workspaceId?: string): CompressionDiagnostics
+- createCompressionDiagnostics · method · L1697-L1709 — private static createCompressionDiagnostics(): CompressionDiagnostics
+- cloneCompressionDiagnostics · method · L1711-L1725 — private static cloneCompressionDiagnostics( diagnostics: CompressionDiagnostics, ): CompressionDiagnostics
+- getCompressionDiagnosticsForWorkspace · method · L1727-L1735 — private static getCompressionDiagnosticsForWorkspace( workspaceId: string, ): CompressionDiagnostics
+- recordCompressionDiagnostic · method · L1737-L1745 — private static recordCompressionDiagnostic( workspaceId: string, origin: MemoryCaptureOrigin, field: keyof Omit<CompressionDiagnostics, "originCounts">, ): void
+- recordCompressionCapture · method · L1747-L1751 — private static recordCompressionCapture(workspaceId: string, origin: MemoryCaptureOrigin): void
+- pauseCompression · method · L1756-L1758 — static pauseCompression(): void
+- resumeCompression · method · L1763-L1770 — static resumeCompression(): void
+- isCompressionPaused · method · L1772-L1774 — private static isCompressionPaused(): boolean
+- applyExecutionSideChannelPolicy · method · L1776-L1800 — static applyExecutionSideChannelPolicy( mode: "paused" | "limited" | "enabled", maxCallsPerWindow = 2, ): void
+- clearExecutionSideChannelPolicy · method · L1802-L1817 — static clearExecutionSideChannelPolicy(): void
+- canExecuteSideChannelCall · method · L1819-L1829 — private static canExecuteSideChannelCall(): boolean
+- shouldQueueCompression · method · L1831-L1870 — private static shouldQueueCompression(input: { type: MemoryType; content: string; tokens: number; origin: MemoryCaptureOrigin; batchable: boolean; priority: MemoryCompressionPriority; }): boolean
+- deriveCompressionPriority · method · L1872-L1907 — private static deriveCompressionPriority( type: MemoryType, content: string, tokens: number, origin: MemoryCaptureOrigin, explicitPriority?: MemoryCompressionPriority, ): MemoryCompressionPriority
+- buildCompressionBatchKey · method · L1909-L1924 — private static buildCompressionBatchKey( workspaceId: string, taskId: string | undefined, origin: MemoryCaptureOrigin, createdAt: number, explicitBatchKey?: string, signalFamily?: string, ): string
+- isHighSignalMemoryType · method · L1926-L1938 — private static isHighSignalMemoryType(type: MemoryType): boolean
+- isStructuredLowValueContent · method · L1940-L1959 — private static isStructuredLowValueContent(content: string): boolean
+- buildDeterministicSummary · method · L1961-L1975 — private static buildDeterministicSummary(content: string): string
+- normalizeSummaryStorageText · method · L1977-L1983 — private static normalizeSummaryStorageText(content: string, maxChars = 1200): string
+- updateMemorySummary · method · L1985-L2014 — private static updateMemorySummary( memory: Memory, workspaceId: string, summary: string, compressed: boolean, ): void
+- enqueueCompression · method · L2016-L2022 — private static enqueueCompression(memoryId: string, entry: CompressionQueueEntry): void
+- scheduleCompressionDrain · method · L2024-L2037 — private static scheduleCompressionDrain(delayMs = COMPRESSION_DRAIN_DELAY_MS): void
+- canSpendCompressionBudget · method · L2039-L2055 — private static canSpendCompressionBudget(workspaceId: string): { allowed: boolean; retryAfterMs: number; }
+- recordCompressionBudgetUse · method · L2057-L2065 — private static recordCompressionBudgetUse(workspaceId: string): void
+- processCompressionQueue · method · L2070-L2174 — private static async processCompressionQueue(): Promise<void>
+- shouldUseLlmForCompressionBatch · method · L2176-L2197 — private static shouldUseLlmForCompressionBatch( group: { workspaceId: string; batchKey: string; origin: MemoryCaptureOrigin; priority: MemoryCompressionPriority; memoryIds: string[]; requestedAt: number; }, memories: Memory[], ): boolean
+- finalizeCompressionBatchLocally · method · L2199-L2234 — private static async finalizeCompressionBatchLocally( group: { workspaceId: string; batchKey: string; origin: MemoryCaptureOrigin; priority: MemoryCompressionPriority; memoryIds: string[]; requestedAt: number; }, memories: Memory[], ): Promise<void>
+- buildBatchDigest · method · L2236-L2255 — private static buildBatchDigest( group: { workspaceId: string; batchKey: string; origin: MemoryCaptureOrigin; priority: MemoryCompressionPriority; memoryIds: string[]; requestedAt: number; }, memories: Memory[], ): string
+- buildBatchSummaryPrompt · method · L2257-L2299 — private static buildBatchSummaryPrompt( group: { workspaceId: string; batchKey: string; origin: MemoryCaptureOrigin; priority: MemoryCompressionPriority; memoryIds: string[]; requestedAt: number; }, memories: Memory[], ): { system: string; user: string }
+- compressMemoryBatch · method · L2301-L2337 — private static async compressMemoryBatch( group: { workspaceId: string; batchKey: string; origin: MemoryCaptureOrigin; priority: MemoryCompressionPriority; memoryIds: string[]; requestedAt: number; }, memories: Memory[], ): Promise<void>
+- generateBatchSummaryText · method · L2339-L2423 — private static async generateBatchSummaryText( group: { workspaceId: string; batchKey: string; origin: MemoryCaptureOrigin; priority: MemoryCompressionPriority; memoryIds: string[]; requestedAt: number; }, memories: Memory[], ): Promise<{ summaryText: string; usedLlm: boolean }>
+- createBatchSummaryMemory · method · L2425-L2454 — private static async createBatchSummaryMemory( group: { workspaceId: string; batchKey: string; origin: MemoryCaptureOrigin; priority: MemoryCompressionPriority; memoryIds: string[]; requestedAt: number; }, memories: Memory[], summaryText: string, compressed: boolean, ): Promise<void>
+- extractSharedTaskId · method · L2456-L2464 — private static extractSharedTaskId(memories: Memory[]): string | undefined
+- updateEmbeddingForMemory · method · L2466-L2479 — private static updateEmbeddingForMemory( memory: Memory, workspaceId: string, summary: string, ): void
+- scheduleCompressionRetry · method · L2481-L2512 — private static scheduleCompressionRetry( group: { workspaceId: string; batchKey: string; origin: MemoryCaptureOrigin; priority: MemoryCompressionPriority; memoryIds: string[]; requestedAt: number; }, delayMs: number, ): void
+- runCleanup · method · L2517-L2547 — private static async runCleanup(): Promise<void>
+- enforceStorageLimit · method · L2549-L2583 — private static enforceStorageLimit(workspaceId: string, maxStorageMb: number): void
+- extractSearchTerms · method · L2588-L2689 — private static extractSearchTerms(prompt: string): string
+- shouldExclude · method · L2694-L2711 — private static shouldExclude(content: string, settings: MemorySettings): boolean
+- containsSensitiveData · method · L2716-L2723 — private static containsSensitiveData(content: string): boolean
+- isExternalMemoryMirrorAllowed · method · L2731-L2745 — private static isExternalMemoryMirrorAllowed(workspaceId: string): boolean
+- truncate · method · L2750-L2753 — private static truncate(text: string, maxLength: number): string
+- ensureInitialized · method · L2758-L2762 — private static ensureInitialized(): void
+- shutdown · method · L2767-L2792 — static shutdown(): void

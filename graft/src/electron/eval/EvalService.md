@@ -1,0 +1,29 @@
+# src/electron/eval/EvalService.ts
+
+- EvalSuiteSummary · interface · L23-L29 — interface EvalSuiteSummary extends EvalSuite
+- safeJsonParse · function · L31-L38 — function safeJsonParse<T>(value: unknown, fallback: T): T
+- sanitizeCorpusText · function · L40-L55 — function sanitizeCorpusText(raw: string): string
+- normalizeTerminalStatus · function · L57-L72 — function normalizeTerminalStatus(task: { status?: string; terminal_status?: string | null; }): Task["terminalStatus"]
+- replayStatusForAssertion · function · L74-L91 — function replayStatusForAssertion(status: Task["terminalStatus"]): WorkSessionStatus | undefined
+- replayStatusForTask · function · L93-L100 — function replayStatusForTask(task: { status?: string; terminal_status?: string | null; }): WorkSessionStatus | undefined
+- normalizeReplayItemStatus · function · L102-L118 — function normalizeReplayItemStatus(value: unknown): WorkSessionTurnStatus | undefined
+- isSyntheticCanonicalItem · function · L120-L126 — function isSyntheticCanonicalItem(item: WorkSessionItem): boolean
+- extractTool · function · L128-L132 — function extractTool(payload: unknown): string
+- extractTaskChangedPaths · function · L134-L157 — function extractTaskChangedPaths(events: TaskEvent[]): Set<string>
+- add · function · L136-L141 — add = (value: unknown)
+- EvalService · class · L159-L846 — class EvalService
+- constructor · method · L160-L160 — constructor(private db: Database.Database)
+- mapEvalCase · method · L162-L177 — private mapEvalCase(row: Any): EvalCase
+- mapEvalSuite · method · L179-L188 — private mapEvalSuite(row: Any): EvalSuite
+- mapEvalRun · method · L190-L202 — private mapEvalRun(row: Any): EvalRun
+- mapEvalCaseRun · method · L204-L215 — private mapEvalCaseRun(row: Any): EvalCaseRun
+- getOrCreateDefaultSuiteId · method · L217-L241 — private getOrCreateDefaultSuiteId(): string
+- addCaseToSuite · method · L243-L254 — private addCaseToSuite(suiteId: string, caseId: string): void
+- listSuites · method · L256-L295 — listSuites(): EvalSuiteSummary[]
+- getCase · method · L297-L300 — getCase(caseId: string): EvalCase | null
+- getRun · method · L302-L312 — getRun(runId: string): (EvalRun & { caseRuns: EvalCaseRun[] }) | null
+- createCaseFromTask · method · L314-L434 — createCaseFromTask(taskId: string): EvalCase
+- runSuite · method · L436-L521 — runSuite(suiteId: string): EvalRun
+- evaluateCaseAgainstTask · method · L523-L587 — private evaluateCaseAgainstTask(evalCase: EvalCase): { status: "pass" | "fail" | "skipped"; details: string; }
+- loadReplayItems · method · L594-L701 — private loadReplayItems(taskId: string, taskSessionId?: string | null): WorkSessionItem[]
+- getBaselineMetrics · method · L703-L845 — getBaselineMetrics(windowDays = 30): EvalBaselineMetrics

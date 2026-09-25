@@ -1,0 +1,31 @@
+# src/electron/updater/update-manager.ts
+
+- GitHubRelease · interface · L21-L32 — interface GitHubRelease
+- GitUpdateTarget · interface · L34-L37 — interface GitUpdateTarget
+- UpdateManager · class · L39-L819 — class UpdateManager
+- constructor · method · L53-L56 — constructor( private readonly runtimePlatform: NodeJS.Platform | string = process.platform, private readonly runtimeRelease: () => string = os.release, )
+- setMainWindow · method · L58-L60 — setMainWindow(window: BrowserWindow): void
+- sendProgress · method · L62-L66 — private sendProgress(progress: UpdateProgress): void
+- sendError · method · L68-L72 — private sendError(error: string): void
+- getVersionInfo · method · L74-L113 — async getVersionInfo(): Promise<AppVersionInfo>
+- detectNpmGlobalInstall · method · L115-L130 — private detectNpmGlobalInstall(appPath: string): boolean
+- verifyDownloadedArtifact · method · L148-L171 — private async verifyDownloadedArtifact(event: Any): Promise<ReleaseSignatureResult>
+- checkForUpdates · method · L173-L238 — async checkForUpdates(): Promise<UpdateInfo>
+- recordCheckedUpdate · method · L240-L243 — private recordCheckedUpdate(updateInfo: UpdateInfo): UpdateInfo
+- fetchLatestRelease · method · L264-L344 — private async fetchLatestRelease(currentVersion: string): Promise<GitHubRelease | null>
+- readCachedRelease · method · L346-L358 — private async readCachedRelease(cachePath: string | null): Promise<GitHubRelease | null>
+- isReleaseShape · method · L360-L367 — private isReleaseShape(value: GitHubRelease): value is GitHubRelease
+- runGitCommand · method · L369-L371 — private runGitCommand(command: string, options: { cwd: string })
+- checkForNewCommits · method · L373-L404 — private async checkForNewCommits(): Promise<GitUpdateTarget | null>
+- isNewerVersion · method · L406-L408 — private isNewerVersion(latest: string, current: string): boolean
+- getCompatibility · method · L410-L416 — private getCompatibility(targetVersion: string)
+- assertUpdateSupported · method · L418-L428 — private assertUpdateSupported(targetVersion: string): void
+- getUpdateMode · method · L430-L438 — private getUpdateMode(versionInfo: AppVersionInfo): "git" | "npm" | "electron-updater"
+- downloadAndInstallUpdate · method · L440-L487 — async downloadAndInstallUpdate(updateInfo: UpdateInfo): Promise<void>
+- gitUpdate · method · L489-L553 — private async gitUpdate(): Promise<void>
+- npmUpdate · method · L555-L583 — private async npmUpdate(targetVersion: string): Promise<void>
+- runNpmGlobalUpdate · method · L585-L608 — private runNpmGlobalUpdate(targetVersion: string): Promise<void>
+- runNpmInstall · method · L610-L631 — private runNpmInstall(cwd: string): Promise<void>
+- runNpmBuild · method · L633-L654 — private runNpmBuild(cwd: string): Promise<void>
+- electronUpdaterUpdate · method · L656-L779 — private async electronUpdaterUpdate(): Promise<void>
+- installUpdateAndRestart · method · L781-L818 — async installUpdateAndRestart(): Promise<void>

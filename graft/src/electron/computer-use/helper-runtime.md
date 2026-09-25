@@ -1,0 +1,68 @@
+# src/electron/computer-use/helper-runtime.ts
+
+- Any · type · L10-L10 — type Any = any;
+- ComputerUseHelperStatus · interface · L18-L26 — interface ComputerUseHelperStatus
+- ComputerUseHelperApp · interface · L28-L33 — interface ComputerUseHelperApp
+- ComputerUseHelperFramePoints · interface · L35-L40 — interface ComputerUseHelperFramePoints
+- ComputerUseHelperWindow · interface · L42-L51 — interface ComputerUseHelperWindow
+- ComputerUseFrontmostApp · interface · L53-L59 — interface ComputerUseFrontmostApp
+- ComputerUseScreenshotPayload · interface · L61-L66 — interface ComputerUseScreenshotPayload
+- ComputerUseAxPressResult · interface · L68-L71 — interface ComputerUseAxPressResult
+- ComputerUseAxFocusResult · interface · L73-L76 — interface ComputerUseAxFocusResult
+- ComputerUseFocusedElementResult · interface · L78-L86 — interface ComputerUseFocusedElementResult
+- ComputerUseAxElementResult · interface · L88-L106 — interface ComputerUseAxElementResult
+- ComputerUseHelperMouseButton · type · L108-L108 — type ComputerUseHelperMouseButton = "left" | "right" | "wheel" | "back" | "forward";
+- ComputerUseHelperKeypressSpec · interface · L110-L115 — interface ComputerUseHelperKeypressSpec
+- PendingRequest · interface · L117-L122 — interface PendingRequest
+- HelperTransportError · class · L124-L129 — class HelperTransportError extends Error
+- constructor · method · L125-L128 — constructor(message: string)
+- HelperCommandError · class · L131-L139 — class HelperCommandError extends Error
+- constructor · method · L132-L138 — constructor( message: string, readonly code?: string, )
+- normalizeError · function · L141-L144 — function normalizeError(error: unknown): Error
+- isRecoverableScreenshotError · function · L146-L154 — function isRecoverableScreenshotError(error: unknown): boolean
+- isPackagedElectronApp · function · L156-L164 — function isPackagedElectronApp(): boolean
+- getBundledHelperSourcePath · function · L166-L183 — function getBundledHelperSourcePath(): string | null
+- isExecutable · function · L185-L195 — async function isExecutable(filePath: string): Promise<boolean>
+- getElectronDialog · function · L197-L207 — function getElectronDialog(): { showMessageBox: (options: Any) => Promise<{ response: number }>; } | null
+- sha256 · function · L209-L211 — function sha256(buffer: Buffer): string
+- resolvePowerShellCommand · function · L213-L218 — function resolvePowerShellCommand(): string
+- ComputerUseHelperRuntime · class · L220-L887 — class ComputerUseHelperRuntime implements ComputerUseProvider
+- getInstance · method · L223-L228 — static getInstance(): ComputerUseHelperRuntime
+- resetForTesting · method · L230-L232 — static resetForTesting(): void
+- getHelperPath · method · L240-L242 — getHelperPath(): string
+- getHelperSourcePath · method · L244-L246 — getHelperSourcePath(): string | null
+- getStatus · method · L248-L289 — async getStatus(): Promise<ComputerUseHelperStatus>
+- ensureReadyWithInteractivePermissions · method · L291-L300 — async ensureReadyWithInteractivePermissions(): Promise<void>
+- stop · method · L302-L310 — stop(): void
+- listApps · method · L312-L331 — async listApps(): Promise<ComputerUseHelperApp[]>
+- listWindows · method · L333-L361 — async listWindows(pid: number): Promise<ComputerUseHelperWindow[]>
+- getFrontmost · method · L363-L379 — async getFrontmost(): Promise<ComputerUseFrontmostApp>
+- screenshot · method · L381-L399 — async screenshot(windowId: number): Promise<ComputerUseScreenshotPayload>
+- axPressAtPoint · method · L401-L414 — async axPressAtPoint(args: { windowId: number; pid: number; x: number; y: number; captureWidth: number; captureHeight: number; }): Promise<ComputerUseAxPressResult>
+- axFocusAtPoint · method · L416-L429 — async axFocusAtPoint(args: { windowId: number; pid: number; x: number; y: number; captureWidth: number; captureHeight: number; }): Promise<ComputerUseAxFocusResult>
+- axDescribeAtPoint · method · L431-L440 — async axDescribeAtPoint(args: { windowId: number; pid: number; x: number; y: number; captureWidth: number; captureHeight: number; }): Promise<Record<string, unknown>>
+- axFindTextInput · method · L442-L448 — async axFindTextInput(args: { pid: number; windowId?: number; }): Promise<ComputerUseAxElementResult>
+- axFocusTextInput · method · L450-L456 — async axFocusTextInput(args: { pid: number; windowId?: number; }): Promise<ComputerUseAxElementResult>
+- axFindFocusableElement · method · L458-L468 — async axFindFocusableElement(args: { pid: number; windowId?: number; roles?: string[]; }): Promise<ComputerUseAxElementResult>
+- axFindActionableElement · method · L470-L480 — async axFindActionableElement(args: { pid: number; windowId?: number; roles?: string[]; }): Promise<ComputerUseAxElementResult>
+- focusedElement · method · L482-L493 — async focusedElement(pid: number): Promise<ComputerUseFocusedElementResult>
+- setValue · method · L495-L497 — async setValue(elementRef: string, value: string): Promise<void>
+- mouseClick · method · L499-L510 — async mouseClick(args: { windowId: number; pid: number; x: number; y: number; captureWidth: number; captureHeight: number; button?: ComputerUseHelperMouseButton; clickCount?: number; }): Promise<void>
+- mouseMove · method · L512-L521 — async mouseMove(args: { windowId: number; pid: number; x: number; y: number; captureWidth: number; captureHeight: number; }): Promise<void>
+- mouseDrag · method · L523-L531 — async mouseDrag(args: { windowId: number; pid: number; path: Array<{ x: number; y: number }>; captureWidth: number; captureHeight: number; }): Promise<void>
+- scrollAtPoint · method · L533-L544 — async scrollAtPoint(args: { windowId: number; pid: number; x: number; y: number; captureWidth: number; captureHeight: number; scrollX: number; scrollY: number; }): Promise<void>
+- typeText · method · L546-L552 — async typeText(text: string, pid: number, windowId?: number): Promise<void>
+- pressKeys · method · L554-L556 — async pressKeys(spec: ComputerUseHelperKeypressSpec & { windowId?: number }): Promise<void>
+- activateApp · method · L558-L560 — async activateApp(pid: number): Promise<void>
+- raiseWindow · method · L562-L567 — async raiseWindow(pid: number, windowId?: number): Promise<void>
+- unminimizeWindow · method · L569-L574 — async unminimizeWindow(pid: number, windowId?: number): Promise<void>
+- openPermissionPane · method · L576-L580 — async openPermissionPane(kind: "accessibility" | "screenRecording"): Promise<void>
+- withRuntimeLock · method · L582-L594 — private async withRuntimeLock<T>(work: () => Promise<T>): Promise<T>
+- ensureHelperInstalled · method · L596-L656 — private async ensureHelperInstalled(): Promise<void>
+- ensureHelperProcess · method · L658-L707 — private async ensureHelperProcess(): Promise<ChildProcessWithoutNullStreams>
+- handleHelperStdoutChunk · method · L709-L741 — private handleHelperStdoutChunk(chunk: string): void
+- rejectAllPending · method · L743-L749 — private rejectAllPending(error: Error): void
+- bridgeCommand · method · L751-L803 — private async bridgeCommand<T = unknown>( cmd: string, args: Record<string, unknown> = {}, timeoutMs = HELPER_COMMAND_TIMEOUT_MS, ): Promise<T>
+- checkPermissions · method · L805-L811 — private async checkPermissions(): Promise<{ accessibility: boolean; screenRecording: boolean }>
+- ensurePermissionsInteractive · method · L813-L859 — private async ensurePermissionsInteractive(): Promise<void>
+- parseAxElementResult · method · L861-L886 — private parseAxElementResult(result: Record<string, unknown>): ComputerUseAxElementResult

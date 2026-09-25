@@ -1,0 +1,29 @@
+# src/electron/gateway/channels/twitch-client.ts
+
+- TwitchMessage · interface · L31-L71 — interface TwitchMessage
+- TwitchBadge · interface · L73-L76 — interface TwitchBadge
+- TwitchEmote · interface · L78-L83 — interface TwitchEmote
+- TwitchClientOptions · interface · L88-L97 — interface TwitchClientOptions
+- TwitchClientEvents · interface · L102-L110 — interface TwitchClientEvents
+- TwitchClient · class · L115-L663 — class TwitchClient extends EventEmitter
+- constructor · method · L132-L143 — constructor(options: TwitchClientOptions)
+- checkConnection · method · L148-L187 — async checkConnection(): Promise<{ success: boolean; username?: string; error?: string }>
+- startReceiving · method · L192-L245 — async startReceiving(): Promise<void>
+- handleMessage · method · L250-L310 — private handleMessage(raw: string): void
+- parseIrcMessage · method · L315-L382 — private parseIrcMessage(line: string): { tags: Record<string, string>; prefix?: string; command: string; params: string[]; } | null
+- handlePrivmsg · method · L387-L401 — private handlePrivmsg(parsed: ReturnType<typeof this.parseIrcMessage>): void
+- handleWhisper · method · L406-L414 — private handleWhisper(parsed: ReturnType<typeof this.parseIrcMessage>): void
+- createTwitchMessage · method · L419-L488 — private createTwitchMessage( channel: string, messageText: string, tags: Record<string, string>, isWhisper: boolean, ): TwitchMessage
+- getCurrentUserId · method · L493-L496 — private getCurrentUserId(): string | undefined
+- startPing · method · L501-L507 — private startPing(): void
+- stopPing · method · L512-L517 — private stopPing(): void
+- scheduleReconnect · method · L522-L536 — private scheduleReconnect(): void
+- stopReceiving · method · L541-L562 — async stopReceiving(): Promise<void>
+- joinChannel · method · L567-L572 — joinChannel(channel: string): void
+- leaveChannel · method · L577-L582 — leaveChannel(channel: string): void
+- sendMessage · method · L587-L606 — async sendMessage(channel: string, message: string, replyTo?: string): Promise<void>
+- sendWhisper · method · L611-L621 — async sendWhisper(username: string, message: string): Promise<void>
+- waitForRateLimit · method · L626-L641 — private async waitForRateLimit(): Promise<void>
+- getJoinedChannels · method · L646-L648 — getJoinedChannels(): string[]
+- isConnected · method · L653-L655 — isConnected(): boolean
+- getUsername · method · L660-L662 — getUsername(): string

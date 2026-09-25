@@ -1,0 +1,82 @@
+# src/electron/agent/custom-skill-loader.ts
+
+- SkillLoaderConfig · interface · L38-L43 — interface SkillLoaderConfig
+- normalizeExternalSkillDirectories · function · L45-L61 — function normalizeExternalSkillDirectories(input: string[] | undefined): string[]
+- validateExternalSkillDirectories · function · L63-L79 — function validateExternalSkillDirectories(input: string[]): void
+- ModelSkillDescriptionOptions · interface · L81-L90 — interface ModelSkillDescriptionOptions
+- RuntimeSkillDescriptor · interface · L92-L100 — interface RuntimeSkillDescriptor
+- RankedSkillMatch · interface · L102-L105 — interface RankedSkillMatch
+- RankSkillsForQueryOptions · interface · L107-L111 — interface RankSkillsForQueryOptions
+- RoutingIntentCue · type · L113-L113 — type RoutingIntentCue = "review" | "fix";
+- isPackagedElectronApp · function · L115-L123 — function isPackagedElectronApp(): boolean
+- CustomSkillLoader · class · L125-L1512 — class CustomSkillLoader
+- constructor · method · L180-L205 — constructor(config?: SkillLoaderConfig)
+- initialize · method · L210-L238 — async initialize(): Promise<void>
+- setWorkspaceSkillsDir · method · L243-L245 — setWorkspaceSkillsDir(workspacePath: string): void
+- getBundledSkillsDir · method · L250-L252 — getBundledSkillsDir(): string
+- getManagedSkillsDir · method · L254-L256 — getManagedSkillsDir(): string
+- getExternalSkillDirs · method · L258-L260 — getExternalSkillDirs(): string[]
+- getWorkspaceSkillsDir · method · L262-L264 — getWorkspaceSkillsDir(): string | null
+- getSkillsDirectory · method · L269-L271 — getSkillsDirectory(): string
+- loadSkillsFromDir · method · L276-L314 — private loadSkillsFromDir(dir: string, source: SkillSource): CustomSkill[]
+- reloadSkills · method · L321-L349 — async reloadSkills(): Promise<CustomSkill[]>
+- doReloadSkills · method · L354-L405 — private async doReloadSkills(): Promise<CustomSkill[]>
+- isSecurityMetadataFile · method · L407-L410 — private isSecurityMetadataFile(fileName: string): boolean
+- verifyManagedSkills · method · L412-L424 — private async verifyManagedSkills(): Promise<void>
+- populateSecurityReports · method · L426-L453 — private async populateSecurityReports( externalSkills: CustomSkill[], managedSkills: CustomSkill[], ): Promise<void>
+- validateSkill · method · L458-L469 — private validateSkill(skill: CustomSkill): boolean
+- registerPluginSkill · method · L476-L489 — registerPluginSkill(skill: CustomSkill): void
+- unregisterPluginSkills · method · L495-L507 — unregisterPluginSkills(pluginName: string): number
+- getLoadStats · method · L509-L518 — getLoadStats(): { bundled: number; external: number; managed: number; workspace: number; total: number; overridden: number; }
+- listSkills · method · L523-L538 — listSkills(): CustomSkill[]
+- listSkillsBySource · method · L543-L545 — listSkillsBySource(source: SkillSource): CustomSkill[]
+- listTaskSkills · method · L551-L553 — listTaskSkills(): CustomSkill[]
+- listGuidelineSkills · method · L558-L560 — listGuidelineSkills(): CustomSkill[]
+- getEnabledGuidelinesPrompt · method · L567-L586 — getEnabledGuidelinesPrompt(): string
+- listModelInvocableSkills · method · L592-L636 — listModelInvocableSkills( options: { availableToolNames?: Set<string>; includePrereqBlockedSkills?: boolean; } = {}, ): CustomSkill[]
+- tokenizeForRouting · method · L638-L645 — private tokenizeForRouting(text: string): Set<string>
+- buildRoutingHaystack · method · L647-L653 — private buildRoutingHaystack(texts: string[]): string
+- normalizeRoutingPhrase · method · L655-L660 — private normalizeRoutingPhrase(text: string): string
+- sanitizeRoutingQuery · method · L662-L674 — private sanitizeRoutingQuery(query: string): string
+- escapeRegExp · method · L676-L678 — private escapeRegExp(text: string): string
+- queryContainsRoutingPhrase · method · L680-L696 — private queryContainsRoutingPhrase(query: string, phrase: string): boolean
+- requiresExplicitSkillInvocation · method · L698-L700 — private requiresExplicitSkillInvocation(skill: CustomSkill): boolean
+- matchesExplicitSkillInvocationTarget · method · L702-L708 — private matchesExplicitSkillInvocationTarget(query: string, phrase: string): boolean
+- matchesExplicitSkillInvocation · method · L710-L718 — private matchesExplicitSkillInvocation(skill: CustomSkill, query: string): boolean
+- matchesSkillRoutingQuery · method · L720-L765 — matchesSkillRoutingQuery(skill: CustomSkill, query: string): boolean
+- scoreTextOverlap · method · L767-L776 — private scoreTextOverlap(queryTokens: Set<string>, texts: string[]): number
+- getIntentCueCount · method · L778-L787 — private getIntentCueCount(texts: string[], cue: RoutingIntentCue): number
+- inferDominantIntentCue · method · L789-L795 — private inferDominantIntentCue(texts: string[]): RoutingIntentCue | null
+- getRoutingExamples · method · L797-L804 — private getRoutingExamples(skill: CustomSkill, polarity: "positive" | "negative"): string[]
+- getBestExampleOverlap · method · L806-L812 — private getBestExampleOverlap(queryTokens: Set<string>, examples: string[]): number
+- rankSkillsForQuery · method · L814-L831 — private rankSkillsForQuery(skills: CustomSkill[], query: string): RankedSkillMatch[]
+- rankModelInvocableSkillsForQuery · method · L833-L848 — rankModelInvocableSkillsForQuery( query: string, options: RankSkillsForQueryOptions = {}, ): RankedSkillMatch[]
+- scoreSkillForQuery · method · L850-L922 — private scoreSkillForQuery(skill: CustomSkill, query: string, queryTokens: Set<string>): number
+- shortlistSkillsForQuery · method · L924-L960 — private shortlistSkillsForQuery( skills: CustomSkill[], query: string, shortlistSize: number, ): { skills: CustomSkill[]; confidence: number; totalEligible: number; }
+- getSkillDescriptionsForModel · method · L966-L1055 — getSkillDescriptionsForModel(options: ModelSkillDescriptionOptions = {}): string
+- getRuntimeSkillDescriptor · method · L1057-L1075 — getRuntimeSkillDescriptor(skill: CustomSkill): RuntimeSkillDescriptor
+- listRuntimeSkillDescriptors · method · L1077-L1086 — listRuntimeSkillDescriptors( options: { availableToolNames?: Set<string>; includePrereqBlockedSkills?: boolean; } = {}, ): RuntimeSkillDescriptor[]
+- getSkillRoutingHints · method · L1092-L1120 — private getSkillRoutingHints(descriptor: RuntimeSkillDescriptor): string[]
+- isLowSignalRoutingHint · method · L1122-L1131 — private isLowSignalRoutingHint( kind: "dontUseWhen" | "outputs" | "successCriteria", value: string, ): boolean
+- getSkill · method · L1136-L1138 — getSkill(id: string): CustomSkill | undefined
+- expandPrompt · method · L1143-L1163 — expandPrompt( skill: CustomSkill, parameterValues: Record<string, string | number | boolean>, context: { artifactDir?: string; workspaceArtifactDir?: string } = {}, ): string
+- expandBaseDir · method · L1168-L1174 — expandBaseDir(prompt: string, skill: CustomSkill): string
+- expandSkillPromptPlaceholders · method · L1176-L1189 — private expandSkillPromptPlaceholders( prompt: string, skill: CustomSkill, context: { artifactDir?: string; workspaceArtifactDir?: string }, ): string
+- resolveBaseDir · method · L1191-L1237 — private resolveBaseDir(skill: CustomSkill): string
+- resolveSkillScopedBaseDir · method · L1244-L1265 — private resolveSkillScopedBaseDir(skill: CustomSkill, fileDir: string): string | null
+- getEligibleSkills · method · L1270-L1276 — async getEligibleSkills(): Promise<CustomSkill[]>
+- getSkillStatus · method · L1281-L1307 — async getSkillStatus(): Promise<SkillStatusReport>
+- getSkillStatusEntry · method · L1312-L1321 — async getSkillStatusEntry(skillId: string): Promise<SkillStatusEntry | null>
+- updateConfig · method · L1326-L1330 — updateConfig(config: SkillsConfig): void
+- setExternalSkillDirs · method · L1332-L1342 — setExternalSkillDirs(directories: string[]): string[]
+- clearEligibilityCache · method · L1347-L1349 — clearEligibilityCache(): void
+- createWorkspaceSkill · method · L1354-L1379 — async createWorkspaceSkill( skill: Omit<CustomSkill, "filePath" | "source">, ): Promise<CustomSkill>
+- updateSkill · method · L1384-L1412 — async updateSkill( skillId: string, updates: Partial<Omit<CustomSkill, "id" | "filePath" | "source">>, ): Promise<CustomSkill | null>
+- deleteWorkspaceSkill · method · L1417-L1430 — async deleteWorkspaceSkill(skillId: string): Promise<boolean>
+- deleteManagedSkill · method · L1435-L1448 — async deleteManagedSkill(skillId: string): Promise<boolean>
+- openSkillsFolder · method · L1453-L1462 — async openSkillsFolder(): Promise<void>
+- openExternalSkillsFolder · method · L1464-L1472 — async openExternalSkillsFolder(dir: string): Promise<void>
+- createSkill · method · L1480-L1494 — async createSkill(skill: Omit<CustomSkill, "filePath" | "source">): Promise<CustomSkill>
+- deleteSkill · method · L1500-L1511 — async deleteSkill(skillId: string): Promise<boolean>
+- getCustomSkillLoader · function · L1517-L1522 — function getCustomSkillLoader(config?: SkillLoaderConfig): CustomSkillLoader
+- resetCustomSkillLoader · function · L1527-L1529 — function resetCustomSkillLoader(): void

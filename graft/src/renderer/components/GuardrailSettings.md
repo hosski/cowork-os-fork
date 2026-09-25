@@ -1,0 +1,16 @@
+# src/renderer/components/GuardrailSettings.tsx
+
+- GuardrailSettings · function · L8-L991 — function GuardrailSettings()
+- loadSettings · function · L22-L32 — loadSettings = async ()
+- handleSave · function · L34-L44 — handleSave = async ()
+- handleReset · function · L46-L53 — handleReset = async ()
+- addCustomPattern · function · L55-L63 — addCustomPattern = ()
+- removeCustomPattern · function · L65-L71 — removeCustomPattern = (pattern: string)
+- addTrustedPattern · function · L73-L81 — addTrustedPattern = ()
+- removeTrustedPattern · function · L83-L89 — removeTrustedPattern = (pattern: string)
+- addDomain · function · L91-L99 — addDomain = ()
+- removeDomain · function · L101-L107 — removeDomain = (domain: string)
+- addWebSearchAllowedDomain · function · L109-L120 — addWebSearchAllowedDomain = ()
+- removeWebSearchAllowedDomain · function · L122-L128 — removeWebSearchAllowedDomain = (domain: string)
+- addWebSearchBlockedDomain · function · L130-L141 — addWebSearchBlockedDomain = ()
+- removeWebSearchBlockedDomain · function · L143-L149 — removeWebSearchBlockedDomain = (domain: string)

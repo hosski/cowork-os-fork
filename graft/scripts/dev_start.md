@@ -1,0 +1,18 @@
+# scripts/dev_start.mjs
+
+- parsePort · function · L17-L23 — function parsePort(value, fallback = DEFAULT_PORT)
+- normalizeDevLogLevel · function · L25-L35 — function normalizeDevLogLevel(env)
+- enableSystemCaForMacDev · function · L37-L50 — function enableSystemCaForMacDev(env)
+- isPortAvailable · function · L52-L61 — async function isPortAvailable(port)
+- findAvailablePort · function · L63-L74 — async function findAvailablePort(startPort)
+- pipePrefixedOutput · function · L76-L99 — function pipePrefixedOutput(child, label)
+- write · function · L78-L95 — write = (stream, chunk)
+- getElectronBinaryStatus · function · L101-L123 — function getElectronBinaryStatus()
+- findRunningElectronDevPid · function · L125-L144 — function findRunningElectronDevPid(electronBinary)
+- getNativeSqliteStatus · function · L146-L184 — function getNativeSqliteStatus(env)
+- repairNativeInstall · function · L186-L212 — function repairNativeInstall(env, reason)
+- runOptionalDevBranding · function · L214-L250 — function runOptionalDevBranding(env)
+- waitForPort · function · L252-L271 — async function waitForPort(port, timeoutMs)
+- finish · function · L258-L262 — finish = (value)
+- terminateChild · function · L348-L355 — function terminateChild(child, signal = "SIGTERM")
+- shutdown · function · L357-L364 — function shutdown(exitCode = 0)

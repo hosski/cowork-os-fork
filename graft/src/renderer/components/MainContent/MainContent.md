@@ -1,0 +1,120 @@
+# src/renderer/components/MainContent/MainContent.tsx
+
+- guessVisualAttachmentMimeType · function · L309-L320 — guessVisualAttachmentMimeType = (fileName: string, mimeType?: string): string | undefined
+- isVideoVisualAttachmentMimeType · function · L322-L323 — isVideoVisualAttachmentMimeType = (mimeType: string | undefined): boolean
+- joinWorkspaceRelativePath · function · L325-L326 — joinWorkspaceRelativePath = (workspacePath: string, relativePath: string): string
+- getAttachmentNamesWithoutImagePreviews · function · L328-L339 — getAttachmentNamesWithoutImagePreviews = ( names: string[], attachments: UserMessageAttachmentMetadata[], ): string[]
+- MentionOption · type · L375-L383 — type MentionOption = { type: "agent" | "everyone" | "integration"; id: string; label: string; description?: string; icon?: string; color?: string; integration?: IntegrationMentionOption; };
+- normalizeMentionSearch · function · L385-L386 — normalizeMentionSearch = (value: string): string
+- isInboxAgentMention · function · L421-L423 — function isInboxAgentMention(mention: IntegrationMentionSelection): boolean
+- extractInboxAskQuery · function · L425-L441 — function extractInboxAskQuery( value: string, mentionSpans: IntegrationMentionSpan[], ): string | null
+- getIntegrationMentionSearchRank · function · L443-L452 — function getIntegrationMentionSearchRank(option: IntegrationMentionOption, query: string): number
+- appendCommandOutputTail · function · L483-L487 — function appendCommandOutputTail(current: string, chunk: string): string
+- limitCommandOutputSessions · function · L489-L499 — function limitCommandOutputSessions(sessions: CommandOutputSession[]): CommandOutputSession[]
+- MainContentProps · interface · L501-L612 — interface MainContentProps
+- getTruncatedTaskEventDetailId · function · L614-L627 — function getTruncatedTaskEventDetailId(event: TaskEvent): string | null
+- getTaskEventPayloadRenderSignature · function · L629-L632 — function getTaskEventPayloadRenderSignature(event: TaskEvent): string
+- isChatInlineFrame · function · L634-L642 — function isChatInlineFrame(value: unknown): value is ChatInlineFrame
+- getTaskEventInlineFrames · function · L644-L647 — function getTaskEventInlineFrames(event: TaskEvent): ChatInlineFrame[]
+- getPreviousUserMessageText · function · L649-L657 — function getPreviousUserMessageText(events: TaskEvent[], beforeIndex: number): string
+- AgentReasoningPanel · function · L659-L739 — function AgentReasoningPanel(props: { currentStep: { description: string } | null; state: AgentReasoningPanelState; })
+- VirtualizedTaskFeedRow · function · L741-L814 — function VirtualizedTaskFeedRow({ itemKey, offsetTop, estimatedHeight, onHeightChange, visiblePerfEventId, visibilityEnabled, children, }: { itemKey: string; offsetTop: number; estimatedHeight: number; onHeightChange: (itemKey: string, height: number) => void; visiblePerfEventId: string | null; visibilityEnabled: boolean; children: React.ReactNode; })
+- measure · function · L766-L782 — measure = ()
+- MeasuredTaskFeedRow · function · L816-L866 — function MeasuredTaskFeedRow({ visiblePerfEventId, enabled, children, }: { visiblePerfEventId: string | null; enabled: boolean; children: React.ReactNode; })
+- measure · function · L833-L847 — measure = ()
+- getTaskFeedRowsSignature · function · L868-L870 — function getTaskFeedRowsSignature(rows: TaskFeedRow[]): string
+- TaskSessionLineageFooter · function · L872-L909 — function TaskSessionLineageFooter({ task, onSelectTask, }: { task: Task | null | undefined; onSelectTask?: (taskId: string | null) => void; })
+- pushArtifactStacksForTimelineItem · function · L1615-L1646 — pushArtifactStacksForTimelineItem = (item: any)
+- getRowRenderSignature · function · L1898-L1960 — getRowRenderSignature = (row: TaskFeedRow): string
+- renderFeedRow · function · L1962-L3140 — renderFeedRow = (row: TaskFeedRow)
+- onToggle · function · L2204-L2209 — onToggle = ()
+- getRenderedFeedRow · function · L3142-L3153 — getRenderedFeedRow = (row: TaskFeedRow)
+- areTaskConversationFlowPropsEqual · function · L3263-L3335 — function areTaskConversationFlowPropsEqual(prev: any, next: any): boolean
+- usePrefersReducedMotion · function · L3343-L3360 — function usePrefersReducedMotion(): boolean
+- updatePreference · function · L3352-L3352 — updatePreference = ()
+- useTypewriterPlaceholder · function · L3362-L3439 — function useTypewriterPlaceholder(phrases: string[], active: boolean): string
+- schedule · function · L3383-L3385 — schedule = (delay: number)
+- step · function · L3387-L3425 — step = ()
+- MainContentComponent · function · L3455-L11597 — function MainContentComponent({ task, selectedTaskId, workspace, events: rawEvents, sharedTaskEventUi = null, childTasks = [], childEvents: rawChildEvents = [], onSelectChildTask, onOpenChildAgentSidebar, onSelectTask, botConversations = [], isLoadingBotConversations = false, onSelectBotConversation, onNewBotConversation, draftValue, draftRevision = 0, onDraftValueChange, onDraftAccepted, draftSnapshot = null, onDraftPatch, onStageDraftAttachment, onResolveDraftAttachment, onReleaseDraftAttachment, onSendMessage, onOpenSideChat, onStartOnboarding, onStartFreshSession, onCreateTask, onAskInbox, onChangeWorkspace, onSelectWorkspace, onOpenSettings, onStopTask, onContinueWithoutCommandsForPausedTask, onWrapUpTask, inputRequest = null, pendingInputRequests = [], onSubmitInputRequest, onDismissInputRequest, onOpenBrowserView, onViewTaskOutputs, onTasksChanged, onOpenSpreadsheetArtifact, onOpenDocumentArtifact, onOpenPresentationArtifact, onOpenWebArtifact, onOpenBrowserWorkbenchSidebar, onOpenWebLinkInSidebar, selectedModel, selectedProvider, selectedReasoningEffort, availableModels, onModelChange, availableProviders = [], uiDensity = "focused", homeResearchVaultEnabled = false, homeNextActionsEnabled = false, rendererPerfLoggingEnabled = false, taskSwitchId = null, hasMoreTimelineHistory = false, isLoadingTimelineHistory = false, timelineHistoryError = null, onLoadMoreTimelineHistory, onLoadTaskEventDetail, onReleaseTaskEventDetail, remoteSession = null, replayControls, }: MainContentProps)
+- handleClickOutside · function · L3813-L3818 — handleClickOutside = (event: MouseEvent)
+- UserSignals · type · L3846-L3846 — type UserSignals = import("../../utils/placeholderEngine").UserSignals;
+- setInteractionMode · function · L3979-L3981 — setInteractionMode = (selection: InteractionModeSelection)
+- setExecutionMode · function · L3982-L3985 — setExecutionMode = (mode: ExecutionMode)
+- openHistory · function · L4121-L4123 — openHistory = ()
+- refresh · function · L4132-L4139 — refresh = ()
+- loadWelcomeTaskSuggestions · function · L4473-L4587 — loadWelcomeTaskSuggestions = async ()
+- loadStoredSuggestions · function · L4480-L4489 — loadStoredSuggestions = async (): Promise<ProactiveSuggestion[]>
+- close · function · L4876-L4879 — close = (e: MouseEvent)
+- CanvasItem · type · L5079-L5084 — type CanvasItem = { kind: "canvas"; session: (typeof canvasSessions)[number]; timestamp: number; forceSnapshot: boolean; };
+- DispatchedItem · type · L5085-L5085 — type DispatchedItem = { kind: "dispatched-agents"; timestamp: number };
+- CliAgentFrameItem · type · L5086-L5091 — type CliAgentFrameItem = { kind: "cli-agent-frame"; timestamp: number; childTask: Task; childTaskEvents: TaskEvent[]; };
+- TimelineItem · type · L5092-L5092 — type TimelineItem = BaseTimelineItem | CanvasItem | DispatchedItem | CliAgentFrameItem;
+- finalizeCurrentSession · function · L5225-L5229 — finalizeCurrentSession = ()
+- toggleVerboseSteps · function · L5327-L5337 — toggleVerboseSteps = ()
+- toggleCodePreviews · function · L5339-L5345 — toggleCodePreviews = ()
+- handleStyleChange · function · L5372-L5377 — handleStyleChange = (event: Event)
+- refresh · function · L5509-L5519 — refresh = ()
+- applyPermissionDefaults · function · L5721-L5751 — applyPermissionDefaults = ( permissionSettings: { defaultPermissionAccess?: "default" | "full"; defaultAccessProfileId?: AccessProfileId; accessProfiles?: AccessProfileDefinition[]; }, forceSelection = false, )
+- loadPermissionDefaults · function · L5753-L5763 — loadPermissionDefaults = async ()
+- loadAdminRuntimePolicy · function · L5765-L5776 — loadAdminRuntimePolicy = async ()
+- handlePermissionSettingsUpdated · function · L5778-L5783 — handlePermissionSettingsUpdated = (event: Event)
+- handleClickOutside · function · L5812-L5817 — handleClickOutside = (e: MouseEvent)
+- handleClickOutside · function · L5826-L5833 — handleClickOutside = (e: MouseEvent)
+- handleClickOutside · function · L5842-L5849 — handleClickOutside = (e: MouseEvent)
+- handleClickOutside · function · L5858-L5862 — handleClickOutside = (e: MouseEvent)
+- handleClickOutside · function · L5871-L5875 — handleClickOutside = (e: MouseEvent)
+- handleClickOutside · function · L5884-L5888 — handleClickOutside = (e: MouseEvent)
+- renderWelcomeTaskDomainRow · function · L5968-L6001 — renderWelcomeTaskDomainRow = ()
+- renderWelcomeOverflowSubmenu · function · L6003-L6048 — renderWelcomeOverflowSubmenu = ()
+- handleWorkspaceDropdownToggle · function · L6051-L6068 — handleWorkspaceDropdownToggle = async ()
+- handleWorkspaceSelect · function · L6071-L6074 — handleWorkspaceSelect = (selectedWorkspace: Workspace)
+- handleSelectNewFolder · function · L6077-L6080 — handleSelectNewFolder = ()
+- handleSkillSelect · function · L6082-L6094 — handleSkillSelect = (skill: CustomSkill)
+- handleSkillParamSubmit · function · L6096-L6121 — handleSkillParamSubmit = (values: SkillParameterFormValues)
+- handleSkillAskInChat · function · L6123-L6137 — handleSkillAskInChat = (values: SkillParameterFormValues)
+- handleSkillParamCancel · function · L6139-L6141 — handleSkillParamCancel = ()
+- updateEmptyCursor · function · L6470-L6478 — updateEmptyCursor = ()
+- reportAttachmentError · function · L6565-L6568 — reportAttachmentError = (message: string)
+- readFileAsBase64 · function · L6570-L6584 — readFileAsBase64 = (file: File): Promise<string>
+- appendPendingAttachments · function · L6586-L6608 — appendPendingAttachments = (files: PendingAttachment[])
+- handleAttachFiles · function · L6610-L6628 — handleAttachFiles = async ()
+- handleRemoveAttachment · function · L6630-L6636 — handleRemoveAttachment = (id: string)
+- isFileDrag · function · L6721-L6722 — isFileDrag = (event: React.DragEvent)
+- handleDragOver · function · L6724-L6728 — handleDragOver = (event: React.DragEvent)
+- handleDragLeave · function · L6730-L6734 — handleDragLeave = (event: React.DragEvent)
+- handleDrop · function · L6736-L6766 — handleDrop = async (event: React.DragEvent)
+- handlePaste · function · L6768-L6801 — handlePaste = async (event: React.ClipboardEvent)
+- renderAttachmentPanel · function · L6803-L6852 — renderAttachmentPanel = ()
+- importAttachmentsToWorkspace · function · L6854-L6887 — importAttachmentsToWorkspace = async (): Promise<ImportedAttachment[]>
+- handleSend · function · L6889-L7458 — handleSend = async ()
+- isSubmittedDraftCurrent · function · L7064-L7072 — isSubmittedDraftCurrent = ()
+- clearComposer · function · L7073-L7088 — clearComposer = (verifySubmission = true)
+- clearAcceptedComposer · function · L7089-L7104 — clearAcceptedComposer = async (): Promise<boolean>
+- feedback · function · L7403-L7422 — feedback = async ()
+- findMentionAtCursor · function · L7460-L7472 — findMentionAtCursor = (value: string, cursor: number | null)
+- handleClickOutside · function · L7564-L7568 — handleClickOutside = (e: MouseEvent)
+- handleClickOutside · function · L7610-L7614 — handleClickOutside = (e: MouseEvent)
+- findSlashAtCursor · function · L7619-L7631 — findSlashAtCursor = (value: string, cursor: number | null)
+- handleSlashSelect · function · L7687-L7753 — handleSlashSelect = (option: SlashCommandOption)
+- insertSlashCommand · function · L7693-L7710 — insertSlashCommand = (commandName: string)
+- handleInputChange · function · L7755-L7791 — handleInputChange = ( value: string, cursor: number, nextIntegrationMentionSpans: IntegrationMentionSpan[], shrink: boolean, )
+- handleInputCursorChange · function · L7793-L7796 — handleInputCursorChange = (cursor: number)
+- replaceIntegrationMentionRange · function · L7798-L7811 — replaceIntegrationMentionRange = ( start: number, end: number, insertText: string, newSpan?: IntegrationMentionSpan, ): IntegrationMentionSpan[]
+- handleMentionSelect · function · L7813-L7860 — handleMentionSelect = (option: MentionOption)
+- renderModeSuggestionBar · function · L7874-L7908 — renderModeSuggestionBar = ()
+- renderMentionDropdown · function · L7910-L7978 — renderMentionDropdown = ()
+- renderOption · function · L7917-L7954 — renderOption = (option: MentionOption)
+- renderSlashDropdown · function · L7980-L8008 — renderSlashDropdown = ()
+- handleKeyDown · function · L8010-L8064 — handleKeyDown = (e: React.KeyboardEvent)
+- handleQuickAction · function · L8066-L8073 — handleQuickAction = (action: string)
+- handleWelcomeTaskSuggestion · function · L8075-L8108 — handleWelcomeTaskSuggestion = (suggestion: WelcomeTaskSuggestion)
+- handleDismissWelcomeTaskSuggestion · function · L8110-L8126 — handleDismissWelcomeTaskSuggestion = ( event: ReactMouseEvent<HTMLButtonElement>, suggestion: WelcomeTaskSuggestion, )
+- handleSnoozeWelcomeTaskSuggestion · function · L8128-L8148 — handleSnoozeWelcomeTaskSuggestion = ( event: ReactMouseEvent<HTMLButtonElement>, suggestion: WelcomeTaskSuggestion, )
+- renderWelcomeTaskSuggestions · function · L8150-L8222 — renderWelcomeTaskSuggestions = ()
+- renderLlmWikiVaultPanel · function · L8263-L8394 — renderLlmWikiVaultPanel = ()
+- handleClick · function · L9025-L9031 — handleClick = ()
+- getMainContentTaskSignature · function · L11599-L11620 — function getMainContentTaskSignature(task: Task | undefined): string
+- getMainContentInputRequestSignature · function · L11622-L11633 — function getMainContentInputRequestSignature( inputRequest: InputRequest | null | undefined, ): string
+- getMainContentInputRequestsSignature · function · L11635-L11648 — function getMainContentInputRequestsSignature(inputRequests: InputRequest[] | undefined): string
+- getRemoteSessionSignature · function · L11650-L11655 — function getRemoteSessionSignature( remoteSession: { deviceId: string; deviceName: string } | null | undefined, ): string
+- areMainContentPropsEqual · function · L11657-L11711 — function areMainContentPropsEqual(prev: MainContentProps, next: MainContentProps): boolean

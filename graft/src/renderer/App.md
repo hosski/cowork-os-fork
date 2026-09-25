@@ -1,0 +1,105 @@
+# src/renderer/App.tsx
+
+- ActiveArtifactKind · type · L265-L265 — type ActiveArtifactKind = "spreadsheet" | "document" | "presentation" | "webpage";
+- BrowserWorkbenchOpenRequest · type · L266-L271 — type BrowserWorkbenchOpenRequest = { requestId: string; taskId: string; sessionId: string; url?: string; };
+- readPersistedSpreadsheetSidebarWidth · function · L273-L282 — function readPersistedSpreadsheetSidebarWidth(): number
+- normalizeWorkspacePath · function · L284-L286 — function normalizeWorkspacePath(filePath: string): string
+- getSpreadsheetFileName · function · L288-L292 — function getSpreadsheetFileName(filePath: string): string
+- cleanTurnText · function · L294-L299 — function cleanTurnText(value: unknown, maxLength = 220): string
+- getEventText · function · L301-L311 — function getEventText(event: TaskEvent | undefined): string
+- getSpreadsheetTurnEventKind · function · L313-L327 — function getSpreadsheetTurnEventKind(event: TaskEvent): { kind: "step" | "assistant"; tone?: "muted" | "active" | "done"; } | null
+- getSpreadsheetTurnEventText · function · L329-L356 — function getSpreadsheetTurnEventText(event: TaskEvent): string
+- buildSpreadsheetTurnEvents · function · L358-L383 — function buildSpreadsheetTurnEvents(args: { events: TaskEvent[]; taskId?: string; sinceTimestamp?: number | null; limit?: number; }): SpreadsheetTurnContext["events"]
+- eventPathMatchesSpreadsheet · function · L385-L396 — function eventPathMatchesSpreadsheet(event: TaskEvent, filePath: string): boolean
+- findSpreadsheetCreationEvent · function · L398-L412 — function findSpreadsheetCreationEvent(events: TaskEvent[], filePath: string): TaskEvent | null
+- findLatestUserMessageTimestamp · function · L414-L421 — function findLatestUserMessageTimestamp(events: TaskEvent[], taskId?: string): number | null
+- buildSpreadsheetTurnContext · function · L423-L522 — function buildSpreadsheetTurnContext(args: { task: Task | undefined; events: TaskEvent[]; filePath: string; isWorking: boolean; durationLabel: string; turnStartedAt?: number | null; }): SpreadsheetTurnContext | null
+- getEffectiveTheme · function · L525-L530 — function getEffectiveTheme(themeMode: ThemeMode): "light" | "dark"
+- LazyViewFallback · function · L532-L538 — function LazyViewFallback({ className = "main-content" }: { className?: string })
+- SnowLeopardLoadingLogo · function · L540-L551 — function SnowLeopardLoadingLogo({ decorative = false }: { decorative?: boolean })
+- TaskViewSkeleton · function · L553-L559 — function TaskViewSkeleton()
+- RightPanelFallback · function · L561-L579 — function RightPanelFallback()
+- ArtifactSidebarFallback · function · L581-L587 — function ArtifactSidebarFallback()
+- mergeTaskPreservingIdentity · function · L603-L615 — function mergeTaskPreservingIdentity(current: Task, updates: Partial<Task>): Task
+- upsertTaskPreservingIdentity · function · L617-L639 — function upsertTaskPreservingIdentity( tasks: Task[], incoming: Task, options?: { prependIfMissing?: boolean }, ): Task[]
+- updateTaskPreservingIdentity · function · L641-L654 — function updateTaskPreservingIdentity( tasks: Task[], taskId: string, updater: (task: Task) => Task, ): Task[]
+- AppView · type · L656-L668 — type AppView = | "home" | "automations" | "main" | "settings" | "browser" | "devices" | "health" | "ideas" | "inboxAgent" | "agents" | "everydayAgent" | "missionControl";
+- RemoteTaskView · type · L669-L676 — type RemoteTaskView = { deviceId: string; deviceName: string; task: Task; events: TaskEvent[]; cursor: TaskTimelinePageCursor | null; hasMoreHistory: boolean; };
+- SideChatState · type · L677-L684 — type SideChatState = { parentTaskId: string; parentTask: Task | null; task: Task | null; events: TaskEvent[]; loading: boolean; sending: boolean; };
+- SelectedTaskWorkspaceViewProps · type · L686-L821 — type SelectedTaskWorkspaceViewProps = { task: Task | undefined; selectedTaskId: string | null; workspace: Workspace | null; replayControls: ReplayControls; sharedTaskEventUi: SharedTaskEventUiState | null; remoteTaskView: RemoteTaskView | null; botConversations: Task[]; isLoadingBotConversations: boolean; draftValue: string; draftRevision: number; onDraftValueChange: (value: string) => ComposerDraft | void; onDraftAccepted: ( revision: number, submittedDraft?: ComposerDraft | null, ) => void | boolean | Promise<void | boolean>; draftSnapshot: ComposerDraft | null; onDraftPatch: ( patch: Partial<Pick<ComposerDraft, "mentions" | "quotedAssistantMessage" | "attachments">>, ) => ComposerDraft | void; onStageDraftAttachment: (attachment: { name: string; size: number; mimeType?: string; path?: string; dataBase64?: string; }) => Promise<DraftAttachmentRef | null>; onResolveDraftAttachment: ( refId: string, ) => Promise<{ ref: DraftAttachmentRef; path: string } | null>; onReleaseDraftAttachment: (refId: string) => Promise<void>; childTasks: Task[]; childEvents: TaskEvent[]; activeInputRequest: InputRequest | null; pendingInputRequests: InputRequest[]; selectedModel: string; selectedProvider: LLMProviderType; selectedReasoningEffort?: LLMReasoningEffort; availableModels: LLMModelInfo[]; availableProviders: LLMProviderInfo[]; uiDensity: UiDensity; homeResearchVaultEnabled: boolean; homeNextActionsEnabled: boolean; rendererPerfLoggingEnabled: boolean; taskSwitchId: string | null; hasMoreTimelineHistory: boolean; isLoadingTimelineHistory: boolean; timelineHistoryError: string | null; onLoadMoreTimelineHistory: (options?: { loadAll?: boolean }) => void | Promise<void>; onLoadTaskEventDetail: (eventId: string, taskId: string) => void | Promise<void>; onReleaseTaskEventDetail: (eventId: string, taskId: string) => void; effectiveRightCollapsed: boolean; onCloseRightPanel: () => void; terminalTabsOpen: boolean; browserWorkbenchRequest: BrowserWorkbenchOpenRequest | null; sideChat: SideChatState | null; sideChatDraftValue: string; sideChatDraftRevision: number; sideChatDraftSnapshot: ComposerDraft | null; onSideChatDraftValueChange: (value: string) => ComposerDraft | void; onSideChatDraftAccepted: ( revision: number, submittedDraft?: ComposerDraft | null, ) => void | boolean | Promise<void | boolean>; rightPanelInput: { task: Task | undefined; workspace: Workspace | null; events: TaskEvent[]; sharedTaskEventUi: SharedTaskEventUiState | null; hasActiveChildren: boolean; childTasks: Task[]; childEvents: TaskEvent[]; runningTasks: Task[]; queuedTasks: Task[]; queueStatus: QueueStatus | null; highlightOutputPath: string | null; }; onSelectChildTask: (taskId: string) => void; onSelectBotConversation: (conversationId: string) => void | Promise<void>; onNewBotConversation: (botRoleId: string) => void | Promise<void>; onSelectTask: (taskId: string | null) => void; onSendMessage: ( message: string, images?: ImageAttachment[], quotedAssistantMessage?: QuotedAssistantMessage, options?: { interactionMode?: import("../shared/interaction-mode").InteractionModeSelection; permissionMode?: PermissionMode; shellAccess?: boolean; accessProfileId?: AccessProfileId; integrationMentions?: IntegrationMentionSelection[]; returnOnAccepted?: boolean; }, ) => Promise<void | boolean>; onOpenSideChat: (request: { taskId: string; fromEventId?: string; initialMessage?: string; }) => Promise<void>; onSendSideChatMessage: (message: string) => Promise<void>; onCloseSideChat: () => void; onOpenSideChatFullThread: (taskId: string) => void | Promise<void>; onStartOnboarding: () => void; onStartFreshSession?: () => void; onCreateTask: ( title: string, prompt: string, options?: Any, images?: ImageAttachment[], workspace?: Workspace, ) => Promise<void | boolean>; onAskInbox: (query: string) => void; onChangeWorkspace: () => void; onSelectWorkspace: (workspace: Workspace) => void; onOpenSettings: (tab?: string) => void; onStopTask: () => Promise<void>; onContinueWithoutCommandsForPausedTask: () => Promise<void>; onWrapUpTask: () => Promise<void>; onSubmitInputRequest: ( requestId: string, answers: Record<string, { optionLabel?: string; otherText?: string }>, ) => void; onDismissInputRequest: (requestId: string) => void; onOpenBrowserView?: (url?: string) => void; onRevealRightSidebar?: () => void; onViewTaskOutputs: (taskId: string, primaryOutputPath?: string) => void; onTasksChanged: () => void | Promise<void>; onCancelTaskById: (taskId: string) => Promise<void>; onHighlightConsumed: () => void; onCloseTerminalTabs: () => void; onModelChange: (selection: { providerType?: LLMProviderType; modelKey: string; reasoningEffort?: LLMReasoningEffort; }) => void; };
+- getAppTaskSignature · function · L823-L838 — function getAppTaskSignature(task: Task | undefined): string
+- getInputRequestSignature · function · L840-L845 — function getInputRequestSignature(inputRequest: InputRequest | null): string
+- getInputRequestsSignature · function · L847-L860 — function getInputRequestsSignature(inputRequests: InputRequest[]): string
+- clampWidth · function · L1175-L1176 — clampWidth = (width: number)
+- handlePointerMove · function · L1180-L1182 — handlePointerMove = (moveEvent: PointerEvent)
+- handlePointerUp · function · L1184-L1195 — handlePointerUp = ()
+- PendingToolEventEntry · type · L1878-L1881 — type PendingToolEventEntry = { event: TaskEvent; queuedAtMs: number; };
+- isTaskPossiblyRunning · function · L1883-L1885 — function isTaskPossiblyRunning(status: Task["status"] | undefined): boolean
+- isTerminalTaskStatus · function · L1887-L1889 — function isTerminalTaskStatus(status: Task["status"] | undefined): boolean
+- getLatestEventTimestamp · function · L1891-L1899 — function getLatestEventTimestamp(events: TaskEvent[]): number
+- isImmediateTaskAttentionEvent · function · L1901-L1910 — function isImmediateTaskAttentionEvent(event: TaskEvent): boolean
+- isShellPermissionPauseReason · function · L1912-L1916 — function isShellPermissionPauseReason(reasonCode: string | null | undefined): boolean
+- isNotificationWorthyPauseReason · function · L1918-L1927 — function isNotificationWorthyPauseReason(reasonCode: string | null | undefined): boolean
+- mergeUniqueTaskEvents · function · L1929-L1931 — function mergeUniqueTaskEvents(existing: TaskEvent[], incoming: TaskEvent[]): TaskEvent[]
+- getApprovalToastId · function · L1933-L1935 — function getApprovalToastId(approvalId: string): string
+- describeApprovalPersistence · function · L1937-L2002 — function describeApprovalPersistence( payload: Any, approved: boolean, ): { type: "info" | "warning"; message: string } | null
+- pickFirstPendingGenericApproval · function · L2004-L2011 — function pickFirstPendingGenericApproval( pending: Map<string, ApprovalRequest>, ): ApprovalRequest | null
+- pickFirstPendingComputerUseApproval · function · L2013-L2020 — function pickFirstPendingComputerUseApproval( pending: Map<string, ApprovalRequest>, ): ApprovalRequest | null
+- extractApprovalId · function · L2022-L2028 — function extractApprovalId(event: TaskEvent): string | null
+- extractInputRequestId · function · L2030-L2036 — function extractInputRequestId(event: TaskEvent): string | null
+- App · function · L2038-L7759 — function App()
+- applySchedulerSnapshot · function · L2486-L2535 — applySchedulerSnapshot = ()
+- applySideChatSnapshot · function · L2567-L2591 — applySideChatSnapshot = ()
+- updatePolicy · function · L2655-L2658 — updatePolicy = (event: Event)
+- handleDisclaimerAccept · function · L2981-L2989 — handleDisclaimerAccept = (dontShowAgain: boolean)
+- handleOnboardingComplete · function · L2991-L3022 — handleOnboardingComplete = (dontShowAgain: boolean)
+- handleOpenBrowserView · function · L3024-L3027 — handleOpenBrowserView = (url?: string)
+- handleShowOnboarding · function · L3032-L3037 — handleShowOnboarding = ()
+- loadLLMConfig · function · L3040-L3054 — loadLLMConfig = async ()
+- handler · function · L3062-L3065 — handler = ()
+- loadAppearanceSettings · function · L3081-L3117 — loadAppearanceSettings = async ()
+- checkMigrationStatus · function · L3132-L3166 — checkMigrationStatus = async ()
+- loadQueueStatus · function · L3174-L3181 — loadQueueStatus = async ()
+- checkUpdates · function · L3196-L3206 — checkUpdates = async ()
+- handleChange · function · L3265-L3271 — handleChange = ()
+- initWorkspace · function · L3289-L3298 — initWorkspace = async ()
+- loadTaskWorkspace · function · L3319-L3333 — loadTaskWorkspace = async ()
+- addToast · function · L3367-L3378 — addToast = (toast: Omit<ToastNotification, "id"> & { id?: string })
+- dismissToast · function · L3380-L3382 — dismissToast = (id: string)
+- handleApprovalResponse · function · L3384-L3422 — handleApprovalResponse = async ( approvalId: string, approved: boolean, action?: ApprovalResponseAction, )
+- handleSessionApproveAllConfirm · function · L3452-L3482 — handleSessionApproveAllConfirm = ()
+- reshowPendingApprovalToasts · function · L3484-L3489 — reshowPendingApprovalToasts = ()
+- showApproveAllWarning · function · L3491-L3500 — showApproveAllWarning = ()
+- updateTaskStatus · function · L3929-L3960 — updateTaskStatus = (t: Task): Task
+- applyTaskStatusUpdate · function · L3961-L3966 — applyTaskStatusUpdate = ()
+- resolveWorkspacePathForTask · function · L4244-L4256 — resolveWorkspacePathForTask = async (): Promise<string | undefined>
+- appendSelectedTaskEvents · function · L4376-L4410 — appendSelectedTaskEvents = ( incomingEvents: TaskEvent[], options?: { queuedAtByEventId?: Map<string, number>; transition?: boolean }, )
+- applyAppend · function · L4383-L4404 — applyAppend = ()
+- flushPendingToolEvents · function · L4412-L4433 — flushPendingToolEvents = (extraEvents: TaskEvent[] = [])
+- schedulePendingToolEventFlush · function · L4435-L4448 — schedulePendingToolEventFlush = ()
+- loadHistoricalEvents · function · L4632-L4732 — loadHistoricalEvents = async ()
+- isStaleSelection · function · L4878-L4887 — isStaleSelection = ()
+- reconcileStaleSelectedTask · function · L5021-L5046 — reconcileStaleSelectedTask = async ()
+- loadChildHistoricalEvents · function · L5104-L5118 — loadChildHistoricalEvents = async ()
+- restore · function · L5377-L5386 — restore = (task: Task | null | undefined): boolean
+- handleChangeWorkspace · function · L5480-L5521 — handleChangeWorkspace = async ()
+- handleCreateTask · function · L5523-L5755 — handleCreateTask = async ( title: string, prompt: string, options?: { generateTitle?: boolean; autonomousMode?: boolean; permissionMode?: PermissionMode; shellAccess?: boolean; accessProfileId?: AccessProfileId; collaborativeMode?: boolean; multiLlmMode?: boolean; multiLlmConfig?: MultiLlmConfig; multitaskMode?: boolean; multitaskLaneCount?: number; multitaskAssignmentMode?: "auto_split"; verificationAgent?: boolean; executionMode?: ExecutionMode; assignedAgentRoleId?: string; taskDomain?: TaskDomain; chronicleMode?: "inherit" | "enabled" | "disabled"; videoGenerationMode?: boolean; llmProfile?: LlmProfile; llmProfileForced?: boolean; agentConfig?: AgentConfig; integrationMentions?: IntegrationMentionSelection[]; }, images?: ImageAttachment[], workspaceOverride?: Workspace, ): Promise<boolean>
+- handleSendMessage · function · L6151-L6235 — handleSendMessage = async ( message: string, images?: ImageAttachment[], quotedAssistantMessage?: QuotedAssistantMessage, options?: { interactionMode?: import("../shared/interaction-mode").InteractionModeSelection; permissionMode?: PermissionMode; shellAccess?: boolean; accessProfileId?: AccessProfileId; integrationMentions?: IntegrationMentionSelection[]; returnOnAccepted?: boolean; }, )
+- handleCancelTask · function · L6242-L6274 — handleCancelTask = async ()
+- handleWrapUpTask · function · L6276-L6299 — handleWrapUpTask = async ()
+- handleCancelTaskById · function · L6301-L6307 — handleCancelTaskById = async (taskId: string)
+- handleQuickTask · function · L6309-L6316 — handleQuickTask = async (prompt: string)
+- handleCreateTaskFromIdea · function · L6318-L6340 — handleCreateTaskFromIdea = async (prompt: string)
+- handleNewSession · function · L6342-L6363 — handleNewSession = async ()
+- handleClearTaskView · function · L6365-L6370 — handleClearTaskView = ()
+- handleModelChange · function · L6372-L6405 — handleModelChange = async (selection: { providerType?: LLMProviderType; modelKey: string; reasoningEffort?: LLMReasoningEffort; })
+- handleThemeChange · function · L6407-L6416 — handleThemeChange = (theme: ThemeMode)
+- handleVisualThemeChange · function · L6418-L6427 — handleVisualThemeChange = (visual: VisualTheme)
+- handleAccentChange · function · L6429-L6438 — handleAccentChange = (accent: AccentColor)
+- handleUiDensityChange · function · L6440-L6449 — handleUiDensityChange = (density: UiDensity)
+- handleCommandOutputStyleChange · function · L6451-L6458 — handleCommandOutputStyleChange = (style: CommandOutputStyle)
+- handleTransparencyEffectsEnabledChange · function · L6460-L6465 — handleTransparencyEffectsEnabledChange = (enabled: boolean)
+- handleDevRunLoggingEnabledChange · function · L6467-L6472 — handleDevRunLoggingEnabledChange = (enabled: boolean)
+- handleHomeResearchVaultEnabledChange · function · L6474-L6479 — handleHomeResearchVaultEnabledChange = (enabled: boolean)
+- handleHomeNextActionsEnabledChange · function · L6481-L6486 — handleHomeNextActionsEnabledChange = (enabled: boolean)
+- fetchTask · function · L6716-L6727 — fetchTask = async ()

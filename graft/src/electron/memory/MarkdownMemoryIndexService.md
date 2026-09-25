@@ -1,0 +1,52 @@
+# src/electron/memory/MarkdownMemoryIndexService.ts
+
+- MarkdownMemoryReadGuard · type · L41-L41 — type MarkdownMemoryReadGuard = (candidatePath: string) => boolean;
+- MarkdownChunk · type · L140-L145 — type MarkdownChunk = { startLine: number; endLine: number; text: string; embedding: number[]; };
+- MarkdownFileEntry · type · L147-L152 — type MarkdownFileEntry = { absPath: string; relPath: string; mtime: number; size: number; };
+- KeywordCandidate · type · L154-L162 — type KeywordCandidate = { id: string; path: string; startLine: number; endLine: number; snippet: string; textScore: number; createdAt: number; };
+- VectorCandidate · type · L164-L172 — type VectorCandidate = { id: string; path: string; startLine: number; endLine: number; snippet: string; vectorScore: number; createdAt: number; };
+- ChunkRow · type · L174-L184 — type ChunkRow = { id: string; workspace_id: string; path: string; start_line: number; end_line: number; text: string; embedding: string; mtime: number; updated_at: number; };
+- ParsedChunkRow · type · L186-L196 — type ParsedChunkRow = { id: string; workspaceId: string; path: string; startLine: number; endLine: number; text: string; embedding: number[]; mtime: number; updatedAt: number; };
+- tokenizeForMemorySearch · function · L198-L205 — function tokenizeForMemorySearch(text: string): string[]
+- buildMarkdownFtsQuery · function · L207-L211 — function buildMarkdownFtsQuery(raw: string): string | null
+- chunkMarkdownForIndex · function · L213-L253 — function chunkMarkdownForIndex( content: string, ): Array<{ startLine: number; endLine: number; text: string }>
+- TARGET_CHARS_OR_MIN · function · L255-L263 — function TARGET_CHARS_OR_MIN(boundary: boolean, chars: number): number
+- hashText · function · L265-L267 — function hashText(input: string): string
+- hashToken · function · L269-L276 — function hashToken(token: string, seed: number): number
+- createLocalEmbedding · function · L278-L319 — function createLocalEmbedding(text: string): number[]
+- cosineSimilarity · function · L321-L335 — function cosineSimilarity(a: number[], b: number[]): number
+- normalizeBm25Rank · function · L337-L340 — function normalizeBm25Rank(rank: number): number
+- normalizeSnippet · function · L342-L346 — function normalizeSnippet(text: string): string
+- redactSensitiveMarkdownContent · function · L348-L355 — function redactSensitiveMarkdownContent(text: string): string
+- parseEmbedding · function · L357-L367 — function parseEmbedding(raw: string): number[]
+- MarkdownMemoryIndexService · class · L369-L1366 — class MarkdownMemoryIndexService
+- constructor · method · L383-L385 — constructor(private readonly db: Database.Database)
+- search · method · L387-L422 — search( workspaceId: string, workspacePath: string, query: string, limit = 10, readGuard?: MarkdownMemoryReadGuard, ): MemorySearchResult[]
+- getRecentSnippets · method · L424-L484 — getRecentSnippets( workspaceId: string, workspacePath: string, limit = 3, readGuard?: MarkdownMemoryReadGuard, ): MemorySearchResult[]
+- scheduleSync · method · L486-L519 — scheduleSync( workspaceId: string, workspacePath: string, force = false, readGuard?: MarkdownMemoryReadGuard, ): void
+- syncWorkspace · method · L521-L642 — async syncWorkspace( workspaceId: string, workspacePath: string, force = false, generation?: number, readGuard?: MarkdownMemoryReadGuard, ): Promise<void>
+- clearWorkspace · method · L644-L673 — clearWorkspace(workspaceId: string): void
+- cleanupMissingFiles · method · L675-L712 — cleanupMissingFiles(workspaceId: string, workspacePath: string): number
+- isMarkdownMemoryId · method · L714-L716 — isMarkdownMemoryId(memoryId: string): boolean
+- getTimelineContext · method · L718-L765 — getTimelineContext(memoryId: string, windowSize = 5): MemoryTimelineEntry[]
+- getDetails · method · L767-L816 — getDetails(memoryIds: string[]): Memory[]
+- listMarkdownFiles · method · L818-L871 — private async listMarkdownFiles( workspacePath: string, readGuard?: MarkdownMemoryReadGuard, ): Promise<MarkdownFileEntry[]>
+- reindexFile · method · L873-L946 — private reindexFile( workspaceId: string, file: MarkdownFileEntry, content: string, contentHash: string, now: number, ): void
+- deleteIndexedFile · method · L948-L969 — private deleteIndexedFile(workspaceId: string, relPath: string): void
+- searchKeyword · method · L971-L1019 — private searchKeyword(workspaceId: string, query: string, limit: number): KeywordCandidate[]
+- searchKeywordFallback · method · L1021-L1077 — private searchKeywordFallback( workspaceId: string, query: string, limit: number, ): KeywordCandidate[]
+- searchVector · method · L1079-L1100 — private searchVector(workspaceId: string, query: string, limit: number): VectorCandidate[]
+- mergeAndRerank · method · L1102-L1179 — private mergeAndRerank( query: string, keywordCandidates: KeywordCandidate[], vectorCandidates: VectorCandidate[], ): Array<{ id: string; path: string; startLine: number; endLine: number; snippet: string; score: number; createdAt: number; }>
+- rerank · method · L1181-L1186 — private rerank(query: string, relPath: string, snippet: string): number
+- computeOverlapScore · method · L1188-L1208 — private computeOverlapScore(query: string, relPath: string, snippet: string): number
+- normalizeMemoryId · method · L1210-L1215 — private normalizeMemoryId(memoryId: string): string | null
+- shutdown · method · L1217-L1235 — shutdown(): void
+- enqueueSync · method · L1237-L1263 — private enqueueSync( workspaceId: string, workspacePath: string, force: boolean, generation: number, readGuard?: MarkdownMemoryReadGuard, ): void
+- getChunkSignature · method · L1265-L1277 — private getChunkSignature(workspaceId: string): string
+- getParsedChunksForWorkspace · method · L1279-L1312 — private getParsedChunksForWorkspace(workspaceId: string): ParsedChunkRow[]
+- isFtsTableAvailable · method · L1314-L1328 — private isFtsTableAvailable(): boolean
+- getSyncGeneration · method · L1330-L1332 — private getSyncGeneration(workspaceId: string): number
+- bumpSyncGeneration · method · L1334-L1338 — private bumpSyncGeneration(workspaceId: string): number
+- resolveWorkspaceFilePath · method · L1340-L1347 — private resolveWorkspaceFilePath(workspacePath: string, relativePath: string): string | null
+- isReadablePath · method · L1349-L1355 — private isReadablePath(candidatePath: string, readGuard: MarkdownMemoryReadGuard): boolean
+- isReadableIndexedPath · method · L1357-L1365 — private isReadableIndexedPath( workspacePath: string, relativePath: string, readGuard?: MarkdownMemoryReadGuard, ): boolean

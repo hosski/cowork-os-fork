@@ -1,0 +1,33 @@
+# src/electron/gateway/channels/feishu.ts
+
+- FeishuTokenResponse · interface · L19-L24 — interface FeishuTokenResponse
+- FeishuMessageEvent · type · L26-L43 — type FeishuMessageEvent = { message?: { message_id?: string; chat_id?: string; chat_type?: string; message_type?: string; content?: string; create_time?: string; }; sender?: { sender_id?: { open_id?: string; union_id?: string; user_id?: string; }; sender_type?: string; }; };
+- normalizeJsonBody · function · L45-L52 — function normalizeJsonBody(value: string): string
+- parseMaybeJson · function · L54-L60 — function parseMaybeJson<T>(raw: string): T | null
+- createError · function · L62-L64 — function createError(value: unknown): Error
+- readRequestBody · function · L66-L75 — function readRequestBody(req: http.IncomingMessage): Promise<string>
+- resolveRequestPath · function · L77-L84 — function resolveRequestPath(req: http.IncomingMessage): string
+- parseFeishuContent · function · L86-L94 — function parseFeishuContent(content: string | undefined): string
+- decryptFeishuPayload · function · L96-L104 — function decryptFeishuPayload(encrypt: string, encryptKey: string): string
+- computeFeishuSignature · function · L106-L116 — function computeFeishuSignature( timestamp: string, nonce: string, encryptKey: string, rawBody: string, ): string
+- FeishuAdapter · class · L118-L521 — class FeishuAdapter implements ChannelAdapter
+- constructor · method · L133-L140 — constructor(config: FeishuConfig)
+- status · method · L142-L144 — get status(): ChannelStatus
+- botUsername · method · L146-L148 — get botUsername(): string | undefined
+- connect · method · L150-L168 — async connect(): Promise<void>
+- disconnect · method · L170-L193 — async disconnect(): Promise<void>
+- sendMessage · method · L195-L225 — async sendMessage(message: OutgoingMessage): Promise<string>
+- onMessage · method · L227-L229 — onMessage(handler: MessageHandler): void
+- onError · method · L231-L233 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L235-L237 — onStatusChange(handler: StatusHandler): void
+- updateConfig · method · L239-L241 — updateConfig(config: FeishuConfig): void
+- getInfo · method · L243-L254 — async getInfo(): Promise<ChannelInfo>
+- startServer · method · L256-L325 — private async startServer(): Promise<void>
+- parseAndVerifyPayload · method · L327-L388 — private parseAndVerifyPayload( req: http.IncomingMessage, rawBody: string, ): Record<string, unknown>
+- handleIncomingPayload · method · L390-L454 — private async handleIncomingPayload(payload: Record<string, unknown>): Promise<void>
+- getTenantAccessToken · method · L456-L483 — private async getTenantAccessToken(): Promise<string>
+- isDuplicate · method · L485-L492 — private isDuplicate(messageId: string): boolean
+- startCleanupLoop · method · L494-L506 — private startCleanupLoop(): void
+- setStatus · method · L508-L513 — private setStatus(status: ChannelStatus, error?: Error): void
+- handleError · method · L515-L520 — private handleError(error: Error, context?: string): void
+- createFeishuAdapter · function · L523-L525 — function createFeishuAdapter(config: FeishuConfig): FeishuAdapter

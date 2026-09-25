@@ -1,0 +1,29 @@
+# src/electron/agent/sandbox/macos-sandbox.ts
+
+- MacOSSandbox · class · L62-L771 — class MacOSSandbox implements ISandbox
+- constructor · method · L68-L70 — constructor(workspace: Workspace)
+- initialize · method · L75-L79 — async initialize(): Promise<void>
+- execute · method · L84-L203 — async execute( command: string, args: string[] = [], options: SandboxOptions = {}, ): Promise<SandboxResult>
+- spawnProcess · method · L210-L246 — spawnProcess( command: string, args: string[] = [], options: SandboxOptions = {}, ): SandboxedProcess
+- cleanup · function · L238-L242 — cleanup = ()
+- executeCode · method · L251-L266 — async executeCode(code: string, language: "python" | "javascript"): Promise<SandboxResult>
+- cleanup · method · L271-L281 — cleanup(): void
+- getMacOSPathAliases · method · L283-L308 — private getMacOSPathAliases(targetPath: string): string[]
+- add · function · L285-L288 — add = (candidate: string | null | undefined): void
+- appendReadSubpathRules · method · L310-L321 — private appendReadSubpathRules(profile: string, pathsToAllow: string[]): string
+- appendWriteSubpathRules · method · L323-L334 — private appendWriteSubpathRules(profile: string, pathsToAllow: string[]): string
+- appendDenySubpathRules · method · L336-L349 — private appendDenySubpathRules(profile: string, pathsToDeny: string[]): string
+- isPathAllowed · method · L355-L409 — private isPathAllowed(targetPath: string, mode: "read" | "write"): boolean
+- buildSafeEnvironment · method · L414-L441 — private buildSafeEnvironment(passthrough: string[]): Record<string, string | undefined>
+- generateSandboxProfile · method · L447-L647 — private generateSandboxProfile(allowNetwork: boolean, options: SandboxOptions = {}): string
+- resolvePolicyPath · method · L649-L651 — private resolvePolicyPath(rawPath: string): string
+- hasBoundedFilesystemScope · method · L659-L665 — private hasBoundedFilesystemScope(): boolean
+- isPathWithin · method · L667-L670 — private isPathWithin(parentPath: string, candidatePath: string): boolean
+- getRuntimeTempDirIfScoped · method · L672-L674 — private getRuntimeTempDirIfScoped(): string
+- getRuntimeTempDir · method · L676-L681 — private getRuntimeTempDir(): string
+- createRuntimeCodeFile · method · L683-L710 — private createRuntimeCodeFile( extension: string, content: string, ): { filePath: string; cleanup: () => void }
+- isExplicitTemporaryOptionPath · method · L712-L725 — private isExplicitTemporaryOptionPath( targetPath: string, candidates: readonly string[] | undefined, ): boolean
+- isRuntimeTemporaryPath · method · L727-L734 — private isRuntimeTemporaryPath(targetPath: string): boolean
+- getNetworkAccessError · method · L736-L749 — private getNetworkAccessError(allowNetwork: boolean): string | undefined
+- writeTempProfile · method · L755-L770 — private writeTempProfile(): { profilePath: string; cleanup: () => void }
+- cleanupOnce · function · L759-L763 — cleanupOnce = ()

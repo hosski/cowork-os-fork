@@ -1,0 +1,34 @@
+# src/electron/gateway/channels/wecom.ts
+
+- WeComTokenResponse · interface · L18-L23 — interface WeComTokenResponse
+- WeComSendResponse · interface · L25-L29 — interface WeComSendResponse
+- createError · function · L31-L33 — function createError(value: unknown): Error
+- readRequestBody · function · L35-L44 — function readRequestBody(req: http.IncomingMessage): Promise<string>
+- resolveRequestUrl · function · L46-L48 — function resolveRequestUrl(req: http.IncomingMessage): URL
+- xmlValue · function · L50-L57 — function xmlValue(xml: string, tag: string): string | undefined
+- computeWeComSignature · function · L59-L69 — function computeWeComSignature( token: string, timestamp: string, nonce: string, encrypted: string, ): string
+- removePkcs7Padding · function · L71-L77 — function removePkcs7Padding(buffer: Buffer): Buffer
+- decryptWeComMessage · function · L79-L99 — function decryptWeComMessage( encryptedBase64: string, encodingAESKey: string, corpId: string, ): string
+- detectWeComTarget · function · L101-L109 — function detectWeComTarget(chatId: string): { touser?: string; toparty?: string; totag?: string }
+- WeComAdapter · class · L111-L458 — class WeComAdapter implements ChannelAdapter
+- constructor · method · L126-L133 — constructor(config: WeComConfig)
+- status · method · L135-L137 — get status(): ChannelStatus
+- botUsername · method · L139-L141 — get botUsername(): string | undefined
+- connect · method · L143-L161 — async connect(): Promise<void>
+- disconnect · method · L163-L186 — async disconnect(): Promise<void>
+- sendMessage · method · L188-L216 — async sendMessage(message: OutgoingMessage): Promise<string>
+- onMessage · method · L218-L220 — onMessage(handler: MessageHandler): void
+- onError · method · L222-L224 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L226-L228 — onStatusChange(handler: StatusHandler): void
+- updateConfig · method · L230-L232 — updateConfig(config: WeComConfig): void
+- getInfo · method · L234-L247 — async getInfo(): Promise<ChannelInfo>
+- startServer · method · L249-L305 — private async startServer(): Promise<void>
+- verifyUrl · method · L307-L326 — private verifyUrl(url: URL): string
+- parseIncomingXml · method · L328-L360 — private parseIncomingXml(url: URL, rawBody: string): string
+- handleIncomingXml · method · L362-L400 — private async handleIncomingXml(xml: string): Promise<void>
+- getAccessToken · method · L402-L420 — private async getAccessToken(): Promise<string>
+- isDuplicate · method · L422-L429 — private isDuplicate(messageId: string): boolean
+- startCleanupLoop · method · L431-L443 — private startCleanupLoop(): void
+- setStatus · method · L445-L450 — private setStatus(status: ChannelStatus, error?: Error): void
+- handleError · method · L452-L457 — private handleError(error: Error, context?: string): void
+- createWeComAdapter · function · L460-L462 — function createWeComAdapter(config: WeComConfig): WeComAdapter

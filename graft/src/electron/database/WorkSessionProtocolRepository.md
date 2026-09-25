@@ -1,0 +1,66 @@
+# src/electron/database/WorkSessionProtocolRepository.ts
+
+- DbRow · type · L18-L18 — type DbRow = Record<string, unknown>;
+- WorkSessionProtocolError · class · L56-L64 — class WorkSessionProtocolError extends Error
+- constructor · method · L57-L63 — constructor( message: string, readonly code = "WORK_SESSION_PROTOCOL_ERROR", )
+- StaleWorkSessionTurnError · class · L66-L78 — class StaleWorkSessionTurnError extends WorkSessionProtocolError
+- constructor · method · L67-L77 — constructor( readonly sessionId: string, readonly expectedTurnId: string, readonly currentTurnId?: string, )
+- requiredId · function · L80-L84 — function requiredId(value: unknown, label: string): string
+- optionalId · function · L86-L89 — function optionalId(value: unknown): string | undefined
+- boundedText · function · L91-L97 — function boundedText(value: unknown, fallback = ""): string
+- parseJson · function · L99-L106 — function parseJson<T>(value: unknown, fallback: T): T
+- normalizeSessionStatus · function · L108-L113 — function normalizeSessionStatus(value: unknown): WorkSessionStatus
+- normalizeTurnStatus · function · L115-L120 — function normalizeTurnStatus(value: unknown): WorkSessionTurnStatus
+- normalizeRedactionClass · function · L122-L127 — function normalizeRedactionClass(value: unknown): WorkSessionRedactionClass
+- normalizeActor · function · L129-L132 — function normalizeActor(value: unknown): WorkSessionActor | string
+- isTerminalTurnStatus · function · L134-L141 — function isTerminalTurnStatus(status: WorkSessionTurnStatus): boolean
+- sessionStatusForTurn · function · L143-L145 — function sessionStatusForTurn(status: WorkSessionTurnStatus): WorkSessionStatus
+- redactWorkSessionValue · function · L152-L175 — function redactWorkSessionValue(value: unknown, key = "", depth = 0): unknown
+- redactPayload · function · L177-L180 — function redactPayload(payload: Record<string, unknown> | undefined): Record<string, unknown>
+- containsSensitiveKey · function · L182-L190 — function containsSensitiveKey(value: unknown, key = "", depth = 0): boolean
+- canonicalize · function · L192-L202 — function canonicalize(value: unknown): unknown
+- checksum · function · L204-L208 — function checksum(value: unknown): string
+- WorkSessionTaskBinding · interface · L210-L215 — interface WorkSessionTaskBinding
+- WorkSessionUserMessageInput · interface · L217-L226 — interface WorkSessionUserMessageInput
+- WorkSessionTerminalInput · interface · L228-L235 — interface WorkSessionTerminalInput
+- WorkSessionProtocolRepository · class · L237-L1028 — class WorkSessionProtocolRepository
+- constructor · method · L238-L238 — constructor(private readonly db: Database.Database)
+- createAggregate · method · L244-L322 — createAggregate(input: WorkSessionCreateInput): WorkSessionAggregate
+- ensureForTask · method · L324-L334 — ensureForTask(binding: WorkSessionTaskBinding): WorkSessionAggregate
+- ensureSessionForTask · method · L337-L371 — ensureSessionForTask(binding: WorkSessionTaskBinding & { id?: string }): WorkSession
+- findById · method · L373-L377 — findById(sessionId: string): WorkSessionAggregate | undefined
+- findByTaskId · method · L379-L387 — findByTaskId(taskId: string): WorkSessionAggregate | undefined
+- getCurrentTurn · method · L389-L393 — getCurrentTurn(sessionId: string): WorkSessionTurn | undefined
+- getSessionById · method · L395-L399 — getSessionById(sessionId: string): WorkSession | undefined
+- countItems · method · L401-L407 — countItems(sessionId: string): number
+- assertExpectedTurn · method · L409-L423 — assertExpectedTurn(sessionId: string, expectedTurnId: string): WorkSessionTurn
+- createTurn · method · L425-L428 — createTurn(input: WorkSessionTurnCreateInput): WorkSessionTurn
+- createTurnInTransaction · method · L430-L483 — private createTurnInTransaction(input: WorkSessionTurnCreateInput): WorkSessionTurn
+- appendItem · method · L485-L491 — appendItem(input: WorkSessionItemAppendInput): WorkSessionItem
+- appendItemInTransaction · method · L493-L555 — private appendItemInTransaction(input: WorkSessionItemAppendInput): WorkSessionItem
+- appendUserMessage · method · L557-L624 — appendUserMessage(input: WorkSessionUserMessageInput): { turn: WorkSessionTurn; item: WorkSessionItem; }
+- setTurnStatus · method · L626-L670 — setTurnStatus( sessionId: string, turnId: string, status: WorkSessionTurnStatus, reason?: string, expectedTurnId?: string, ): WorkSessionTurn
+- completeTurn · method · L672-L727 — completeTurn(input: WorkSessionTerminalInput): WorkSessionTurn
+- listItems · method · L729-L751 — listItems( sessionId: string, options?: { afterSequence?: number; limit?: number }, ): WorkSessionItem[]
+- listAllItems · method · L759-L782 — listAllItems(sessionId: string, options?: { pageSize?: number }): WorkSessionItem[]
+- replay · method · L784-L797 — replay(sessionId: string): WorkSessionReplayProjection | undefined
+- checksum · method · L799-L801 — checksum(sessionId: string): string | undefined
+- getAggregate · method · L803-L818 — private getAggregate(sessionId: string): WorkSessionAggregate | undefined
+- getSession · method · L820-L823 — private getSession(sessionId: string): WorkSession | undefined
+- getTurn · method · L825-L830 — private getTurn(turnId: string): WorkSessionTurn | undefined
+- getLastItem · method · L832-L839 — getLastItem(sessionId: string): WorkSessionItem | undefined
+- findItemBySourceEvent · method · L842-L848 — findItemBySourceEvent(sessionId: string, sourceEventId: string): WorkSessionItem | undefined
+- findSessionRow · method · L850-L854 — private findSessionRow(sessionId: string): DbRow | undefined
+- findSessionRowByTaskId · method · L856-L860 — private findSessionRowByTaskId(taskId: string): DbRow | undefined
+- findSessionIdForTask · method · L863-L866 — findSessionIdForTask(taskId: string): string | undefined
+- bindTaskSession · method · L869-L875 — bindTaskSession(taskId: string, sessionId: string): void
+- updateTaskSessionBinding · method · L877-L915 — updateTaskSessionBinding( taskId: string, updates: { parentSessionId?: string; isolationKey?: string; owner?: string; inheritedPolicySnapshot?: Record<string, unknown>; }, ): void
+- bindTaskSessionInTransaction · method · L917-L941 — private bindTaskSessionInTransaction(taskId: string, sessionId: string): void
+- findBoundSessionId · method · L943-L948 — private findBoundSessionId(taskId: string): string | undefined
+- findTurnRowByIdempotency · method · L950-L954 — private findTurnRowByIdempotency(sessionId: string, idempotencyKey: string): DbRow | undefined
+- findItemRowByIdempotency · method · L956-L960 — private findItemRowByIdempotency(sessionId: string, idempotencyKey: string): DbRow | undefined
+- findItemRowBySourceEvent · method · L962-L966 — private findItemRowBySourceEvent(sessionId: string, sourceEventId: string): DbRow | undefined
+- assertExpectedTurnInTransaction · method · L968-L973 — private assertExpectedTurnInTransaction(session: WorkSession, expectedTurnId: string): void
+- mapSession · method · L975-L987 — private mapSession(row: DbRow): WorkSession
+- mapTurn · method · L989-L1002 — private mapTurn(row: DbRow): WorkSessionTurn
+- mapItem · method · L1004-L1027 — private mapItem(row: DbRow): WorkSessionItem

@@ -1,0 +1,44 @@
+# src/electron/agent/llm/azure-openai-provider.ts
+
+- isToolResult · function · L40-L41 — isToolResult = (item: LLMContent | LLMToolResult): item is LLMToolResult
+- isToolUse · function · L42-L43 — isToolUse = (item: LLMContent | LLMToolResult): item is LLMToolUse
+- isTextContent · function · L44-L45 — isTextContent = (item: LLMContent | LLMToolResult): item is LLMTextContent
+- isImageContent · function · L46-L47 — isImageContent = (item: LLMContent | LLMToolResult): item is LLMImageContent
+- AzureRequestKind · type · L49-L49 — type AzureRequestKind = "chat_completions" | "responses" | "test_connection";
+- AzureRequestReasoningEffort · type · L50-L50 — type AzureRequestReasoningEffort = "low" | "medium" | "high" | "xhigh";
+- AzureOpenAIProvider · class · L52-L1303 — class AzureOpenAIProvider implements LLMProvider
+- constructor · method · L60-L80 — constructor(config: LLMProviderConfig)
+- getReasoningEffort · method · L82-L93 — private getReasoningEffort(): AzureRequestReasoningEffort | undefined
+- logRequestReasoning · method · L95-L103 — private logRequestReasoning(kind: AzureRequestKind, model: string): void
+- getFallbackReasoningEffort · method · L105-L112 — private getFallbackReasoningEffort( effort: AzureRequestReasoningEffort | undefined, ): AzureRequestReasoningEffort | undefined
+- getChatCompletionsUrl · method · L114-L118 — private getChatCompletionsUrl(): string
+- getResponsesUrl · method · L120-L122 — private getResponsesUrl(): string
+- isMaxTokensUnsupported · method · L124-L127 — private isMaxTokensUnsupported(errorData: Any): boolean
+- isChatCompletionUnsupported · method · L129-L139 — private isChatCompletionUnsupported(errorData: Any): boolean
+- buildChatCompletionsBody · method · L141-L174 — private buildChatCompletionsBody( request: LLMRequest, useMaxCompletionTokens: boolean, reasoningEffortOverride?: AzureRequestReasoningEffort, ): Record<string, Any>
+- buildResponsesInput · method · L176-L257 — private buildResponsesInput( messages: LLMMessage[], system?: string, systemBlocks?: LLMRequest["systemBlocks"], ): Any[]
+- toResponsesTools · method · L259-L268 — private toResponsesTools( tools: LLMTool[], ): Array<{ type: "function"; name: string; description: string; parameters: Any }>
+- sanitizeSchemaForResponses · method · L270-L294 — private sanitizeSchemaForResponses(schema: Any): Any
+- buildResponsesBody · method · L296-L329 — private buildResponsesBody( request: LLMRequest, reasoningEffortOverride?: AzureRequestReasoningEffort, ): Record<string, Any>
+- sendRequest · method · L331-L350 — private async sendRequest( url: string, body: Record<string, Any>, signal?: AbortSignal, kind?: AzureRequestKind, model?: string, ): Promise<Response>
+- sendRequestWithReasoningFallback · method · L352-L374 — private async sendRequestWithReasoningFallback( url: string, body: Record<string, Any>, signal?: AbortSignal, kind?: AzureRequestKind, model?: string, fallbackBody?: Record<string, Any>, ): Promise<Response>
+- emitStreamProgress · method · L376-L393 — private emitStreamProgress( onStreamProgress: StreamProgressCallback | undefined, startedAt: number, inputTokens: number, outputTokens: number, outputChars: number, streaming: boolean, text?: string, ): void
+- consumeSseEvents · method · L395-L456 — private async consumeSseEvents( response: Response, onEvent: (eventData: string) => void, ): Promise<void>
+- flushEvent · function · L407-L411 — flushEvent = ()
+- fromChatCompletionsStreamResponse · method · L458-L608 — private async fromChatCompletionsStreamResponse( response: Response, request: LLMRequest, startedAt: number, ): Promise<LLMResponse>
+- fromResponsesStreamResponse · method · L610-L876 — private async fromResponsesStreamResponse( response: Response, request: LLMRequest, startedAt: number, ): Promise<LLMResponse>
+- StreamedToolCall · type · L615-L620 — type StreamedToolCall = { order: number; id: string; name?: string; argumentsText: string; };
+- normalizeStreamedToolCallIdentifier · function · L632-L638 — normalizeStreamedToolCallIdentifier = (value: unknown): string | undefined
+- getStreamedToolCall · function · L640-L681 — getStreamedToolCall = (identifiers: { callId?: unknown; itemId?: unknown; outputIndex?: unknown; itemIndex?: unknown; }): StreamedToolCall
+- fromResponsesApiResponse · method · L878-L925 — private fromResponsesApiResponse(response: Any): LLMResponse
+- isTransientInterruptionMessage · method · L927-L941 — private isTransientInterruptionMessage(message: string): boolean
+- isModelOutputValidationError · method · L944-L947 — private isModelOutputValidationError(message: string): boolean
+- isTransientServerErrorMessage · method · L950-L953 — private isTransientServerErrorMessage(message: string): boolean
+- getResponseRequestId · method · L955-L962 — private getResponseRequestId(response?: Response): string | undefined
+- buildAzureApiError · method · L964-L980 — private buildAzureApiError( response: Response, errorData?: { error?: { message?: string; code?: string } }, ): LLMProviderError
+- toStructuredProviderError · method · L982-L1012 — private toStructuredProviderError(error: Any): LLMProviderError
+- createMessage · method · L1014-L1181 — async createMessage(request: LLMRequest): Promise<LLMResponse>
+- runResponses · function · L1024-L1061 — runResponses = async ( streaming: boolean, reasoningEffortOverride?: AzureRequestReasoningEffort, ): Promise<LLMResponse>
+- runChatCompletions · function · L1063-L1116 — runChatCompletions = async ( useMaxCompletionTokens: boolean, reasoningEffortOverride?: AzureRequestReasoningEffort, ): Promise<LLMResponse>
+- testConnection · method · L1183-L1302 — async testConnection(): Promise<{ success: boolean; error?: string }>
+- runResponses · function · L1192-L1229 — runResponses = async (): Promise<{ success: boolean; error?: string }>

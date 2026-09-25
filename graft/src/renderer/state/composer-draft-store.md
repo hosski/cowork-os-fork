@@ -1,0 +1,22 @@
+# src/renderer/state/composer-draft-store.ts
+
+- ComposerDraftTransport · interface · L12-L19 — interface ComposerDraftTransport
+- ComposerDraftListener · type · L21-L21 — type ComposerDraftListener = (draft: ComposerDraft | null) => void;
+- ComposerDraftStoreOptions · interface · L23-L27 — interface ComposerDraftStoreOptions
+- ComposerDraftStore · class · L29-L287 — class ComposerDraftStore
+- constructor · method · L40-L44 — constructor(options: ComposerDraftStoreOptions = {})
+- get · method · L46-L48 — get(key: string): ComposerDraft | null
+- subscribe · method · L50-L58 — subscribe(key: string, listener: ComposerDraftListener): () => void
+- load · method · L60-L93 — async load(input: ComposerDraftKeyInput): Promise<ComposerDraft | null>
+- ensure · method · L95-L103 — ensure(input: ComposerDraftKeyInput): ComposerDraft
+- update · method · L105-L122 — update( input: ComposerDraftKeyInput, patch: Partial< Pick<ComposerDraft, "text" | "mentions" | "quotedAssistantMessage" | "attachments"> >, ): ComposerDraft
+- setDraft · method · L124-L133 — setDraft(draft: ComposerDraft, persist = false): ComposerDraft
+- flush · method · L135-L173 — async flush(key: string): Promise<void>
+- clearAfterAccepted · method · L175-L181 — async clearAfterAccepted( input: ComposerDraftKeyInput, submittedRevision: number, ): Promise<boolean>
+- clearAfterAcceptedDraft · method · L183-L198 — async clearAfterAcceptedDraft( submittedDraft: ComposerDraft, submittedRevision: number, ): Promise<boolean>
+- clearAfterAcceptedAtKey · method · L200-L227 — private async clearAfterAcceptedAtKey( input: ComposerDraftKeyInput, key: string, submittedRevision: number, ): Promise<boolean>
+- finishAcceptedClear · method · L229-L267 — private async finishAcceptedClear( input: ComposerDraftKeyInput, key: string, submittedRevision: number, pendingWrite?: Promise<void>, ): Promise<boolean>
+- flushAll · method · L269-L271 — async flushAll(): Promise<void>
+- schedulePersist · method · L273-L282 — private schedulePersist(key: string): void
+- emit · method · L284-L286 — private emit(key: string, draft: ComposerDraft | null): void
+- createWindowComposerDraftTransport · function · L289-L296 — function createWindowComposerDraftTransport(): ComposerDraftTransport

@@ -1,0 +1,44 @@
+# connectors/okta-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L35 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L37-L46 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L48-L55 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- OktaConfig · type · L78-L81 — type OktaConfig = { baseUrl?: string; apiToken?: string; };
+- RateLimitInfo · type · L83-L87 — type RateLimitInfo = { limit?: number; remaining?: number; resetAt?: string; };
+- RequestMeta · type · L89-L94 — type RequestMeta = { durationMs: number; rateLimit?: RateLimitInfo; vendorRequestId?: string; baseUrl?: string; };
+- RequestResult · type · L96-L100 — type RequestResult = { data: any; meta: RequestMeta; nextCursor?: string; };
+- OktaClient · class · L102-L214 — class OktaClient
+- constructor · method · L103-L103 — constructor(private config: OktaConfig)
+- health · method · L105-L107 — async health(): Promise<RequestResult>
+- listUsers · method · L109-L116 — async listUsers(limit?: number, after?: string, q?: string): Promise<RequestResult>
+- getUser · method · L118-L120 — async getUser(userId: string): Promise<RequestResult>
+- createUser · method · L122-L125 — async createUser(payload: Record<string, any>, activate?: boolean): Promise<RequestResult>
+- updateUser · method · L127-L129 — async updateUser(userId: string, payload: Record<string, any>): Promise<RequestResult>
+- getBaseUrl · method · L131-L136 — private getBaseUrl(): string
+- getAuthHeader · method · L138-L143 — private getAuthHeader(): string
+- extractRateLimit · method · L145-L159 — private extractRateLimit(headers: Headers): RateLimitInfo | undefined
+- extractNextCursor · method · L161-L174 — private extractNextCursor(headers: Headers): string | undefined
+- requestJson · method · L176-L213 — private async requestJson(method: string, path: string, body?: any): Promise<RequestResult>
+- ToolProvider · type · L218-L221 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L223-L405 — class StdioMCPServer
+- constructor · method · L227-L230 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L232-L244 — start(): void
+- stop · method · L246-L252 — stop(): void
+- handleLine · method · L254-L264 — private handleLine(line: string): void
+- handleMessage · method · L266-L275 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L277-L310 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L312-L318 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L320-L334 — private handleInitialize(_params: any): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsList · method · L336-L338 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L340-L367 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L369-L372 — private handleShutdown(): Record<string, never>
+- sendResult · method · L374-L377 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L379-L386 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L388-L390 — private sendMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- requireInitialized · method · L392-L396 — private requireInitialized(): void
+- createError · method · L398-L404 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }
+- buildEnvelope · function · L511-L524 — function buildEnvelope(result: RequestResult): any

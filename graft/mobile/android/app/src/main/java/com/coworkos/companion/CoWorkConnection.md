@@ -1,0 +1,23 @@
+# mobile/android/app/src/main/java/com/coworkos/companion/CoWorkConnection.kt
+
+- ConnectionState · enum · L25-L27 — enum class ConnectionState
+- CoWorkConnection · class · L33-L390 — class CoWorkConnection(private val context: Context)
+- connect · method · L81-L124 — fun connect()
+- onOpen · function · L95-L97 — override fun onOpen(ws: WebSocket, response: Response)
+- onMessage · function · L99-L101 — override fun onMessage(ws: WebSocket, text: String)
+- onClosing · function · L103-L105 — override fun onClosing(ws: WebSocket, code: Int, reason: String)
+- onClosed · function · L107-L113 — override fun onClosed(ws: WebSocket, code: Int, reason: String)
+- onFailure · function · L115-L122 — override fun onFailure(ws: WebSocket, t: Throwable, response: Response?)
+- disconnect · method · L126-L135 — fun disconnect(cleanly: Boolean = true)
+- setForeground · method · L137-L150 — fun setForeground(foreground: Boolean)
+- destroy · method · L152-L155 — fun destroy()
+- scheduleReconnect · method · L159-L173 — private fun scheduleReconnect()
+- authenticate · method · L177-L214 — private fun authenticate()
+- handleMessage · method · L218-L225 — private fun handleMessage(text: String)
+- handleResponse · method · L227-L242 — private fun handleResponse(json: JSONObject)
+- handleRequest · method · L246-L271 — private fun handleRequest(json: JSONObject)
+- handleCameraSnap · method · L275-L290 — private fun handleCameraSnap(requestId: String, params: JSONObject?)
+- handleLocationGet · method · L294-L331 — @Suppress("MissingPermission") private fun handleLocationGet(requestId: String, params: JSONObject?)
+- handleSystemNotify · method · L335-L371 — private fun handleSystemNotify(requestId: String, params: JSONObject?)
+- sendJSON · method · L375-L377 — private fun sendJSON(json: JSONObject)
+- sendError · method · L379-L389 — private fun sendError(requestId: String, code: String, message: String)

@@ -1,0 +1,27 @@
+# src/electron/security/policy-manager.ts
+
+- PolicyCheckResult · interface · L38-L44 — interface PolicyCheckResult
+- PolicyLayer · type · L49-L53 — type PolicyLayer = | "global_guardrails" | "workspace_permissions" | "context_restrictions" | "tool_specific";
+- LayerDecision · interface · L58-L62 — interface LayerDecision
+- PolicyContext · interface · L67-L72 — interface PolicyContext
+- SecurityPolicyManager · class · L86-L476 — class SecurityPolicyManager
+- constructor · method · L91-L93 — constructor(private context: PolicyContext)
+- checkToolAccess · method · L99-L131 — checkToolAccess(toolName: string, input?: Record<string, Any>): PolicyCheckResult
+- checkCommandPolicy · method · L136-L181 — private checkCommandPolicy(command: string): PolicyCheckResult
+- getDeniedTools · method · L186-L188 — getDeniedTools(): string[]
+- getApprovalRequiredTools · method · L193-L195 — getApprovalRequiredTools(): string[]
+- getToolDecisions · method · L200-L202 — getToolDecisions(toolName: string): LayerDecision[]
+- expandToolGroup · method · L208-L210 — static expandToolGroup(groupName: ToolGroupName): readonly string[]
+- isToolInGroup · method · L215-L218 — static isToolInGroup(toolName: string, groupName: ToolGroupName): boolean
+- getToolRiskLevel · method · L223-L225 — static getToolRiskLevel(toolName: string): ToolRiskLevel | undefined
+- requiresNetworkPermission · method · L227-L232 — static requiresNetworkPermission(toolName: string): boolean
+- evaluateAllPolicies · method · L240-L289 — private evaluateAllPolicies(): void
+- evaluateGuardrailLayer · method · L294-L309 — private evaluateGuardrailLayer(toolName: string): LayerDecision
+- evaluateWorkspaceLayer · method · L314-L383 — private evaluateWorkspaceLayer(toolName: string): LayerDecision
+- evaluateContextLayer · method · L389-L427 — private evaluateContextLayer(toolName: string): LayerDecision
+- evaluateToolSpecificLayer · method · L432-L452 — private evaluateToolSpecificLayer(toolName: string): LayerDecision
+- getAllKnownTools · method · L457-L475 — private getAllKnownTools(): string[]
+- getDefaultBlockedPatterns · function · L481-L501 — function getDefaultBlockedPatterns(): string[]
+- matchGlobPattern · function · L506-L519 — function matchGlobPattern(command: string, pattern: string): boolean
+- createPolicyManager · function · L524-L534 — function createPolicyManager( workspace: Workspace, guardrails: GuardrailSettings, gatewayContext?: GatewayContextType, ): SecurityPolicyManager
+- isToolAllowedQuick · function · L540-L578 — function isToolAllowedQuick( toolName: string, workspace: Workspace, gatewayContext?: GatewayContextType, ): boolean

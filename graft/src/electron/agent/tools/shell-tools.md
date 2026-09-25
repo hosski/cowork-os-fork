@@ -1,0 +1,50 @@
+# src/electron/agent/tools/shell-tools.ts
+
+- RunCommandResult · type · L59-L66 — type RunCommandResult = { success: boolean; stdout: string; stderr: string; exitCode: number | null; truncated?: boolean; terminationReason?: CommandTerminationReason; };
+- stripScriptControlCodes · function · L74-L90 — function stripScriptControlCodes(text: string): string
+- isValidPid · function · L148-L150 — function isValidPid(pid: unknown): pid is number
+- isProcessOwnedByCurrentUser · function · L156-L175 — function isProcessOwnedByCurrentUser(pid: number): boolean
+- isValidUsername · function · L181-L186 — function isValidUsername(username: string | undefined): username is string
+- getLeadingShellTokens · function · L188-L198 — function getLeadingShellTokens(command: string, maxTokens = 16): string[]
+- shouldUsePersistentShell · function · L200-L213 — function shouldUsePersistentShell(command: string): boolean
+- shouldSandboxShellCommand · function · L215-L231 — function shouldSandboxShellCommand(input: { persistentShellAllowed: boolean; requireSandboxForShell: boolean; accessSandboxMode?: string; accessApprovalPolicy?: string; hasScopedAccessRules?: boolean; }): boolean
+- isSandboxRuntimeFailure · function · L233-L245 — function isSandboxRuntimeFailure(stderr: string, exitCode: number | null): boolean
+- buildEmptyCommandFailureMessage · function · L247-L259 — function buildEmptyCommandFailureMessage(input: { exitCode: number | null; cwd: string; workspacePath: string; sandboxType: string; }): string
+- getExecutableTokenIndex · function · L261-L280 — function getExecutableTokenIndex(tokens: string[]): number
+- isEnvAssignment · function · L262-L263 — isEnvAssignment = (token: string): boolean
+- isApplyPatchToken · function · L282-L285 — function isApplyPatchToken(token: string): boolean
+- tryExtractNestedShellCommand · function · L287-L333 — function tryExtractNestedShellCommand(executableName: string, args: string[]): string | null
+- containsApplyPatchCommandBoundary · function · L335-L339 — function containsApplyPatchCommandBoundary(command: string): boolean
+- isDirectApplyPatchInvocation · function · L341-L359 — function isDirectApplyPatchInvocation(command: string, depth = 0): boolean
+- resolveShellForCommandExecution · function · L361-L387 — function resolveShellForCommandExecution(): string
+- buildSafeShellPath · function · L389-L405 — function buildSafeShellPath(platform: NodeJS.Platform, envPath: string | undefined): string
+- getShellArgs · function · L411-L421 — function getShellArgs(shell: string, command: string): string[]
+- resolveCommandCwd · function · L423-L433 — function resolveCommandCwd(workspacePath: string, cwd?: string): string
+- resolveDockerSandboxCwd · function · L435-L440 — function resolveDockerSandboxCwd(workspacePath: string, cwd: string): string
+- getDescendantPids · function · L447-L501 — function getDescendantPids(parentPid: number): number[]
+- getDescendantPidsWindows · function · L506-L554 — function getDescendantPidsWindows(parentPid: number): number[]
+- killProcessTree · function · L561-L599 — function killProcessTree(pid: number, signal: NodeJS.Signals): void
+- ShellTools · class · L604-L1808 — class ShellTools
+- constructor · method · L626-L630 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L635-L652 — setWorkspace(workspace: Workspace): void
+- getShellAccessScopeFingerprint · method · L654-L674 — private getShellAccessScopeFingerprint(workspace: Workspace): string
+- getVerificationCommandKey · method · L676-L687 — private getVerificationCommandKey(command: string, cwd: string): string | null
+- waitForVerificationCommandResult · method · L689-L715 — private async waitForVerificationCommandResult(key: string): Promise<RunCommandResult | null>
+- markVerificationCommandRunning · method · L717-L719 — private markVerificationCommandRunning(key: string): void
+- pruneVerificationCommandCache · method · L721-L732 — private pruneVerificationCommandCache(now = Date.now()): void
+- recordVerificationCommandResult · method · L734-L746 — private recordVerificationCommandResult( key: string | null, result: RunCommandResult, ): RunCommandResult
+- allowUnsandboxedShellFallback · method · L748-L755 — private allowUnsandboxedShellFallback(policies: AdminPolicies): boolean
+- shouldAllowShellNetwork · method · L757-L771 — private shouldAllowShellNetwork(policies: AdminPolicies): boolean
+- runCommandInSandbox · method · L773-L960 — private async runCommandInSandbox( command: string, options: { cwd: string; timeout: number; promptPrefix: string; env?: Record<string, string>; policies: AdminPolicies; }, ): Promise<{ success: boolean; stdout: string; stderr: string; exitCode: number | null; truncated?: boolean; terminationReason?: CommandTerminationReason; } | null>
+- clearEscalationTimeouts · method · L966-L972 — private clearEscalationTimeouts(): void
+- sendStdin · method · L977-L993 — sendStdin(input: string): boolean
+- hasActiveProcess · method · L998-L1000 — hasActiveProcess(): boolean
+- killProcess · method · L1006-L1132 — killProcess(force: boolean = false): boolean
+- runCommand · method · L1138-L1709 — async runCommand( command: string, options?: { cwd?: string; timeout?: number; env?: Record<string, string>; signal?: AbortSignal; }, ): Promise<RunCommandResult>
+- getCommandSignature · method · L1726-L1741 — private getCommandSignature(command: string): string
+- invokesInterpreter · method · L1747-L1751 — private invokesInterpreter(command: string): boolean
+- isAutoApprovalSafe · method · L1756-L1758 — private isAutoApprovalSafe(command: string): boolean
+- isBundleApprovalActive · method · L1763-L1767 — private isBundleApprovalActive(now: number): boolean
+- recordBundleApproval · method · L1772-L1782 — private recordBundleApproval(now: number): void
+- truncateOutput · method · L1787-L1795 — private truncateOutput(output: string): string
+- sanitizeCommandOutput · method · L1800-L1807 — private sanitizeCommandOutput(output: string): string

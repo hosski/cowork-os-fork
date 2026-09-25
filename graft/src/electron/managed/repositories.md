@@ -1,0 +1,40 @@
+# src/electron/managed/repositories.ts
+
+- safeJsonParse · function · L11-L18 — function safeJsonParse<T>(jsonString: string | null | undefined, defaultValue: T): T
+- ManagedAgentRepository · class · L20-L139 — class ManagedAgentRepository
+- constructor · method · L21-L21 — constructor(private db: Database.Database)
+- create · method · L23-L50 — create(input: Omit<ManagedAgent, "createdAt" | "updatedAt">): ManagedAgent
+- update · method · L52-L83 — update( id: string, updates: Partial<Pick<ManagedAgent, "name" | "description" | "status" | "currentVersion">>, ): ManagedAgent | undefined
+- findById · method · L85-L88 — findById(id: string): ManagedAgent | undefined
+- list · method · L90-L126 — list(params?: { limit?: number; offset?: number; status?: ManagedAgent["status"]; }): ManagedAgent[]
+- mapRow · method · L128-L138 — private mapRow(row: Any): ManagedAgent
+- ManagedAgentVersionRepository · class · L141-L222 — class ManagedAgentVersionRepository
+- constructor · method · L142-L142 — constructor(private db: Database.Database)
+- create · method · L144-L168 — create(input: ManagedAgentVersion): ManagedAgentVersion
+- find · method · L170-L175 — find(agentId: string, version: number): ManagedAgentVersion | undefined
+- list · method · L177-L188 — list(agentId: string): ManagedAgentVersion[]
+- updateMetadata · method · L190-L205 — updateMetadata( agentId: string, version: number, metadata: Record<string, unknown> | undefined, ): ManagedAgentVersion | undefined
+- mapRow · method · L207-L221 — private mapRow(row: Any): ManagedAgentVersion
+- ManagedEnvironmentRepository · class · L224-L345 — class ManagedEnvironmentRepository
+- constructor · method · L225-L225 — constructor(private db: Database.Database)
+- create · method · L227-L255 — create(input: Omit<ManagedEnvironment, "createdAt" | "updatedAt">): ManagedEnvironment
+- update · method · L257-L288 — update( id: string, updates: Partial<Pick<ManagedEnvironment, "name" | "status" | "revision" | "config">>, ): ManagedEnvironment | undefined
+- findById · method · L290-L293 — findById(id: string): ManagedEnvironment | undefined
+- list · method · L295-L331 — list(params?: { limit?: number; offset?: number; status?: ManagedEnvironment["status"]; }): ManagedEnvironment[]
+- mapRow · method · L333-L344 — private mapRow(row: Any): ManagedEnvironment
+- ManagedSessionRepository · class · L347-L503 — class ManagedSessionRepository
+- constructor · method · L348-L348 — constructor(private db: Database.Database)
+- create · method · L350-L387 — create(input: Omit<ManagedSession, "createdAt" | "updatedAt">): ManagedSession
+- update · method · L389-L421 — update( id: string, updates: Partial< Pick< ManagedSession, | "status" | "backingTaskId" | "backingTeamRunId" | "resumedFromSessionId" | "latestSummary" | "startedAt" | "completedAt" | "title" | "surface" > >, ): ManagedSession | undefined
+- findById · method · L423-L426 — findById(id: string): ManagedSession | undefined
+- findByBackingTaskId · method · L428-L435 — findByBackingTaskId(taskId: string): ManagedSession | undefined
+- list · method · L437-L479 — list(params?: { limit?: number; offset?: number; agentId?: string; workspaceId?: string; status?: ManagedSession["status"]; surface?: ManagedSession["surface"]; }): ManagedSession[]
+- mapRow · method · L481-L502 — private mapRow(row: Any): ManagedSession
+- ManagedSessionEventRepository · class · L505-L605 — class ManagedSessionEventRepository
+- constructor · method · L506-L506 — constructor(private db: Database.Database)
+- create · method · L508-L551 — create( input: Omit<ManagedSessionEvent, "id" | "seq"> & { id?: string; seq?: number; sourceTaskId?: string; sourceTaskEventId?: string; }, ): ManagedSessionEvent
+- findById · method · L553-L556 — findById(id: string): ManagedSessionEvent | undefined
+- listBySessionId · method · L558-L570 — listBySessionId(sessionId: string, limit = 500): ManagedSessionEvent[]
+- hasSourceTaskEvent · method · L572-L584 — hasSourceTaskEvent(sessionId: string, sourceTaskEventId: string): boolean
+- getNextSeq · method · L586-L593 — private getNextSeq(sessionId: string): number
+- mapRow · method · L595-L604 — private mapRow(row: Any): ManagedSessionEvent

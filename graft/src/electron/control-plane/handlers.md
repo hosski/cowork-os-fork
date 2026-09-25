@@ -1,0 +1,95 @@
+# src/electron/control-plane/handlers.ts
+
+- ControlPlaneMethodDeps · interface · L124-L129 — interface ControlPlaneMethodDeps
+- getManagedSessionService · function · L136-L147 — function getManagedSessionService(deps: ControlPlaneMethodDeps): ManagedSessionService
+- getEverydayAgentService · function · L149-L154 — function getEverydayAgentService(deps: ControlPlaneMethodDeps): EverydayAgentService
+- isLoopbackHost · function · L156-L159 — function isLoopbackHost(host: string): boolean
+- writeLocalControlPlaneConnectionFile · function · L161-L188 — function writeLocalControlPlaneConnectionFile(settings: { host: string; port: number; token: string; }): void
+- toNodePlatform · function · L190-L206 — function toNodePlatform(platform?: string): "ios" | "android" | "macos" | "linux" | "windows"
+- getRemoteGatewayNodeInfo · function · L208-L218 — async function getRemoteGatewayNodeInfo(): Promise<import("../../shared/types").NodeInfo | null>
+- getControlPlaneServer · function · L223-L225 — function getControlPlaneServer(): ControlPlaneServer | null
+- getStartupAutoConnectRemoteDeviceIds · function · L227-L231 — function getStartupAutoConnectRemoteDeviceIds( devices: Array<Pick<ManagedDevice, "id" | "autoConnect">>, ): string[]
+- requireScope · function · L233-L237 — function requireScope(client: any, scope: "admin" | "read" | "write" | "operator"): void
+- requireEverydayAgentReceiptAccess · function · L239-L241 — function requireEverydayAgentReceiptAccess(client: any): void
+- redactManagedEnvironmentForRead · function · L243-L255 — function redactManagedEnvironmentForRead(environment: any)
+- isLocalManagedDeviceIdentifier · function · L272-L276 — function isLocalManagedDeviceIdentifier(deviceId?: string | null): boolean
+- getHostnameFromUrl · function · L278-L285 — function getHostnameFromUrl(url?: string): string | undefined
+- normalizeGatewayUrl · function · L287-L289 — function normalizeGatewayUrl(url?: string): string
+- getLegacyRemoteNodeId · function · L291-L295 — function getLegacyRemoteNodeId(url?: string): string | undefined
+- inferManagedTransport · function · L297-L303 — function inferManagedTransport(config?: RemoteGatewayConfig): ManagedDevice["transport"]
+- normalizeManagedRemoteDevice · function · L305-L348 — function normalizeManagedRemoteDevice(device: ManagedDevice): ManagedDevice
+- toManagedDeviceFromSaved · function · L350-L385 — function toManagedDeviceFromSaved(settings: ControlPlaneSettingsData, saved: Any): ManagedDevice
+- listStoredManagedDevices · function · L387-L437 — function listStoredManagedDevices(): ManagedDevice[]
+- buildLocalManagedDevice · function · L439-L462 — function buildLocalManagedDevice(): ManagedDevice
+- findManagedDeviceById · function · L464-L469 — function findManagedDeviceById(deviceId?: string | null): ManagedDevice | null
+- getManagedRemoteNodeInfo · function · L471-L505 — async function getManagedRemoteNodeInfo(device: ManagedDevice): Promise<NodeInfo | null>
+- listManagedRemoteNodes · function · L507-L511 — async function listManagedRemoteNodes(): Promise<NodeInfo[]>
+- getManagedRemoteNodeAliases · function · L513-L533 — async function getManagedRemoteNodeAliases( device: ManagedDevice, nodeId?: string, ): Promise<string[]>
+- findManagedRemoteDeviceByNodeId · function · L535-L548 — async function findManagedRemoteDeviceByNodeId(nodeId: string): Promise<ManagedDevice | null>
+- getDefaultLocalWorkspaceId · function · L550-L553 — function getDefaultLocalWorkspaceId(db: Any): string | undefined
+- normalizePathForMatch · function · L556-L566 — function normalizePathForMatch(p: string): string
+- pathsMatch · function · L569-L577 — function pathsMatch(a: string, b: string): boolean
+- resolveLocalWorkspaceIdForRemoteTask · function · L583-L605 — function resolveLocalWorkspaceIdForRemoteTask( db: Any, remoteWorkspaces: Array<{ id?: string; path?: string }>, remoteTask: { workspaceId?: string }, fallbackWorkspaceId: string | undefined, ): string | undefined
+- isActiveTaskStatus · function · L607-L609 — function isActiveTaskStatus(status?: string): boolean
+- isTaskAttention · function · L611-L619 — function isTaskAttention(task: Partial<Task> | null | undefined): boolean
+- maxAttentionLevel · function · L621-L631 — function maxAttentionLevel( ...levels: Array<ManagedDeviceAttentionState | undefined> ): ManagedDeviceAttentionState
+- getLocalConfigSnapshot · function · L633-L700 — async function getLocalConfigSnapshot(): Promise<Any>
+- getLocalStorageSummary · function · L702-L749 — async function getLocalStorageSummary(db: Any): Promise<{ storage: ManagedDeviceSummary["storage"]; workspaceRoots: Array<{ id: string; name: string; path: string }>; }>
+- upsertRemoteShadowTask · function · L751-L782 — function upsertRemoteShadowTask(db: Any, workspaceId: string, nodeId: string, task: Any): void
+- syncRemoteShadowTasksForNode · function · L786-L844 — async function syncRemoteShadowTasksForNode(nodeId: string): Promise<void>
+- listLocalDeviceTasks · function · L846-L851 — function listLocalDeviceTasks(taskRepo: TaskRepository, limit = 50): Task[]
+- listTasksForNode · function · L853-L867 — async function listTasksForNode(nodeId: string): Promise<Task[]>
+- buildAlertsFromSummaryParts · function · L869-L964 — function buildAlertsFromSummaryParts(params: { device: ManagedDevice; recentTasks: Task[]; channels?: Any[]; approvalsPending?: number; inputRequestsPending?: number; freeBytes?: number; }): ManagedDeviceAlert[]
+- attentionFromAlerts · function · L966-L971 — function attentionFromAlerts(alerts: ManagedDeviceAlert[]): ManagedDeviceAttentionState
+- buildLocalManagedDeviceSummary · function · L973-L1084 — async function buildLocalManagedDeviceSummary(): Promise<ManagedDeviceSummary>
+- buildRemoteManagedDeviceSummary · function · L1086-L1256 — async function buildRemoteManagedDeviceSummary( device: ManagedDevice, ): Promise<ManagedDeviceSummary>
+- buildManagedDeviceSummary · function · L1258-L1267 — async function buildManagedDeviceSummary(deviceId: string): Promise<ManagedDeviceSummary>
+- listManagedDevicesForRenderer · function · L1269-L1295 — async function listManagedDevicesForRenderer(): Promise<ManagedDevice[]>
+- forwardRemoteTaskEvent · function · L1297-L1326 — function forwardRemoteTaskEvent(deviceId: string, payload: unknown): void
+- ensureFleetManager · function · L1328-L1367 — function ensureFleetManager()
+- getLegacyActiveRemoteDeviceId · function · L1369-L1381 — function getLegacyActiveRemoteDeviceId(): string | null
+- connectManagedRemoteDevice · function · L1383-L1396 — async function connectManagedRemoteDevice(deviceId: string): Promise<RemoteGatewayStatus>
+- disconnectManagedRemoteDevice · function · L1398-L1402 — function disconnectManagedRemoteDevice(deviceId: string): RemoteGatewayStatus
+- routeLocalDeviceProxyRequest · function · L1404-L1653 — async function routeLocalDeviceProxyRequest(method: string, params?: unknown): Promise<Any>
+- sanitizeTaskCreateParams · function · L1655-L1740 — function sanitizeTaskCreateParams(params: unknown): { title: string; prompt: string; workspaceId: string; assignedAgentRoleId?: string; agentConfig?: AgentConfig; budgetTokens?: number; budgetCost?: number; shellAccess?: boolean; }
+- sanitizeTaskIdParams · function · L1742-L1747 — function sanitizeTaskIdParams(params: unknown): { taskId: string }
+- sanitizeApprovalRespondParams · function · L1749-L1757 — function sanitizeApprovalRespondParams(params: unknown): { approvalId: string; approved: boolean }
+- sanitizeTaskListParams · function · L1759-L1773 — function sanitizeTaskListParams(params: unknown): { limit: number; offset: number; workspaceId?: string; }
+- sanitizeApprovalListParams · function · L1775-L1789 — function sanitizeApprovalListParams(params: unknown): { limit: number; offset: number; taskId?: string; }
+- sanitizeTaskEventsParams · function · L1791-L1798 — function sanitizeTaskEventsParams(params: unknown): { taskId: string; limit: number }
+- sanitizeWorkspaceIdParams · function · L1800-L1805 — function sanitizeWorkspaceIdParams(params: unknown): { workspaceId: string }
+- sanitizeManagedAgentCreateParams · function · L1899-L1901 — function sanitizeManagedAgentCreateParams(params: unknown): Any
+- sanitizeManagedAgentUpdateParams · function · L1903-L1924 — function sanitizeManagedAgentUpdateParams(params: unknown): Any
+- sanitizeManagedAgentIdParams · function · L1926-L1931 — function sanitizeManagedAgentIdParams(params: unknown): { agentId: string }
+- sanitizeManagedAgentVersionParams · function · L1933-L1942 — function sanitizeManagedAgentVersionParams(params: unknown): { agentId: string; version: number }
+- sanitizeManagedEnvironmentCreateParams · function · L1944-L1956 — function sanitizeManagedEnvironmentCreateParams(params: unknown): Any
+- sanitizeManagedEnvironmentUpdateParams · function · L1958-L1970 — function sanitizeManagedEnvironmentUpdateParams(params: unknown): Any
+- sanitizeManagedEnvironmentIdParams · function · L1972-L1979 — function sanitizeManagedEnvironmentIdParams(params: unknown): { environmentId: string }
+- sanitizeManagedSessionCreateParams · function · L1981-L1994 — function sanitizeManagedSessionCreateParams(params: unknown): Any
+- sanitizeManagedSessionIdParams · function · L1996-L2001 — function sanitizeManagedSessionIdParams(params: unknown): { sessionId: string }
+- sanitizeManagedSessionListParams · function · L2003-L2015 — function sanitizeManagedSessionListParams(params: unknown): Any
+- sanitizeManagedSessionEventsParams · function · L2017-L2023 — function sanitizeManagedSessionEventsParams(params: unknown): { sessionId: string; limit: number }
+- sanitizeManagedSessionSendEventParams · function · L2025-L2065 — function sanitizeManagedSessionSendEventParams(params: unknown): Any
+- sanitizeWorkspaceCreateParams · function · L2067-L2085 — function sanitizeWorkspaceCreateParams(params: unknown): { name: string; path: string }
+- sanitizeChannelIdParams · function · L2087-L2092 — function sanitizeChannelIdParams(params: unknown): { channelId: string }
+- sanitizeChannelCreateParams · function · L2094-L2138 — function sanitizeChannelCreateParams(params: unknown): { type: string; name: string; enabled: boolean; config: Record<string, unknown>; securityConfig: Record<string, unknown>; }
+- sanitizeChannelUpdateParams · function · L2140-L2173 — function sanitizeChannelUpdateParams(params: unknown): { channelId: string; updates: { name?: string; config?: Record<string, unknown>; securityConfig?: Record<string, unknown>; }; }
+- maskSecretString · function · L2175-L2180 — function maskSecretString(value: string): string
+- redactObjectSecrets · function · L2186-L2204 — function redactObjectSecrets(input: unknown, depth = 0): unknown
+- truncateForBroadcast · function · L2212-L2217 — function truncateForBroadcast(value: string): string
+- truncateForBroadcastKey · function · L2221-L2226 — function truncateForBroadcastKey(value: string, key?: string): string
+- sanitizeForBroadcast · function · L2228-L2276 — function sanitizeForBroadcast(value: unknown, depth = 0, key?: string): unknown
+- attachAgentDaemonTaskBridge · function · L2278-L2394 — function attachAgentDaemonTaskBridge( server: ControlPlaneServer, daemon: AgentDaemon, managedSessions?: ManagedSessionService, ): () => void
+- handler · function · L2288-L2385 — handler = (evt: any)
+- startControlPlaneFromSettings · function · L2396-L2579 — async function startControlPlaneFromSettings( options: { deps?: ControlPlaneMethodDeps; forceEnable?: boolean; onEvent?: (event: any) => void; } = {}, ): Promise<{ ok: boolean; skipped?: boolean; address?: { host: string; port: number; wsUrl: string }; tailscale?: { httpsUrl?: string; wssUrl?: string }; error?: string; }>
+- registerACPMethodsOnServer · function · L2585-L2695 — function registerACPMethodsOnServer( server: ControlPlaneServer, deps: ControlPlaneMethodDeps, ): void
+- registerCompanyOpsMethods · function · L2697-L2718 — function registerCompanyOpsMethods(server: ControlPlaneServer, deps: ControlPlaneMethodDeps): void
+- registerCanvasMethods · function · L2725-L2884 — function registerCanvasMethods(server: ControlPlaneServer): void
+- requireString · function · L2734-L2739 — requireString = (value: unknown, field: string): string
+- registerTaskAndWorkspaceMethods · function · L2886-L3898 — function registerTaskAndWorkspaceMethods( server: ControlPlaneServer, deps: ControlPlaneMethodDeps, ): void
+- isAdminClient · function · L2900-L2900 — isAdminClient = (client: any)
+- redactWorkspaceForRead · function · L2909-L2914 — redactWorkspaceForRead = (workspace: any)
+- redactTaskForRead · function · L2916-L2932 — redactTaskForRead = (task: any)
+- redactChannelForRead · function · L2934-L2944 — redactChannelForRead = (channel: any)
+- setupControlPlaneHandlers · function · L3903-L5100 — function setupControlPlaneHandlers( mainWindow: BrowserWindow, deps?: ControlPlaneMethodDeps, ): void
+- shutdownControlPlane · function · L5106-L5126 — async function shutdownControlPlane(): Promise<void>

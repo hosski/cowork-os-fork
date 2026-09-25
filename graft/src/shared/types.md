@@ -1,0 +1,1027 @@
+# src/shared/types.ts
+
+- ThemeMode · type · L8-L8 — type ThemeMode = "light" | "dark" | "system";
+- VisualTheme · type · L9-L9 — type VisualTheme = "terminal" | "warm" | "oblivion";
+- AccentColor · type · L10-L19 — type AccentColor = | "cyan" | "blue" | "purple" | "pink" | "rose" | "orange" | "green" | "teal" | "coral";
+- UiDensity · type · L21-L21 — type UiDensity = (typeof UI_DENSITIES)[number];
+- TimelineVerbosity · type · L22-L22 — type TimelineVerbosity = "summary" | "verbose";
+- CommandOutputStyle · type · L29-L29 — type CommandOutputStyle = (typeof COMMAND_OUTPUT_STYLES)[number];
+- AppearanceSettings · interface · L31-L47 — interface AppearanceSettings
+- TraySettings · interface · L50-L57 — interface TraySettings
+- MemoryFeaturesSettings · interface · L60-L115 — interface MemoryFeaturesSettings
+- MemoryWriteApprovalStatus · type · L117-L117 — type MemoryWriteApprovalStatus = "pending" | "applying" | "applied" | "rejected" | "failed";
+- MemoryWriteApprovalItem · interface · L119-L138 — interface MemoryWriteApprovalItem
+- MemoryObservationPrivacyState · type · L140-L140 — type MemoryObservationPrivacyState = "normal" | "private" | "redacted" | "suppressed";
+- MemoryObservationGeneratedBy · type · L141-L141 — type MemoryObservationGeneratedBy = "capture" | "migration" | "manual";
+- MemoryObservationMigrationStatus · type · L142-L142 — type MemoryObservationMigrationStatus = "current" | "backfilled" | "failed";
+- MemoryObservationMetadata · interface · L144-L171 — interface MemoryObservationMetadata
+- MemoryObservationSearchQuery · interface · L173-L183 — interface MemoryObservationSearchQuery
+- MemoryObservationSearchResult · interface · L185-L204 — interface MemoryObservationSearchResult
+- MemoryObservationTimelineEntry · interface · L206-L208 — interface MemoryObservationTimelineEntry extends MemoryObservationSearchResult
+- MemoryObservationBackfillStatus · interface · L210-L218 — interface MemoryObservationBackfillStatus
+- SupermemorySearchMode · type · L220-L220 — type SupermemorySearchMode = "hybrid" | "memories";
+- SupermemoryCustomContainer · interface · L222-L225 — interface SupermemoryCustomContainer
+- SupermemorySettings · interface · L227-L238 — interface SupermemorySettings
+- SupermemoryConfigStatus · interface · L240-L254 — interface SupermemoryConfigStatus
+- MemoryWakeUpLayerId · type · L256-L256 — type MemoryWakeUpLayerId = "L0" | "L1" | "L2" | "L3";
+- MemoryLayerBudgetStatus · interface · L258-L262 — interface MemoryLayerBudgetStatus
+- MemoryLayerPreview · interface · L264-L272 — interface MemoryLayerPreview
+- MemoryLayerPreviewPayload · interface · L274-L281 — interface MemoryLayerPreviewPayload
+- VerbatimQuoteSourceType · type · L283-L287 — type VerbatimQuoteSourceType = | "transcript_span" | "task_message" | "memory" | "workspace_markdown";
+- VerbatimQuoteSearchResult · interface · L289-L305 — interface VerbatimQuoteSearchResult
+- CuratedMemoryTarget · type · L307-L307 — type CuratedMemoryTarget = "user" | "workspace";
+- CuratedMemoryKind · type · L309-L315 — type CuratedMemoryKind = | "identity" | "preference" | "constraint" | "workflow_rule" | "project_fact" | "active_commitment";
+- CuratedMemoryEntry · interface · L317-L331 — interface CuratedMemoryEntry
+- AwarenessSource · type · L333-L343 — type AwarenessSource = | "conversation" | "feedback" | "files" | "git" | "apps" | "browser" | "calendar" | "notifications" | "clipboard" | "tasks";
+- AwarenessSensitivity · type · L345-L345 — type AwarenessSensitivity = "low" | "medium" | "high";
+- AwarenessBeliefType · type · L347-L355 — type AwarenessBeliefType = | "user_fact" | "user_preference" | "user_goal" | "workflow_habit" | "project_affinity" | "device_context" | "open_loop" | "due_soon";
+- AwarenessPromotionStatus · type · L357-L357 — type AwarenessPromotionStatus = "observed" | "promoted" | "confirmed";
+- AwarenessSourcePolicy · interface · L359-L365 — interface AwarenessSourcePolicy
+- AwarenessConfig · interface · L367-L371 — interface AwarenessConfig
+- AwarenessEvent · interface · L373-L384 — interface AwarenessEvent
+- AwarenessBelief · interface · L386-L399 — interface AwarenessBelief
+- AwarenessSummaryItem · interface · L401-L410 — interface AwarenessSummaryItem
+- AwarenessSummary · interface · L412-L421 — interface AwarenessSummary
+- AwarenessSnapshot · interface · L423-L436 — interface AwarenessSnapshot
+- AwarenessWakeReason · type · L438-L444 — type AwarenessWakeReason = | "context_shift" | "focus_shift" | "deadline_risk" | "repeated_workflow" | "idle_window" | "due_soon";
+- GoalStateStatus · type · L446-L446 — type GoalStateStatus = "observed" | "active" | "blocked" | "completed" | "stale";
+- GoalState · interface · L448-L458 — interface GoalState
+- ProjectState · interface · L460-L469 — interface ProjectState
+- OpenLoopState · interface · L471-L481 — interface OpenLoopState
+- RoutineState · interface · L483-L497 — interface RoutineState
+- FocusSessionState · interface · L499-L509 — interface FocusSessionState
+- AutonomyPolicyLevel · type · L511-L516 — type AutonomyPolicyLevel = | "observe_only" | "suggest_only" | "execute_local" | "execute_with_approval" | "never";
+- ChiefOfStaffActionType · type · L518-L526 — type ChiefOfStaffActionType = | "prepare_briefing" | "create_task" | "schedule_follow_up" | "draft_message" | "draft_agenda" | "organize_work_session" | "nudge_user" | "execute_local_action";
+- ActionPolicy · interface · L528-L533 — interface ActionPolicy
+- AutonomyDecision · interface · L535-L554 — interface AutonomyDecision
+- AutonomyAction · interface · L556-L565 — interface AutonomyAction
+- AutonomyOutcome · interface · L567-L575 — interface AutonomyOutcome
+- ChiefOfStaffWorldModel · interface · L577-L588 — interface ChiefOfStaffWorldModel
+- AutonomyConfig · interface · L590-L595 — interface AutonomyConfig
+- UserFactCategory · type · L597-L607 — type UserFactCategory = | "identity" | "preference" | "bio" | "work" | "goal" | "operating" | "voice" | "accountability" | "constraint" | "other";
+- UserFact · interface · L609-L619 — interface UserFact
+- UserProfile · interface · L621-L625 — interface UserProfile
+- AddUserFactRequest · interface · L627-L634 — interface AddUserFactRequest
+- UpdateUserFactRequest · interface · L636-L642 — interface UpdateUserFactRequest
+- WorkspaceKitIssue · interface · L645-L649 — interface WorkspaceKitIssue
+- WorkspaceKitFileStatus · interface · L651-L661 — interface WorkspaceKitFileStatus
+- WorkspaceKitStatus · interface · L663-L676 — interface WorkspaceKitStatus
+- WorkspaceKitInitMode · type · L678-L678 — type WorkspaceKitInitMode = "missing" | "overwrite";
+- WorkspaceKitInitRequest · interface · L680-L684 — interface WorkspaceKitInitRequest
+- WorkspaceKitProjectCreateRequest · interface · L686-L689 — interface WorkspaceKitProjectCreateRequest
+- WorkspaceKitTemplatePreset · type · L691-L691 — type WorkspaceKitTemplatePreset = "default" | "venture_operator";
+- TaskStatus · type · L705-L715 — type TaskStatus = | "pending" | "queued" | "planning" | "executing" | "paused" | "blocked" | "completed" | "failed" | "cancelled" | "interrupted";
+- VerificationOutcome · type · L717-L721 — type VerificationOutcome = | "pass" | "fail_blocking" | "pending_user_action" | "warn_non_blocking";
+- VerificationScope · type · L723-L723 — type VerificationScope = "high_risk" | "normal";
+- VerificationEvidenceMode · type · L725-L725 — type VerificationEvidenceMode = "agent_observable" | "user_observable" | "time_blocked";
+- TaskErrorCode · type · L731-L731 — type TaskErrorCode = (typeof TASK_ERROR_CODES)[keyof typeof TASK_ERROR_CODES];
+- CommandTerminationReason · type · L736-L740 — type CommandTerminationReason = | "normal" // Command completed naturally | "user_stopped" // User explicitly killed the process | "timeout" // Command exceeded timeout limit | "error";
+- EventType · type · L742-L933 — type EventType = | "task_created" | "task_title_updated" | "task_completed" | "plan_created" | "plan_revised" | "step_started" | "step_completed" | "step_failed" | "executing" | "tool_call" | "tool_result" | "tool_error" | "assistant_message" | "approval_requested" | "approval_granted" | "approval_denied" | "input_request_created" | "input_request_resolved" | "input_request_dismissed" | "skill_parameter_collection_started" | "skill_parameter_answered" | "skill_parameter_collection_finished" | "file_created" | "file_modified" | "file_deleted" | "image_generated" | "error" | "log" | "verification_started" | "verification_passed" | "verification_failed" | "entropy_sweep_started" | "entropy_sweep_completed" | "entropy_sweep_failed" | "review_quality_passed" | "review_quality_failed" | "verification_pending_user_action" | "retry_started" | "task_cancelled" | "task_paused" | "task_resumed" | "continuation_decision" | "auto_continuation_started" | "auto_continuation_blocked" | "context_compaction_started" | "context_compaction_completed" | "context_compaction_failed" | "no_progress_circuit_breaker" | "step_contract_escalated" | "task_interrupted" | "task_status" | "task_queued" | "task_dequeued" | "queue_updated" | "plan_revision_blocked" | "step_timeout" | "tool_blocked" | "security_finding" | "security_action_denied" | "security_runtime_degraded" | "mode_gate_blocked" | "execution_mode_auto_promoted" | "plan_contract_conflict" | "workspace_boundary_recovery" | "workspace_path_alias_normalized" | "workspace_path_alias_recovery_attempted" | "workspace_path_alias_recovery_failed" | "task_path_root_pinned" | "task_path_rewrite_applied" | "task_path_recovery_attempted" | "task_path_recovery_failed" | "tool_disable_suppressed_recoverable_path_drift" | "mutation_checkpoint_retry_applied" | "step_contract_satisfied_by_prior_mutation" | "required_tool_inference_decision" | "mutation_duplicate_bypass_applied" | "step_contract_reconciled_posthoc" | "verification_checklist_evaluated" | "verification_mode_selected" | "follow_up_tool_lock_forced_finalization" | "tool_protocol_violation" | "turn_window_soft_exhausted" | "follow_up_turn_recovery_started" | "follow_up_turn_recovery_completed" | "follow_up_turn_recovery_blocked" | "safety_stop_triggered" | "turn_policy_selected" | "verification_preflight_policy_applied" | "verification_artifact_output_downgraded" | "verification_missing_artifact_ignored" | "verification_text_checklist_evaluated" | "progress_update" | "learning_progress" | "shell_session_created" | "shell_session_updated" | "shell_session_reset" | "shell_session_closed" | "llm_routing_changed" | "llm_retry" | "follow_up_completed" | "follow_up_failed" | "tool_warning" | "workspace_permissions_updated" | "user_message" | "user_feedback" | "annotation_created" | "annotation_updated" | "annotation_addressing_started" | "annotation_addressed" | "annotation_resolved" | "annotation_dismissed" | "command_output" // LLM usage tracking (tokens/cost) | "llm_usage" | "llm_error" // Persisted Jev decision telemetry (hidden from the primary renderer timeline) | "jev_decision" // Real-time streaming progress (ephemeral, not persisted to DB) | "llm_streaming" // Sub-Agent / Parallel Agent events | "agent_spawned" // Parent spawned a child agent | "agent_spawn_requested" // Parent requested a child agent; dispatch is not confirmed yet | "agent_completed" // Child agent completed successfully | "agent_failed" // Child agent failed | "agent_message" // A human or agent sent a message to another task | "agent_follow_up_scheduled" // A queued follow-up was accepted for a later turn | "agent_follow_up_started" // A queued follow-up was incorporated at a turn boundary | "agent_interrupt_requested" // A user or controller requested interruption | "agent_interrupt_confirmed" // The runtime confirmed interruption | "sub_agent_result" // Result summary from child agent // Unified orchestration graph events | "orchestration_run_created" | "orchestration_node_ready" | "orchestration_node_dispatched" | "orchestration_node_completed" | "orchestration_node_failed" | "orchestration_run_completed" | "orchestration_run_failed" // Context management | "context_summarized" // Earlier messages were dropped and summarized // Conversation persistence | "conversation_snapshot" // Full conversation history for restoration // Git Worktree events | "worktree_created" // Worktree was set up for this task | "worktree_committed" // Auto-commit happened in worktree | "worktree_merge_start" // Merge to base branch started | "worktree_merged" // Successfully merged to base branch | "worktree_conflict" // Merge conflict detected | "worktree_cleaned" // Worktree removed after completion // Comparison mode events | "comparison_started" // Comparison session started | "comparison_completed" // Comparison session completed // Collaborative Thoughts events (team multi-agent thinking) | "agent_thought" // Agent sharing analysis/reasoning with team | "synthesis_started" // Leader beginning synthesis of team thoughts | "synthesis_completed" // Leader completed synthesis // Step-level user feedback events | "step_feedback" // User sent feedback on an in-progress step | "step_skipped" // Step was skipped by user intervention // Citation engine events | "citations_collected" // Web research citations gathered // Workflow decomposition events | "workflow_detected" // Multi-phase workflow identified | "workflow_phase_started" // Pipeline phase started | "workflow_phase_completed" // Pipeline phase completed | "workflow_phase_failed" // Pipeline phase failed | "pipeline_completed" // Full workflow pipeline completed | "pipeline_failed" // Full workflow pipeline failed | "step_intent_scored" // Heuristic alignment of plan steps vs task intent // Document generation events | "artifact_created" // Document/file artifact generated | "diagram_created" // Mermaid diagram generated by agent // Deep work mode events | "progress_journal" // Periodic human-readable status update for long-running tasks | "research_recovery_started" // Agent began researching error before retry | "task_list_created" | "task_list_updated" | "task_list_verification_nudged" // Timeline V2 canonical event set | "timeline_group_started" | "timeline_group_finished" | "timeline_step_started" | "timeline_step_updated" | "timeline_step_finished" | "timeline_evidence_attached" | "timeline_artifact_emitted" | "timeline_command_output" | "timeline_error" // Persisted, task-scoped impact snapshots. Producers must only emit typed, // attributable counts; renderer code never derives these values from prose. | "task_impact_updated";
+- TimelineEventType · type · L935-L944 — type TimelineEventType = | "timeline_group_started" | "timeline_group_finished" | "timeline_step_started" | "timeline_step_updated" | "timeline_step_finished" | "timeline_evidence_attached" | "timeline_artifact_emitted" | "timeline_command_output" | "timeline_error";
+- TimelineEventStatus · type · L946-L953 — type TimelineEventStatus = | "pending" | "in_progress" | "completed" | "failed" | "blocked" | "skipped" | "cancelled";
+- TimelineEventActor · type · L955-L955 — type TimelineEventActor = "system" | "agent" | "user" | "tool" | "subagent";
+- TimelineStage · type · L957-L957 — type TimelineStage = "DISCOVER" | "BUILD" | "VERIFY" | "FIX" | "DELIVER";
+- OrchestrationGraphRunStatus · type · L959-L959 — type OrchestrationGraphRunStatus = "running" | "completed" | "failed" | "cancelled";
+- OrchestrationGraphNodeStatus · type · L961-L968 — type OrchestrationGraphNodeStatus = | "pending" | "ready" | "running" | "completed" | "failed" | "cancelled" | "blocked";
+- OrchestrationGraphNodeKind · type · L970-L976 — type OrchestrationGraphNodeKind = | "child_task" | "workflow_phase" | "team_work_item" | "synthesis" | "verification" | "acp_task";
+- OrchestrationDispatchTarget · type · L978-L982 — type OrchestrationDispatchTarget = | "native_child_task" | "local_role" | "remote_acp" | "external_runtime";
+- OrchestrationGraphRun · interface · L984-L995 — interface OrchestrationGraphRun
+- OrchestrationGraphNode · interface · L997-L1030 — interface OrchestrationGraphNode
+- OrchestrationGraphEdge · interface · L1032-L1037 — interface OrchestrationGraphEdge
+- OrchestrationNodeNotification · interface · L1039-L1055 — interface OrchestrationNodeNotification
+- WorkerRoleKind · type · L1057-L1057 — type WorkerRoleKind = "researcher" | "implementer" | "verifier" | "synthesizer";
+- DelegationWorkerRole · type · L1058-L1058 — type DelegationWorkerRole = WorkerRoleKind | "auto";
+- VerificationVerdict · type · L1060-L1060 — type VerificationVerdict = "PASS" | "FAIL" | "PARTIAL";
+- WorkerRoleSpec · interface · L1062-L1076 — interface WorkerRoleSpec
+- WorkerPromptContext · interface · L1078-L1085 — interface WorkerPromptContext
+- RuntimeToolConcurrencyClass · type · L1087-L1091 — type RuntimeToolConcurrencyClass = | "exclusive" | "read_parallel" | "side_effect_parallel" | "serial_only";
+- RuntimeToolInterruptBehavior · type · L1093-L1093 — type RuntimeToolInterruptBehavior = "cancel" | "block";
+- RuntimeToolApprovalKind · type · L1095-L1101 — type RuntimeToolApprovalKind = | "none" | "workspace_policy" | "external_service" | "data_export" | "destructive" | "shell_sensitive";
+- RuntimeToolSideEffectLevel · type · L1103-L1103 — type RuntimeToolSideEffectLevel = "none" | "low" | "medium" | "high";
+- RuntimeToolResultKind · type · L1105-L1113 — type RuntimeToolResultKind = | "generic" | "read" | "mutation" | "search" | "command" | "browser" | "artifact" | "integration";
+- RuntimeToolCapabilityTag · type · L1115-L1127 — type RuntimeToolCapabilityTag = | "core" | "code" | "research" | "browser" | "artifact" | "integration" | "memory" | "system" | "orchestration" | "admin" | "shell" | "mcp";
+- RuntimeToolMetadata · interface · L1129-L1141 — interface RuntimeToolMetadata
+- SessionChecklistItemKind · type · L1143-L1143 — type SessionChecklistItemKind = "implementation" | "verification" | "other";
+- SessionChecklistItemStatus · type · L1144-L1144 — type SessionChecklistItemStatus = "pending" | "in_progress" | "completed" | "blocked";
+- SessionChecklistItem · interface · L1146-L1153 — interface SessionChecklistItem
+- SessionChecklistState · interface · L1155-L1160 — interface SessionChecklistState
+- ToolPolicyStage · type · L1162-L1171 — type ToolPolicyStage = | "task_restrictions" | "workspace_quick_access" | "availability" | "mode_and_domain" | "workspace_script" | "agent_security" | "permissions" | "semantic_review" | "approval";
+- ToolPolicyStageDecision · type · L1173-L1173 — type ToolPolicyStageDecision = "allow" | "defer" | "deny" | "require_approval" | "skip";
+- ToolPolicyTraceEntry · interface · L1175-L1181 — interface ToolPolicyTraceEntry
+- ToolPolicyTrace · interface · L1183-L1187 — interface ToolPolicyTrace
+- PermissionMode · type · L1189-L1195 — type PermissionMode = | "default" | "plan" | "dangerous_only" | "accept_edits" | "dont_ask" | "bypass_permissions";
+- PermissionEffect · type · L1197-L1197 — type PermissionEffect = "allow" | "deny" | "ask";
+- PermissionRuleSource · type · L1199-L1205 — type PermissionRuleSource = | "session" | "workspace_db" | "workspace_manifest" | "profile" | "legacy_guardrails" | "legacy_builtin_settings";
+- PermissionPersistenceDestination · type · L1207-L1207 — type PermissionPersistenceDestination = "session" | "workspace" | "profile" | "recurring";
+- PermissionRuleScope · type · L1209-L1232 — type PermissionRuleScope = | { kind: "tool"; toolName: string; } | { kind: "domain"; domain: string; toolName?: string; toolPrefix?: string; } | { kind: "path"; path: string; toolName?: string; } | { kind: "command_prefix"; prefix: string; } | { kind: "mcp_server"; serverName: string; };
+- PermissionRule · interface · L1234-L1241 — interface PermissionRule
+- RecurringApprovalRuleSummary · interface · L1243-L1255 — interface RecurringApprovalRuleSummary
+- ProtectedCredentialRequestStatus · type · L1257-L1257 — type ProtectedCredentialRequestStatus = "pending" | "fulfilled" | "denied" | "expired";
+- ProtectedCredentialRequestSummary · interface · L1259-L1269 — interface ProtectedCredentialRequestSummary
+- ProtectedCredentialSummary · interface · L1271-L1279 — interface ProtectedCredentialSummary
+- PermissionDecisionReason · type · L1281-L1334 — type PermissionDecisionReason = | { type: "rule"; rule: PermissionRule; summary: string; metadata?: Record<string, unknown>; } | { type: "mode"; mode: PermissionMode; summary: string; metadata?: Record<string, unknown>; } | { type: "workspace_capability"; capability: "workspace" | "read" | "write" | "delete" | "network" | "shell"; summary: string; metadata?: Record<string, unknown>; } | { type: "guardrail"; summary: string; metadata?: Record<string, unknown>; } | { type: "workspace_script"; summary: string; metadata?: Record<string, unknown>; } | { type: "task_restriction"; summary: string; metadata?: Record<string, unknown>; } | { type: "denial_fallback"; summary: string; metadata?: Record<string, unknown>; } | { type: "bundle_grant"; summary: string; metadata?: Record<string, unknown>; } | { type: "legacy_compat"; summary: string; metadata?: Record<string, unknown>; } | { type: "other"; summary: string; metadata?: Record<string, unknown>; };
+- PermissionPromptActionOption · interface · L1336-L1351 — interface PermissionPromptActionOption
+- FileProvenanceSourceKind · type · L1353-L1358 — type FileProvenanceSourceKind = | "user_imported_external" | "clipboard_or_drag_data" | "channel_attachment" | "workspace_native" | "unknown";
+- FileTrustLevel · type · L1360-L1360 — type FileTrustLevel = "trusted" | "untrusted";
+- FileProvenanceRecord · interface · L1362-L1370 — interface FileProvenanceRecord
+- SensitiveSourceRef · interface · L1372-L1379 — interface SensitiveSourceRef
+- ExportTargetRef · interface · L1381-L1387 — interface ExportTargetRef
+- PermissionSecurityContext · interface · L1389-L1394 — interface PermissionSecurityContext
+- PermissionPromptDetails · interface · L1396-L1404 — interface PermissionPromptDetails
+- PermissionEvaluationResult · interface · L1406-L1413 — interface PermissionEvaluationResult
+- PersistedPermissionRule · interface · L1415-L1417 — interface PersistedPermissionRule extends PermissionRule
+- PermissionSettingsMigrationSnapshot · interface · L1425-L1433 — interface PermissionSettingsMigrationSnapshot
+- PermissionSettingsMigration · interface · L1435-L1446 — interface PermissionSettingsMigration
+- PermissionSettingsData · interface · L1448-L1462 — interface PermissionSettingsData
+- ToolResultEnvelopeStatus · type · L1464-L1471 — type ToolResultEnvelopeStatus = | "queued" | "running" | "success" | "error" | "blocked" | "cancelled" | "discarded";
+- ToolResultEvidence · interface · L1473-L1478 — interface ToolResultEvidence
+- ToolResultEnvelope · interface · L1480-L1493 — interface ToolResultEnvelope
+- EvidenceRef · interface · L1495-L1501 — interface EvidenceRef
+- ToolType · type · L1503-L1652 — type ToolType = | "read_file" | "write_file" | "copy_file" | "list_directory" | "rename_file" | "move_file" | "delete_file" | "create_directory" | "search_files" | "run_skill" | "run_command" | "compile_latex" | "generate_image" | "analyze_image" // System tools | "system_info" | "get_current_location" | "read_clipboard" | "write_clipboard" | "take_screenshot" | "open_application" | "open_url" | "open_path" | "show_in_folder" | "get_env" | "get_app_paths" // Network/Browser tools | "web_search" | "youtube_ingest_video" | "youtube_ask_video" | "youtube_ask_or_ingest_video" | "youtube_search_ingested_segments" | "youtube_list_ingested_videos" | "x_search" | "voice_call" | "browser_navigate" | "browser_screenshot" | "browser_snapshot" | "browser_tabs" | "browser_switch_tab" | "browser_close_tab" | "browser_get_content" | "browser_click" | "browser_hover" | "browser_drag" | "browser_fill" | "browser_type" | "browser_press" | "browser_wait" | "browser_scroll" | "browser_select" | "browser_get_text" | "browser_evaluate" | "browser_upload_file" | "browser_handle_dialog" | "browser_console" | "browser_network" | "browser_downloads" | "browser_storage" | "browser_emulate" | "browser_trace_start" | "browser_trace_stop" | "browser_back" | "browser_forward" | "browser_reload" | "browser_save_pdf" | "browser_close" // X/Twitter | "x_action" // Notion | "notion_action" // Box | "box_action" // OneDrive | "onedrive_action" // Google Workspace (Drive/Gmail/Calendar) | "google_drive_action" | "gmail_action" | "gmail_search_emails" | "gmail_search_email_ids" | "gmail_batch_read_email" | "gmail_read_email_thread" | "gmail_create_draft" | "gmail_list_drafts" | "gmail_update_draft" | "gmail_send_draft" | "gmail_send_email" | "gmail_apply_labels_to_emails" | "gmail_bulk_label_matching_emails" | "gmail_forward_emails" | "mailbox_action" | "email_imap_unread" | "calendar_action" // Apple Calendar (macOS) | "apple_calendar_action" // Dropbox | "dropbox_action" // SharePoint | "sharepoint_action" // Scraping tools (Scrapling integration) | "scrape_page" | "scrape_multiple" | "scrape_extract" | "scrape_session" | "scraping_status" // Memory tools | "memory_save" | "memory_curate" | "memory_curated_read" | "memory_search_index" | "memory_timeline" | "memory_details" | "supermemory_profile" | "supermemory_search" | "supermemory_remember" | "supermemory_forget" | "search_sessions" | "memory_topics_load" // Scratchpad tools (session-scoped agent notes) | "scratchpad_write" | "scratchpad_read" // Orchestration tools | "orchestrate_agents" // QA tools (Playwright visual QA) | "qa_run" | "qa_navigate" | "qa_interact" | "qa_screenshot" | "qa_check" | "qa_report" | "qa_cleanup" // Computer use tools (CUA) | "screen_context_resolve" | "screenshot" | "click" | "double_click" | "move_mouse" | "drag" | "scroll" | "type_text" | "keypress" | "wait" // Batch image processing | "batch_image_process" // Meta tools | "revise_plan" | "request_user_input" | "task_history" | "task_events";
+- ApprovalType · type · L1654-L1667 — type ApprovalType = | "delete_file" | "delete_multiple" | "bulk_rename" | "workspace_write" | "network_access" | "external_file_access" | "data_export" | "external_service" | "location_access" | "run_command" | "risk_gate" | "computer_use" | "protected_credential";
+- ToolRiskLevel · type · L1675-L1675 — type ToolRiskLevel = "read" | "write" | "destructive" | "system" | "network";
+- ToolGroupName · type · L1888-L1888 — type ToolGroupName = keyof typeof TOOL_GROUPS;
+- GatewayContextType · type · L2043-L2043 — type GatewayContextType = "private" | "group" | "public";
+- SuccessCriteriaType · type · L2075-L2075 — type SuccessCriteriaType = "shell_command" | "file_exists";
+- SuccessCriteria · interface · L2077-L2081 — interface SuccessCriteria
+- AgentType · type · L2091-L2091 — type AgentType = "main" | "sub" | "parallel";
+- ConversationMode · type · L2092-L2092 — type ConversationMode = "task" | "chat" | "hybrid" | "think";
+- ExecutionMode · type · L2093-L2093 — type ExecutionMode = "execute" | "chat" | "plan" | "analyze" | "verified" | "debug";
+- ExecutionModeSource · type · L2094-L2094 — type ExecutionModeSource = "user" | "strategy" | "auto_promote";
+- ExternalRuntimePermissionMode · type · L2096-L2096 — type ExternalRuntimePermissionMode = "approve-reads" | "approve-all" | "deny-all";
+- ExternalRuntimeAgent · type · L2097-L2097 — type ExternalRuntimeAgent = "codex" | "claude";
+- ExternalRuntimeConfig · interface · L2099-L2106 — interface ExternalRuntimeConfig
+- TurnBudgetPolicy · type · L2107-L2107 — type TurnBudgetPolicy = "hard_window" | "adaptive_unbounded";
+- VerificationArtifactPathPolicy · type · L2108-L2111 — type VerificationArtifactPathPolicy = | "require_existing" | "inline_if_missing" | "always_inline";
+- WorkspacePathAliasPolicy · type · L2112-L2112 — type WorkspacePathAliasPolicy = "rewrite_and_retry" | "strict_fail" | "disabled";
+- TaskPathRootPolicy · type · L2113-L2113 — type TaskPathRootPolicy = "pin_and_rewrite" | "strict_fail" | "disabled";
+- TaskDomain · type · L2114-L2121 — type TaskDomain = | "auto" | "code" | "research" | "operations" | "writing" | "general" | "media";
+- ToolDecision · type · L2122-L2122 — type ToolDecision = "allow" | "deny" | "ask";
+- LlmProfile · type · L2123-L2123 — type LlmProfile = "strong" | "cheap";
+- ReviewPolicy · type · L2124-L2124 — type ReviewPolicy = "off" | "balanced" | "strict";
+- TaskStrategyIntent · type · L2126-L2135 — type TaskStrategyIntent = | "chat" | "advice" | "planning" | "execution" | "mixed" | "thinking" | "workflow" | "deep_work" | "redirect";
+- DirectResponseMode · type · L2137-L2141 — type DirectResponseMode = | "none" | "companion" | "terminal_quick_answer" | "brief_status_then_execute";
+- PreflightGate · type · L2143-L2143 — type PreflightGate = "preflight_framing" | "workspace_selection" | "artifact_presence";
+- WorkflowMode · type · L2145-L2145 — type WorkflowMode = "none" | "workflow" | "deep_work";
+- StrategyOverride · interface · L2147-L2153 — interface StrategyOverride
+- TaskStrategySnapshot · interface · L2155-L2166 — interface TaskStrategySnapshot
+- EntropySweepPolicy · type · L2172-L2172 — type EntropySweepPolicy = "off" | "balanced" | "strict";
+- TaskRiskLevel · type · L2173-L2173 — type TaskRiskLevel = "low" | "medium" | "high";
+- PersistentTaskGoalStatus · type · L2174-L2174 — type PersistentTaskGoalStatus = "active" | "paused" | "completed" | "cleared";
+- PersistentTaskGoalConfig · interface · L2176-L2186 — interface PersistentTaskGoalConfig
+- IntegrationMentionSource · type · L2188-L2188 — type IntegrationMentionSource = "builtin" | "gateway" | "mcp";
+- IntegrationMentionStatus · type · L2189-L2189 — type IntegrationMentionStatus = "configured" | "connected";
+- IntegrationMentionSelection · interface · L2191-L2199 — interface IntegrationMentionSelection
+- IntegrationMentionOption · interface · L2201-L2205 — interface IntegrationMentionOption extends IntegrationMentionSelection
+- AgentConfig · interface · L2211-L2467 — interface AgentConfig
+- CliTaskOwnership · interface · L2469-L2480 — interface CliTaskOwnership
+- ModelCapability · type · L2486-L2486 — type ModelCapability = "code" | "math" | "research" | "vision" | "fast" | "long_context";
+- MemoryTier · type · L2489-L2489 — type MemoryTier = "short" | "medium" | "long";
+- ConfirmationRisk · type · L2492-L2492 — type ConfirmationRisk = "low" | "medium" | "high";
+- MultiLlmParticipant · interface · L2495-L2503 — interface MultiLlmParticipant
+- MultiLlmConfig · interface · L2506-L2511 — interface MultiLlmConfig
+- ResearchPhaseModelOverride · interface · L2517-L2520 — interface ResearchPhaseModelOverride
+- ResearchWorkflowConfig · interface · L2526-L2538 — interface ResearchWorkflowConfig
+- Task · interface · L2540-L2651 — interface Task
+- SkillApplicationTrigger · type · L2653-L2653 — type SkillApplicationTrigger = "slash" | "planner" | "model" | "explicit_hint";
+- PendingSkillParameterCollection · interface · L2655-L2663 — interface PendingSkillParameterCollection
+- SkillContextDirectives · interface · L2665-L2674 — interface SkillContextDirectives
+- SkillApplication · interface · L2676-L2686 — interface SkillApplication
+- TaskTerminalStatus · type · L2688-L2695 — type TaskTerminalStatus = | "ok" | "partial_success" | "needs_user_action" | "awaiting_approval" | "awaiting_verification" | "resume_available" | "failed";
+- StepFailureClass · type · L2697-L2708 — type StepFailureClass = | "budget_exhausted" | "tool_error" | "contract_error" | "contract_unmet_write_required" | "required_contract" | "required_verification" | "optional_enrichment" | "dependency_unavailable" | "provider_quota" | "user_blocker" | "unknown";
+- TaskStopReason · type · L2710-L2720 — type TaskStopReason = | "completed" | "max_turns" | "tool_error" | "contract_block" | "verification_block" | "awaiting_user_input" | "dependency_unavailable" | "max_llm_calls" | "max_recovered_responses" | "max_repeated_iterations";
+- WorktreeStatus · type · L2724-L2732 — type WorktreeStatus = | "creating" // Worktree is being set up | "active" // Worktree is ready and in use | "committing" // Auto-commit in progress | "merging" // Merge back to base branch in progress | "merged" // Successfully merged | "conflict" // Merge conflict detected | "cleaned" // Worktree removed after completion | "failed";
+- WorktreeInfo · interface · L2734-L2747 — interface WorktreeInfo
+- MergeResult · interface · L2749-L2754 — interface MergeResult
+- PullRequestResult · interface · L2756-L2761 — interface PullRequestResult
+- WorktreeSettings · interface · L2763-L2769 — interface WorktreeSettings
+- ImprovementCandidateSource · type · L2781-L2785 — type ImprovementCandidateSource = | "task_failure" | "verification_failure" | "user_feedback" | "dev_log";
+- ImprovementCandidateStatus · type · L2787-L2793 — type ImprovementCandidateStatus = | "open" | "running" | "review" | "parked" | "resolved" | "dismissed";
+- ImprovementCandidateReadiness · type · L2795-L2801 — type ImprovementCandidateReadiness = | "ready" | "cooling_down" | "parked" | "blocked_provider" | "needs_more_evidence" | "unknown";
+- ImprovementRunStatus · type · L2803-L2803 — type ImprovementRunStatus = "queued" | "running" | "passed" | "failed" | "cancelled";
+- ImprovementReviewStatus · type · L2805-L2805 — type ImprovementReviewStatus = "pending" | "accepted" | "dismissed";
+- ImprovementPromotionMode · type · L2806-L2806 — type ImprovementPromotionMode = "merge" | "github_pr";
+- ImprovementPromotionStatus · type · L2807-L2813 — type ImprovementPromotionStatus = | "idle" | "promoting" | "applied" // legacy-only | "merged" // legacy/manual-only | "pr_opened" | "promotion_failed";
+- ImprovementFailureClass · type · L2815-L2830 — type ImprovementFailureClass = | "provider_tool_protocol_error" | "provider_rate_limited" | "provider_model_missing" | "provider_network_failure" | "provider_config_error" | "provider_unknown" | "plan_timeout" | "task_timeout" | "mutation_contract_unmet" | "artifact_contract_unmet" | "verification_failed" | "missing_resumable_state" | "non_promotable_result" | "preflight_failed" | "unknown";
+- ImprovementEvidence · interface · L2832-L2841 — interface ImprovementEvidence
+- ImprovementCandidate · interface · L2843-L2872 — interface ImprovementCandidate
+- ImprovementCampaignStage · type · L2874-L2880 — type ImprovementCampaignStage = | "queued" | "preflight" | "reproducing" | "implementing" | "verifying" | "completed";
+- ImprovementLoopSettings · interface · L2882-L2905 — interface ImprovementLoopSettings
+- ImprovementEligibility · interface · L2907-L2920 — interface ImprovementEligibility
+- ImprovementHistoryResetResult · interface · L2922-L2932 — interface ImprovementHistoryResetResult
+- ImprovementExperimentConfig · interface · L2958-L2962 — interface ImprovementExperimentConfig
+- ImprovementRun · interface · L2964-L2985 — interface ImprovementRun
+- ImprovementRunEvaluation · interface · L2987-L2996 — interface ImprovementRunEvaluation
+- ImprovementVariantLane · type · L2998-L3002 — type ImprovementVariantLane = | "minimal_patch" | "test_first" | "root_cause" | "guardrail_hardening";
+- ImprovementCampaignStatus · type · L3004-L3017 — type ImprovementCampaignStatus = | "queued" | "preflight" | "reproducing" | "implementing" | "verifying" | "pr_opened" | "parked" | "planning" | "running_variants" | "judging" | "ready_for_review" | "promoted" | "failed";
+- ImprovementVariantStatus · type · L3019-L3019 — type ImprovementVariantStatus = "queued" | "running" | "passed" | "failed" | "cancelled";
+- ImprovementReplayCase · interface · L3021-L3031 — interface ImprovementReplayCase
+- ImprovementProgramConfig · interface · L3033-L3039 — interface ImprovementProgramConfig
+- ImprovementVariantArtifactSummary · interface · L3041-L3048 — interface ImprovementVariantArtifactSummary
+- ImprovementVariantObservability · interface · L3050-L3066 — interface ImprovementVariantObservability
+- ImprovementCampaignObservability · interface · L3068-L3081 — interface ImprovementCampaignObservability
+- ImprovementVariantEvaluation · interface · L3083-L3101 — interface ImprovementVariantEvaluation
+- ImprovementJudgeVerdict · interface · L3103-L3117 — interface ImprovementJudgeVerdict
+- ImprovementVariantRun · interface · L3119-L3137 — interface ImprovementVariantRun
+- ImprovementCampaign · interface · L3139-L3174 — interface ImprovementCampaign
+- ComparisonSession · interface · L3178-L3188 — interface ComparisonSession
+- ComparisonSessionStatus · type · L3190-L3194 — type ComparisonSessionStatus = | "running" | "completed" // All agents finished | "partial" // Some agents finished, some failed/cancelled | "cancelled";
+- ComparisonResult · interface · L3196-L3210 — interface ComparisonResult
+- ComparisonAgentSpec · interface · L3212-L3216 — interface ComparisonAgentSpec
+- VisualAttachmentMimeType · type · L3218-L3225 — type VisualAttachmentMimeType = | "image/jpeg" | "image/png" | "image/gif" | "image/webp" | "video/mp4" | "video/quicktime" | "video/webm";
+- ImageAttachment · interface · L3228-L3245 — interface ImageAttachment
+- QuotedAssistantMessage · interface · L3248-L3257 — interface QuotedAssistantMessage
+- TaskFollowUpInput · interface · L3260-L3290 — interface TaskFollowUpInput
+- AgentMessageDeliveryStatus · type · L3292-L3292 — type AgentMessageDeliveryStatus = "accepted" | "queued" | "delivered" | "failed";
+- AgentMessageSendResult · interface · L3294-L3303 — interface AgentMessageSendResult
+- AgentMessagePayload · interface · L3305-L3322 — interface AgentMessagePayload
+- TaskEvent · interface · L3324-L3340 — interface TaskEvent
+- WorkSessionProtocolVersion · type · L3350-L3350 — type WorkSessionProtocolVersion = 1;
+- WorkSessionStatus · type · L3352-L3360 — type WorkSessionStatus = | "pending" | "executing" | "waiting" | "paused" | "completed" | "partial_success" | "failed" | "cancelled";
+- WorkSessionTurnStatus · type · L3362-L3369 — type WorkSessionTurnStatus = | "pending" | "executing" | "waiting" | "completed" | "partial_success" | "failed" | "cancelled";
+- WorkSessionActor · type · L3371-L3378 — type WorkSessionActor = | "system" | "user" | "agent" | "tool" | "subagent" | "automation" | "controller";
+- WorkSessionItemKind · type · L3380-L3395 — type WorkSessionItemKind = | "session" | "turn" | "message" | "reasoning" | "tool_call" | "tool_result" | "approval" | "input_request" | "wait" | "compaction" | "artifact" | "evidence" | "status" | "error" | "legacy_event";
+- WorkSessionRedactionClass · type · L3397-L3397 — type WorkSessionRedactionClass = "none" | "standard" | "sensitive" | "secret_redacted";
+- WorkSession · interface · L3399-L3409 — interface WorkSession
+- WorkSessionTurn · interface · L3411-L3422 — interface WorkSessionTurn
+- WorkSessionItem · interface · L3424-L3439 — interface WorkSessionItem
+- WorkSessionAggregate · interface · L3441-L3446 — interface WorkSessionAggregate
+- WorkSessionCreateInput · interface · L3448-L3457 — interface WorkSessionCreateInput
+- WorkSessionTurnCreateInput · interface · L3459-L3466 — interface WorkSessionTurnCreateInput
+- WorkSessionItemAppendInput · interface · L3468-L3480 — interface WorkSessionItemAppendInput
+- WorkSessionSteeringInput · interface · L3482-L3488 — interface WorkSessionSteeringInput
+- WorkSessionReplayProjection · interface · L3490-L3498 — interface WorkSessionReplayProjection
+- WorkSessionProjectionCursor · interface · L3505-L3516 — interface WorkSessionProjectionCursor<State = Record<string, unknown>>
+- WorkSessionProjectionUpdate · interface · L3518-L3525 — interface WorkSessionProjectionUpdate<State = Record<string, unknown>>
+- WorkSessionActivityLeaseKind · type · L3527-L3527 — type WorkSessionActivityLeaseKind = "llm" | "tool" | "retry" | "wait" | "join" | "reconnect";
+- WorkSessionActivityLeaseStatus · type · L3528-L3528 — type WorkSessionActivityLeaseStatus = "active" | "released" | "expired";
+- WorkSessionActivityLease · interface · L3531-L3544 — interface WorkSessionActivityLease
+- WorkSessionOperationalMetric · interface · L3546-L3556 — interface WorkSessionOperationalMetric
+- WorkSessionReplayFixtureKind · type · L3558-L3564 — type WorkSessionReplayFixtureKind = | "crash" | "compaction" | "approval" | "credential" | "policy_revocation" | "child_session";
+- WorkSessionReplayFixture · interface · L3566-L3575 — interface WorkSessionReplayFixture
+- WorkSessionReplayEvaluationResult · interface · L3577-L3588 — interface WorkSessionReplayEvaluationResult
+- WorkSessionReadMode · type · L3590-L3590 — type WorkSessionReadMode = "legacy" | "vnext";
+- WorkSessionRolloutConfig · interface · L3592-L3599 — interface WorkSessionRolloutConfig
+- OutcomeContractStatus · type · L3606-L3606 — type OutcomeContractStatus = "pending" | "satisfied" | "partial" | "unmet" | "waived";
+- OutcomeContractRequirementKind · type · L3608-L3608 — type OutcomeContractRequirementKind = "objective" | "output" | "verification" | "criterion";
+- OutcomeContractRequirementStatus · type · L3609-L3609 — type OutcomeContractRequirementStatus = "pending" | "satisfied" | "failed" | "waived";
+- OutcomeContractRequirement · interface · L3611-L3619 — interface OutcomeContractRequirement
+- OutcomeContract · interface · L3621-L3634 — interface OutcomeContract
+- ConstraintLedgerEntryKind · type · L3636-L3641 — type ConstraintLedgerEntryKind = | "constraint" | "decision" | "assumption" | "requirement" | "waiver";
+- ConstraintLedgerEntryStatus · type · L3642-L3642 — type ConstraintLedgerEntryStatus = "active" | "satisfied" | "violated" | "superseded";
+- ConstraintLedgerEntry · interface · L3644-L3657 — interface ConstraintLedgerEntry
+- ConstraintLedger · interface · L3660-L3664 — interface ConstraintLedger
+- EvidenceManifestSourceType · type · L3666-L3670 — type EvidenceManifestSourceType = | EvidenceRef["sourceType"] | "artifact_revision" | "task_event" | "child_session";
+- EvidenceManifestEntryStatus · type · L3671-L3671 — type EvidenceManifestEntryStatus = "supporting" | "contradicting" | "neutral" | "stale";
+- EvidenceManifestEntry · interface · L3673-L3689 — interface EvidenceManifestEntry
+- EvidenceManifest · interface · L3691-L3695 — interface EvidenceManifest
+- ArtifactRevisionStatus · type · L3697-L3697 — type ArtifactRevisionStatus = "draft" | "committed" | "superseded" | "retracted";
+- ArtifactRevision · interface · L3699-L3714 — interface ArtifactRevision
+- WaitStateKind · type · L3716-L3716 — type WaitStateKind = "approval" | "input" | "reconnect" | "paused" | "child" | "external";
+- WaitStateStatus · type · L3717-L3717 — type WaitStateStatus = "pending" | "resolved" | "expired" | "cancelled";
+- WaitState · interface · L3719-L3734 — interface WaitState
+- WorkSessionChildStatus · type · L3736-L3742 — type WorkSessionChildStatus = | "pending" | "running" | "completed" | "partial" | "failed" | "cancelled";
+- WorkSessionChildOutcome · type · L3743-L3743 — type WorkSessionChildOutcome = "complete" | "partial" | "failed";
+- WorkSessionChildLink · interface · L3745-L3759 — interface WorkSessionChildLink
+- WorkSessionChildAggregate · interface · L3761-L3770 — interface WorkSessionChildAggregate
+- WorkSessionContractAggregate · interface · L3772-L3780 — interface WorkSessionContractAggregate
+- SessionProgressWaitingKind · type · L3782-L3782 — type SessionProgressWaitingKind = "approval" | "input" | "reconnect" | "paused" | "blocked";
+- SessionProgressWaiting · interface · L3784-L3789 — interface SessionProgressWaiting
+- SessionProgressStep · interface · L3791-L3795 — interface SessionProgressStep
+- SessionProgressArtifact · interface · L3797-L3802 — interface SessionProgressArtifact
+- SessionProgressApproval · interface · L3804-L3809 — interface SessionProgressApproval
+- SessionProgressInputRequest · interface · L3811-L3815 — interface SessionProgressInputRequest
+- SessionProgressState · interface · L3818-L3847 — interface SessionProgressState
+- SessionSearchResult · interface · L3849-L3852 — interface SessionSearchResult
+- TaskTimelineEventV2 · interface · L3854-L3863 — interface TaskTimelineEventV2 extends TaskEvent
+- TaskTimelinePageCursor · interface · L3865-L3869 — interface TaskTimelinePageCursor
+- TaskTimelinePageRequest · interface · L3871-L3879 — interface TaskTimelinePageRequest
+- TaskTimelinePageSummary · interface · L3881-L3895 — interface TaskTimelinePageSummary
+- TaskTimelinePageResult · interface · L3897-L3904 — interface TaskTimelinePageResult
+- TaskEventDetailResult · interface · L3906-L3909 — interface TaskEventDetailResult
+- TaskEventDetailRequest · interface · L3911-L3914 — interface TaskEventDetailRequest
+- TaskTraceRunSibling · interface · L3916-L3925 — interface TaskTraceRunSibling
+- TaskTraceRunSummary · interface · L3927-L3940 — interface TaskTraceRunSummary
+- TaskTraceMetrics · interface · L3942-L3952 — interface TaskTraceMetrics
+- ListTaskTraceRunsRequest · interface · L3954-L3959 — interface ListTaskTraceRunsRequest
+- TaskTraceTab · type · L3961-L3961 — type TaskTraceTab = "transcript" | "debug";
+- TaskTraceRowActor · type · L3962-L3962 — type TaskTraceRowActor = "user" | "agent" | "tool" | "model" | "result" | "system";
+- TaskTraceBadgeTone · type · L3963-L3963 — type TaskTraceBadgeTone = "neutral" | "active" | "success" | "warning" | "error";
+- TaskTraceBadge · interface · L3965-L3968 — interface TaskTraceBadge
+- TaskTraceInspectorField · interface · L3970-L3974 — interface TaskTraceInspectorField
+- TaskTraceInspectorPayload · interface · L3976-L3983 — interface TaskTraceInspectorPayload
+- TaskTraceRow · interface · L3985-L3998 — interface TaskTraceRow
+- TaskTraceRunDetail · interface · L4000-L4007 — interface TaskTraceRunDetail
+- TaskOutputSummary · interface · L4013-L4019 — interface TaskOutputSummary
+- TaskMetricKind · type · L4021-L4032 — type TaskMetricKind = | "files_changed" | "lines_added" | "lines_removed" | "sources_collected" | "citations_used" | "artifacts_created" | "slides_created" | "rows_processed" | "records_updated" | "checks_passed" | "agents_active";
+- TaskImpactMetricProvenance · type · L4034-L4038 — type TaskImpactMetricProvenance = | "plan_projection" | "canonical_tool_outcome" | "timeline_evidence" | "task_mutation_ledger";
+- TaskImpactMetric · interface · L4044-L4053 — interface TaskImpactMetric
+- ActivityItemStatus · type · L4055-L4055 — type ActivityItemStatus = "pending" | "running" | "completed" | "failed" | "blocked";
+- ActivityItemViewModel · interface · L4057-L4066 — interface ActivityItemViewModel
+- ActivityGroupViewModel · interface · L4068-L4077 — interface ActivityGroupViewModel
+- TaskStatusMetricSlot · interface · L4079-L4085 — interface TaskStatusMetricSlot
+- TaskStatusStripState · type · L4087-L4096 — type TaskStatusStripState = | "working" | "completed" | "failed" | "cancelled" | "paused" | "blocked" | "waiting_for_approval" | "waiting_for_input" | "idle";
+- TaskStatusStripViewModel · interface · L4098-L4118 — interface TaskStatusStripViewModel
+- LearningProgressStage · type · L4120-L4128 — type LearningProgressStage = | "screen_context_used" | "memory_captured" | "playbook_reinforced" | "skill_proposed" | "skill_reviewed" | "skill_approved" | "skill_rejected" | "no_learning";
+- LearningProgressStatus · type · L4130-L4130 — type LearningProgressStatus = "done" | "pending" | "skipped" | "failed";
+- LearningProgressStep · interface · L4132-L4145 — interface LearningProgressStep
+- TaskLearningProgress · interface · L4147-L4160 — interface TaskLearningProgress
+- UnifiedRecallSourceType · type · L4162-L4169 — type UnifiedRecallSourceType = | "task" | "message" | "file" | "workspace_note" | "memory" | "screen_context" | "knowledge_graph";
+- ChronicleCaptureScope · type · L4171-L4171 — type ChronicleCaptureScope = "frontmost_display" | "all_displays";
+- ChronicleTaskMode · type · L4172-L4172 — type ChronicleTaskMode = "inherit" | "enabled" | "disabled";
+- ChronicleSourceReference · interface · L4174-L4178 — interface ChronicleSourceReference
+- ChronicleSettings · interface · L4180-L4191 — interface ChronicleSettings
+- ChronicleCaptureStatus · interface · L4193-L4212 — interface ChronicleCaptureStatus
+- ChronicleResolvedContext · interface · L4214-L4228 — interface ChronicleResolvedContext
+- UnifiedRecallResult · interface · L4230-L4241 — interface UnifiedRecallResult
+- UnifiedRecallQuery · interface · L4243-L4248 — interface UnifiedRecallQuery
+- UnifiedRecallResponse · interface · L4250-L4255 — interface UnifiedRecallResponse
+- ShellSessionScope · type · L4257-L4257 — type ShellSessionScope = "task" | "workspace" | "tab";
+- ShellSessionStatus · type · L4258-L4264 — type ShellSessionStatus = | "inactive" | "active" | "running" | "resetting" | "ended" | "fallback";
+- ShellSessionInfo · interface · L4266-L4284 — interface ShellSessionInfo
+- ShellSessionLifecycleEvent · interface · L4286-L4294 — interface ShellSessionLifecycleEvent
+- TerminalTabRunResult · interface · L4296-L4303 — interface TerminalTabRunResult
+- TerminalTabCompletionResult · interface · L4305-L4310 — interface TerminalTabCompletionResult
+- TerminalTabOutputEvent · interface · L4312-L4320 — interface TerminalTabOutputEvent
+- GithubReviewThreadState · type · L4322-L4322 — type GithubReviewThreadState = "open" | "resolved" | "outdated" | "unknown";
+- GithubPullRequestReviewComment · interface · L4324-L4331 — interface GithubPullRequestReviewComment
+- GithubPullRequestReviewThread · interface · L4333-L4348 — interface GithubPullRequestReviewThread
+- GithubPullRequestReviewSummary · interface · L4350-L4359 — interface GithubPullRequestReviewSummary
+- LLMRoutingReason · type · L4361-L4370 — type LLMRoutingReason = | "manual_override" | "profile_routing" | "automatic_execution" | "verification" | "fallback" | "provider_outage" | "quota" | "model_capability" | "unknown";
+- LLMRoutingFallbackStep · interface · L4372-L4379 — interface LLMRoutingFallbackStep
+- LLMRoutingRuntimeState · interface · L4381-L4392 — interface LLMRoutingRuntimeState
+- TaskBestKnownOutcome · interface · L4394-L4403 — interface TaskBestKnownOutcome
+- TaskUsageTotals · interface · L4405-L4413 — interface TaskUsageTotals
+- TaskFileChanges · interface · L4415-L4419 — interface TaskFileChanges
+- EvalCase · interface · L4421-L4436 — interface EvalCase
+- EvalSuite · interface · L4438-L4445 — interface EvalSuite
+- EvalRun · interface · L4447-L4457 — interface EvalRun
+- EvalCaseRun · interface · L4459-L4468 — interface EvalCaseRun
+- EvalBaselineMetrics · interface · L4470-L4487 — interface EvalBaselineMetrics
+- TaskExportQuery · interface · L4489-L4494 — interface TaskExportQuery
+- TaskExportItem · interface · L4496-L4517 — interface TaskExportItem
+- TaskExportJson · interface · L4519-L4524 — interface TaskExportJson
+- BotConversationListQuery · interface · L4527-L4535 — interface BotConversationListQuery
+- BotNotificationPolicy · interface · L4537-L4542 — interface BotNotificationPolicy
+- UpdateBotNotificationPolicyRequest · interface · L4544-L4548 — interface UpdateBotNotificationPolicyRequest
+- Artifact · interface · L4550-L4558 — interface Artifact
+- AnnotationSurfaceType · type · L4560-L4560 — type AnnotationSurfaceType = "browser" | "diff" | "file" | "artifact" | "message";
+- AnnotationStatus · type · L4562-L4562 — type AnnotationStatus = "open" | "addressing" | "addressed" | "resolved" | "dismissed";
+- AnnotationViewportRef · interface · L4564-L4570 — interface AnnotationViewportRef
+- AnnotationRectRef · interface · L4572-L4577 — interface AnnotationRectRef
+- BrowserAnnotationTargetRef · interface · L4579-L4593 — interface BrowserAnnotationTargetRef
+- BrowserAnnotationTargetResolveResult · interface · L4595-L4600 — interface BrowserAnnotationTargetResolveResult
+- DiffAnnotationTargetRef · interface · L4602-L4612 — interface DiffAnnotationTargetRef
+- FileAnnotationTargetRef · interface · L4614-L4625 — interface FileAnnotationTargetRef
+- MessageAnnotationTargetRef · interface · L4627-L4633 — interface MessageAnnotationTargetRef
+- AnnotationTargetRef · type · L4635-L4639 — type AnnotationTargetRef = | BrowserAnnotationTargetRef | DiffAnnotationTargetRef | FileAnnotationTargetRef | MessageAnnotationTargetRef;
+- AnnotationStylePatch · interface · L4641-L4653 — interface AnnotationStylePatch
+- Annotation · interface · L4655-L4672 — interface Annotation
+- AnnotationCreateInput · interface · L4674-L4685 — interface AnnotationCreateInput
+- AnnotationListQuery · interface · L4687-L4694 — interface AnnotationListQuery
+- AnnotationUpdateInput · interface · L4696-L4704 — interface AnnotationUpdateInput
+- DocumentVersionEntry · interface · L4706-L4713 — interface DocumentVersionEntry
+- PdfReviewPageSummary · interface · L4715-L4720 — interface PdfReviewPageSummary
+- PdfReviewExtractionMode · type · L4722-L4722 — type PdfReviewExtractionMode = "native" | "ocrmypdf" | "page-ocr" | "fallback";
+- PdfReviewSummary · interface · L4724-L4733 — interface PdfReviewSummary
+- DocumentEditorDocxBlock · interface · L4735-L4742 — interface DocumentEditorDocxBlock
+- PdfRegionSelection · interface · L4744-L4752 — interface PdfRegionSelection
+- DocxBlockSelection · interface · L4754-L4760 — interface DocxBlockSelection
+- DocumentEditSelection · type · L4762-L4762 — type DocumentEditSelection = PdfRegionSelection | DocxBlockSelection;
+- DocumentEditorSession · interface · L4764-L4776 — interface DocumentEditorSession
+- DocumentEditRequest · interface · L4778-L4782 — interface DocumentEditRequest
+- Workspace · interface · L4784-L4792 — interface Workspace
+- isTempWorkspaceId · function · L4800-L4803 — function isTempWorkspaceId(id: string | null | undefined): boolean
+- SandboxType · type · L4808-L4808 — type SandboxType = "auto" | "macos" | "docker" | "none";
+- DockerSandboxConfig · interface · L4813-L4822 — interface DockerSandboxConfig
+- WorkspacePermissions · interface · L4824-L4852 — interface WorkspacePermissions
+- ExternalStepVerification · interface · L4858-L4877 — interface ExternalStepVerification
+- VerificationEvidenceEntry · interface · L4880-L4885 — interface VerificationEvidenceEntry
+- TaskVerificationEvidenceBundle · interface · L4888-L4890 — interface TaskVerificationEvidenceBundle
+- PlanStep · interface · L4892-L4907 — interface PlanStep
+- Plan · interface · L4909-L4912 — interface Plan
+- SessionChecklistToolItemInput · interface · L4914-L4919 — interface SessionChecklistToolItemInput
+- StepFeedbackAction · type · L4921-L4921 — type StepFeedbackAction = "retry" | "skip" | "stop" | "drift";
+- StepFeedbackPayload · interface · L4923-L4928 — interface StepFeedbackPayload
+- ToolCall · interface · L4930-L4935 — interface ToolCall
+- ToolResult · interface · L4937-L4943 — interface ToolResult
+- NodeToolResult · interface · L4949-L4954 — interface NodeToolResult
+- ToolDefinition · interface · L4959-L4970 — interface ToolDefinition
+- ApprovalRequest · interface · L4972-L4983 — interface ApprovalRequest
+- ApprovalResponseAction · type · L4985-L4995 — type ApprovalResponseAction = | "allow_once" | "deny_once" | "allow_session" | "deny_session" | "allow_workspace" | "deny_workspace" | "allow_profile" | "deny_profile" | "allow_recurring" | "deny_recurring";
+- ApprovalResponse · interface · L4997-L5001 — interface ApprovalResponse
+- RequestUserInputOption · interface · L5003-L5006 — interface RequestUserInputOption
+- RequestUserInputQuestion · interface · L5008-L5013 — interface RequestUserInputQuestion
+- RequestUserInputArgs · interface · L5015-L5017 — interface RequestUserInputArgs
+- InputRequestAnswer · interface · L5019-L5022 — interface InputRequestAnswer
+- InputRequestResponse · interface · L5024-L5028 — interface InputRequestResponse
+- InputRequest · interface · L5030-L5038 — interface InputRequest
+- Skill · interface · L5040-L5048 — interface Skill
+- AgentCapability · type · L5055-L5074 — type AgentCapability = // Technical | "code" // Writing and editing code | "review" // Reviewing code or content | "test" // Writing and running tests | "design" // UI/UX and visual design | "ops" // DevOps, CI/CD, infrastructure | "security" // Security analysis and auditing // Analysis & Research | "research" // Investigating and gathering information | "analyze" // Data analysis and insights | "plan" // Planning and architecture // Communication & Content | "document" // Writing documentation | "write" // General content writing | "communicate" // Customer support, outreach | "market" // Marketing and growth // Management | "manage" // Project management, coordination | "product";
+- AgentAutonomyLevel · type · L5082-L5082 — type AgentAutonomyLevel = "intern" | "specialist" | "lead";
+- HeartbeatStatus · type · L5087-L5087 — type HeartbeatStatus = "idle" | "running" | "sleeping" | "error";
+- HeartbeatProfile · type · L5088-L5088 — type HeartbeatProfile = "observer" | "operator" | "dispatcher";
+- HeartbeatRunType · type · L5089-L5089 — type HeartbeatRunType = "pulse" | "dispatch";
+- HeartbeatDispatchKind · type · L5090-L5090 — type HeartbeatDispatchKind = "silent" | "suggestion" | "task" | "runbook" | "cron_handoff";
+- HeartbeatPulseResultKind · type · L5091-L5097 — type HeartbeatPulseResultKind = | "idle" | "deferred" | "suggestion" | "dispatch_task" | "dispatch_runbook" | "handoff_to_cron";
+- HeartbeatSignalUrgency · type · L5098-L5098 — type HeartbeatSignalUrgency = "low" | "medium" | "high" | "critical";
+- HeartbeatSignalSource · type · L5099-L5108 — type HeartbeatSignalSource = | "hook" | "cron" | "api" | "manual" | "awareness" | "git" | "files" | "tasks" | "system";
+- HeartbeatActiveHours · interface · L5109-L5114 — interface HeartbeatActiveHours
+- AgentReviewRating · type · L5118-L5118 — type AgentReviewRating = 1 | 2 | 3 | 4 | 5;
+- AgentPerformanceReview · interface · L5120-L5132 — interface AgentPerformanceReview
+- AgentReviewGenerateRequest · interface · L5134-L5138 — interface AgentReviewGenerateRequest
+- AgentToolRestrictions · interface · L5143-L5146 — interface AgentToolRestrictions
+- CompanyLoopType · type · L5148-L5148 — type CompanyLoopType = "monitor" | "work_generation" | "execution" | "review";
+- CompanyOutputType · type · L5150-L5157 — type CompanyOutputType = | "status_digest" | "decision_brief" | "issue_batch" | "exception_alert" | "work_order" | "review_request" | "metric_report";
+- CompanyPriority · type · L5159-L5159 — type CompanyPriority = "critical" | "high" | "normal" | "low";
+- CompanyReviewReason · type · L5161-L5167 — type CompanyReviewReason = | "strategy" | "irreversible_action" | "policy_exception" | "budget_risk" | "customer_risk" | "operator_attention";
+- CompanyEvidenceRef · interface · L5169-L5173 — interface CompanyEvidenceRef
+- CompanyOutputContract · interface · L5175-L5189 — interface CompanyOutputContract
+- AgentRoleKind · type · L5191-L5191 — type AgentRoleKind = "system" | "custom" | "persona_template";
+- HeartbeatPolicy · interface · L5193-L5207 — interface HeartbeatPolicy
+- HeartbeatPolicyInput · interface · L5209-L5219 — interface HeartbeatPolicyInput
+- AutomationProfile · interface · L5221-L5239 — interface AutomationProfile
+- CreateAutomationProfileRequest · interface · L5241-L5250 — interface CreateAutomationProfileRequest
+- UpdateAutomationProfileRequest · interface · L5252-L5261 — interface UpdateAutomationProfileRequest
+- CoreTraceSourceSurface · type · L5263-L5263 — type CoreTraceSourceSurface = "heartbeat" | "subconscious" | "memory" | "trigger" | "device";
+- CoreTraceKind · type · L5265-L5271 — type CoreTraceKind = | "pulse_cycle" | "subconscious_cycle" | "memory_update" | "dream_distill" | "harness_experiment" | "regression_eval";
+- CoreTraceStatus · type · L5273-L5273 — type CoreTraceStatus = "running" | "completed" | "failed" | "skipped";
+- CoreTracePhase · type · L5275-L5287 — type CoreTracePhase = | "start" | "evidence" | "failure_mining" | "gating" | "decision" | "dispatch" | "memory" | "eval" | "gate" | "promotion" | "complete" | "error";
+- CoreMemoryScopeKind · type · L5289-L5294 — type CoreMemoryScopeKind = | "global" | "workspace" | "automation_profile" | "code_workspace" | "pull_request";
+- CoreMemoryCandidateType · type · L5296-L5306 — type CoreMemoryCandidateType = | "preference" | "constraint" | "pattern" | "project_state" | "watch_item" | "open_loop" | "correction" | "recurring_task" | "ignored_noise" | "invalidates_prior";
+- CoreMemoryCandidateStatus · type · L5308-L5308 — type CoreMemoryCandidateStatus = "proposed" | "accepted" | "rejected" | "merged";
+- CoreTrace · interface · L5310-L5326 — interface CoreTrace
+- CoreTraceEvent · interface · L5328-L5336 — interface CoreTraceEvent
+- CoreMemoryCandidate · interface · L5338-L5356 — interface CoreMemoryCandidate
+- CoreMemoryDistillRun · interface · L5358-L5372 — interface CoreMemoryDistillRun
+- CoreMemoryScopeState · interface · L5374-L5382 — interface CoreMemoryScopeState
+- ListCoreTracesRequest · interface · L5384-L5391 — interface ListCoreTracesRequest
+- GetCoreTraceResult · interface · L5393-L5397 — interface GetCoreTraceResult
+- ListCoreMemoryCandidatesRequest · interface · L5399-L5406 — interface ListCoreMemoryCandidatesRequest
+- ReviewCoreMemoryCandidateRequest · interface · L5408-L5412 — interface ReviewCoreMemoryCandidateRequest
+- ListCoreMemoryDistillRunsRequest · interface · L5414-L5418 — interface ListCoreMemoryDistillRunsRequest
+- DreamingScopeKind · type · L5420-L5420 — type DreamingScopeKind = "workspace" | "agent_role" | "topic" | "recent_sessions";
+- DreamingTriggerSource · type · L5422-L5422 — type DreamingTriggerSource = "heartbeat" | "task_completion" | "manual" | "system";
+- DreamingRunStatus · type · L5424-L5424 — type DreamingRunStatus = "running" | "completed" | "failed" | "skipped";
+- DreamingCandidateAction · type · L5426-L5436 — type DreamingCandidateAction = | "curated_add" | "curated_replace" | "curated_archive" | "archive_mark_stale" | "topic_pack_update" | "ignored_noise_pattern" | "open_loop" | "recurring_task" | "constraint" | "correction";
+- DreamingCandidateTarget · type · L5438-L5443 — type DreamingCandidateTarget = | "curated_memory" | "archive_memory" | "topic_pack" | "core_memory" | "suggestion_policy";
+- DreamingCandidateStatus · type · L5445-L5445 — type DreamingCandidateStatus = "proposed" | "accepted" | "rejected" | "applied" | "merged";
+- DreamingRun · interface · L5447-L5464 — interface DreamingRun
+- DreamingCandidate · interface · L5466-L5481 — interface DreamingCandidate
+- ListDreamingRunsRequest · interface · L5483-L5488 — interface ListDreamingRunsRequest
+- ListDreamingCandidatesRequest · interface · L5490-L5496 — interface ListDreamingCandidatesRequest
+- ReviewDreamingCandidateRequest · interface · L5498-L5502 — interface ReviewDreamingCandidateRequest
+- RunCoreMemoryDistillNowRequest · interface · L5504-L5507 — interface RunCoreMemoryDistillNowRequest
+- CoreFailureCategory · type · L5509-L5521 — type CoreFailureCategory = | "wake_timing" | "dispatch_overreach" | "dispatch_underreach" | "memory_noise" | "memory_staleness" | "subconscious_duplication" | "subconscious_low_signal" | "routing_mismatch" | "workspace_context_gap" | "cooldown_policy_mismatch" | "budget_policy_mismatch" | "unknown";
+- CoreFailureSeverity · type · L5523-L5523 — type CoreFailureSeverity = "low" | "medium" | "high" | "critical";
+- CoreFailureRecordStatus · type · L5525-L5525 — type CoreFailureRecordStatus = "open" | "clustered" | "resolved" | "archived";
+- CoreFailureClusterStatus · type · L5527-L5527 — type CoreFailureClusterStatus = "open" | "stable" | "evaluating" | "resolved" | "dismissed";
+- CoreEvalCaseStatus · type · L5529-L5529 — type CoreEvalCaseStatus = "draft" | "active" | "failing" | "archived";
+- CoreExperimentChangeKind · type · L5531-L5534 — type CoreExperimentChangeKind = | "automation_profile" | "subconscious_settings" | "memory_policy";
+- CoreExperimentStatus · type · L5536-L5542 — type CoreExperimentStatus = | "proposed" | "running" | "passed_gate" | "failed_gate" | "promoted" | "rejected";
+- CoreFailureRecord · interface · L5544-L5560 — interface CoreFailureRecord
+- CoreFailureCluster · interface · L5562-L5577 — interface CoreFailureCluster
+- CoreEvalCase · interface · L5579-L5592 — interface CoreEvalCase
+- CoreHarnessExperiment · interface · L5594-L5606 — interface CoreHarnessExperiment
+- CoreHarnessExperimentRun · interface · L5608-L5619 — interface CoreHarnessExperimentRun
+- CoreRegressionGateResult · interface · L5621-L5630 — interface CoreRegressionGateResult
+- CoreLearningsEntry · interface · L5632-L5642 — interface CoreLearningsEntry
+- ListCoreFailureRecordsRequest · interface · L5644-L5651 — interface ListCoreFailureRecordsRequest
+- ListCoreFailureClustersRequest · interface · L5653-L5659 — interface ListCoreFailureClustersRequest
+- ReviewCoreFailureClusterRequest · interface · L5661-L5665 — interface ReviewCoreFailureClusterRequest
+- ListCoreEvalCasesRequest · interface · L5667-L5673 — interface ListCoreEvalCasesRequest
+- ReviewCoreEvalCaseRequest · interface · L5675-L5678 — interface ReviewCoreEvalCaseRequest
+- ListCoreExperimentsRequest · interface · L5680-L5686 — interface ListCoreExperimentsRequest
+- RunCoreExperimentRequest · interface · L5688-L5694 — interface RunCoreExperimentRequest
+- ReviewCoreExperimentRequest · interface · L5696-L5699 — interface ReviewCoreExperimentRequest
+- ListCoreLearningsRequest · interface · L5701-L5707 — interface ListCoreLearningsRequest
+- AgentRole · interface · L5712-L5762 — interface AgentRole
+- CreateAgentRoleRequest · interface · L5767-L5803 — interface CreateAgentRoleRequest
+- UpdateAgentRoleRequest · interface · L5808-L5838 — interface UpdateAgentRoleRequest
+- AgentTeam · interface · L5846-L5862 — interface AgentTeam
+- CreateAgentTeamRequest · interface · L5864-L5875 — interface CreateAgentTeamRequest
+- UpdateAgentTeamRequest · interface · L5877-L5888 — interface UpdateAgentTeamRequest
+- AgentTeamMember · interface · L5890-L5898 — interface AgentTeamMember
+- CreateAgentTeamMemberRequest · interface · L5900-L5906 — interface CreateAgentTeamMemberRequest
+- UpdateAgentTeamMemberRequest · interface · L5908-L5913 — interface UpdateAgentTeamMemberRequest
+- AgentTeamRunStatus · type · L5915-L5921 — type AgentTeamRunStatus = | "pending" | "running" | "paused" | "completed" | "failed" | "cancelled";
+- AgentTeamRunPhase · type · L5923-L5923 — type AgentTeamRunPhase = "dispatch" | "think" | "execute" | "synthesize" | "complete";
+- AgentTeamRun · interface · L5925-L5937 — interface AgentTeamRun
+- CreateAgentTeamRunRequest · interface · L5939-L5946 — interface CreateAgentTeamRunRequest
+- AgentTeamItemStatus · type · L5948-L5948 — type AgentTeamItemStatus = "todo" | "in_progress" | "blocked" | "done" | "failed";
+- AgentTeamItem · interface · L5950-L5963 — interface AgentTeamItem
+- CreateAgentTeamItemRequest · interface · L5965-L5974 — interface CreateAgentTeamItemRequest
+- UpdateAgentTeamItemRequest · interface · L5976-L5986 — interface UpdateAgentTeamItemRequest
+- ManagedAgentStatus · type · L5990-L5990 — type ManagedAgentStatus = "draft" | "active" | "suspended" | "archived";
+- ManagedAgentExecutionMode · type · L5991-L5991 — type ManagedAgentExecutionMode = "solo" | "team";
+- ManagedAgentRoutineTriggerType · type · L5993-L6000 — type ManagedAgentRoutineTriggerType = | "manual" | "schedule" | "api" | "channel_event" | "mailbox_event" | "github_event" | "connector_event";
+- ManagedAgentRoutineTriggerConfig · interface · L6002-L6023 — interface ManagedAgentRoutineTriggerConfig
+- ManagedAgentRoutineRecord · interface · L6025-L6037 — interface ManagedAgentRoutineRecord
+- CreateManagedAgentRoutineRequest · interface · L6039-L6045 — interface CreateManagedAgentRoutineRequest
+- UpdateManagedAgentRoutineRequest · interface · L6047-L6054 — interface UpdateManagedAgentRoutineRequest
+- ManagedAgentLinkedRoutineRef · interface · L6056-L6062 — interface ManagedAgentLinkedRoutineRef
+- ManagedAgentConversionProvenance · interface · L6064-L6069 — interface ManagedAgentConversionProvenance
+- AgentWorkspaceRole · type · L6071-L6071 — type AgentWorkspaceRole = "viewer" | "operator" | "builder" | "publisher" | "admin";
+- AgentWorkspaceMembership · interface · L6073-L6080 — interface AgentWorkspaceMembership
+- AgentWorkspacePermissionSnapshot · interface · L6082-L6096 — interface AgentWorkspacePermissionSnapshot
+- ManagedAgentAuditEntry · interface · L6098-L6120 — interface ManagedAgentAuditEntry
+- ManagedAgentInsightsCount · interface · L6122-L6125 — interface ManagedAgentInsightsCount
+- ManagedAgentInsightsToolCount · interface · L6127-L6130 — interface ManagedAgentInsightsToolCount
+- ManagedAgentInsightsError · interface · L6132-L6138 — interface ManagedAgentInsightsError
+- ManagedAgentInsights · interface · L6140-L6154 — interface ManagedAgentInsights
+- ManagedAgentSlackDeploymentHealthTarget · interface · L6156-L6165 — interface ManagedAgentSlackDeploymentHealthTarget
+- ManagedAgentSlackDeploymentHealth · interface · L6167-L6176 — interface ManagedAgentSlackDeploymentHealth
+- ManagedSessionWorkpaperDecision · interface · L6178-L6182 — interface ManagedSessionWorkpaperDecision
+- ManagedSessionWorkpaperApproval · interface · L6184-L6190 — interface ManagedSessionWorkpaperApproval
+- ManagedSessionWorkpaperArtifact · interface · L6192-L6198 — interface ManagedSessionWorkpaperArtifact
+- ManagedSessionWorkpaperAuditItem · interface · L6200-L6206 — interface ManagedSessionWorkpaperAuditItem
+- ManagedSessionWorkpaper · interface · L6208-L6218 — interface ManagedSessionWorkpaper
+- ConvertAgentRoleToManagedAgentRequest · interface · L6220-L6223 — interface ConvertAgentRoleToManagedAgentRequest
+- ConvertAutomationProfileToManagedAgentRequest · interface · L6225-L6228 — interface ConvertAutomationProfileToManagedAgentRequest
+- ManagedAgentConversionResult · interface · L6230-L6237 — interface ManagedAgentConversionResult
+- ManagedAgentModelConfig · interface · L6239-L6243 — interface ManagedAgentModelConfig
+- ManagedAgentTeamTemplate · interface · L6245-L6251 — interface ManagedAgentTeamTemplate
+- ManagedAgentRuntimeDefaults · interface · L6253-L6263 — interface ManagedAgentRuntimeDefaults
+- ManagedAgent · interface · L6265-L6273 — interface ManagedAgent
+- ManagedAgentVersion · interface · L6275-L6287 — interface ManagedAgentVersion
+- ManagedEnvironmentKind · type · L6289-L6289 — type ManagedEnvironmentKind = "cowork_local";
+- ManagedEnvironmentStatus · type · L6290-L6290 — type ManagedEnvironmentStatus = "active" | "archived";
+- ManagedEnvironmentConfig · interface · L6292-L6307 — interface ManagedEnvironmentConfig
+- ManagedEnvironment · interface · L6309-L6318 — interface ManagedEnvironment
+- ManagedSessionStatus · type · L6320-L6327 — type ManagedSessionStatus = | "pending" | "running" | "awaiting_input" | "interrupted" | "completed" | "failed" | "cancelled";
+- ManagedSession · interface · L6329-L6346 — interface ManagedSession
+- WorkContextStatus · type · L6354-L6354 — type WorkContextStatus = "active" | "paused" | "completed" | "archived";
+- WorkContextMemberRole · type · L6356-L6356 — type WorkContextMemberRole = "primary" | "child" | "reviewer" | "scheduled";
+- WorkContextState · interface · L6358-L6374 — interface WorkContextState
+- WorkContext · interface · L6376-L6389 — interface WorkContext
+- WorkContextCreateInput · interface · L6391-L6397 — interface WorkContextCreateInput
+- WorkContextUpdateInput · interface · L6399-L6406 — interface WorkContextUpdateInput
+- WorkContextMemberInput · interface · L6408-L6413 — interface WorkContextMemberInput
+- SessionHumanRole · type · L6415-L6415 — type SessionHumanRole = "owner" | "contributor" | "reviewer" | "viewer";
+- SessionHumanCapability · type · L6416-L6416 — type SessionHumanCapability = "view" | "contribute" | "review" | "approve" | "manage";
+- SessionHumanMemberStatus · type · L6417-L6417 — type SessionHumanMemberStatus = "active" | "revoked";
+- SessionInviteRole · type · L6418-L6418 — type SessionInviteRole = Exclude<SessionHumanRole, "owner">;
+- SessionPrincipal · interface · L6420-L6423 — interface SessionPrincipal
+- SessionHumanMember · interface · L6425-L6436 — interface SessionHumanMember
+- SessionInvite · interface · L6438-L6447 — interface SessionInvite
+- SessionInviteCreateInput · interface · L6449-L6453 — interface SessionInviteCreateInput
+- SessionInviteCreateResult · interface · L6455-L6458 — interface SessionInviteCreateResult
+- SessionInviteAcceptInput · interface · L6460-L6464 — interface SessionInviteAcceptInput
+- SessionInviteAcceptResult · interface · L6466-L6469 — interface SessionInviteAcceptResult
+- SessionMemberUpdateInput · interface · L6471-L6476 — interface SessionMemberUpdateInput
+- SessionActionAttribution · interface · L6478-L6481 — interface SessionActionAttribution
+- SessionAuditEntry · interface · L6483-L6492 — interface SessionAuditEntry
+- SessionShareSnapshot · interface · L6494-L6499 — interface SessionShareSnapshot
+- SessionMembersRequest · type · L6501-L6503 — type SessionMembersRequest = | { contextId: string; principalId?: string } | { taskId: string; principalId?: string };
+- ManagedSessionSurface · type · L6505-L6505 — type ManagedSessionSurface = "runtime" | "agent_panel" | "studio_preview";
+- ManagedSessionInputContent · type · L6507-L6509 — type ManagedSessionInputContent = | { type: "text"; text: string } | { type: "file"; artifactId: string };
+- ManagedSessionCreateInput · interface · L6511-L6520 — interface ManagedSessionCreateInput
+- ManagedSessionUserMessageRequest · interface · L6522-L6527 — interface ManagedSessionUserMessageRequest
+- ManagedSessionEventType · type · L6529-L6540 — type ManagedSessionEventType = | "session.created" | "user.message" | "assistant.message" | "tool.call" | "tool.result" | "task.event.bridge" | "status.changed" | "input.requested" | "input.received" | "session.completed" | "session.failed";
+- ManagedSessionEvent · interface · L6542-L6549 — interface ManagedSessionEvent
+- ManagedAgentToolFamily · type · L6551-L6560 — type ManagedAgentToolFamily = | "shell" | "browser" | "computer-use" | "files" | "memory" | "documents" | "images" | "search" | "communication";
+- ManagedAgentRuntimeToolSurface · type · L6562-L6562 — type ManagedAgentRuntimeToolSurface = "chatgpt" | "slack";
+- ManagedAgentRuntimeToolApprovalBehavior · type · L6564-L6568 — type ManagedAgentRuntimeToolApprovalBehavior = | "no_approval" | "auto_approve" | "require_approval" | "workspace_policy";
+- ManagedAgentRuntimeToolCatalogEntry · interface · L6570-L6583 — interface ManagedAgentRuntimeToolCatalogEntry
+- ManagedAgentRuntimeToolCatalog · interface · L6585-L6591 — interface ManagedAgentRuntimeToolCatalog
+- ManagedAgentFileRef · interface · L6593-L6599 — interface ManagedAgentFileRef
+- ManagedAgentMemoryConfig · interface · L6601-L6604 — interface ManagedAgentMemoryConfig
+- ManagedAgentChannelTarget · interface · L6606-L6616 — interface ManagedAgentChannelTarget
+- ManagedAgentScheduleConfig · interface · L6618-L6624 — interface ManagedAgentScheduleConfig
+- AgentStarterPrompt · interface · L6626-L6632 — interface AgentStarterPrompt
+- AgentBuilderConnectionRequirement · interface · L6634-L6645 — interface AgentBuilderConnectionRequirement
+- AgentBuilderRoutinePlan · interface · L6647-L6652 — interface AgentBuilderRoutinePlan
+- AgentBuilderSelectionRequirementKind · type · L6654-L6654 — type AgentBuilderSelectionRequirementKind = "integration" | "tool" | "skill";
+- AgentBuilderSelectionOption · interface · L6656-L6665 — interface AgentBuilderSelectionOption
+- AgentBuilderSelectionRequirement · interface · L6667-L6675 — interface AgentBuilderSelectionRequirement
+- AgentBuilderPlan · interface · L6677-L6715 — interface AgentBuilderPlan
+- AgentBuilderPlanRequest · interface · L6717-L6720 — interface AgentBuilderPlanRequest
+- AgentBuilderCreateRequest · interface · L6722-L6726 — interface AgentBuilderCreateRequest
+- AgentBuilderCreateResult · interface · L6728-L6733 — interface AgentBuilderCreateResult
+- AudioSummaryConfig · interface · L6735-L6741 — interface AudioSummaryConfig
+- ImageGenReferencePhoto · interface · L6743-L6749 — interface ImageGenReferencePhoto
+- ImageGenProfile · interface · L6751-L6759 — interface ImageGenProfile
+- ManagedAgentLegacyMirror · interface · L6761-L6764 — interface ManagedAgentLegacyMirror
+- ManagedAgentApprovalPolicy · interface · L6766-L6770 — interface ManagedAgentApprovalPolicy
+- ManagedAgentSharingConfig · interface · L6772-L6776 — interface ManagedAgentSharingConfig
+- ManagedAgentDeploymentConfig · interface · L6778-L6780 — interface ManagedAgentDeploymentConfig
+- ManagedAgentStudioConfig · interface · L6782-L6821 — interface ManagedAgentStudioConfig
+- AgentTemplate · interface · L6823-L6844 — interface AgentTemplate
+- AudioSummaryResult · interface · L6846-L6853 — interface AudioSummaryResult
+- ThoughtPhase · type · L6857-L6857 — type ThoughtPhase = "dispatch" | "analysis" | "synthesis";
+- AgentThought · interface · L6860-L6874 — interface AgentThought
+- CreateAgentThoughtRequest · interface · L6876-L6887 — interface CreateAgentThoughtRequest
+- TeamThoughtEvent · interface · L6890-L6895 — interface TeamThoughtEvent
+- CognitiveOffloadCategory · type · L7175-L7185 — type CognitiveOffloadCategory = | "context-switching" // Keeping track of multiple threads/projects | "status-reporting" // Standup summaries, progress updates, dashboards | "information-triage" // Filtering noise from signal (emails, Slack, PRs) | "decision-preparation" // Assembling data for decisions (not making them) | "documentation" // Maintaining docs, meeting notes, runbooks | "review-preparation" // Pre-screening code, designs, proposals | "dependency-tracking" // Cross-team blockers, library updates, deadlines | "compliance-checks" // Standards adherence, process gates, audit prep | "knowledge-curation" // Organizing learnings, best practices, FAQs | "routine-automation";
+- ProactiveTaskDefinition · interface · L7190-L7201 — interface ProactiveTaskDefinition
+- PersonaTemplateSkillRef · interface · L7206-L7210 — interface PersonaTemplateSkillRef
+- PersonaTemplateHeartbeatConfig · interface · L7212-L7220 — interface PersonaTemplateHeartbeatConfig
+- PersonaTemplateCognitiveOffloadConfig · interface · L7222-L7225 — interface PersonaTemplateCognitiveOffloadConfig
+- PersonaTemplateCategory · type · L7230-L7235 — type PersonaTemplateCategory = | "engineering" | "management" | "product" | "data" | "operations";
+- PersonaTemplate · interface · L7241-L7267 — interface PersonaTemplate
+- PersonaTemplateActivationResult · interface · L7272-L7277 — interface PersonaTemplateActivationResult
+- ActivatePersonaTemplateRequest · interface · L7282-L7292 — interface ActivatePersonaTemplateRequest
+- TaskSubscription · interface · L7300-L7306 — interface TaskSubscription
+- StandupReport · interface · L7311-L7321 — interface StandupReport
+- CronSchedule · type · L7323-L7326 — type CronSchedule = | { kind: "at"; atMs: number } | { kind: "every"; everyMs: number; anchorMs?: number } | { kind: "cron"; expr: string; tz?: string };
+- CouncilParticipant · interface · L7328-L7333 — interface CouncilParticipant
+- CouncilFileSource · interface · L7335-L7338 — interface CouncilFileSource
+- CouncilUrlSource · interface · L7340-L7343 — interface CouncilUrlSource
+- CouncilConnectorSource · interface · L7345-L7350 — interface CouncilConnectorSource
+- CouncilSourceBundle · interface · L7352-L7356 — interface CouncilSourceBundle
+- CouncilDeliveryConfig · interface · L7358-L7363 — interface CouncilDeliveryConfig
+- CouncilExecutionPolicy · interface · L7365-L7368 — interface CouncilExecutionPolicy
+- CouncilConfig · interface · L7370-L7386 — interface CouncilConfig
+- CreateCouncilConfigRequest · interface · L7388-L7399 — interface CreateCouncilConfigRequest
+- UpdateCouncilConfigRequest · interface · L7401-L7414 — interface UpdateCouncilConfigRequest
+- CouncilRun · interface · L7416-L7429 — interface CouncilRun
+- CouncilMemo · interface · L7431-L7442 — interface CouncilMemo
+- HeartbeatResult · interface · L7447-L7490 — interface HeartbeatResult
+- HeartbeatDecisionMode · type · L7492-L7492 — type HeartbeatDecisionMode = "silent" | "inbox_suggestion" | "task_creation" | "nudge";
+- HeartbeatSignalFamily · type · L7494-L7505 — type HeartbeatSignalFamily = | "urgent_interrupt" | "focus_state" | "open_loop_pressure" | "correction_learning" | "memory_drift" | "cross_workspace_patterns" | "suggestion_aging" | "awareness_signal" | "maintenance" | "mentions" | "assigned_tasks";
+- HeartbeatWorkspaceScope · type · L7507-L7507 — type HeartbeatWorkspaceScope = "single" | "all";
+- HeartbeatSignal · interface · L7509-L7527 — interface HeartbeatSignal
+- HeartbeatDeferredState · interface · L7529-L7536 — interface HeartbeatDeferredState
+- HeartbeatConfig · interface · L7541-L7550 — interface HeartbeatConfig
+- AutomationProfileRunQuery · interface · L7552-L7555 — interface AutomationProfileRunQuery
+- HeartbeatEvent · interface · L7560-L7596 — interface HeartbeatEvent
+- BoardColumn · type · L7601-L7601 — type BoardColumn = "backlog" | "todo" | "in_progress" | "review" | "done";
+- TaskLabel · interface · L7621-L7627 — interface TaskLabel
+- CreateTaskLabelRequest · interface · L7632-L7636 — interface CreateTaskLabelRequest
+- UpdateTaskLabelRequest · interface · L7641-L7644 — interface UpdateTaskLabelRequest
+- TaskLabelListQuery · interface · L7649-L7651 — interface TaskLabelListQuery
+- WorkingStateType · type · L7658-L7658 — type WorkingStateType = "context" | "progress" | "notes" | "plan";
+- AgentWorkingState · interface · L7663-L7674 — interface AgentWorkingState
+- UpdateWorkingStateRequest · interface · L7679-L7686 — interface UpdateWorkingStateRequest
+- WorkingStateQuery · interface · L7691-L7696 — interface WorkingStateQuery
+- WorkingStateHistoryQuery · interface · L7701-L7706 — interface WorkingStateHistoryQuery
+- ActivityActorType · type · L7713-L7713 — type ActivityActorType = "agent" | "user" | "system";
+- ActivityType · type · L7718-L7735 — type ActivityType = | "task_created" | "task_started" | "task_completed" | "task_failed" | "task_paused" | "task_resumed" | "comment" | "file_created" | "file_modified" | "file_deleted" | "command_executed" | "tool_used" | "mention" | "supervisor_exchange" | "agent_assigned" | "error" | "info";
+- Activity · interface · L7740-L7753 — interface Activity
+- CreateActivityRequest · interface · L7758-L7767 — interface CreateActivityRequest
+- ActivityListQuery · interface · L7772-L7782 — interface ActivityListQuery
+- MentionType · type · L7789-L7789 — type MentionType = "request" | "handoff" | "review" | "fyi";
+- MentionStatus · type · L7794-L7794 — type MentionStatus = "pending" | "acknowledged" | "completed" | "dismissed";
+- AgentMention · interface · L7799-L7811 — interface AgentMention
+- CreateMentionRequest · interface · L7816-L7823 — interface CreateMentionRequest
+- MentionListQuery · interface · L7828-L7836 — interface MentionListQuery
+- DiscordSupervisorConfig · interface · L7840-L7850 — interface DiscordSupervisorConfig
+- SupervisorProtocolIntent · type · L7852-L7856 — type SupervisorProtocolIntent = | "status_request" | "review_request" | "escalation_notice" | "ack";
+- SupervisorExchangeStatus · type · L7858-L7858 — type SupervisorExchangeStatus = "open" | "acknowledged" | "escalated" | "closed" | "ignored";
+- SupervisorActorKind · type · L7860-L7860 — type SupervisorActorKind = "peer" | "worker" | "supervisor" | "human" | "system";
+- SupervisorEvidenceRef · interface · L7862-L7867 — interface SupervisorEvidenceRef
+- SupervisorExchange · interface · L7869-L7889 — interface SupervisorExchange
+- SupervisorExchangeMessage · interface · L7891-L7901 — interface SupervisorExchangeMessage
+- SupervisorExchangeListQuery · interface · L7903-L7907 — interface SupervisorExchangeListQuery
+- ResolveSupervisorExchangeRequest · interface · L7909-L7913 — interface ResolveSupervisorExchangeRequest
+- SupervisorExchangeEvent · interface · L7915-L7918 — interface SupervisorExchangeEvent
+- WalletInfo · interface · L7922-L7926 — interface WalletInfo
+- InfraSandboxInfo · interface · L7928-L7934 — interface InfraSandboxInfo
+- InfraProviderStatus · type · L7936-L7936 — type InfraProviderStatus = "connected" | "disconnected" | "error" | "not_configured";
+- InfraStatus · interface · L7938-L7949 — interface InfraStatus
+- InfraSettings · interface · L7951-L7985 — interface InfraSettings
+- SuggestionType · type · L8025-L8030 — type SuggestionType = | "follow_up" | "recurring_pattern" | "goal_aligned" | "insight" | "reverse_prompt";
+- ProactiveSuggestion · interface · L8032-L8062 — interface ProactiveSuggestion
+- EverydayCapabilityBundle · type · L8069-L8080 — type EverydayCapabilityBundle = | "inbox" | "calendar" | "browser" | "files" | "docs" | "messages" | "github_work" | "memory" | "screen_context" | "remote_devices" | "automations";
+- EverydayActionRisk · type · L8082-L8091 — type EverydayActionRisk = | "read" | "draft" | "stage" | "execute_low_risk" | "execute_sensitive" | "destructive" | "data_export" | "spend" | "credential_sensitive";
+- EverydayApprovalPosture · type · L8093-L8093 — type EverydayApprovalPosture = "review_first" | "trusted_patterns" | "review_only";
+- EverydayReceiptStatus · type · L8095-L8102 — type EverydayReceiptStatus = | "executed" | "skipped" | "blocked" | "paused" | "failed" | "previewed" | "approved";
+- EverydayPreviewStatus · type · L8104-L8104 — type EverydayPreviewStatus = "pending" | "approved" | "rejected" | "expired" | "blocked";
+- EverydayCapabilityBundleDefinition · interface · L8106-L8113 — interface EverydayCapabilityBundleDefinition
+- EverydayCapabilitySetting · interface · L8206-L8211 — interface EverydayCapabilitySetting
+- EverydayConnectorAllowlistEntry · interface · L8213-L8219 — interface EverydayConnectorAllowlistEntry
+- EverydayActiveHours · interface · L8221-L8229 — interface EverydayActiveHours
+- EverydayMemoryPolicy · interface · L8231-L8238 — interface EverydayMemoryPolicy
+- EverydayRetentionSettings · interface · L8240-L8246 — interface EverydayRetentionSettings
+- EverydayBrowserProfilePolicy · interface · L8248-L8253 — interface EverydayBrowserProfilePolicy
+- EverydayPauseScope · interface · L8255-L8263 — interface EverydayPauseScope
+- EverydayAgentProfile · interface · L8265-L8289 — interface EverydayAgentProfile
+- EverydayAdminPolicySnapshot · interface · L8291-L8299 — interface EverydayAdminPolicySnapshot
+- EverydayCompiledPolicy · interface · L8301-L8327 — interface EverydayCompiledPolicy
+- EverydayAgentProfileResult · interface · L8329-L8332 — interface EverydayAgentProfileResult
+- EverydayAgentUpdateProfileRequest · interface · L8334-L8349 — interface EverydayAgentUpdateProfileRequest
+- EverydayActionTargetBinding · interface · L8351-L8360 — interface EverydayActionTargetBinding
+- EverydayActionPreviewInput · interface · L8362-L8381 — interface EverydayActionPreviewInput
+- EverydayActionPreview · interface · L8383-L8403 — interface EverydayActionPreview
+- EverydayActionReceipt · interface · L8405-L8434 — interface EverydayActionReceipt
+- EverydayTrustPattern · interface · L8436-L8453 — interface EverydayTrustPattern
+- EverydayAgentListReceiptsRequest · interface · L8455-L8461 — interface EverydayAgentListReceiptsRequest
+- EverydayAgentClearDataRequest · interface · L8463-L8474 — interface EverydayAgentClearDataRequest
+- EverydayAgentApproveActionRequest · interface · L8476-L8480 — interface EverydayAgentApproveActionRequest
+- LLMProviderType · type · L9857-L9857 — type LLMProviderType = (typeof LLM_PROVIDER_TYPES)[number];
+- CachedModelInfo · interface · L9895-L9902 — interface CachedModelInfo
+- CustomProviderConfig · interface · L9904-L9917 — interface CustomProviderConfig
+- ProviderFailoverSettings · interface · L9919-L9922 — interface ProviderFailoverSettings
+- ProviderRoutingSettings · interface · L9924-L9935 — interface ProviderRoutingSettings
+- LLMProviderFallbackConfig · interface · L9937-L9940 — interface LLMProviderFallbackConfig
+- MoaModelSlot · interface · L9942-L9948 — interface MoaModelSlot
+- MoaPreset · interface · L9950-L9960 — interface MoaPreset
+- OpenAIReasoningEffort · type · L9962-L9962 — type OpenAIReasoningEffort = "low" | "medium" | "high" | "xhigh" | "max" | "ultra";
+- AzureReasoningEffort · type · L9963-L9963 — type AzureReasoningEffort = "low" | "medium" | "high" | "extra_high";
+- LLMReasoningEffort · type · L9964-L9964 — type LLMReasoningEffort = OpenAIReasoningEffort | AzureReasoningEffort;
+- LLMTextVerbosity · type · L9965-L9965 — type LLMTextVerbosity = "low" | "medium" | "high";
+- PromptCacheSurface · type · L9967-L9967 — type PromptCacheSurface = "executor" | "followUps" | "chatMode" | "sideCalls";
+- PromptCachingSettings · interface · L9969-L9980 — interface PromptCachingSettings
+- JevDecisionProvider · type · L9982-L9982 — type JevDecisionProvider = "typesafe" | "openrouter";
+- JevToolReviewMode · type · L9984-L9984 — type JevToolReviewMode = "off" | "observe" | "active";
+- JevProviderSettings · interface · L9986-L9994 — interface JevProviderSettings
+- JevSettingsData · interface · L9997-L10027 — interface JevSettingsData
+- JevTestProviderRequest · interface · L10030-L10034 — interface JevTestProviderRequest
+- LLMSettingsData · interface · L10036-L10245 — interface LLMSettingsData
+- LLMProviderInfo · interface · L10247-L10251 — interface LLMProviderInfo
+- LLMModelInfo · interface · L10253-L10260 — interface LLMModelInfo
+- LLMConfigStatus · interface · L10262-L10269 — interface LLMConfigStatus
+- ChannelType · type · L10272-L10289 — type ChannelType = | "telegram" | "discord" | "slack" | "whatsapp" | "imessage" | "signal" | "mattermost" | "matrix" | "twitch" | "line" | "bluebubbles" | "email" | "teams" | "googlechat" | "feishu" | "wecom" | "x";
+- ChannelStatus · type · L10290-L10290 — type ChannelStatus = "disconnected" | "connecting" | "connected" | "error";
+- SecurityMode · type · L10291-L10291 — type SecurityMode = "open" | "allowlist" | "pairing";
+- ContextType · type · L10296-L10296 — type ContextType = "dm" | "group";
+- ContextPolicy · interface · L10302-L10311 — interface ContextPolicy
+- ChannelSpecialization · interface · L10313-L10327 — interface ChannelSpecialization
+- CreateChannelSpecializationRequest · interface · L10329-L10340 — interface CreateChannelSpecializationRequest
+- UpdateChannelSpecializationRequest · interface · L10342-L10353 — interface UpdateChannelSpecializationRequest
+- ChannelSecurityConfig · interface · L10358-L10374 — interface ChannelSecurityConfig
+- ChannelData · interface · L10376-L10398 — interface ChannelData
+- ChannelUserData · interface · L10400-L10408 — interface ChannelUserData
+- AddChannelRequest · interface · L10410-L10531 — interface AddChannelRequest
+- UpdateChannelRequest · interface · L10533-L10549 — interface UpdateChannelRequest
+- TestChannelResult · interface · L10551-L10555 — interface TestChannelResult
+- ExtensionType · type · L10558-L10558 — type ExtensionType = "channel" | "tool" | "provider" | "integration";
+- ExtensionState · type · L10559-L10559 — type ExtensionState = "loading" | "loaded" | "registered" | "active" | "error" | "disabled";
+- ExtensionCapabilities · interface · L10561-L10571 — interface ExtensionCapabilities
+- ExtensionData · interface · L10573-L10586 — interface ExtensionData
+- ExtensionConfig · interface · L10588-L10590 — interface ExtensionConfig
+- TunnelProvider · type · L10593-L10593 — type TunnelProvider = "ngrok" | "tailscale" | "cloudflare" | "localtunnel";
+- TunnelStatus · type · L10594-L10594 — type TunnelStatus = "stopped" | "starting" | "running" | "error";
+- TunnelConfig · interface · L10596-L10606 — interface TunnelConfig
+- TunnelStatusData · interface · L10608-L10614 — interface TunnelStatusData
+- SecureMcpTunnelTargetType · type · L10616-L10616 — type SecureMcpTunnelTargetType = "cowork-host" | "http";
+- SecureMcpTunnelConnectionState · type · L10617-L10622 — type SecureMcpTunnelConnectionState = | "stopped" | "connecting" | "connected" | "reconnecting" | "error";
+- SecureMcpTunnelPolicy · interface · L10624-L10630 — interface SecureMcpTunnelPolicy
+- SecureMcpTunnelDisplayConfig · interface · L10632-L10647 — interface SecureMcpTunnelDisplayConfig
+- SecureMcpTunnelDisplaySettings · interface · L10649-L10651 — interface SecureMcpTunnelDisplaySettings
+- SecureMcpTunnelStatus · interface · L10653-L10664 — interface SecureMcpTunnelStatus
+- SecureMcpTunnelAuditEvent · interface · L10666-L10677 — interface SecureMcpTunnelAuditEvent
+- SearchProviderType · type · L10680-L10687 — type SearchProviderType = | "tavily" | "exa" | "brave" | "serpapi" | "google" | "searxng" | "duckduckgo";
+- SearchType · type · L10688-L10688 — type SearchType = "web" | "news" | "images";
+- WebSearchMode · type · L10689-L10689 — type WebSearchMode = "disabled" | "cached" | "live";
+- SearchSettingsData · interface · L10691-L10714 — interface SearchSettingsData
+- XAuthMethod · type · L10717-L10717 — type XAuthMethod = "browser" | "manual";
+- XMentionWorkspaceMode · type · L10719-L10719 — type XMentionWorkspaceMode = "temporary";
+- XMentionTriggerSettings · interface · L10721-L10728 — interface XMentionTriggerSettings
+- XMentionTriggerStatus · interface · L10730-L10739 — interface XMentionTriggerStatus
+- XSettingsData · interface · L10741-L10757 — interface XSettingsData
+- XConnectionTestResult · interface · L10759-L10764 — interface XConnectionTestResult
+- NotionSettingsData · interface · L10767-L10772 — interface NotionSettingsData
+- NotionConnectionTestResult · interface · L10774-L10779 — interface NotionConnectionTestResult
+- BoxBrainSettings · interface · L10781-L10800 — interface BoxBrainSettings
+- BoxBrainItemStatus · type · L10802-L10802 — type BoxBrainItemStatus = "indexed" | "metadata_only" | "skipped" | "error" | "deleted";
+- BoxBrainRunStatus · type · L10803-L10803 — type BoxBrainRunStatus = "completed" | "partial" | "failed" | "disabled" | "skipped";
+- BoxBrainStatus · interface · L10805-L10821 — interface BoxBrainStatus
+- BoxBrainSyncResult · interface · L10823-L10834 — interface BoxBrainSyncResult
+- BoxSettingsData · interface · L10837-L10850 — interface BoxSettingsData
+- BoxConnectionTestResult · interface · L10852-L10857 — interface BoxConnectionTestResult
+- OneDriveSettingsData · interface · L10860-L10865 — interface OneDriveSettingsData
+- OneDriveConnectionTestResult · interface · L10867-L10873 — interface OneDriveConnectionTestResult
+- GoogleWorkspaceAccount · interface · L10875-L10884 — interface GoogleWorkspaceAccount
+- GoogleWorkspaceConnectionMode · type · L10886-L10886 — type GoogleWorkspaceConnectionMode = "gmail" | "workspace";
+- GoogleWorkspaceSettingsData · interface · L10889-L10904 — interface GoogleWorkspaceSettingsData
+- GoogleWorkspaceConnectionTestResult · interface · L10906-L10913 — interface GoogleWorkspaceConnectionTestResult
+- AgentMailSettingsData · interface · L10915-L10922 — interface AgentMailSettingsData
+- AgentMailConnectionTestResult · interface · L10924-L10930 — interface AgentMailConnectionTestResult
+- AgentMailRealtimeConnectionState · type · L10932-L10936 — type AgentMailRealtimeConnectionState = | "disconnected" | "connecting" | "connected" | "error";
+- AgentMailStatus · interface · L10938-L10950 — interface AgentMailStatus
+- AgentMailPod · interface · L10952-L10958 — interface AgentMailPod
+- AgentMailWorkspaceBinding · interface · L10960-L10966 — interface AgentMailWorkspaceBinding
+- AgentMailInbox · interface · L10968-L10977 — interface AgentMailInbox
+- AgentMailDomainRecord · interface · L10979-L10985 — interface AgentMailDomainRecord
+- AgentMailDomain · interface · L10987-L10998 — interface AgentMailDomain
+- AgentMailListEntry · interface · L11000-L11010 — interface AgentMailListEntry
+- AgentMailApiKeySummary · interface · L11012-L11020 — interface AgentMailApiKeySummary
+- DropboxSettingsData · interface · L11023-L11027 — interface DropboxSettingsData
+- DropboxConnectionTestResult · interface · L11029-L11035 — interface DropboxConnectionTestResult
+- SharePointSettingsData · interface · L11038-L11044 — interface SharePointSettingsData
+- SharePointConnectionTestResult · interface · L11046-L11051 — interface SharePointConnectionTestResult
+- SearchProviderInfo · interface · L11053-L11059 — interface SearchProviderInfo
+- SearchConfigStatus · interface · L11061-L11070 — interface SearchConfigStatus
+- GuardrailSettings · interface · L11073-L11138 — interface GuardrailSettings
+- ReputationProvider · type · L11211-L11211 — type ReputationProvider = "virustotal";
+- ReputationVerdict · type · L11213-L11213 — type ReputationVerdict = "clean" | "unknown" | "suspicious" | "malicious" | "error";
+- ReputationAction · type · L11215-L11215 — type ReputationAction = "allow" | "warn" | "block";
+- ReputationPolicy · interface · L11217-L11223 — interface ReputationPolicy
+- ReputationSettingsData · interface · L11225-L11239 — interface ReputationSettingsData
+- ArtifactReputationKind · type · L11258-L11258 — type ArtifactReputationKind = "npm_package_tarball";
+- ReputationAnalysisStats · type · L11260-L11260 — type ReputationAnalysisStats = Record<string, number>;
+- ArtifactReputationEntry · interface · L11262-L11277 — interface ArtifactReputationEntry
+- MCPArtifactReputationStatus · interface · L11279-L11294 — interface MCPArtifactReputationStatus
+- UpdateMode · type · L11297-L11297 — type UpdateMode = "git" | "npm" | "electron-updater";
+- UpdateInfo · interface · L11299-L11313 — interface UpdateInfo
+- UpdateProgress · interface · L11315-L11321 — interface UpdateProgress
+- AppVersionInfo · interface · L11323-L11330 — interface AppVersionInfo
+- MigrationStatus · interface · L11333-L11337 — interface MigrationStatus
+- QueueSettings · interface · L11343-L11346 — interface QueueSettings
+- QueueStatus · interface · L11348-L11354 — interface QueueStatus
+- ToastNotification · interface · L11362-L11383 — interface ToastNotification
+- SkillParameter · interface · L11386-L11393 — interface SkillParameter
+- SkillType · type · L11395-L11395 — type SkillType = "task" | "guideline";
+- SkillSource · type · L11398-L11398 — type SkillSource = "bundled" | "managed" | "external" | "workspace";
+- SkillRequirements · interface · L11401-L11408 — interface SkillRequirements
+- SkillInstallSpec · interface · L11411-L11421 — interface SkillInstallSpec
+- SkillInvocationPolicy · interface · L11424-L11427 — interface SkillInvocationPolicy
+- SkillMetadata · interface · L11430-L11454 — interface SkillMetadata
+- CustomSkill · interface · L11456-L11474 — interface CustomSkill
+- SkillEligibility · interface · L11477-L11488 — interface SkillEligibility
+- SkillStatusEntry · interface · L11491-L11510 — interface SkillStatusEntry extends CustomSkill
+- SkillStatusReport · interface · L11513-L11525 — interface SkillStatusReport
+- SkillRegistryEntry · interface · L11528-L11545 — interface SkillRegistryEntry
+- SkillSearchResult · interface · L11548-L11554 — interface SkillSearchResult
+- SkillInstallProgress · interface · L11557-L11563 — interface SkillInstallProgress
+- CapabilityBundleKind · type · L11565-L11565 — type CapabilityBundleKind = "skill" | "plugin-pack";
+- CapabilitySecurityVerdict · type · L11567-L11567 — type CapabilitySecurityVerdict = "clean" | "warning" | "quarantined";
+- CapabilitySecuritySeverity · type · L11569-L11569 — type CapabilitySecuritySeverity = "info" | "warning" | "critical";
+- CapabilitySecurityImportSource · type · L11571-L11577 — type CapabilitySecurityImportSource = | "registry" | "clawhub" | "url" | "git" | "managed" | "unmanaged-local";
+- CapabilitySecurityFinding · interface · L11579-L11585 — interface CapabilitySecurityFinding
+- CapabilitySecurityReport · interface · L11587-L11612 — interface CapabilitySecurityReport
+- InstallSecurityOutcome · interface · L11614-L11618 — interface InstallSecurityOutcome
+- QuarantinedImportRecord · interface · L11620-L11628 — interface QuarantinedImportRecord
+- ImportSecurityReportRequest · interface · L11630-L11635 — interface ImportSecurityReportRequest
+- RetryQuarantinedImportResult · interface · L11637-L11643 — interface RetryQuarantinedImportResult
+- SkillsConfig · interface · L11645-L11653 — interface SkillsConfig
+- NotificationType · type · L11657-L11665 — type NotificationType = | "task_completed" | "task_failed" | "scheduled_task" | "input_required" | "companion_suggestion" | "info" | "warning" | "error";
+- AppNotification · interface · L11667-L11683 — interface AppNotification
+- NotificationStoreFile · interface · L11685-L11688 — interface NotificationStoreFile
+- AutomationRunSource · type · L11692-L11698 — type AutomationRunSource = | "heartbeat" | "strategic_planner" | "cron" | "daily_plan" | "subconscious" | "memory_dreaming";
+- AutomationRunUsefulness · type · L11700-L11700 — type AutomationRunUsefulness = "actionable" | "informational" | "low_value" | "failed";
+- AutomationRunTrigger · type · L11702-L11709 — type AutomationRunTrigger = | "startup" | "schedule" | "manual" | "heartbeat" | "hook" | "cron" | "api";
+- AutomationRunEvidenceRef · interface · L11711-L11715 — interface AutomationRunEvidenceRef
+- AutomationRunOutcomeMetrics · interface · L11717-L11726 — interface AutomationRunOutcomeMetrics
+- AutomationRunOutcome · interface · L11728-L11754 — interface AutomationRunOutcome
+- CreateAutomationRunOutcomeInput · type · L11756-L11767 — type CreateAutomationRunOutcomeInput = Omit< AutomationRunOutcome, | "id" | "createdAt" | "notificationDeliveredAt" | "notificationSkippedAt" | "notificationSkipReason" > & { id?: string; createdAt?: number; notificationDeliveredAt?: number; };
+- AutomationRunOutcomeListRequest · interface · L11769-L11776 — interface AutomationRunOutcomeListRequest
+- AutomationRunOutcomeSummary · interface · L11778-L11784 — interface AutomationRunOutcomeSummary
+- HooksSettingsData · interface · L11788-L11799 — interface HooksSettingsData
+- HookMappingData · interface · L11801-L11820 — interface HookMappingData
+- GmailHooksSettingsData · interface · L11822-L11844 — interface GmailHooksSettingsData
+- ResendHooksSettingsData · interface · L11846-L11849 — interface ResendHooksSettingsData
+- HooksStatus · interface · L11851-L11858 — interface HooksStatus
+- TailscaleMode · type · L11865-L11865 — type TailscaleMode = "off" | "serve" | "funnel";
+- ControlPlaneSettingsData · interface · L11870-L11895 — interface ControlPlaneSettingsData
+- ControlPlaneClientInfo · interface · L11900-L11908 — interface ControlPlaneClientInfo
+- ControlPlaneStatus · interface · L11913-L11934 — interface ControlPlaneStatus
+- TailscaleAvailability · interface · L11939-L11943 — interface TailscaleAvailability
+- ControlPlaneEvent · interface · L11948-L11962 — interface ControlPlaneEvent
+- ClientRole · type · L11971-L11971 — type ClientRole = "operator" | "node";
+- NodePlatform · type · L11976-L11976 — type NodePlatform = "ios" | "android" | "macos" | "linux" | "windows";
+- NodeCapabilityType · type · L11981-L11988 — type NodeCapabilityType = | "camera" | "location" | "screen" | "sms" | "voice" | "canvas" | "system";
+- NodeCommand · type · L11993-L12002 — type NodeCommand = | "camera.snap" | "camera.clip" | "location.get" | "screen.record" | "sms.send" | "canvas.navigate" | "canvas.snapshot" | "canvas.eval" | "system.notify";
+- NodeInfo · interface · L12007-L12032 — interface NodeInfo
+- NodeInvokeParams · interface · L12037-L12046 — interface NodeInvokeParams
+- NodeInvokeResult · interface · L12051-L12061 — interface NodeInvokeResult
+- NodeEvent · interface · L12066-L12075 — interface NodeEvent
+- CameraSnapParams · interface · L12080-L12087 — interface CameraSnapParams
+- CameraSnapResult · interface · L12092-L12101 — interface CameraSnapResult
+- CameraClipParams · interface · L12106-L12113 — interface CameraClipParams
+- CameraClipResult · interface · L12118-L12125 — interface CameraClipResult
+- LocationGetParams · interface · L12130-L12137 — interface LocationGetParams
+- LocationGetResult · interface · L12142-L12153 — interface LocationGetResult
+- ScreenRecordParams · interface · L12158-L12167 — interface ScreenRecordParams
+- ScreenRecordResult · interface · L12172-L12179 — interface ScreenRecordResult
+- SmsSendParams · interface · L12184-L12189 — interface SmsSendParams
+- SmsSendResult · interface · L12194-L12199 — interface SmsSendResult
+- SSHTunnelState · type · L12206-L12206 — type SSHTunnelState = "disconnected" | "connecting" | "connected" | "reconnecting" | "error";
+- SSHTunnelConfig · interface · L12211-L12236 — interface SSHTunnelConfig
+- SSHTunnelStatus · interface · L12241-L12256 — interface SSHTunnelStatus
+- ControlPlaneConnectionMode · type · L12265-L12265 — type ControlPlaneConnectionMode = "local" | "remote";
+- RemoteGatewayConfig · interface · L12271-L12288 — interface RemoteGatewayConfig
+- SavedRemoteGatewayDevice · interface · L12290-L12298 — interface SavedRemoteGatewayDevice
+- ManagedDeviceRole · type · L12303-L12303 — type ManagedDeviceRole = "local" | "remote";
+- ManagedDevicePurpose · type · L12304-L12310 — type ManagedDevicePurpose = | "primary" | "work" | "personal" | "automation" | "archive" | "general";
+- ManagedDeviceTransport · type · L12311-L12311 — type ManagedDeviceTransport = "local" | "direct" | "ssh" | "tailscale" | "unknown";
+- ManagedDeviceAttentionState · type · L12312-L12312 — type ManagedDeviceAttentionState = "none" | "info" | "warning" | "critical";
+- ManagedDeviceStorageSummary · interface · L12314-L12321 — interface ManagedDeviceStorageSummary
+- ManagedDeviceAppsSummary · interface · L12323-L12330 — interface ManagedDeviceAppsSummary
+- ManagedDeviceAlert · interface · L12332-L12338 — interface ManagedDeviceAlert
+- ManagedDevice · interface · L12340-L12361 — interface ManagedDevice
+- ManagedDeviceSummary · interface · L12363-L12398 — interface ManagedDeviceSummary
+- AppProfileSummary · interface · L12400-L12408 — interface AppProfileSummary
+- ProfileExportResult · interface · L12410-L12413 — interface ProfileExportResult
+- DeviceProxyRequest · interface · L12419-L12423 — interface DeviceProxyRequest
+- RemoteGatewayConnectionState · type · L12428-L12434 — type RemoteGatewayConnectionState = | "disconnected" | "connecting" | "authenticating" | "connected" | "reconnecting" | "error";
+- RemoteGatewayStatus · interface · L12439-L12458 — interface RemoteGatewayStatus
+- CanvasSessionStatus · type · L12465-L12465 — type CanvasSessionStatus = "active" | "paused" | "closed";
+- CanvasSessionMode · type · L12472-L12472 — type CanvasSessionMode = "html" | "browser";
+- CanvasSession · interface · L12477-L12498 — interface CanvasSession
+- CanvasA2UIAction · interface · L12504-L12515 — interface CanvasA2UIAction
+- CanvasEvent · interface · L12520-L12549 — interface CanvasEvent
+- CanvasPushContent · interface · L12554-L12561 — interface CanvasPushContent
+- CanvasEvalScript · interface · L12566-L12571 — interface CanvasEvalScript
+- CanvasSnapshot · interface · L12576-L12585 — interface CanvasSnapshot
+- CanvasCheckpoint · interface · L12591-L12602 — interface CanvasCheckpoint
+- PersonalityId · type · L12609-L12616 — type PersonalityId = | "professional" | "friendly" | "concise" | "creative" | "technical" | "casual" | "custom";
+- PersonaId · type · L12621-L12632 — type PersonaId = | "none" | "jarvis" | "friday" | "hal" | "computer" | "alfred" | "intern" | "sensei" | "pirate" | "noir" | "companion";
+- ResponseLength · type · L12637-L12637 — type ResponseLength = "terse" | "balanced" | "detailed";
+- EmojiUsage · type · L12642-L12642 — type EmojiUsage = "none" | "minimal" | "moderate" | "expressive";
+- CodeCommentStyle · type · L12647-L12647 — type CodeCommentStyle = "minimal" | "moderate" | "verbose";
+- ExplanationDepth · type · L12652-L12652 — type ExplanationDepth = "expert" | "balanced" | "teaching";
+- AnalogyDomain · type · L12657-L12666 — type AnalogyDomain = | "none" | "cooking" | "sports" | "space" | "music" | "nature" | "gaming" | "movies" | "construction";
+- ResponseStylePreferences · interface · L12671-L12680 — interface ResponseStylePreferences
+- PersonalityQuirks · interface · L12685-L12692 — interface PersonalityQuirks
+- RelationshipData · interface · L12697-L12710 — interface RelationshipData
+- PersonaDefinition · interface · L12715-L12724 — interface PersonaDefinition
+- PersonalityDefinition · interface · L12729-L12736 — interface PersonalityDefinition
+- PersonalitySettings · interface · L12741-L12760 — interface PersonalitySettings
+- getPersonalityById · function · L12871-L12873 — function getPersonalityById(id: PersonalityId): PersonalityDefinition | undefined
+- getPersonaById · function · L13067-L13069 — function getPersonaById(id: PersonaId): PersonaDefinition | undefined
+- ContextMode · type · L13160-L13160 — type ContextMode = "coding" | "chat" | "planning" | "writing" | "research" | "all";
+- PersonalityTrait · interface · L13166-L13175 — interface PersonalityTrait
+- BehavioralRule · interface · L13180-L13187 — interface BehavioralRule
+- ContextOverride · interface · L13192-L13197 — interface ContextOverride
+- CommunicationStyle · interface · L13202-L13219 — interface CommunicationStyle
+- ExpertiseArea · interface · L13224-L13232 — interface ExpertiseArea
+- ConversationExample · interface · L13237-L13243 — interface ConversationExample
+- CustomInstructions · interface · L13248-L13253 — interface CustomInstructions
+- PersonalityQuirksV2 · interface · L13258-L13263 — interface PersonalityQuirksV2 extends PersonalityQuirks
+- PersonalityConfigV2 · interface · L13268-L13310 — interface PersonalityConfigV2
+- TraitDefinition · interface · L13315-L13322 — interface TraitDefinition
+- createDefaultTraits · function · L13534-L13541 — function createDefaultTraits(): PersonalityTrait[]
+- createTraitsFromPreset · function · L13546-L13555 — function createTraitsFromPreset(presetId: string): PersonalityTrait[]
+- VoiceProvider · type · L13582-L13582 — type VoiceProvider = "elevenlabs" | "openai" | "azure" | "local";
+- SystemVoiceAdapter · type · L13584-L13584 — type SystemVoiceAdapter = "macos-say" | "windows-sapi" | "espeak" | null;
+- VoiceProviderCapability · interface · L13586-L13590 — interface VoiceProviderCapability
+- VoiceCapabilities · interface · L13592-L13595 — interface VoiceCapabilities
+- VoiceInputMode · type · L13600-L13600 — type VoiceInputMode = "push_to_talk" | "voice_activity" | "disabled";
+- VoiceResponseMode · type · L13605-L13605 — type VoiceResponseMode = "auto" | "manual" | "smart";
+- VoiceSettings · interface · L13610-L13691 — interface VoiceSettings
+- VoiceState · interface · L13696-L13717 — interface VoiceState
+- ElevenLabsVoice · interface · L13722-L13729 — interface ElevenLabsVoice
+- VoiceEventType · type · L13734-L13741 — type VoiceEventType = | "voice:state-changed" | "voice:transcript" | "voice:partial-transcript" | "voice:speaking-start" | "voice:speaking-end" | "voice:error" | "voice:audio-level";
+- VoiceEvent · interface · L13746-L13749 — interface VoiceEvent
+- Company · interface · L13804-L13816 — interface Company
+- CompanyUpdate · interface · L13818-L13827 — interface CompanyUpdate
+- CompanyCreateInput · interface · L13829-L13838 — interface CompanyCreateInput
+- Goal · interface · L13840-L13849 — interface Goal
+- GoalUpdate · interface · L13851-L13857 — interface GoalUpdate
+- GoalCreateInput · interface · L13859-L13865 — interface GoalCreateInput
+- Project · interface · L13867-L13878 — interface Project
+- ProjectCreateInput · interface · L13880-L13888 — interface ProjectCreateInput
+- ProjectUpdate · interface · L13890-L13898 — interface ProjectUpdate
+- ProjectWorkspaceLink · interface · L13900-L13907 — interface ProjectWorkspaceLink
+- Issue · interface · L13909-L13930 — interface Issue
+- IssueFilters · interface · L13932-L13941 — interface IssueFilters
+- IssueUpdate · interface · L13943-L13960 — interface IssueUpdate
+- IssueCreateInput · interface · L13962-L13980 — interface IssueCreateInput
+- IssueComment · interface · L13982-L13990 — interface IssueComment
+- HeartbeatRun · interface · L13992-L14012 — interface HeartbeatRun
+- HeartbeatRunEvent · interface · L14014-L14020 — interface HeartbeatRunEvent
+- RunFilters · interface · L14022-L14030 — interface RunFilters
+- CostSummary · interface · L14032-L14043 — interface CostSummary
+- CompanyTemplateExport · interface · L14045-L14057 — interface CompanyTemplateExport
+- CompanyImportResult · interface · L14059-L14064 — interface CompanyImportResult
+- CompanyPackageSourceKind · type · L14066-L14066 — type CompanyPackageSourceKind = "local" | "git" | "github";
+- CompanyPackageTrustLevel · type · L14067-L14067 — type CompanyPackageTrustLevel = "local" | "trusted" | "untrusted";
+- CompanyPackageSourceStatus · type · L14068-L14068 — type CompanyPackageSourceStatus = "ready" | "needs_attention" | "imported";
+- CompanyPackageManifestKind · type · L14069-L14075 — type CompanyPackageManifestKind = | "company" | "team" | "agent" | "project" | "task" | "skill";
+- CompanyGraphNodeKind · type · L14076-L14076 — type CompanyGraphNodeKind = CompanyPackageManifestKind;
+- CompanyGraphEdgeKind · type · L14077-L14085 — type CompanyGraphEdgeKind = | "contains" | "belongs_to" | "reports_to" | "manages_team" | "includes" | "attaches_skill" | "assigned_to" | "related_to_project";
+- CompanySyncStatus · type · L14086-L14086 — type CompanySyncStatus = "in_sync" | "diverged" | "local_override" | "unlinked";
+- CompanyImportAction · type · L14087-L14087 — type CompanyImportAction = "create" | "update" | "link" | "skip" | "conflict" | "warning";
+- CompanyRuntimeEntityKind · type · L14088-L14088 — type CompanyRuntimeEntityKind = "company" | "goal" | "project" | "issue" | "agent_role";
+- CompanyPackageSource · interface · L14090-L14105 — interface CompanyPackageSource
+- CompanyPackageSourceInput · interface · L14107-L14118 — interface CompanyPackageSourceInput
+- CompanyPackageManifest · interface · L14120-L14134 — interface CompanyPackageManifest
+- CompanyGraphNode · interface · L14136-L14150 — interface CompanyGraphNode
+- CompanyGraphEdge · interface · L14152-L14162 — interface CompanyGraphEdge
+- CompanySyncState · interface · L14164-L14177 — interface CompanySyncState
+- ResolvedCompanyGraph · interface · L14179-L14186 — interface ResolvedCompanyGraph
+- CompanyImportPreviewItem · interface · L14188-L14198 — interface CompanyImportPreviewItem
+- CompanyImportPreview · interface · L14200-L14206 — interface CompanyImportPreview
+- CompanyPackageImportRequest · interface · L14208-L14211 — interface CompanyPackageImportRequest
+- CompanyPackageImportResult · interface · L14213-L14221 — interface CompanyPackageImportResult
+- AutonomyPolicyPreset · type · L14223-L14223 — type AutonomyPolicyPreset = "manual" | "safe_autonomy" | "founder_edge";
+- HumanInputPolicy · type · L14224-L14224 — type HumanInputPolicy = "none" | "hard_blockers" | "structured_plan" | "legacy_interactive";
+- OperationalAutonomyPolicy · interface · L14226-L14234 — interface OperationalAutonomyPolicy
+- StrategicPlannerConfig · interface · L14236-L14249 — interface StrategicPlannerConfig
+- StrategicPlannerConfigUpdate · interface · L14251-L14261 — interface StrategicPlannerConfigUpdate
+- SymphonyRuntimeMode · type · L14263-L14263 — type SymphonyRuntimeMode = "native" | "acpx";
+- SymphonyRunStatus · type · L14265-L14265 — type SymphonyRunStatus = "idle" | "running" | "blocked" | "error";
+- SymphonyWorkflowDefinition · interface · L14267-L14273 — interface SymphonyWorkflowDefinition
+- SymphonyConfig · interface · L14275-L14292 — interface SymphonyConfig
+- SymphonyConfigUpdate · interface · L14294-L14309 — interface SymphonyConfigUpdate
+- SymphonyStatusIssueRef · interface · L14311-L14320 — interface SymphonyStatusIssueRef
+- SymphonyStatus · interface · L14322-L14330 — interface SymphonyStatus
+- StrategicPlannerRun · interface · L14332-L14346 — interface StrategicPlannerRun
+- CompanyOperatorStatus · interface · L14348-L14367 — interface CompanyOperatorStatus
+- CompanyOutputFeedItem · interface · L14369-L14392 — interface CompanyOutputFeedItem
+- CompanyReviewQueueItem · interface · L14394-L14409 — interface CompanyReviewQueueItem
+- CompanyExecutionMapItem · interface · L14411-L14428 — interface CompanyExecutionMapItem
+- CompanyCommandCenterOverview · interface · L14430-L14439 — interface CompanyCommandCenterOverview
+- CompanyCommandCenterSummary · interface · L14441-L14451 — interface CompanyCommandCenterSummary
+- MissionControlCategory · type · L14453-L14459 — type MissionControlCategory = | "attention" | "work" | "reviews" | "learnings" | "awareness" | "evidence";
+- MissionControlSeverity · type · L14461-L14461 — type MissionControlSeverity = "action_needed" | "monitor_only" | "successful" | "failed";
+- MissionControlEvidenceSource · type · L14463-L14477 — type MissionControlEvidenceSource = | "activity_feed" | "heartbeat_run" | "heartbeat_event" | "heartbeat_signal" | "task" | "mention" | "company_output" | "subconscious_run" | "subconscious_decision" | "subconscious_dispatch" | "core_memory_candidate" | "core_memory_distill_run" | "core_learning" | "awareness_event";
+- MissionControlScopeRequest · interface · L14479-L14483 — interface MissionControlScopeRequest
+- MissionControlListRequest · interface · L14485-L14489 — interface MissionControlListRequest extends MissionControlScopeRequest
+- MissionControlItem · interface · L14491-L14512 — interface MissionControlItem
+- MissionControlItemEvidence · interface · L14514-L14523 — interface MissionControlItemEvidence
+- MissionControlBriefSection · interface · L14525-L14528 — interface MissionControlBriefSection
+- MissionControlBrief · interface · L14530-L14544 — interface MissionControlBrief
+- StrategicPlannerRunRequest · interface · L14546-L14549 — interface StrategicPlannerRunRequest

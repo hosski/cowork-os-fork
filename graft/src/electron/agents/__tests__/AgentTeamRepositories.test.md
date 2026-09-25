@@ -1,0 +1,32 @@
+# src/electron/agents/__tests__/AgentTeamRepositories.test.ts
+
+- MockAgentTeamRepository · class · L41-L182 — class MockAgentTeamRepository
+- create · method · L42-L82 — create(request: CreateAgentTeamRequest): AgentTeam
+- findById · method · L84-L87 — findById(id: string): AgentTeam | undefined
+- findByName · method · L89-L96 — findByName(workspaceId: string, name: string): AgentTeam | undefined
+- listByWorkspace · method · L98-L106 — listByWorkspace(workspaceId: string, includeInactive = false): AgentTeam[]
+- update · method · L108-L139 — update(request: UpdateAgentTeamRequest): AgentTeam | undefined
+- delete · method · L141-L165 — delete(id: string): boolean
+- mapRowToTeam · method · L167-L181 — private mapRowToTeam(row: Any): AgentTeam
+- MockAgentTeamMemberRepository · class · L184-L265 — class MockAgentTeamMemberRepository
+- add · method · L185-L212 — add(request: CreateAgentTeamMemberRequest): AgentTeamMember
+- findById · method · L214-L217 — findById(id: string): AgentTeamMember | undefined
+- findByTeamAndRole · method · L219-L226 — findByTeamAndRole(teamId: string, agentRoleId: string): AgentTeamMember | undefined
+- listByTeam · method · L228-L236 — listByTeam(teamId: string): AgentTeamMember[]
+- update · method · L238-L248 — update(request: UpdateAgentTeamMemberRequest): AgentTeamMember | undefined
+- remove · method · L250-L252 — remove(id: string): boolean
+- mapRowToMember · method · L254-L264 — private mapRowToMember(row: Any): AgentTeamMember
+- MockAgentTeamRunRepository · class · L267-L352 — class MockAgentTeamRunRepository
+- create · method · L268-L294 — create(request: CreateAgentTeamRunRequest): AgentTeamRun
+- findById · method · L296-L299 — findById(id: string): AgentTeamRun | undefined
+- listByTeam · method · L301-L307 — listByTeam(teamId: string): AgentTeamRun[]
+- update · method · L309-L338 — update( id: string, updates: { status?: AgentTeamRunStatus; completedAt?: number | null; error?: string | null; summary?: string | null; }, ): AgentTeamRun | undefined
+- mapRowToRun · method · L340-L351 — private mapRowToRun(row: Any): AgentTeamRun
+- MockAgentTeamItemRepository · class · L354-L456 — class MockAgentTeamItemRepository
+- create · method · L355-L389 — create(request: CreateAgentTeamItemRequest): AgentTeamItem
+- listByRun · method · L391-L397 — listByRun(teamRunId: string): AgentTeamItem[]
+- findById · method · L399-L402 — findById(id: string): AgentTeamItem | undefined
+- update · method · L404-L421 — update(request: UpdateAgentTeamItemRequest): AgentTeamItem | undefined
+- delete · method · L423-L425 — delete(id: string): boolean
+- setResultSummaryBySourceTaskId · method · L427-L438 — setResultSummaryBySourceTaskId(sourceTaskId: string, resultSummary: string | null): number
+- mapRowToItem · method · L440-L455 — private mapRowToItem(row: Any): AgentTeamItem

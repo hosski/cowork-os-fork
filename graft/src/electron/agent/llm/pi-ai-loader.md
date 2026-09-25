@@ -1,0 +1,7 @@
+# src/electron/agent/llm/pi-ai-loader.ts
+
+- PiAiCompleteOptions · type · L11-L23 — type PiAiCompleteOptions = { apiKey?: string; maxTokens?: number; signal?: AbortSignal; sessionId?: string; cacheRetention?: CacheRetention; onPayload?: ( payload: unknown, model: Model<Any>, ) => unknown | undefined | Promise<unknown | undefined>; reasoningEffort?: "low" | "medium" | "high" | "xhigh" | "max" | "ultra"; textVerbosity?: "low" | "medium" | "high"; };
+- PiAiModule · type · L25-L33 — type PiAiModule = { complete: ( model: Model<Any>, context: Context, options?: PiAiCompleteOptions, ) => Promise<AssistantMessage>; getModels: (provider: string) => Array<Model<Any>>; getProviders: () => string[]; };
+- PiAiOAuthModule · type · L35-L48 — type PiAiOAuthModule = { getOAuthApiKey: ( providerId: "openai-codex", credentials: Record<string, OAuthCredentials>, ) => Promise<{ newCredentials: OAuthCredentials; apiKey: string } | null>; loginOpenAICodex: (callbacks: { onAuth: (info: OAuthAuthInfo) => void; onPrompt: (prompt: OAuthPrompt) => Promise<string>; onProgress?: (message: string) => void; onManualCodeInput?: () => Promise<string>; originator?: string; }) => Promise<OAuthCredentials>; refreshOpenAICodexToken: (refreshToken: string) => Promise<OAuthCredentials>; };
+- loadPiAiModule · function · L59-L64 — function loadPiAiModule(): Promise<PiAiModule>
+- loadPiAiOAuthModule · function · L66-L73 — function loadPiAiOAuthModule(): Promise<PiAiOAuthModule>

@@ -1,0 +1,52 @@
+# src/electron/agent/tools/shell-session-manager.ts
+
+- ShellSnapshot · type · L15-L19 — type ShellSnapshot = { cwd: string; env: Record<string, string>; aliases: Record<string, string>; };
+- ShellSessionRuntime · type · L21-L44 — type ShellSessionRuntime = { info: ShellSessionInfo; snapshot: ShellSnapshot; process: ChildProcess | null; buffer: string; ready: boolean; busy: boolean; pending: Array<{ commandId: string; command: string; resolve: (value: ShellCommandResult) => void; reject: (reason?: unknown) => void; timeout: ReturnType<typeof setTimeout>; fallback: boolean; cwd?: string; onOutput?: (event: { stream: "stdout" | "stderr"; output: string }) => void; }>; cmdSeq: number; exitStatusOverride?: ShellSessionStatus; terminalOutputListeners: Map< string, (event: { stream: "stdout" | "stderr"; output: string }) => void >; };
+- ShellCommandResult · interface · L46-L56 — interface ShellCommandResult
+- ShellRunRequest · interface · L58-L71 — interface ShellRunRequest
+- safeJsonParse · function · L79-L85 — function safeJsonParse<T>(value: string, fallback: T): T
+- normalizePathForShell · function · L87-L89 — function normalizePathForShell(value: string): string
+- quoteForPosixShell · function · L91-L93 — function quoteForPosixShell(value: string): string
+- terminateProcessTree · function · L95-L120 — function terminateProcessTree( child: ChildProcess | null, signal: NodeJS.Signals = "SIGTERM", ): void
+- terminatePersistedShellProcess · function · L122-L141 — function terminatePersistedShellProcess(pid: number): void
+- stripShellControlCodes · function · L143-L151 — function stripShellControlCodes(text: string): string
+- isLikelyInteractiveCommand · function · L153-L161 — function isLikelyInteractiveCommand(command: string): boolean
+- resolveShellExecutable · function · L163-L185 — function resolveShellExecutable(): string
+- resolveTerminalShellExecutable · function · L187-L200 — function resolveTerminalShellExecutable(): string
+- getShellArgs · function · L202-L213 — function getShellArgs(shell: string): string[]
+- getTerminalShellArgs · function · L215-L220 — function getTerminalShellArgs(shell: string): string[]
+- parseAliasLine · function · L222-L232 — function parseAliasLine(line: string): [string, string] | null
+- parseEnvLine · function · L234-L240 — function parseEnvLine(line: string): [string, string] | null
+- diffSnapshot · function · L242-L276 — function diffSnapshot( previous: ShellSnapshot, next: ShellSnapshot, ): { cwd: string; env: Record<string, string | null>; aliases: Record<string, string | null>; }
+- applyEnvExport · function · L278-L280 — function applyEnvExport(name: string, value: string): string
+- applyEnvUnset · function · L282-L284 — function applyEnvUnset(name: string): string
+- applyAliasExport · function · L286-L289 — function applyAliasExport(name: string, value: string): string
+- buildRehydrateCommands · function · L291-L309 — function buildRehydrateCommands(snapshot: ShellSnapshot): string[]
+- snapshotForPersistence · function · L311-L319 — function snapshotForPersistence(snapshot: ShellSnapshot): ShellSnapshot
+- ShellSessionManager · class · L321-L1174 — class ShellSessionManager
+- getInstance · method · L327-L332 — static getInstance(): ShellSessionManager
+- constructor · method · L334-L334 — private constructor()
+- ensureStateLoaded · method · L336-L403 — private async ensureStateLoaded(): Promise<void>
+- persistState · method · L405-L441 — private async persistState(): Promise<void>
+- getSessionKey · method · L443-L445 — private getSessionKey(taskId: string, workspaceId: string, scope: ShellSessionScope): string
+- createInfo · method · L447-L469 — private createInfo(params: { taskId: string; workspaceId: string; scope: ShellSessionScope; cwd: string; id?: string; }): ShellSessionInfo
+- getOrCreateRuntime · method · L471-L503 — private getOrCreateRuntime(params: { taskId: string; workspaceId: string; workspacePath: string; scope?: ShellSessionScope; id?: string; }): ShellSessionRuntime
+- updateRuntimeInfo · method · L505-L511 — private updateRuntimeInfo(runtime: ShellSessionRuntime, patch: Partial<ShellSessionInfo>): void
+- invalidateRuntime · method · L513-L549 — private async invalidateRuntime(runtime: ShellSessionRuntime, reason: string): Promise<void>
+- emitTerminalOutput · method · L551-L563 — private emitTerminalOutput( runtime: ShellSessionRuntime, event: { stream: "stdout" | "stderr"; output: string }, ): void
+- spawnProcess · method · L565-L634 — private spawnProcess(runtime: ShellSessionRuntime, workspacePath: string): void
+- tryCompletePending · method · L636-L702 — private tryCompletePending(runtime: ShellSessionRuntime): void
+- ensureShellReady · method · L704-L718 — private async ensureShellReady( runtime: ShellSessionRuntime, workspacePath: string, ): Promise<void>
+- parseShellOutput · method · L720-L812 — private parseShellOutput( raw: string, runtime: ShellSessionRuntime, ): { visible: string; cwd: string; env: Record<string, string>; aliases: Record<string, string>; exitCode: number | null; }
+- runCommand · method · L814-L921 — async runCommand(request: ShellRunRequest): Promise<ShellCommandResult>
+- createTab · method · L923-L970 — async createTab(params: { workspaceId: string; workspacePath: string; cwd?: string; title?: string; }): Promise<ShellSessionInfo>
+- listTabs · method · L972-L975 — async listTabs(workspaceId?: string): Promise<ShellSessionInfo[]>
+- runInTab · method · L977-L1013 — async runInTab(params: { tabId: string; workspacePath: string; command: string; cwd?: string; timeoutMs: number; onOutput?: (event: { stream: "stdout" | "stderr"; output: string }) => void; }): Promise<ShellCommandResult>
+- attachTerminalTabOutput · method · L1015-L1033 — async attachTerminalTabOutput( sessionId: string, listenerKey: string, listener: (event: { stream: "stdout" | "stderr"; output: string }) => void, workspacePath?: string, ): Promise<ShellSessionInfo>
+- writeToSession · method · L1035-L1061 — async writeToSession(sessionId: string, input: string): Promise<ShellSessionInfo>
+- stopSessionById · method · L1063-L1089 — async stopSessionById(sessionId: string): Promise<ShellSessionInfo | null>
+- closeSessionById · method · L1091-L1110 — async closeSessionById(sessionId: string): Promise<ShellSessionInfo | null>
+- getSessionInfo · method · L1112-L1119 — getSessionInfo( taskId: string, workspaceId: string, scope: ShellSessionScope = "task", ): ShellSessionInfo | null
+- listSessions · method · L1121-L1129 — listSessions(taskId?: string, workspaceId?: string): ShellSessionInfo[]
+- resetSession · method · L1131-L1156 — async resetSession( taskId: string, workspaceId: string, scope: ShellSessionScope = "task", ): Promise<ShellSessionInfo | null>
+- closeSession · method · L1158-L1173 — async closeSession( taskId: string, workspaceId: string, scope: ShellSessionScope = "task", ): Promise<ShellSessionInfo | null>

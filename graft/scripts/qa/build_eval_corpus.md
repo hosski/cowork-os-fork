@@ -1,0 +1,15 @@
+# scripts/qa/build_eval_corpus.cjs
+
+- parseArgs · function · L11-L37 — function parseArgs(argv)
+- sqlEscape · function · L39-L41 — function sqlEscape(value)
+- ensureSqliteCli · function · L43-L50 — function ensureSqliteCli()
+- sqlExec · function · L52-L56 — function sqlExec(sql)
+- sqlJson · function · L58-L68 — function sqlJson(sql)
+- nowMs · function · L70-L72 — function nowMs()
+- randomUuid · function · L74-L78 — function randomUuid()
+- sanitizeText · function · L80-L95 — function sanitizeText(raw)
+- normalizeTerminalStatus · function · L97-L104 — function normalizeTerminalStatus(taskRow)
+- ensureEvalTables · function · L106-L132 — function ensureEvalTables()
+- hasTasksTable · function · L134-L139 — function hasTasksTable()
+- getOrCreateSuite · function · L141-L168 — function getOrCreateSuite(suiteName)
+- main · function · L170-L264 — function main()

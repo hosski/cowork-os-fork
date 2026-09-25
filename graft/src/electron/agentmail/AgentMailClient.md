@@ -1,0 +1,35 @@
+# src/electron/agentmail/AgentMailClient.ts
+
+- AgentMailRequestOptions · type · L3-L7 — type AgentMailRequestOptions = { method?: "GET" | "POST" | "PATCH" | "DELETE"; query?: Record<string, string | number | boolean | null | undefined>; body?: unknown; };
+- stripTrailingSlash · function · L11-L13 — function stripTrailingSlash(value: string): string
+- AgentMailClient · class · L15-L385 — class AgentMailClient
+- constructor · method · L20-L24 — constructor(private readonly settings: AgentMailSettingsData)
+- apiKey · method · L26-L28 — get apiKey(): string | undefined
+- buildUrl · method · L30-L37 — private buildUrl(pathname: string, query?: AgentMailRequestOptions["query"]): string
+- request · method · L39-L78 — async request<T>(pathname: string, options: AgentMailRequestOptions = {}): Promise<T>
+- listPods · method · L80-L87 — listPods(limit = 100, pageToken?: string)
+- getPod · method · L89-L91 — getPod(podId: string)
+- createPod · method · L93-L101 — createPod(input: { name?: string; clientId?: string })
+- deletePod · method · L103-L107 — deletePod(podId: string)
+- listPodInboxes · method · L109-L119 — listPodInboxes(podId: string, limit = 100, pageToken?: string)
+- createPodInbox · method · L121-L134 — createPodInbox( podId: string, input: { username?: string; domain?: string; displayName?: string; clientId?: string }, )
+- updateInbox · method · L136-L143 — updateInbox(inboxId: string, input: { displayName: string })
+- deleteInbox · method · L145-L149 — deleteInbox(inboxId: string)
+- listPodDomains · method · L151-L161 — listPodDomains(podId: string, limit = 100, pageToken?: string)
+- createPodDomain · method · L163-L171 — createPodDomain(podId: string, input: { domain: string; feedbackEnabled: boolean })
+- verifyPodDomain · method · L173-L180 — verifyPodDomain(podId: string, domainId: string)
+- deletePodDomain · method · L182-L189 — deletePodDomain(podId: string, domainId: string)
+- listPodThreads · method · L191-L215 — listPodThreads( podId: string, input: { limit?: number; pageToken?: string; after?: string; includeSpam?: boolean; includeBlocked?: boolean; includeTrash?: boolean; } = {}, )
+- getPodThread · method · L217-L221 — getPodThread(podId: string, threadId: string)
+- getAttachment · method · L223-L227 — getAttachment(inboxId: string, messageId: string, attachmentId: string)
+- updateMessage · method · L229-L244 — updateMessage( inboxId: string, messageId: string, input: { addLabels?: string[]; removeLabels?: string[] }, )
+- replyAllMessage · method · L246-L264 — replyAllMessage( inboxId: string, messageId: string, input: { text?: string; html?: string; subject?: string; labels?: string[] }, )
+- listLists · method · L266-L275 — listLists(direction: "send" | "receive" | "reply", listType: "allow" | "block", limit = 100)
+- createListEntry · method · L277-L289 — createListEntry( direction: "send" | "receive" | "reply", listType: "allow" | "block", input: { entry: string; reason?: string }, )
+- deleteListEntry · method · L291-L302 — deleteListEntry( direction: "send" | "receive" | "reply", listType: "allow" | "block", entry: string, )
+- listInboxLists · method · L304-L318 — listInboxLists( inboxId: string, direction: "send" | "receive" | "reply", listType: "allow" | "block", limit = 100, )
+- createInboxListEntry · method · L320-L336 — createInboxListEntry( inboxId: string, direction: "send" | "receive" | "reply", listType: "allow" | "block", input: { entry: string; reason?: string }, )
+- deleteInboxListEntry · method · L338-L353 — deleteInboxListEntry( inboxId: string, direction: "send" | "receive" | "reply", listType: "allow" | "block", entry: string, )
+- listInboxApiKeys · method · L355-L359 — listInboxApiKeys(inboxId: string)
+- createInboxApiKey · method · L361-L375 — createInboxApiKey( inboxId: string, input: { name?: string; permissions?: Record<string, boolean> }, )
+- deleteInboxApiKey · method · L377-L384 — deleteInboxApiKey(inboxId: string, apiKeyId: string)

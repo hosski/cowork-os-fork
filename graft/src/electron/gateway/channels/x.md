@@ -1,0 +1,29 @@
+# src/electron/gateway/channels/x.ts
+
+- XMentionCommandResult · type · L24-L24 — type XMentionCommandResult = { taskId?: string } | void;
+- XMentionCommandHandler · type · L25-L25 — type XMentionCommandHandler = (mention: ParsedMentionCommand) => Promise<XMentionCommandResult>;
+- XAdapterConfig · interface · L27-L29 — interface XAdapterConfig extends XConfig
+- XAdapter · class · L31-L352 — class XAdapter implements ChannelAdapter
+- constructor · method · L47-L47 — constructor(private config: XAdapterConfig)
+- status · method · L49-L51 — get status(): ChannelStatus
+- botUsername · method · L53-L55 — get botUsername(): string | undefined
+- updateConfig · method · L57-L62 — updateConfig(config: XConfig): void
+- connect · method · L64-L92 — async connect(): Promise<void>
+- disconnect · method · L94-L102 — async disconnect(): Promise<void>
+- sendMessage · method · L104-L129 — async sendMessage(message: OutgoingMessage): Promise<string>
+- onMessage · method · L131-L133 — onMessage(handler: MessageHandler): void
+- onError · method · L135-L137 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L139-L141 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L143-L152 — async getInfo(): Promise<ChannelInfo>
+- setStatus · method · L154-L160 — private setStatus(status: ChannelStatus, error?: Error): void
+- schedulePoll · method · L162-L174 — private schedulePoll(delayMs: number): void
+- getPollIntervalMs · method · L176-L183 — private getPollIntervalMs(): number
+- getFetchCount · method · L185-L192 — private getFetchCount(): number
+- resolveTriggerSettings · method · L194-L208 — private resolveTriggerSettings()
+- rememberTweetId · method · L210-L223 — private rememberTweetId(tweetId: string): boolean
+- hasSeenTweetId · method · L225-L229 — private hasSeenTweetId(tweetId: string): boolean
+- pollOnce · method · L231-L323 — private async pollOnce(): Promise<void>
+- extractHandle · method · L325-L329 — private extractHandle(stdout?: string): string | undefined
+- extractTweetId · method · L331-L346 — private extractTweetId(data: unknown, stdout?: string): string | undefined
+- toError · method · L348-L351 — private toError(error: unknown): Error
+- createXAdapter · function · L354-L356 — function createXAdapter(config: XAdapterConfig): XAdapter

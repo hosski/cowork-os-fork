@@ -1,0 +1,29 @@
+# src/electron/agent/decisions/http-client.ts
+
+- DecisionErrorCode · type · L3-L11 — type DecisionErrorCode = | "configuration" | "validation" | "authentication" | "request" | "response" | "aborted" | "timeout" | "transport";
+- DecisionClientError · class · L13-L35 — class DecisionClientError extends Error
+- constructor · method · L19-L34 — constructor( code: DecisionErrorCode, message: string, options: { provider: string; status?: number; retryable?: boolean; }, )
+- DecisionFetch · type · L39-L42 — type DecisionFetch = ( input: string | URL | Request, init?: RequestInit, ) => Promise<Response>;
+- DecisionSleep · type · L44-L44 — type DecisionSleep = (delayMs: number, signal?: AbortSignal) => Promise<void>;
+- DecisionHttpClientOptions · interface · L46-L57 — interface DecisionHttpClientOptions
+- isRecord · function · L65-L67 — function isRecord(value: unknown): value is Record<string, unknown>
+- statusFor · function · L69-L71 — function statusFor(response: Response): number
+- isSuccessful · function · L73-L77 — function isSuccessful(response: Response): boolean
+- validatePositiveNumber · function · L79-L83 — function validatePositiveNumber(name: string, value: number): void
+- validateNonNegativeInteger · function · L85-L89 — function validateNonNegativeInteger(name: string, value: number): void
+- normalizeDecisionApiKey · function · L92-L102 — function normalizeDecisionApiKey(value: string): string
+- redactDetail · function · L104-L113 — function redactDetail(value: string, secret?: string): string
+- errorDetail · function · L115-L126 — function errorDetail(body: unknown, secret?: string): string | undefined
+- sleepWithAbort · function · L128-L150 — function sleepWithAbort(delayMs: number, signal?: AbortSignal): Promise<void>
+- onAbort · function · L144-L147 — onAbort = (): void
+- isRetryableDecisionStatus · function · L152-L154 — function isRetryableDecisionStatus(status: number): boolean
+- DecisionHttpClient · class · L157-L508 — class DecisionHttpClient
+- constructor · method · L168-L226 — constructor(options: DecisionHttpClientOptions)
+- post · method · L228-L281 — async post<T>(body: unknown, options: DecisionRequestOptions = {}): Promise<T>
+- fetchAttempt · method · L283-L360 — private async fetchAttempt( serializedBody: string, timeoutMs: number, callerSignal?: AbortSignal, ): Promise<{ response: Response; body: unknown }>
+- cancelResponseBody · function · L297-L307 — cancelResponseBody = (): void
+- abortFromCaller · function · L309-L314 — abortFromCaller = (): void
+- readJson · method · L362-L461 — private async readJson(response: Response, allowMalformed: boolean): Promise<unknown>
+- httpError · method · L463-L491 — private httpError(status: number, body: unknown, retryable: boolean): DecisionClientError
+- abortedError · method · L493-L499 — private abortedError(): DecisionClientError
+- timeoutError · method · L501-L507 — private timeoutError(timeoutMs: number): DecisionClientError

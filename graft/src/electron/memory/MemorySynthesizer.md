@@ -1,0 +1,35 @@
+# src/electron/memory/MemorySynthesizer.ts
+
+- MemorySourceKind · type · L20-L29 — type MemorySourceKind = | "curated_memory" | "user_profile" | "relationship" | "playbook" | "memory" | "knowledge_graph" | "workspace_kit" | "daily_summary" | "box_brain";
+- MemoryFragment · interface · L31-L40 — interface MemoryFragment
+- SynthesizedContext · interface · L42-L48 — interface SynthesizedContext
+- SynthesizeOptions · interface · L50-L56 — interface SynthesizeOptions
+- LayeredContextResult · interface · L58-L63 — interface LayeredContextResult extends SynthesizedContext
+- emptySourceAttribution · function · L65-L77 — function emptySourceAttribution(): Record<MemorySourceKind, number>
+- estimateTokens · function · L88-L90 — function estimateTokens(text: string): number
+- fingerprint · function · L92-L94 — function fingerprint(text: string): string
+- recencyScore · function · L96-L99 — function recencyScore(updatedAt: number, now: number): number
+- compositeScore · function · L101-L107 — function compositeScore(f: MemoryFragment, now: number): number
+- sanitize · function · L109-L111 — function sanitize(text: string): string
+- extractBulletLines · function · L113-L118 — function extractBulletLines(raw: string | null | undefined): string[]
+- categoryLabel · function · L120-L134 — function categoryLabel(cat: string): string
+- isOperatingManualCategory · function · L136-L138 — function isOperatingManualCategory(category?: string): boolean
+- isReviewedOperatingManualFact · function · L140-L148 — function isReviewedOperatingManualFact(fact: { category?: string; confidence?: number; source?: string; pinned?: boolean; }): boolean
+- extractCuratedFragments · function · L150-L165 — function extractCuratedFragments(workspaceId: string): MemoryFragment[]
+- extractUserProfileFragments · function · L167-L186 — function extractUserProfileFragments(): MemoryFragment[]
+- extractRelationshipFragments · function · L188-L203 — function extractRelationshipFragments(): MemoryFragment[]
+- extractPlaybookFragments · function · L205-L224 — function extractPlaybookFragments(workspaceId: string, taskPrompt: string): MemoryFragment[]
+- extractArchiveFragments · function · L226-L242 — function extractArchiveFragments(workspaceId: string, taskPrompt: string): MemoryFragment[]
+- extractBoxBrainFragments · function · L244-L268 — function extractBoxBrainFragments(workspaceId: string, taskPrompt: string): MemoryFragment[]
+- extractKnowledgeGraphFragments · function · L270-L290 — function extractKnowledgeGraphFragments(workspaceId: string, taskPrompt: string): MemoryFragment[]
+- extractDailySummaryFragments · function · L292-L310 — function extractDailySummaryFragments( workspacePath: string, taskPrompt: string, readGuard?: MarkdownMemoryReadGuard, ): MemoryFragment[]
+- dedupeAndRank · function · L312-L325 — function dedupeAndRank(fragments: MemoryFragment[], now: number): MemoryFragment[]
+- selectFragments · function · L327-L343 — function selectFragments( fragments: MemoryFragment[], tokenBudget: number, ): { selected: MemoryFragment[]; droppedCount: number }
+- groupBySource · function · L345-L361 — function groupBySource(fragments: MemoryFragment[]): Record<MemorySourceKind, MemoryFragment[]>
+- MemorySynthesizer · class · L363-L850 — class MemorySynthesizer
+- buildHotMemoryContext · method · L364-L427 — static buildHotMemoryContext(workspaceId: string, tokenBudget = 900): SynthesizedContext
+- buildStructuredMemoryContext · method · L429-L510 — static buildStructuredMemoryContext( workspaceId: string, workspacePath: string, taskPrompt: string, options: { includeKnowledgeGraph?: boolean; includeArchive?: boolean; tokenBudget?: number; filesystemReadGuard?: MarkdownMemoryReadGuard; } = {}, ): SynthesizedContext
+- buildRecallHintsContext · method · L512-L541 — static buildRecallHintsContext(): string
+- buildWakeUpLayers · method · L543-L626 — private static buildWakeUpLayers( workspaceId: string, workspacePath: string, taskPrompt: string, options: SynthesizeOptions, settings: ReturnType<typeof MemoryFeaturesManager.loadSettings>, ): { l0: LayeredContextResult; l1: LayeredContextResult; recallHints: string; }
+- buildLayerPreview · method · L628-L746 — static buildLayerPreview( workspaceId: string, workspacePath: string, taskPrompt: string, options: SynthesizeOptions = {}, ): MemoryLayerPreviewPayload
+- synthesize · method · L748-L849 — static synthesize( workspaceId: string, workspacePath: string, taskPrompt: string, options: SynthesizeOptions = {}, ): SynthesizedContext

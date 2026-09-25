@@ -1,0 +1,30 @@
+# src/electron/spreadsheet/SpreadsheetWorkbookSessionService.ts
+
+- SessionRecord · type · L33-L38 — type SessionRecord = { session: SpreadsheetWorkbookSession; preview: SpreadsheetPreview; filePath: string; workspacePath: string; };
+- clampPositiveInteger · function · L58-L61 — function clampPositiveInteger(value: number, fallback: number): number
+- normalizeFormat · function · L63-L69 — function normalizeFormat(filePath: string): SpreadsheetWorkbookFormat
+- resolveWorkbookPathWithinWorkspace · function · L71-L88 — async function resolveWorkbookPathWithinWorkspace( filePath: string, workspacePath: string, ): Promise<{ filePath: string; workspacePath: string }>
+- clampWorksheetRow · function · L90-L92 — function clampWorksheetRow(value: number, fallback: number): number
+- clampWorksheetColumn · function · L94-L96 — function clampWorksheetColumn(value: number, fallback: number): number
+- createCell · function · L98-L105 — function createCell(row: number, column: number): SpreadsheetPreviewCell
+- ensureSheetBounds · function · L107-L138 — function ensureSheetBounds( sheet: SpreadsheetPreviewSheet, minRows: number, minColumns: number, ): void
+- applyCellInput · function · L140-L148 — function applyCellInput(cell: SpreadsheetPreviewCell, input: SpreadsheetCellInput): void
+- cellType · function · L150-L157 — function cellType(cell: SpreadsheetPreviewCell | undefined): SpreadsheetCellData["type"]
+- toCellData · function · L159-L173 — function toCellData( cell: SpreadsheetPreviewCell | undefined, row: number, column: number, ): SpreadsheetCellData
+- createWarnings · function · L175-L207 — function createWarnings( preview: SpreadsheetPreview, format: SpreadsheetWorkbookFormat, ): SpreadsheetCompatibilityWarning[]
+- assertPatchWithinLimits · function · L209-L262 — function assertPatchWithinLimits(patch: SpreadsheetPatch): void
+- SpreadsheetWorkbookSessionService · class · L264-L634 — class SpreadsheetWorkbookSessionService
+- openWorkbook · method · L267-L328 — async openWorkbook(input: { filePath: string; workspacePath: string; fileName?: string; }): Promise<SpreadsheetOpenWorkbookResult>
+- getViewport · method · L330-L342 — getViewport(request: SpreadsheetViewportRequest): SpreadsheetViewportResult
+- applyPatches · method · L344-L381 — applyPatches(sessionId: string, patches: SpreadsheetPatch[]): SpreadsheetApplyPatchesResult
+- saveWorkbook · method · L383-L432 — async saveWorkbook(sessionId: string): Promise<SpreadsheetSaveWorkbookResult>
+- closeWorkbook · method · L434-L437 — closeWorkbook(sessionId: string): { success: boolean }
+- getTsv · method · L439-L441 — getTsv(sessionId: string): string
+- trimSessions · method · L443-L449 — private trimSessions(): void
+- getRecord · method · L451-L457 — private getRecord(sessionId: string): SessionRecord
+- getSheetIndex · method · L459-L465 — private getSheetIndex(record: SessionRecord, sheetId: string): number
+- getSheetById · method · L467-L473 — private getSheetById( record: SessionRecord, sheetId: string, ): SpreadsheetPreviewSheet | undefined
+- buildViewport · method · L475-L516 — private buildViewport( sessionId: string, request: Omit<SpreadsheetViewportRequest, "sessionId">, ): SpreadsheetViewport
+- applyPatch · method · L518-L597 — private applyPatch(record: SessionRecord, patch: SpreadsheetPatch): void
+- readdressSheet · method · L599-L615 — private readdressSheet(sheet: SpreadsheetPreviewSheet): void
+- refreshSessionFromPreview · method · L617-L633 — private refreshSessionFromPreview(record: SessionRecord): void

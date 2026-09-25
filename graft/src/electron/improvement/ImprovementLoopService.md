@@ -1,0 +1,63 @@
+# src/electron/improvement/ImprovementLoopService.ts
+
+- Any · type · L38-L38 — type Any = any;
+- ImprovementStageTransition · type · L39-L39 — type ImprovementStageTransition = { stage: string; at: number; detail?: string };
+- ImprovementLoopServiceDeps · interface · L41-L49 — interface ImprovementLoopServiceDeps
+- ImprovementLoopService · class · L61-L1672 — class ImprovementLoopService
+- constructor · method · L77-L90 — constructor( private readonly db: Database.Database, private readonly candidateService: ImprovementCandidateService, private readonly deps: ImprovementLoopServiceDeps = {}, )
+- start · method · L92-L139 — async start(agentDaemon: AgentDaemon): Promise<void>
+- finalize · function · L114-L118 — finalize = (taskId: string)
+- stop · method · L141-L160 — stop(): void
+- getSettings · method · L162-L166 — getSettings(): ImprovementLoopSettings
+- saveSettings · method · L168-L175 — saveSettings(settings: ImprovementLoopSettings): ImprovementLoopSettings
+- listCandidates · method · L177-L179 — listCandidates(workspaceId?: string): ImprovementCandidate[]
+- listCampaigns · method · L181-L183 — listCampaigns(workspaceId?: string): ImprovementCampaign[]
+- listCampaignsFresh · method · L185-L188 — async listCampaignsFresh(workspaceId?: string): Promise<ImprovementCampaign[]>
+- refreshCandidates · method · L190-L192 — async refreshCandidates(): Promise<{ candidateCount: number }>
+- dismissCandidate · method · L194-L196 — dismissCandidate(candidateId: string): ImprovementCandidate | undefined
+- resetHistory · method · L198-L208 — async resetHistory(): Promise<ImprovementHistoryResetResult>
+- reviewCampaign · method · L210-L291 — async reviewCampaign( campaignId: string, reviewStatus: ImprovementReviewStatus, ): Promise<ImprovementCampaign | undefined>
+- runNextExperiment · method · L293-L305 — async runNextExperiment(): Promise<ImprovementCampaign | null>
+- retryCampaign · method · L307-L333 — async retryCampaign(campaignId: string): Promise<ImprovementCampaign | null>
+- startCampaignForCandidate · method · L335-L484 — private async startCampaignForCandidate( candidate: ImprovementCandidate, settings: ImprovementLoopSettings, ): Promise<ImprovementCampaign | null>
+- markRootTaskCompleted · method · L486-L499 — private markRootTaskCompleted(taskId: string, summary: string): void
+- markRootTaskFailed · method · L501-L521 — private markRootTaskFailed( taskId: string, message: string, failureClass?: Task["failureClass"], ): void
+- finalizeVariant · method · L523-L655 — private async finalizeVariant(variantId: string, taskId: string): Promise<void>
+- promoteCampaign · method · L657-L833 — private async promoteCampaign( campaignId: string, winner: ImprovementVariantRun, reviewStatus: ImprovementReviewStatus = "accepted", ): Promise<ImprovementCampaign | undefined>
+- reconcileActiveCampaigns · method · L835-L894 — private async reconcileActiveCampaigns(): Promise<void>
+- pickNextCandidate · method · L896-L936 — private async pickNextCandidate( requireWorktree: boolean, ): Promise<ImprovementCandidate | undefined>
+- resolveExecutionWorkspace · method · L938-L968 — private resolveExecutionWorkspace( candidate: ImprovementCandidate, sourceWorkspace: Workspace, ): Workspace
+- findCanonicalCoworkWorkspace · method · L970-L996 — private findCanonicalCoworkWorkspace(): Workspace | undefined
+- getPreferredCoworkRepoPath · method · L998-L1005 — private getPreferredCoworkRepoPath(): string | undefined
+- pathsMatch · method · L1007-L1009 — private pathsMatch(left: string, right: string): boolean
+- buildWorkspaceScoringCandidate · method · L1011-L1028 — private buildWorkspaceScoringCandidate(workspace: Workspace): ImprovementCandidate
+- scoreExecutionWorkspace · method · L1030-L1055 — private scoreExecutionWorkspace(workspace: Workspace, candidate: ImprovementCandidate): number
+- candidateExplicitlyTargetsCowork · method · L1057-L1071 — private candidateExplicitlyTargetsCowork(candidate: ImprovementCandidate): boolean
+- isLikelyCoworkCodeWorkspace · method · L1073-L1079 — private isLikelyCoworkCodeWorkspace(workspace: Workspace): boolean
+- buildReplaySet · method · L1081-L1101 — private buildReplaySet(candidate: ImprovementCandidate, settings: ImprovementLoopSettings)
+- runPreflightChecks · method · L1103-L1160 — private async runPreflightChecks( candidate: ImprovementCandidate, sourceWorkspace: Workspace, executionWorkspace: Workspace, settings: ImprovementLoopSettings, ): Promise< | { ok: true; providerHealthSnapshot: Record<string, unknown> } | { ok: false; failureClass: ImprovementFailureClass; message: string } >
+- startScoutVariant · method · L1162-L1182 — private async startScoutVariant( campaignId: string, candidate: ImprovementCandidate, sourceWorkspace: Workspace, executionWorkspace: Workspace, settings: ImprovementLoopSettings, ): Promise<void>
+- startImplementationVariant · method · L1184-L1228 — private async startImplementationVariant( campaignId: string, candidate: ImprovementCandidate, settings: ImprovementLoopSettings, ): Promise<void>
+- startVariantTask · method · L1230-L1319 — private async startVariantTask(params: { campaignId: string; candidate: ImprovementCandidate; lane: ImprovementVariantLane; stage: "reproducing" | "implementing"; sourceWorkspace: Workspace; executionWorkspace: Workspace; settings: ImprovementLoopSettings; executionMode: "analyze" | "verified"; verificationAgent: boolean; maxTurns: number; maxTokens: number; }): Promise<void>
+- failCampaign · method · L1321-L1362 — private async failCampaign( campaignId: string, candidate: ImprovementCandidate, params: { failureClass: ImprovementFailureClass; message: string }, ): Promise<void>
+- failPromotion · method · L1364-L1405 — private async failPromotion( campaignId: string, candidate: ImprovementCandidate | undefined, message: string, pullRequest?: { success?: boolean; error?: string; url?: string; number?: number }, ): Promise<void>
+- readPackageMetadata · method · L1407-L1415 — private readPackageMetadata(workspacePath: string): { name?: string } | null
+- collectRelevantLogPaths · method · L1417-L1427 — private collectRelevantLogPaths( sourceWorkspace: Workspace, executionWorkspace: Workspace, ): string[]
+- enrichCampaigns · method · L1429-L1431 — private enrichCampaigns(campaigns: ImprovementCampaign[]): ImprovementCampaign[]
+- enrichCampaign · method · L1433-L1446 — private enrichCampaign(campaign: ImprovementCampaign): ImprovementCampaign
+- getCampaign · method · L1448-L1451 — private getCampaign(campaignId: string): ImprovementCampaign | undefined
+- shouldRequireWorktreeForWorkspace · method · L1453-L1462 — private async shouldRequireWorktreeForWorkspace( workspacePath: string, isTemp: boolean | undefined, requireWorktree: boolean, ): Promise<boolean>
+- canPromoteVariant · method · L1464-L1474 — private canPromoteVariant(variant: ImprovementVariantRun, task: Task | undefined): boolean
+- buildAttemptFingerprint · method · L1476-L1482 — private buildAttemptFingerprint( candidate: ImprovementCandidate | undefined, stage: string, ): string
+- classifyFailureFromTask · method · L1484-L1496 — private classifyFailureFromTask(task: Task | undefined): ImprovementFailureClass
+- classifyFailureFromText · method · L1498-L1520 — private classifyFailureFromText(text: string): ImprovementFailureClass
+- resetInterval · method · L1522-L1536 — private resetInterval(): void
+- buildPullRequestTitle · method · L1538-L1544 — private buildPullRequestTitle( candidate: ImprovementCandidate | undefined, campaign: ImprovementCampaign, ): string
+- applyEligibilityGuard · method · L1546-L1556 — private applyEligibilityGuard(settings: ImprovementLoopSettings): ImprovementLoopSettings
+- normalizeSettings · method · L1558-L1569 — private normalizeSettings(settings: ImprovementLoopSettings): ImprovementLoopSettings
+- assertImprovementEligible · method · L1571-L1576 — private assertImprovementEligible(): void
+- buildPullRequestBody · method · L1578-L1596 — private buildPullRequestBody( candidate: ImprovementCandidate | undefined, campaign: ImprovementCampaign, winner: ImprovementVariantRun, ): string
+- appendStageTransition · method · L1598-L1616 — private appendStageTransition( campaign: ImprovementCampaign, stage: string, detail?: string, ): ImprovementCampaign["observability"]
+- getStageTransitions · method · L1618-L1622 — private getStageTransitions( observability: ImprovementCampaign["observability"] | undefined, ): ImprovementStageTransition[]
+- notify · method · L1624-L1636 — private async notify(params: { type: NotificationType; title: string; message: string; taskId?: string; workspaceId?: string; }): Promise<void>
+- cancelImprovementTasksForReset · method · L1638-L1671 — private async cancelImprovementTasksForReset(): Promise<string[]>

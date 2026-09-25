@@ -1,0 +1,45 @@
+# src/renderer/components/SpreadsheetArtifactViewer.tsx
+
+- SpreadsheetArtifactViewerMode · type · L38-L38 — type SpreadsheetArtifactViewerMode = "sidebar" | "fullscreen";
+- SpreadsheetSettingsTab · type · L39-L59 — type SpreadsheetSettingsTab = | "appearance" | "llm" | "search" | "telegram" | "slack" | "whatsapp" | "teams" | "x" | "morechannels" | "integrations" | "updates" | "system" | "queue" | "skills" | "voice" | "scheduled" | "mcp" | "agents" | "github" | "notifications";
+- PendingSpreadsheetAttachment · type · L60-L66 — type PendingSpreadsheetAttachment = { id: string; path: string; name: string; size: number; mimeType?: string; };
+- SpreadsheetTurnContext · type · L68-L80 — type SpreadsheetTurnContext = { statusLabel: string; summary: string; secondaryText?: string; artifactPath: string; artifactName: string; events?: Array<{ id: string; kind: "step" | "assistant"; text: string; tone?: "muted" | "active" | "done"; }>; };
+- SpreadsheetArtifactViewerProps · type · L82-L104 — type SpreadsheetArtifactViewerProps = { filePath: string; workspacePath: string; mode: SpreadsheetArtifactViewerMode; onClose: () => void; onFullscreen: () => void; onExitFullscreen: () => void; onSendMessage?: (message: string, images?: ImageAttachment[]) => Promise<void>; selectedModelLabel?: string; selectedModel?: string; selectedProvider?: LLMProviderType; selectedReasoningEffort?: LLMReasoningEffort; availableModels?: LLMModelInfo[]; availableProviders?: LLMProviderInfo[]; workspaceId?: string; onModelChange?: (selection: { providerType?: LLMProviderType; modelKey: string; reasoningEffort?: LLMReasoningEffort; }) => void; onOpenSettings?: (tab?: SpreadsheetSettingsTab) => void; turnContext?: SpreadsheetTurnContext | null; };
+- ViewerData · type · L106-L106 — type ViewerData = NonNullable<FileViewerResult["data"]>;
+- CellPosition · type · L107-L107 — type CellPosition = { row: number; column: number };
+- CellRange · type · L108-L108 — type CellRange = { start: CellPosition; end: CellPosition };
+- getFileName · function · L112-L114 — function getFileName(filePath: string): string
+- formatAttachmentSize · function · L116-L122 — function formatAttachmentSize(size: number): string
+- isImageAttachment · function · L124-L126 — function isImageAttachment(attachment: PendingSpreadsheetAttachment): boolean
+- getWorkbookTitle · function · L128-L130 — function getWorkbookTitle(fileName: string): string
+- getCellStyle · function · L132-L141 — function getCellStyle(cell: SpreadsheetPreviewCell): CSSProperties | undefined
+- clonePreview · function · L143-L145 — function clonePreview(preview: SpreadsheetPreview): SpreadsheetPreview
+- createCell · function · L147-L154 — function createCell(row: number, column: number): SpreadsheetPreviewCell
+- ensureSheetBounds · function · L156-L184 — function ensureSheetBounds( sheet: SpreadsheetPreview["sheets"][number], minRows: number, minColumns: number, ): void
+- getCellText · function · L186-L190 — function getCellText(cell: SpreadsheetPreviewCell | null): string
+- getCellDisplayText · function · L192-L196 — function getCellDisplayText(cell: SpreadsheetPreviewCell | undefined): string
+- normalizeRange · function · L198-L210 — function normalizeRange(range: CellRange | null): CellRange | null
+- cellIsInRange · function · L212-L221 — function cellIsInRange(range: CellRange | null, row: number, column: number): boolean
+- buildFallbackPreview · function · L223-L252 — function buildFallbackPreview(data: ViewerData): SpreadsheetPreview | null
+- SpreadsheetArtifactViewer · function · L254-L1400 — function SpreadsheetArtifactViewer({ filePath, workspacePath, mode, onClose, onFullscreen, onExitFullscreen, onSendMessage, selectedModelLabel, selectedModel, selectedProvider, selectedReasoningEffort, availableModels = [], availableProviders = [], workspaceId, onModelChange, onOpenSettings, turnContext, }: SpreadsheetArtifactViewerProps)
+- loadLegacyPreview · function · L334-L346 — loadLegacyPreview = async ()
+- loadWorkbook · function · L348-L380 — loadWorkbook = async ()
+- queuePatch · function · L440-L455 — queuePatch = (patch: SpreadsheetPatch)
+- selectCell · function · L457-L465 — selectCell = (position: CellPosition, extend = false)
+- selectRange · function · L467-L472 — selectRange = (range: CellRange, active: CellPosition = range.start)
+- selectColumn · function · L474-L482 — selectColumn = (column: number)
+- selectRow · function · L484-L492 — selectRow = (row: number)
+- selectAllVisibleSheet · function · L494-L502 — selectAllVisibleSheet = ()
+- getSelectedRangeText · function · L504-L523 — getSelectedRangeText = ()
+- copySelectionToClipboard · function · L525-L534 — copySelectionToClipboard = async ()
+- updateCellValue · function · L536-L573 — updateCellValue = (row: number, column: number, value: string)
+- startEditing · function · L575-L585 — startEditing = (position: CellPosition, initialValue?: string)
+- commitEditing · function · L587-L593 — commitEditing = ()
+- cancelEditing · function · L595-L599 — cancelEditing = ()
+- moveSelection · function · L601-L608 — moveSelection = (deltaRow: number, deltaColumn: number)
+- addRows · function · L610-L632 — addRows = (count = 1)
+- addColumns · function · L634-L658 — addColumns = (count = 1)
+- pasteTabularData · function · L660-L714 — pasteTabularData = (text: string)
+- handleGridKeyDown · function · L716-L763 — handleGridKeyDown = (event: KeyboardEvent<HTMLDivElement>)
+- handleSave · function · L765-L843 — handleSave = async ()
+- handleFullscreenSend · function · L903-L923 — handleFullscreenSend = async ()

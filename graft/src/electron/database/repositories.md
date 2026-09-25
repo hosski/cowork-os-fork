@@ -1,0 +1,387 @@
+# src/electron/database/repositories.ts
+
+- safeJsonParse · function · L70-L82 — function safeJsonParse<T>(jsonString: string, defaultValue: T, context?: string): T
+- quoteSqlIdentifier · function · L88-L93 — quoteSqlIdentifier = (identifier: string): string
+- SqliteForeignKeyRow · interface · L135-L140 — interface SqliteForeignKeyRow
+- SqliteTableInfoRow · interface · L142-L146 — interface SqliteTableInfoRow
+- WorkspaceRepository · class · L148-L283 — class WorkspaceRepository
+- constructor · method · L149-L149 — constructor(private db: Database.Database)
+- create · method · L151-L177 — create(name: string, path: string, permissions: WorkspacePermissions): Workspace
+- findById · method · L179-L183 — findById(id: string): Workspace | undefined
+- findAll · method · L185-L193 — findAll(): Workspace[]
+- existsByPath · method · L198-L202 — existsByPath(path: string): boolean
+- findByPath · method · L207-L211 — findByPath(path: string): Workspace | undefined
+- updatePermissions · method · L216-L219 — updatePermissions(id: string, permissions: WorkspacePermissions): void
+- updateLastUsedAt · method · L224-L227 — updateLastUsedAt(id: string, lastUsedAt: number = Date.now()): void
+- updatePath · method · L232-L235 — updatePath(id: string, nextPath: string): void
+- delete · method · L240-L243 — delete(id: string): void
+- mapRowToWorkspace · method · L245-L282 — private mapRowToWorkspace(row: Any): Workspace
+- TaskSessionMetadata · interface · L285-L291 — interface TaskSessionMetadata
+- TaskSessionMetadataRepository · class · L293-L400 — class TaskSessionMetadataRepository
+- constructor · method · L294-L294 — constructor(private db: Database.Database)
+- findBySessionId · method · L296-L303 — findBySessionId(sessionId: string): TaskSessionMetadata | undefined
+- findBySessionIds · method · L305-L329 — findBySessionIds(sessionIds: string[]): Map<string, TaskSessionMetadata>
+- upsert · method · L331-L366 — upsert( sessionId: string, updates: { name?: string | null; archivedAt?: number | null }, ): TaskSessionMetadata
+- rename · method · L368-L370 — rename(sessionId: string, name: string): TaskSessionMetadata
+- archive · method · L372-L374 — archive(sessionId: string, archivedAt = Date.now()): TaskSessionMetadata
+- unarchive · method · L376-L378 — unarchive(sessionId: string): TaskSessionMetadata
+- delete · method · L380-L386 — delete(sessionId: string): void
+- mapRow · method · L388-L399 — private mapRow(row: Any): TaskSessionMetadata
+- BotNotificationPreferenceRepository · class · L402-L443 — class BotNotificationPreferenceRepository
+- constructor · method · L403-L403 — constructor(private db: Database.Database)
+- findByAgentRoleId · method · L405-L418 — findByAgentRoleId(agentRoleId: string): import("../../shared/types").BotNotificationPolicy
+- upsert · method · L420-L442 — upsert( agentRoleId: string, updates: { onFinish?: boolean; onInputRequired?: boolean }, ): import("../../shared/types").BotNotificationPolicy
+- normalizeOptionalSessionMetadataText · function · L445-L449 — function normalizeOptionalSessionMetadataText(value: unknown): string | null
+- normalizeOptionalSessionMetadataNumber · function · L451-L455 — function normalizeOptionalSessionMetadataNumber(value: unknown): number | null
+- TaskRepository · class · L457-L2020 — class TaskRepository
+- constructor · method · L532-L532 — constructor(private db: Database.Database)
+- buildSidebarCursorPredicate · method · L542-L610 — private static buildSidebarCursorPredicate(cursor?: { id?: string; pinned?: boolean; status?: string; updatedAt?: number; createdAt?: number; }): { sql: string; args: Any[] }
+- normalizePromptFields · method · L612-L624 — private static normalizePromptFields( task: Omit<Task, "id" | "createdAt" | "updatedAt">, ): Omit<Task, "id" | "createdAt" | "updatedAt">
+- create · method · L626-L703 — create(task: Omit<Task, "id" | "createdAt" | "updatedAt">): Task
+- update · method · L785-L851 — update(id: string, updates: Partial<Task>): void
+- togglePin · method · L853-L871 — togglePin(id: string): Task | undefined
+- touch · method · L873-L886 — touch(id: string, timestamp = Date.now()): Task | undefined
+- findById · method · L888-L892 — findById(id: string): Task | undefined
+- findAll · method · L894-L972 — findAll( limit = 100, offset = 0, options?: { prioritizeSidebar?: boolean; includeArchivedSessions?: boolean; botConversation?: { workspaceId: string; agentRoleId: string }; excludeSources?: Array<NonNullable<Task["source"]>>; cursor?: { id?: string; pinned?: boolean; status?: string; updatedAt?: number; createdAt?: number; }; }, ): Task[]
+- findBotConversations · method · L979-L1031 — findBotConversations( workspaceId: string, options?: { agentRoleId?: string; includeArchivedSessions?: boolean; includeAllWorkspaces?: boolean; limit?: number; offset?: number; }, ): Task[]
+- search · method · L1033-L1068 — search( query: string, options?: { workspaceId?: string; limit?: number; includeArchivedSessions?: boolean }, ): Task[]
+- findSidebarSummaries · method · L1070-L1231 — findSidebarSummaries( limit = 100, offset = 0, options?: { prioritizeSidebar?: boolean; includeArchivedSessions?: boolean; excludeBotConversations?: boolean; excludeSources?: Array<NonNullable<Task["source"]>>; cursor?: { id?: string; pinned?: boolean; status?: string; updatedAt?: number; createdAt?: number; }; }, ): Task[]
+- findByStatus · method · L1236-L1246 — findByStatus(status: string | string[]): Task[]
+- findByWorkspace · method · L1251-L1273 — findByWorkspace(workspaceId: string, limit?: number, offset?: number): Task[]
+- findBySessionId · method · L1275-L1302 — findBySessionId(sessionId: string, limit?: number, offset?: number): Task[]
+- countByWorkspace · method · L1304-L1311 — countByWorkspace(workspaceId: string): number
+- findByCreatedAtRange · method · L1317-L1361 — findByCreatedAtRange(params: { startMs: number; endMs: number; limit?: number; workspaceId?: string; query?: string; }): Task[]
+- delete · method · L1363-L1525 — delete(id: string): void
+- cleanupTaskForeignKeyReferences · method · L1527-L1605 — private cleanupTaskForeignKeyReferences(taskId: string): void
+- mapRowToTask · method · L1607-L1716 — private mapRowToTask(row: Any): Task
+- mapRowToSidebarTask · method · L1718-L1814 — private mapRowToSidebarTask(row: Any): Task
+- SidebarAgentConfig · type · L1719-L1719 — type SidebarAgentConfig = NonNullable<Task["agentConfig"]>;
+- setBooleanAgentConfig · function · L1721-L1732 — setBooleanAgentConfig = ( key: | "videoGenerationMode" | "multitaskMode" | "collaborativeMode" | "multiLlmMode" | "autonomousMode", value: unknown, ): void
+- findByTargetNodeId · method · L1816-L1825 — findByTargetNodeId(nodeId: string, limit = 50): Task[]
+- findByTargetNodeIds · method · L1827-L1846 — findByTargetNodeIds(nodeIds: string[], limit = 50): Task[]
+- pruneByTargetNodeIds · method · L1848-L1890 — pruneByTargetNodeIds(nodeIds: string[], keepTaskIds: string[], createdAtGte?: number): number
+- findByParent · method · L1895-L1903 — findByParent(parentTaskId: string): Task[]
+- findByBoardColumn · method · L1910-L1918 — findByBoardColumn(workspaceId: string, boardColumn: string): Task[]
+- getTaskBoard · method · L1923-L1951 — getTaskBoard(workspaceId: string): Record<string, Task[]>
+- moveToColumn · method · L1956-L1959 — moveToColumn(id: string, boardColumn: string): Task | undefined
+- setPriority · method · L1964-L1967 — setPriority(id: string, priority: number): Task | undefined
+- setDueDate · method · L1972-L1975 — setDueDate(id: string, dueDate: number | null): Task | undefined
+- setEstimate · method · L1980-L1983 — setEstimate(id: string, estimatedMinutes: number | null): Task | undefined
+- addLabel · method · L1988-L1998 — addLabel(id: string, labelId: string): Task | undefined
+- removeLabel · method · L2003-L2011 — removeLabel(id: string, labelId: string): Task | undefined
+- assignAgentRole · method · L2016-L2019 — assignAgentRole(id: string, agentRoleId: string | null): Task | undefined
+- TaskEventRepository · class · L2022-L3157 — class TaskEventRepository
+- constructor · method · L2043-L2043 — constructor(private db: Database.Database)
+- normalizePositiveInteger · method · L2045-L2054 — private static normalizePositiveInteger( value: unknown, fallback: number, min: number, max: number, ): number
+- create · method · L2056-L2145 — create(event: Omit<TaskEvent, "id"> & { id?: string }): TaskEvent
+- findByTaskId · method · L2147-L2155 — findByTaskId(taskId: string): TaskEvent[]
+- findRecentByTaskId · method · L2157-L2201 — findRecentByTaskId(taskId: string, maxEvents: number): TaskEvent[]
+- findByTaskIdAndTypes · method · L2203-L2229 — findByTaskIdAndTypes(taskId: string, types: string[], maxEvents?: number): TaskEvent[]
+- findLatestConversationSnapshot · method · L2231-L2246 — findLatestConversationSnapshot(taskId: string): TaskEvent | null
+- findEventCursorById · method · L2248-L2269 — findEventCursorById(taskId: string, eventId: string): TaskTimelinePageCursor | null
+- findReplayTailAfterCursor · method · L2271-L2328 — findReplayTailAfterCursor( taskId: string, afterCursor: TaskTimelinePageCursor, types: string[], limit = 200, ): TaskEvent[]
+- findTimelinePage · method · L2330-L2645 — findTimelinePage(request: TaskTimelinePageRequest): TaskTimelinePageResult
+- selectRows · function · L2405-L2435 — selectRows = (scopeWhere: string, scopeArgs: Any[]): Any[]
+- findLatestTimelineContextRow · method · L2647-L2694 — private findLatestTimelineContextRow( taskId: string, effectiveType: string, selectedRows: Any[], singleEventByteLimit: number, ): Any | null
+- findEventDetailById · method · L2696-L2768 — findEventDetailById( eventId: string, scope?: { taskId?: string; additionalTaskIds?: string[]; additionalTaskEventTypes?: string[]; }, ): TaskEventDetailResult
+- selectScopedRow · function · L2721-L2730 — selectScopedRow = (scopeWhere: string, scopeArgs: Any[]): Any
+- findByTaskIds · method · L2770-L2813 — findByTaskIds(taskIds: string[], types?: string[]): TaskEvent[]
+- updatePayloadById · method · L2815-L2824 — updatePayloadById(eventId: string, payload: Record<string, unknown>): void
+- buildTimelineTruncatedPayloadRow · method · L2826-L2844 — private buildTimelineTruncatedPayloadRow(row: Any, payloadBytes: number): Any
+- deriveTimelinePageSummary · method · L2846-L2889 — private deriveTimelinePageSummary( events: TaskEvent[], ): Partial<TaskTimelinePageResult["summary"]>
+- buildTimelinePageWarnings · method · L2891-L2910 — private buildTimelinePageWarnings( taskId: string, payloadBytes: number, largestEventPayloadBytes: number, truncatedEventCount: number, ): string[] | undefined
+- mapRowsToEvents · method · L2912-L3005 — private mapRowsToEvents( rows: Any[], options: { persistMigrations?: boolean } = {}, ): { events: TaskEvent[]; migratedCount: number }
+- persistMigratedRows · method · L3007-L3044 — private persistMigratedRows(rows: TaskEvent[]): void
+- getLatestSeq · method · L3046-L3052 — getLatestSeq(taskId: string): number
+- migrateLegacyEventsForTask · method · L3054-L3083 — migrateLegacyEventsForTask(taskId: string): number
+- migrateLegacyEventsForTasks · method · L3085-L3092 — migrateLegacyEventsForTasks(taskIds: string[]): number
+- pruneOldSnapshots · method · L3098-L3126 — pruneOldSnapshots(taskId: string): void
+- pruneOldEvents · method · L3132-L3142 — pruneOldEvents(retentionDays: number = 90): number
+- vacuumIfNeeded · method · L3148-L3156 — vacuumIfNeeded(thresholdMB: number = 500): boolean
+- TaskTraceRepository · class · L3159-L3213 — class TaskTraceRepository
+- constructor · method · L3160-L3163 — constructor( private readonly taskRepo: TaskRepository, private readonly taskEventRepo: TaskEventRepository, )
+- listTaskTraceRuns · method · L3165-L3183 — listTaskTraceRuns( request: import("../../shared/types").ListTaskTraceRunsRequest = {}, ): TaskTraceRunSummary[]
+- getTaskTraceRun · method · L3185-L3203 — getTaskTraceRun(taskId: string): TaskTraceRunDetail | undefined
+- listSessionTasks · method · L3205-L3212 — private listSessionTasks(task: Task): Task[]
+- ArtifactRepository · class · L3215-L3275 — class ArtifactRepository
+- constructor · method · L3216-L3216 — constructor(private db: Database.Database)
+- create · method · L3218-L3240 — create(artifact: Omit<Artifact, "id">): Artifact
+- findByTaskId · method · L3242-L3248 — findByTaskId(taskId: string): Artifact[]
+- findById · method · L3250-L3254 — findById(id: string): Artifact | undefined
+- findLatestByPath · method · L3256-L3262 — findLatestByPath(artifactPath: string): Artifact | undefined
+- mapRowToArtifact · method · L3264-L3274 — private mapRowToArtifact(row: Any): Artifact
+- normalizeAnnotationStatus · function · L3285-L3292 — function normalizeAnnotationStatus( value: unknown, fallback: AnnotationStatus = "open", ): AnnotationStatus
+- AnnotationRepository · class · L3294-L3528 — class AnnotationRepository
+- constructor · method · L3295-L3295 — constructor(private db: Database.Database)
+- create · method · L3297-L3345 — create(input: AnnotationCreateInput): Annotation
+- update · method · L3347-L3402 — update(id: string, patch: AnnotationUpdateInput): Annotation | undefined
+- markAddressing · method · L3404-L3429 — markAddressing(taskId: string, annotationIds?: string[]): number
+- markAddressed · method · L3431-L3441 — markAddressed(taskId: string): number
+- findById · method · L3443-L3446 — findById(id: string): Annotation | undefined
+- list · method · L3448-L3489 — list(query: AnnotationListQuery = {}): Annotation[]
+- listOpenByTask · method · L3491-L3497 — listOpenByTask(taskId: string): Annotation[]
+- mapRowToAnnotation · method · L3499-L3527 — private mapRowToAnnotation(row: Any): Annotation
+- ApprovalRepository · class · L3530-L3625 — class ApprovalRepository
+- constructor · method · L3531-L3531 — constructor(private db: Database.Database)
+- create · method · L3533-L3555 — create(approval: Omit<ApprovalRequest, "id">): ApprovalRequest
+- update · method · L3557-L3568 — update( id: string, status: "approved" | "denied", attribution?: { principalId?: string; role?: string }, ): void
+- findById · method · L3570-L3573 — findById(id: string): ApprovalRequest | undefined
+- findPendingByTaskId · method · L3575-L3583 — findPendingByTaskId(taskId: string): ApprovalRequest[]
+- findPending · method · L3585-L3598 — findPending(limit = 100): ApprovalRequest[]
+- findAllPending · method · L3601-L3609 — findAllPending(): ApprovalRequest[]
+- mapRowToApproval · method · L3611-L3624 — private mapRowToApproval(row: Any): ApprovalRequest
+- WorkspacePermissionRuleRepository · class · L3627-L3772 — class WorkspacePermissionRuleRepository
+- constructor · method · L3628-L3628 — constructor(private db: Database.Database)
+- listByWorkspaceId · method · L3630-L3639 — listByWorkspaceId(workspaceId: string): PersistedPermissionRule[]
+- findById · method · L3641-L3646 — findById(id: string): PersistedPermissionRule | null
+- create · method · L3648-L3699 — create(rule: { workspaceId: string; effect: PersistedPermissionRule["effect"]; scope: PersistedPermissionRule["scope"]; metadata?: Record<string, unknown>; }): PersistedPermissionRule
+- deleteById · method · L3701-L3708 — deleteById(id: string): PersistedPermissionRule | null
+- deleteByWorkspaceAndId · method · L3710-L3717 — deleteByWorkspaceAndId(workspaceId: string, id: string): PersistedPermissionRule | null
+- mapRowToRule · method · L3719-L3771 — private mapRowToRule(row: Any): PersistedPermissionRule
+- InputRequestRepository · class · L3774-L3914 — class InputRequestRepository
+- constructor · method · L3775-L3775 — constructor(private db: Database.Database)
+- create · method · L3777-L3807 — create(request: { taskId: string; questions: InputRequest["questions"]; requestedAt: number; status?: InputRequest["status"]; }): InputRequest
+- resolve · method · L3809-L3820 — resolve( id: string, status: Extract<InputRequest["status"], "submitted" | "dismissed">, answers?: InputRequest["answers"], ): void
+- findById · method · L3822-L3826 — findById(id: string): InputRequest | undefined
+- findPendingByTaskId · method · L3828-L3836 — findPendingByTaskId(taskId: string): InputRequest[]
+- findAllPending · method · L3839-L3847 — findAllPending(): InputRequest[]
+- list · method · L3849-L3895 — list(params: { limit: number; offset: number; taskId?: string; status?: InputRequest["status"]; }): InputRequest[]
+- mapRowToInputRequest · method · L3897-L3913 — private mapRowToInputRequest(row: Any): InputRequest
+- SkillRepository · class · L3916-L3968 — class SkillRepository
+- constructor · method · L3917-L3917 — constructor(private db: Database.Database)
+- create · method · L3919-L3941 — create(skill: Omit<Skill, "id">): Skill
+- findAll · method · L3943-L3947 — findAll(): Skill[]
+- findById · method · L3949-L3953 — findById(id: string): Skill | undefined
+- mapRowToSkill · method · L3955-L3967 — private mapRowToSkill(row: Any): Skill
+- LLMModel · interface · L3970-L3981 — interface LLMModel
+- LLMModelRepository · class · L3983-L4022 — class LLMModelRepository
+- constructor · method · L3984-L3984 — constructor(private db: Database.Database)
+- findAll · method · L3986-L3994 — findAll(): LLMModel[]
+- findByKey · method · L3996-L4000 — findByKey(key: string): LLMModel | undefined
+- findById · method · L4002-L4006 — findById(id: string): LLMModel | undefined
+- mapRowToModel · method · L4008-L4021 — private mapRowToModel(row: Any): LLMModel
+- ChannelConfigReadResult · interface · L4033-L4037 — interface ChannelConfigReadResult
+- encryptChannelConfig · function · L4043-L4058 — function encryptChannelConfig(json: string): string
+- decryptChannelConfig · function · L4064-L4105 — function decryptChannelConfig(value: string): ChannelConfigReadResult
+- Channel · interface · L4107-L4126 — interface Channel
+- ChannelUser · interface · L4128-L4142 — interface ChannelUser
+- ChannelSession · interface · L4144-L4157 — interface ChannelSession
+- ChannelMessage · interface · L4159-L4176 — interface ChannelMessage
+- ChannelRepository · class · L4178-L4402 — class ChannelRepository
+- constructor · method · L4179-L4179 — constructor(private db: Database.Database)
+- create · method · L4181-L4209 — create(channel: Omit<Channel, "id" | "createdAt" | "updatedAt">): Channel
+- update · method · L4211-L4253 — update(id: string, updates: Partial<Channel>): void
+- findById · method · L4255-L4259 — findById(id: string): Channel | undefined
+- findByType · method · L4261-L4265 — findByType(type: string): Channel | undefined
+- findAllByType · method · L4267-L4271 — findAllByType(type: string): Channel[]
+- findAll · method · L4273-L4277 — findAll(): Channel[]
+- findEnabled · method · L4279-L4285 — findEnabled(): Channel[]
+- delete · method · L4287-L4378 — delete(id: string): void
+- mapRowToChannel · method · L4380-L4401 — private mapRowToChannel(row: Record<string, unknown>): Channel
+- ChannelUserRepository · class · L4404-L4604 — class ChannelUserRepository
+- constructor · method · L4405-L4405 — constructor(private db: Database.Database)
+- create · method · L4407-L4439 — create( user: Omit<ChannelUser, "id" | "createdAt" | "lastSeenAt" | "pairingAttempts">, ): ChannelUser
+- update · method · L4441-L4483 — update(id: string, updates: Partial<ChannelUser>): void
+- findById · method · L4485-L4489 — findById(id: string): ChannelUser | undefined
+- findByChannelUserId · method · L4491-L4497 — findByChannelUserId(channelId: string, channelUserId: string): ChannelUser | undefined
+- findByChannelId · method · L4499-L4505 — findByChannelId(channelId: string): ChannelUser[]
+- findAllowedByChannelId · method · L4507-L4513 — findAllowedByChannelId(channelId: string): ChannelUser[]
+- deleteByChannelId · method · L4515-L4518 — deleteByChannelId(channelId: string): void
+- delete · method · L4520-L4523 — delete(id: string): void
+- deleteExpiredPending · method · L4530-L4545 — deleteExpiredPending(channelId: string): number
+- deletePendingByChannel · method · L4550-L4559 — deletePendingByChannel(channelId: string): number
+- deleteExpiredPendingAll · method · L4564-L4578 — deleteExpiredPendingAll(): number
+- findByPairingCode · method · L4580-L4586 — findByPairingCode(channelId: string, pairingCode: string): ChannelUser | undefined
+- mapRowToUser · method · L4588-L4603 — private mapRowToUser(row: Record<string, unknown>): ChannelUser
+- ChannelSessionRepository · class · L4606-L4748 — class ChannelSessionRepository
+- constructor · method · L4607-L4607 — constructor(private db: Database.Database)
+- create · method · L4609-L4637 — create(session: Omit<ChannelSession, "id" | "createdAt" | "lastActivityAt">): ChannelSession
+- update · method · L4639-L4683 — update(id: string, updates: Partial<ChannelSession>): void
+- findById · method · L4685-L4689 — findById(id: string): ChannelSession | undefined
+- findByChatId · method · L4691-L4697 — findByChatId(channelId: string, chatId: string): ChannelSession | undefined
+- findByTaskId · method · L4699-L4703 — findByTaskId(taskId: string): ChannelSession | undefined
+- findActiveByChannelId · method · L4705-L4711 — findActiveByChannelId(channelId: string): ChannelSession[]
+- deleteIdleOlderThan · method · L4713-L4719 — deleteIdleOlderThan(cutoffMs: number): number
+- deleteByChannelId · method · L4721-L4724 — deleteByChannelId(channelId: string): void
+- mapRowToSession · method · L4726-L4747 — private mapRowToSession(row: Record<string, unknown>): ChannelSession
+- ChannelSpecializationRepository · class · L4750-L4987 — class ChannelSpecializationRepository
+- constructor · method · L4751-L4751 — constructor(private db: Database.Database)
+- upsert · method · L4753-L4777 — upsert(request: CreateChannelSpecializationRequest): ChannelSpecialization
+- create · method · L4779-L4822 — create(request: CreateChannelSpecializationRequest): ChannelSpecialization
+- update · method · L4824-L4862 — update(request: UpdateChannelSpecializationRequest): ChannelSpecialization | undefined
+- push · function · L4830-L4833 — push = (column: string, value: unknown)
+- delete · method · L4864-L4867 — delete(id: string): boolean
+- findById · method · L4869-L4874 — findById(id: string): ChannelSpecialization | undefined
+- findByScope · method · L4876-L4895 — findByScope(input: { channelId: string; chatId?: string | null; threadId?: string | null; }): ChannelSpecialization | undefined
+- listByChannel · method · L4897-L4906 — listByChannel(channelId: string): ChannelSpecialization[]
+- resolve · method · L4908-L4948 — resolve(input: { channelId: string; chatId?: string | null; threadId?: string | null; }): ChannelSpecialization | undefined
+- cleanOptionalString · method · L4950-L4952 — private cleanOptionalString(value: unknown): string | undefined
+- cleanToolRestrictions · method · L4954-L4964 — private cleanToolRestrictions(value: unknown): string[]
+- mapRow · method · L4966-L4986 — private mapRow(row: Record<string, unknown>): ChannelSpecialization
+- ChannelMessageRepository · class · L4989-L5079 — class ChannelMessageRepository
+- constructor · method · L4990-L4990 — constructor(private db: Database.Database)
+- create · method · L4992-L5017 — create(message: Omit<ChannelMessage, "id">): ChannelMessage
+- findBySessionId · method · L5019-L5025 — findBySessionId(sessionId: string, limit = 50): ChannelMessage[]
+- findByChatId · method · L5027-L5033 — findByChatId(channelId: string, chatId: string, limit = 50): ChannelMessage[]
+- deleteByChannelId · method · L5035-L5038 — deleteByChannelId(channelId: string): void
+- getDistinctChatIds · method · L5043-L5057 — getDistinctChatIds( channelId: string, limit = 50, ): Array<{ chatId: string; lastTimestamp: number }>
+- mapRowToMessage · method · L5059-L5078 — private mapRowToMessage(row: Record<string, unknown>): ChannelMessage
+- QueuedMessage · interface · L5085-L5098 — interface QueuedMessage
+- ScheduledMessage · interface · L5100-L5110 — interface ScheduledMessage
+- DeliveryRecord · interface · L5112-L5123 — interface DeliveryRecord
+- RateLimitRecord · interface · L5125-L5133 — interface RateLimitRecord
+- AuditLogEntry · interface · L5135-L5144 — interface AuditLogEntry
+- MessageQueueRepository · class · L5146-L5257 — class MessageQueueRepository
+- constructor · method · L5147-L5147 — constructor(private db: Database.Database)
+- enqueue · method · L5149-L5179 — enqueue(item: Omit<QueuedMessage, "id" | "createdAt" | "attempts" | "status">): QueuedMessage
+- update · method · L5181-L5207 — update(id: string, updates: Partial<QueuedMessage>): void
+- findPending · method · L5209-L5219 — findPending(limit = 50): QueuedMessage[]
+- findById · method · L5221-L5225 — findById(id: string): QueuedMessage | undefined
+- delete · method · L5227-L5230 — delete(id: string): void
+- deleteOld · method · L5232-L5239 — deleteOld(olderThanMs: number): number
+- mapRowToItem · method · L5241-L5256 — private mapRowToItem(row: Record<string, unknown>): QueuedMessage
+- ScheduledMessageRepository · class · L5259-L5371 — class ScheduledMessageRepository
+- constructor · method · L5260-L5260 — constructor(private db: Database.Database)
+- create · method · L5262-L5288 — create(item: Omit<ScheduledMessage, "id" | "createdAt" | "status">): ScheduledMessage
+- update · method · L5290-L5316 — update(id: string, updates: Partial<ScheduledMessage>): void
+- findDue · method · L5318-L5328 — findDue(limit = 50): ScheduledMessage[]
+- findById · method · L5330-L5334 — findById(id: string): ScheduledMessage | undefined
+- findByChatId · method · L5336-L5344 — findByChatId(channelType: string, chatId: string): ScheduledMessage[]
+- cancel · method · L5346-L5351 — cancel(id: string): void
+- delete · method · L5353-L5356 — delete(id: string): void
+- mapRowToItem · method · L5358-L5370 — private mapRowToItem(row: Record<string, unknown>): ScheduledMessage
+- DeliveryTrackingRepository · class · L5373-L5474 — class DeliveryTrackingRepository
+- constructor · method · L5374-L5374 — constructor(private db: Database.Database)
+- create · method · L5376-L5402 — create(item: Omit<DeliveryRecord, "id" | "createdAt">): DeliveryRecord
+- update · method · L5404-L5434 — update(id: string, updates: Partial<DeliveryRecord>): void
+- findByMessageId · method · L5436-L5440 — findByMessageId(messageId: string): DeliveryRecord | undefined
+- findByChatId · method · L5442-L5451 — findByChatId(channelType: string, chatId: string, limit = 50): DeliveryRecord[]
+- deleteOld · method · L5453-L5458 — deleteOld(olderThanMs: number): number
+- mapRowToItem · method · L5460-L5473 — private mapRowToItem(row: Record<string, unknown>): DeliveryRecord
+- RateLimitRepository · class · L5476-L5567 — class RateLimitRepository
+- constructor · method · L5477-L5477 — constructor(private db: Database.Database)
+- getOrCreate · method · L5479-L5515 — getOrCreate(channelType: string, userId: string): RateLimitRecord
+- update · method · L5517-L5545 — update(channelType: string, userId: string, updates: Partial<RateLimitRecord>): void
+- resetWindow · method · L5547-L5554 — resetWindow(channelType: string, userId: string): void
+- mapRowToItem · method · L5556-L5566 — private mapRowToItem(row: Record<string, unknown>): RateLimitRecord
+- AuditLogRepository · class · L5569-L5678 — class AuditLogRepository
+- constructor · method · L5570-L5570 — constructor(private db: Database.Database)
+- log · method · L5572-L5596 — log(entry: Omit<AuditLogEntry, "id" | "timestamp">): AuditLogEntry
+- find · method · L5598-L5655 — find(options: { action?: string; channelType?: string; userId?: string; chatId?: string; fromTimestamp?: number; toTimestamp?: number; severity?: AuditLogEntry["severity"]; limit?: number; offset?: number; }): AuditLogEntry[]
+- deleteOld · method · L5657-L5662 — deleteOld(olderThanMs: number): number
+- mapRowToEntry · method · L5664-L5677 — private mapRowToEntry(row: Record<string, unknown>): AuditLogEntry
+- MemoryType · type · L5684-L5695 — type MemoryType = | "observation" | "decision" | "error" | "insight" | "screen_context" | "summary" | "preference" | "constraint" | "timing_preference" | "workflow_pattern" | "correction_rule";
+- PrivacyMode · type · L5696-L5696 — type PrivacyMode = "normal" | "strict" | "disabled";
+- TimePeriod · type · L5697-L5697 — type TimePeriod = "hourly" | "daily" | "weekly";
+- Memory · interface · L5699-L5711 — interface Memory
+- CuratedMemoryEntryRecord · interface · L5713-L5713 — interface CuratedMemoryEntryRecord extends CuratedMemoryEntry
+- MemorySummary · interface · L5715-L5725 — interface MemorySummary
+- MemorySettings · interface · L5727-L5736 — interface MemorySettings
+- PendingMemoryWriteStatus · type · L5738-L5738 — type PendingMemoryWriteStatus = "pending" | "applying" | "applied" | "rejected" | "failed";
+- PendingMemoryWrite · interface · L5740-L5759 — interface PendingMemoryWrite
+- MemorySearchResult · type · L5761-L5787 — type MemorySearchResult = | { id: string; snippet: string; type: MemoryType; relevanceScore: number; createdAt: number; taskId?: string; /** Origin of this search result (database memory vs markdown kit index). */ source: "db"; } | { id: string; snippet: string; type: MemoryType; relevanceScore: number; createdAt: number; taskId?: string; /** Origin of this search result (database memory vs markdown kit index). */ source: "markdown"; /** File path for markdown-backed results (workspace-relative). */ path: string; /** Start line (1-based) for markdown-backed results. */ startLine: number; /** End line (1-based) for markdown-backed results. */ endLine: number; };
+- MemoryEmbedding · interface · L5789-L5794 — interface MemoryEmbedding
+- MemoryTimelineEntry · interface · L5796-L5802 — interface MemoryTimelineEntry
+- MemoryStats · interface · L5804-L5809 — interface MemoryStats
+- buildImportedMemoryFilterSql · function · L5813-L5814 — buildImportedMemoryFilterSql = (contentExpr: string): string
+- MemoryRepository · class · L5816-L6676 — class MemoryRepository
+- constructor · method · L5817-L5817 — constructor(private db: Database.Database)
+- create · method · L5891-L5920 — create(memory: Omit<Memory, "id" | "createdAt" | "updatedAt">): Memory
+- update · method · L5922-L5954 — update( id: string, updates: Partial<Pick<Memory, "summary" | "tokens" | "isCompressed" | "content">>, ): void
+- findById · method · L5956-L5960 — findById(id: string): Memory | undefined
+- findByIds · method · L5962-L5968 — findByIds(ids: string[]): Memory[]
+- search · method · L5974-L6089 — search( workspaceId: string, query: string, limit = 20, includePrivate = false, ): MemorySearchResult[]
+- mapRows · function · L6004-L6013 — mapRows = (rows: Record<string, unknown>[])
+- searchImportedGlobal · method · L6095-L6194 — searchImportedGlobal(query: string, limit = 20, includePrivate = false): MemorySearchResult[]
+- searchLocalForPromptRecall · method · L6201-L6305 — searchLocalForPromptRecall( workspaceId: string, query: string, limit = 5, ): Array<MemorySearchResult & { source: "db"; content: string }>
+- mapRows · function · L6226-L6236 — mapRows = (rows: Record<string, unknown>[])
+- searchByContentMarker · method · L6312-L6333 — searchByContentMarker(workspaceId: string, marker: string, limit = 50): MemorySearchResult[]
+- mapRows · function · L6313-L6322 — mapRows = (rows: Record<string, unknown>[])
+- getTimelineContext · method · L6339-L6367 — getTimelineContext(memoryId: string, windowSize = 5): MemoryTimelineEntry[]
+- getFullDetails · method · L6373-L6375 — getFullDetails(ids: string[]): Memory[]
+- getRecentForWorkspace · method · L6380-L6390 — getRecentForWorkspace(workspaceId: string, limit = 10, includePrivate = false): Memory[]
+- getRecentImportedGlobal · method · L6392-L6402 — getRecentImportedGlobal(limit = 20, includePrivate = false): Memory[]
+- getUncompressed · method · L6407-L6416 — getUncompressed(limit = 50): Memory[]
+- listWorkspaceIds · method · L6421-L6432 — listWorkspaceIds(limit = 5000): string[]
+- getApproxStorageBytes · method · L6437-L6446 — getApproxStorageBytes(workspaceId: string): number
+- getOldestForWorkspace · method · L6451-L6472 — getOldestForWorkspace( workspaceId: string, limit = 200, ): Array<{ id: string; createdAt: number; approxBytes: number }>
+- deleteByIds · method · L6477-L6486 — deleteByIds(workspaceId: string, ids: string[]): number
+- findByWorkspace · method · L6491-L6500 — findByWorkspace(workspaceId: string, limit = 100, offset = 0): Memory[]
+- findByTask · method · L6505-L6513 — findByTask(taskId: string): Memory[]
+- deleteOlderThan · method · L6518-L6525 — deleteOlderThan(workspaceId: string, cutoffTimestamp: number): number
+- deleteByWorkspace · method · L6530-L6534 — deleteByWorkspace(workspaceId: string): number
+- deleteByWorkspaceAndId · method · L6536-L6540 — deleteByWorkspaceAndId(workspaceId: string, memoryId: string): number
+- getStats · method · L6545-L6562 — getStats(workspaceId: string): MemoryStats
+- getImportedStats · method · L6567-L6578 — getImportedStats(workspaceId: string): { count: number; totalTokens: number }
+- findImported · method · L6583-L6592 — findImported(workspaceId: string, limit = 50, offset = 0): Memory[]
+- deleteImported · method · L6597-L6603 — deleteImported(workspaceId: string): number
+- truncateToSnippet · method · L6605-L6608 — private truncateToSnippet(content: string, maxChars: number): string
+- tokenizeSearchQuery · method · L6610-L6617 — private tokenizeSearchQuery(raw: string): string[]
+- buildRelaxedFtsQuery · method · L6619-L6627 — private buildRelaxedFtsQuery(raw: string, maxTokens = 8): string | null
+- shouldTryRawFtsQuery · method · L6629-L6632 — private shouldTryRawFtsQuery(raw: string): boolean
+- runMemoryFtsQuery · method · L6634-L6659 — private runMemoryFtsQuery<T>( label: string, query: string, run: () => T, meta?: { workspaceId?: string; limit?: number }, ): T
+- mapRowToMemory · method · L6661-L6675 — private mapRowToMemory(row: Record<string, unknown>): Memory
+- CuratedMemoryRepository · class · L6678-L6871 — class CuratedMemoryRepository
+- constructor · method · L6679-L6679 — constructor(private db: Database.Database)
+- create · method · L6681-L6720 — create( input: Omit<CuratedMemoryEntryRecord, "id" | "createdAt" | "updatedAt"> & { id?: string; createdAt?: number; updatedAt?: number; }, ): CuratedMemoryEntryRecord
+- update · method · L6722-L6768 — update( id: string, updates: Partial< Pick< CuratedMemoryEntryRecord, "kind" | "content" | "normalizedKey" | "confidence" | "status" | "lastConfirmedAt" > >, ): CuratedMemoryEntryRecord | undefined
+- findById · method · L6770-L6775 — findById(id: string): CuratedMemoryEntryRecord | undefined
+- findByNormalizedKey · method · L6777-L6796 — findByNormalizedKey( workspaceId: string, target: CuratedMemoryTarget, kind: CuratedMemoryKind, normalizedKey: string, ): CuratedMemoryEntryRecord | undefined
+- findFirstMatching · method · L6798-L6812 — findFirstMatching(workspaceId: string, target: CuratedMemoryTarget, match: string)
+- list · method · L6814-L6848 — list(params: { workspaceId: string; target?: CuratedMemoryTarget; kind?: CuratedMemoryKind; status?: "active" | "archived"; limit?: number; }): CuratedMemoryEntryRecord[]
+- archive · method · L6850-L6852 — archive(id: string): CuratedMemoryEntryRecord | undefined
+- mapRow · method · L6854-L6870 — private mapRow(row: Record<string, unknown>): CuratedMemoryEntryRecord
+- MemoryEmbeddingRepository · class · L6873-L7058 — class MemoryEmbeddingRepository
+- constructor · method · L6874-L6874 — constructor(private db: Database.Database)
+- upsert · method · L6876-L6886 — upsert(workspaceId: string, memoryId: string, embedding: number[], updatedAt = Date.now()): void
+- getByWorkspace · method · L6888-L6917 — getByWorkspace(workspaceId: string): MemoryEmbedding[]
+- getStats · method · L6919-L6927 — getStats(workspaceId: string): { count: number }
+- findMissingOrStale · method · L6933-L6959 — findMissingOrStale( workspaceId: string, limit = 500, ): Array<{ memoryId: string; updatedAt: number; content: string; summary?: string }>
+- getImportedGlobal · method · L6961-L6993 — getImportedGlobal(limit = 5000, offset = 0): Array<MemoryEmbedding & { workspaceId: string }>
+- findMissingOrStaleImportedGlobal · method · L6995-L7026 — findMissingOrStaleImportedGlobal(limit = 500): Array<{ memoryId: string; workspaceId: string; updatedAt: number; content: string; summary?: string; }>
+- deleteByWorkspace · method · L7028-L7032 — deleteByWorkspace(workspaceId: string): number
+- deleteByMemoryIds · method · L7034-L7043 — deleteByMemoryIds(ids: string[]): number
+- deleteImported · method · L7045-L7057 — deleteImported(workspaceId: string): number
+- MemorySummaryRepository · class · L7060-L7135 — class MemorySummaryRepository
+- constructor · method · L7061-L7061 — constructor(private db: Database.Database)
+- create · method · L7063-L7088 — create(summary: Omit<MemorySummary, "id" | "createdAt">): MemorySummary
+- findByWorkspaceAndPeriod · method · L7090-L7103 — findByWorkspaceAndPeriod( workspaceId: string, timePeriod: TimePeriod, limit = 10, ): MemorySummary[]
+- findByWorkspace · method · L7105-L7114 — findByWorkspace(workspaceId: string, limit = 50): MemorySummary[]
+- deleteByWorkspace · method · L7116-L7120 — deleteByWorkspace(workspaceId: string): number
+- mapRowToSummary · method · L7122-L7134 — private mapRowToSummary(row: Record<string, unknown>): MemorySummary
+- MemorySettingsRepository · class · L7137-L7242 — class MemorySettingsRepository
+- constructor · method · L7138-L7138 — constructor(private db: Database.Database)
+- getOrCreate · method · L7140-L7177 — getOrCreate(workspaceId: string): MemorySettings
+- update · method · L7179-L7219 — update(workspaceId: string, updates: Partial<Omit<MemorySettings, "workspaceId">>): void
+- delete · method · L7221-L7224 — delete(workspaceId: string): void
+- mapRowToSettings · method · L7226-L7241 — private mapRowToSettings(row: Record<string, unknown>): MemorySettings
+- PendingMemoryWriteRepository · class · L7244-L7462 — class PendingMemoryWriteRepository
+- constructor · method · L7245-L7245 — constructor(private db: Database.Database)
+- create · method · L7247-L7310 — create(input: { workspaceId: string; taskId?: string; target: string; action: string; origin: string; summary: string; payload: Record<string, unknown>; oldValue?: string; proposedValue?: string; reason?: string; evidence?: Array<Record<string, unknown>>; riskScore?: number; }): PendingMemoryWrite
+- findById · method · L7312-L7317 — findById(id: string): PendingMemoryWrite | undefined
+- list · method · L7319-L7347 — list( params: { workspaceId?: string; status?: PendingMemoryWriteStatus; limit?: number; } = {}, ): PendingMemoryWrite[]
+- countPending · method · L7349-L7362 — countPending(workspaceId?: string): number
+- updateStatus · method · L7364-L7377 — updateStatus( id: string, status: PendingMemoryWriteStatus, details: { reviewedBy?: string; resolution?: string } = {}, ): PendingMemoryWrite | undefined
+- updateStatusIfCurrent · method · L7379-L7400 — updateStatusIfCurrent( id: string, expectedStatus: PendingMemoryWriteStatus, status: PendingMemoryWriteStatus, details: { reviewedBy?: string; resolution?: string } = {}, ): PendingMemoryWrite | undefined
+- rejectPending · method · L7409-L7430 — rejectPending( details: { workspaceId?: string; reviewedBy?: string; resolution?: string; } = {}, ): number
+- mapRow · method · L7432-L7461 — private mapRow(row: Record<string, unknown>): PendingMemoryWrite
+- WorktreeInfoRepository · class · L7466-L7564 — class WorktreeInfoRepository
+- constructor · method · L7467-L7467 — constructor(private db: Database.Database)
+- create · method · L7469-L7489 — create(info: WorktreeInfo): WorktreeInfo
+- findByTaskId · method · L7491-L7495 — findByTaskId(taskId: string): WorktreeInfo | undefined
+- findByWorkspaceId · method · L7497-L7503 — findByWorkspaceId(workspaceId: string): WorktreeInfo[]
+- update · method · L7505-L7535 — update(taskId: string, updates: Partial<WorktreeInfo>): void
+- delete · method · L7537-L7540 — delete(taskId: string): void
+- mapRow · method · L7542-L7563 — private mapRow(row: Record<string, unknown>): WorktreeInfo
+- ComparisonSessionRepository · class · L7568-L7702 — class ComparisonSessionRepository
+- constructor · method · L7569-L7569 — constructor(private db: Database.Database)
+- create · method · L7571-L7594 — create(params: Omit<ComparisonSession, "id" | "createdAt">): ComparisonSession
+- findById · method · L7596-L7601 — findById(id: string): ComparisonSession | undefined
+- findByWorkspaceId · method · L7603-L7609 — findByWorkspaceId(workspaceId: string): ComparisonSession[]
+- update · method · L7611-L7641 — update(id: string, updates: Partial<ComparisonSession>): void
+- delete · method · L7643-L7646 — delete(id: string): void
+- syncTaskIdsFromTasks · method · L7648-L7653 — syncTaskIdsFromTasks(sessionId: string): string[]
+- mapRow · method · L7655-L7673 — private mapRow(row: Record<string, unknown>): ComparisonSession
+- reconcileTaskIds · method · L7675-L7683 — private reconcileTaskIds(session: ComparisonSession): ComparisonSession
+- getTaskIdsForSession · method · L7685-L7693 — private getTaskIdsForSession(sessionId: string): string[]
+- arraysEqual · method · L7695-L7701 — private arraysEqual(a: string[], b: string[]): boolean

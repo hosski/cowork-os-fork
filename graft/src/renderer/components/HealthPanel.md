@@ -1,0 +1,21 @@
+# src/renderer/components/HealthPanel.tsx
+
+- HealthPanelProps · interface · L27-L31 — interface HealthPanelProps
+- SourceFormState · type · L33-L40 — type SourceFormState = { provider: HealthSourceInput["provider"]; kind: HealthSourceInput["kind"]; name: string; description: string; accountLabel: string; notes: string; };
+- formatTime · function · L74-L82 — function formatTime(timestamp?: number): string
+- workflowPrompt · function · L84-L91 — function workflowPrompt(workflow: HealthWorkflow): string
+- buildDefaultForm · function · L93-L103 — function buildDefaultForm(): SourceFormState
+- HealthPanel · function · L105-L873 — function HealthPanel({ compact = false, onOpenSettings, onCreateTask }: HealthPanelProps)
+- loadDashboard · function · L119-L130 — loadDashboard = async ()
+- handleTemplateSelect · function · L154-L164 — handleTemplateSelect = (provider: HealthSourceInput["provider"])
+- handleCreateSource · function · L166-L193 — handleCreateSource = async ()
+- handleSyncSource · function · L195-L205 — handleSyncSource = async (sourceId: string)
+- handleConnectAppleHealth · function · L207-L223 — handleConnectAppleHealth = async (source: HealthSource)
+- handleDisableSource · function · L225-L239 — handleDisableSource = async (source: HealthSource)
+- handleImportFiles · function · L241-L256 — handleImportFiles = async (sourceId: string)
+- handleGenerateWorkflow · function · L258-L274 — handleGenerateWorkflow = async (workflowType: HealthWorkflowType)
+- handleRefresh · function · L276-L279 — handleRefresh = async ()
+- buildAppleHealthWritebackItems · function · L281-L305 — buildAppleHealthWritebackItems = (source: HealthSource): HealthWritebackItem[]
+- handlePreviewWriteback · function · L307-L326 — handlePreviewWriteback = async (source: HealthSource)
+- handleApplyWriteback · function · L328-L348 — handleApplyWriteback = async ()
+- WorkflowCard · function · L875-L917 — function WorkflowCard({ workflow, onCreateTask, }: { workflow: HealthWorkflow; onCreateTask?: (title: string, prompt: string) => void; })

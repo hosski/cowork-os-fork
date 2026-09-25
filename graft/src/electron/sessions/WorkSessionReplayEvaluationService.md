@@ -1,0 +1,30 @@
+# src/electron/sessions/WorkSessionReplayEvaluationService.ts
+
+- WorkSessionReplayAssertions · interface · L10-L14 — interface WorkSessionReplayAssertions
+- WorkSessionReplayEvaluationOptions · interface · L16-L19 — interface WorkSessionReplayEvaluationOptions
+- WorkSessionReplayState · interface · L92-L107 — interface WorkSessionReplayState
+- payloadRecord · function · L109-L117 — function payloadRecord(item: WorkSessionItem): Record<string, unknown>
+- eventType · function · L119-L126 — function eventType(item: WorkSessionItem): string
+- text · function · L128-L130 — function text(value: unknown): string
+- isRedacted · function · L132-L135 — function isRedacted(value: unknown): boolean
+- containsCredentialLeak · function · L137-L156 — function containsCredentialLeak(value: unknown, key = ""): boolean
+- uniquePush · function · L158-L160 — function uniquePush(items: string[], value: string): void
+- boundedUniquePush · function · L162-L165 — function boundedUniquePush(items: string[], value: string, max: number): void
+- remove · function · L167-L170 — function remove(items: string[], value: string): void
+- sideEffectKey · function · L172-L178 — function sideEffectKey(payload: Record<string, unknown>): string | undefined
+- requestIdentity · function · L180-L198 — function requestIdentity(payload: Record<string, unknown>): string
+- normalizePath · function · L200-L202 — function normalizePath(value: unknown): string
+- collectReplayEvidence · function · L204-L225 — function collectReplayEvidence( next: WorkSessionReplayState, type: string, payload: Record<string, unknown>, ): void
+- normalizeReplayTerminalStatus · function · L227-L245 — function normalizeReplayTerminalStatus(value: unknown): WorkSessionStatus | undefined
+- isTerminalReplayStatus · function · L247-L254 — function isTerminalReplayStatus(status: WorkSessionStatus): boolean
+- terminalStatusForEvent · function · L256-L265 — function terminalStatusForEvent( type: string, payload: Record<string, unknown>, ): WorkSessionStatus | undefined
+- createEmptyWorkSessionReplayState · function · L267-L284 — function createEmptyWorkSessionReplayState(): WorkSessionReplayState
+- reduceWorkSessionReplayState · function · L287-L411 — function reduceWorkSessionReplayState( state: WorkSessionReplayState, item: WorkSessionItem, ): WorkSessionReplayState
+- projectionState · function · L413-L416 — function projectionState(state: WorkSessionReplayState): Omit<WorkSessionReplayState, "findings">
+- replayWorkSessionItems · function · L418-L422 — function replayWorkSessionItems(items: WorkSessionItem[]): WorkSessionReplayState
+- validateReplayAssertions · function · L424-L445 — function validateReplayAssertions(value: unknown): string[]
+- evaluateIsolatedReplay · function · L447-L507 — function evaluateIsolatedReplay( items: WorkSessionItem[], fixtureOrOptions?: string | WorkSessionReplayEvaluationOptions, legacyAssertions?: WorkSessionReplayAssertions, ): WorkSessionReplayEvaluationResult
+- fixtureItem · function · L509-L527 — function fixtureItem( sessionId: string, sequence: number, kind: WorkSessionItemKind, eventType: string, payload: Record<string, unknown> = {}, ): WorkSessionItem
+- createDeterministicWorkSessionReplayFixtures · function · L529-L625 — function createDeterministicWorkSessionReplayFixtures(): WorkSessionReplayFixture[]
+- make · function · L530-L540 — make = ( id: string, kind: WorkSessionReplayFixture["kind"], items: WorkSessionItem[], status: WorkSessionStatus = "completed", )
+- evaluateDeterministicReplayFixtures · function · L627-L649 — function evaluateDeterministicReplayFixtures(): WorkSessionReplayEvaluationResult[]

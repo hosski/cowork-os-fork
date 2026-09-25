@@ -1,0 +1,45 @@
+# src/renderer/components/DevicesPanel.tsx
+
+- DeviceTaskOptions · interface · L62-L74 — interface DeviceTaskOptions
+- DevicesPanelProps · interface · L76-L87 — interface DevicesPanelProps
+- TaskFilter · type · L89-L89 — type TaskFilter = "selected" | "all" | "attention";
+- PanelOverlay · type · L90-L96 — type PanelOverlay = | { type: "pairing" } | { type: "details"; deviceId: string } | { type: "apps"; deviceId: string } | { type: "storage"; deviceId: string } | { type: "observer"; deviceId: string } | null;
+- TestResult · type · L98-L102 — type TestResult = { success: boolean; message: string; latencyMs?: number; };
+- formatRelativeTime · function · L104-L114 — function formatRelativeTime(timestamp?: number): string
+- formatBytes · function · L116-L126 — function formatBytes(value?: number): string
+- purposeLabel · function · L128-L144 — function purposeLabel(purpose?: ManagedDevice["purpose"]): string
+- deviceConnectionLabel · function · L146-L162 — function deviceConnectionLabel(device: ManagedDevice): string
+- deviceAttentionLabel · function · L164-L175 — function deviceAttentionLabel(level?: ManagedDevice["attentionState"]): string | null
+- inferTransport · function · L177-L187 — function inferTransport(config: RemoteGatewayConfig): ManagedDevice["transport"]
+- normalizeGatewayUrl · function · L189-L191 — function normalizeGatewayUrl(url?: string): string
+- reconcileRemoteDeviceNamesFromSettings · function · L193-L223 — function reconcileRemoteDeviceNamesFromSettings( devices: ManagedDevice[], settingsData: ControlPlaneSettingsData | null | undefined, ): ManagedDevice[]
+- isTaskAttention · function · L225-L232 — function isTaskAttention(task: Task): boolean
+- toSavedRemoteDevice · function · L234-L244 — function toSavedRemoteDevice(device: ManagedDevice): SavedRemoteGatewayDevice | null
+- upsertManagedRemoteDevice · function · L246-L255 — function upsertManagedRemoteDevice( devices: ManagedDevice[], nextDevice: ManagedDevice, ): ManagedDevice[]
+- getTaskBadge · function · L257-L299 — function getTaskBadge(task: Task)
+- isTerminalDeviceTask · function · L301-L303 — function isTerminalDeviceTask(task: Task): boolean
+- DevicesPanel · function · L331-L1980 — function DevicesPanel({ onOpenTask, onNewTaskForDevice, onCreateTaskHere, workspace, onOpenSettings, availableProviders = [], }: DevicesPanelProps)
+- loadPermissionSettings · function · L390-L406 — loadPermissionSettings = async ()
+- handleClickOutside · function · L534-L543 — handleClickOutside = (e: MouseEvent)
+- handleNavigate · function · L549-L562 — handleNavigate = (event: Event)
+- handleAction · function · L569-L574 — handleAction = (event: Event)
+- loadDispatchChannels · function · L582-L600 — async function loadDispatchChannels()
+- ModalShell · function · L1982-L2009 — function ModalShell({ title, subtitle, onClose, children, }: { title: string; subtitle?: string; onClose: () => void; children: ReactNode; })
+- DeviceConnectionOverlay · function · L2011-L2354 — function DeviceConnectionOverlay({ onClose, onRefresh, }: { onClose: () => void; onRefresh: () => Promise<void>; })
+- handleTestConnection · function · L2168-L2191 — handleTestConnection = async ()
+- DeviceDetailsDrawer · function · L2356-L2466 — function DeviceDetailsDrawer({ summary, onClose, onConnect, onDisconnect, onRemove, }: { summary: ManagedDeviceSummary; onClose: () => void; onConnect: (deviceId: string) => Promise<void>; onDisconnect: (deviceId: string) => Promise<void>; onRemove: (deviceId: string) => Promise<void>; })
+- DetailBlock · function · L2468-L2478 — function DetailBlock({ icon, label, value }: { icon: ReactNode; label: string; value: string })
+- AppsChannelType · type · L2480-L2480 — type AppsChannelType = "whatsapp" | "telegram" | "slack" | "teams" | "email";
+- SecurityModeOption · type · L2481-L2481 — type SecurityModeOption = "pairing" | "allowlist" | "open";
+- ChannelDraftState · type · L2483-L2509 — type ChannelDraftState = { name: string; securityMode: SecurityModeOption; telegramBotToken: string; whatsappAllowedNumbers: string; whatsappSelfChatMode: boolean; whatsappResponsePrefix: string; slackBotToken: string; slackAppToken: string; slackSigningSecret: string; teamsAppId: string; teamsAppPassword: string; teamsTenantId: string; teamsWebhookPort: string; emailProtocol: "imap-smtp" | "loom"; emailAddress: string; emailPassword: string; emailImapHost: string; emailImapPort: string; emailSmtpHost: string; emailSmtpPort: string; emailDisplayName: string; emailLoomBaseUrl: string; emailLoomAccessToken: string; emailLoomIdentity: string; emailLoomMailboxFolder: string; };
+- defaultChannelName · function · L2539-L2552 — function defaultChannelName(type: AppsChannelType): string
+- buildChannelDraft · function · L2554-L2559 — function buildChannelDraft(type: AppsChannelType): ChannelDraftState
+- parseListInput · function · L2561-L2567 — function parseListInput(value: string): string[] | undefined
+- toOptionalNumber · function · L2569-L2574 — function toOptionalNumber(value: string): number | undefined
+- getChannelSetupHint · function · L2576-L2591 — function getChannelSetupHint(type: AppsChannelType, draft: ChannelDraftState): string
+- validateChannelDraft · function · L2593-L2621 — function validateChannelDraft(type: AppsChannelType, draft: ChannelDraftState): string | null
+- buildChannelCreateParams · function · L2623-L2720 — function buildChannelCreateParams(type: AppsChannelType, draft: ChannelDraftState)
+- AppsManagerModal · function · L2722-L3275 — function AppsManagerModal({ summary, onClose, onRefresh, }: { summary: ManagedDeviceSummary; onClose: () => void; onRefresh: () => Promise<void>; })
+- handleAddChannel · function · L2793-L2816 — handleAddChannel = async ()
+- StorageModal · function · L3277-L3319 — function StorageModal({ summary, onClose, }: { summary: ManagedDeviceSummary; onClose: () => void; })
+- ObserverModal · function · L3321-L3372 — function ObserverModal({ summary, onClose, }: { summary: ManagedDeviceSummary; onClose: () => void; })

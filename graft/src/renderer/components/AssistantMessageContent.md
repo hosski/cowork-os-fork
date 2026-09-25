@@ -1,0 +1,26 @@
+# src/renderer/components/AssistantMessageContent.tsx
+
+- AssistantMessageContentProps · type · L7-L12 — type AssistantMessageContentProps = { message: string; markdownComponents: Any; workspacePath?: string; onOpenViewer?: (path: string) => void; };
+- VideoDirective · type · L14-L20 — type VideoDirective = { path: string; title?: string; poster?: string; muted?: boolean; loop?: boolean; };
+- HtmlDirective · type · L22-L25 — type HtmlDirective = { path: string; title?: string; };
+- FrameDirective · type · L27-L34 — type FrameDirective = { path?: string; title?: string; height?: string; aspectRatio?: string; kind?: string; chrome?: boolean; };
+- MessageSegment · type · L36-L45 — type MessageSegment = | { type: "markdown"; content: string } | { type: "command_excerpt"; text: string; label: string; raw: string } | { type: "video"; directive: VideoDirective; raw: string } | { type: "video_error"; raw: string; error: string } | { type: "html"; directive: HtmlDirective; raw: string } | { type: "html_source"; html: string; title?: string; raw: string } | { type: "frame"; directive: FrameDirective; raw: string } | { type: "frame_source"; html: string; directive: FrameDirective; raw: string } | { type: "html_error"; raw: string; error: string };
+- DeferredMarkdown · function · L51-L57 — function DeferredMarkdown({ children, components }: { children: string; components?: unknown })
+- normalizeCommandExcerptText · function · L73-L77 — function normalizeCommandExcerptText(value: string): string
+- isLongOsascriptCommandText · function · L79-L88 — function isLongOsascriptCommandText(value: string): boolean
+- collectOsascriptCommandBlock · function · L90-L115 — function collectOsascriptCommandBlock( lines: string[], startIndex: number, ): { text: string; endIndex: number } | null
+- isOsascriptContinuationLine · function · L117-L131 — function isOsascriptContinuationLine(line: string): boolean
+- OsascriptCommandExcerpt · function · L133-L153 — function OsascriptCommandExcerpt({ text, label = "Command failed: osascript", }: { text: string; label?: string; })
+- decodeQuotedValue · function · L155-L158 — function decodeQuotedValue(value: string): string
+- decodeHtmlAttrValue · function · L160-L172 — function decodeHtmlAttrValue(value: string): string
+- normalizeFrameKind · function · L174-L178 — function normalizeFrameKind(value: unknown): string | undefined
+- parseRichFrameTagDirective · function · L180-L223 — function parseRichFrameTagDirective(line: string): MessageSegment
+- collectHtmlFence · function · L225-L248 — function collectHtmlFence( lines: string[], startIndex: number, ): { html: string; raw: string; endIndex: number } | null
+- parseVideoDirective · function · L250-L303 — function parseVideoDirective(line: string): MessageSegment
+- parseHtmlDirective · function · L305-L358 — function parseHtmlDirective(line: string): MessageSegment
+- parseFrameDirective · function · L360-L428 — function parseFrameDirective( line: string, options: { requirePath?: boolean } = {}, ): MessageSegment
+- getRenderableHtmlTitle · function · L430-L444 — function getRenderableHtmlTitle(html: string): string | undefined
+- looksLikeRenderableHtml · function · L446-L455 — function looksLikeRenderableHtml(html: string): boolean
+- parseAssistantMessageSegments · function · L457-L574 — function parseAssistantMessageSegments(message: string): MessageSegment[]
+- flushMarkdown · function · L463-L467 — flushMarkdown = ()
+- AssistantMessageContent · function · L576-L732 — function AssistantMessageContent({ message, markdownComponents, workspacePath, onOpenViewer, }: AssistantMessageContentProps)

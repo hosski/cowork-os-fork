@@ -103,7 +103,7 @@ export function MissionControlPanel({
   const [agentError, setAgentError] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [rightTab, setRightTab] = useState<"feed" | "task" | "ops" | "grill" | "dag">("feed");
+  const [rightTab, setRightTab] = useState<"grill" | "dag">("grill");
   const [feedFilter, setFeedFilter] = useState<"all" | "tasks" | "comments" | "status">("all");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [commentText, setCommentText] = useState("");
@@ -1449,7 +1449,7 @@ export function MissionControlPanel({
                           }}
                           onClick={() => {
                             setSelectedTaskId(task.id);
-                            setRightTab("task");
+                            setRightTab("grill");
                           }}
                         >
                           <div className="mc-task-title">{task.title}</div>
@@ -1490,48 +1490,13 @@ export function MissionControlPanel({
         </main>
 
       {/* Right Panel - Floating Modal */}
-      {rightTab && rightTab !== "feed" && rightTab !== "task" && rightTab !== "ops" && rightTab !== "grill" && rightTab !== "dag" ? null : (
-        rightTab ? (
-          <MissionControlRightPanel
-            rightTab={rightTab as "feed" | "task" | "ops" | "grill" | "dag"}
-            setRightTab={setRightTab}
-            onClose={() => setRightTab(null as any)}
-            selectedTask={selectedTask}
-            setSelectedTaskId={setSelectedTaskId}
-            activities={activities}
-            events={events}
-            agents={agents}
-            goals={goals}
-            projects={projects}
-            issues={issues}
-            issueComments={issueComments}
-            issueRuns={issueRuns}
-            runEvents={runEvents}
-            selectedIssueId={selectedIssueId}
-            setSelectedIssueId={setSelectedIssueId}
-            selectedIssueRunId={selectedIssueRunId}
-            setSelectedIssueRunId={setSelectedIssueRunId}
-            selectedPlannerRunId={selectedPlannerRunId}
-            setSelectedPlannerRunId={setSelectedPlannerRunId}
-            plannerRuns={plannerRuns}
-            commandCenterSummary={commandCenterSummary}
-            selectedCompanyId={selectedCompanyId}
-            selectedWorkspaceId={selectedWorkspaceId}
-            feedFilter={feedFilter}
-            setFeedFilter={setFeedFilter}
-            selectedAgent={selectedAgent}
-            setSelectedAgent={setSelectedAgent}
-            commentText={commentText}
-            setCommentText={setCommentText}
-            postingComment={postingComment}
-            onPostComment={handlePostComment}
-            formatRelativeTime={formatRelativeTime}
-            getAgent={getAgent}
-          />
-        ) : null
-      )}
-          ) : null}
-        </aside>
+      {rightTab ? (
+        <MissionControlRightPanel
+          rightTab={rightTab}
+          setRightTab={setRightTab}
+          onClose={() => setRightTab(null as any)}
+        />
+      ) : null}
       </div>
 
       {standupOpen && supportsWorkspaceReports && selectedWorkspace && (
@@ -1554,7 +1519,7 @@ export function MissionControlPanel({
               tasks={tasks}
               onOpenTask={(taskId) => {
                 setSelectedTaskId(taskId);
-                setRightTab("task");
+                setRightTab("grill");
                 setTeamsOpen(false);
               }}
             />

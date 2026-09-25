@@ -1,0 +1,43 @@
+# src/shared/access-profiles.ts
+
+- AccessSandboxMode · type · L9-L9 — type AccessSandboxMode = "read-only" | "workspace-write" | "danger-full-access";
+- AccessApprovalPolicy · type · L10-L10 — type AccessApprovalPolicy = "untrusted" | "on-request" | "never";
+- AccessReviewer · type · L11-L11 — type AccessReviewer = "user" | "auto-review" | "none";
+- AccessNetworkMode · type · L12-L12 — type AccessNetworkMode = "disabled" | "on-request" | "enabled";
+- BuiltinAccessProfileId · type · L14-L14 — type BuiltinAccessProfileId = "ask_for_approval" | "approve_for_me" | "full_access";
+- AccessProfileId · type · L18-L18 — type AccessProfileId = BuiltinAccessProfileId | (string & {});
+- AccessFilesystemRule · interface · L20-L23 — interface AccessFilesystemRule
+- AccessDomainRule · interface · L25-L28 — interface AccessDomainRule
+- AccessProfileDefinition · interface · L30-L50 — interface AccessProfileDefinition
+- AccessProfileInheritanceIssue · interface · L52-L55 — interface AccessProfileInheritanceIssue
+- AccessProfileResolutionStatus · type · L57-L57 — type AccessProfileResolutionStatus = "resolved" | "missing" | "invalid";
+- AccessProfileResolution · interface · L59-L63 — interface AccessProfileResolution
+- getBuiltinAccessProfile · function · L102-L106 — function getBuiltinAccessProfile( profileId: string | undefined, ): AccessProfileDefinition | undefined
+- getAccessProfileLabel · function · L108-L112 — function getAccessProfileLabel(profileId: string | undefined): string
+- AccessScopeOperation · type · L114-L114 — type AccessScopeOperation = "read" | "write";
+- normalizeScopePath · function · L116-L144 — function normalizeScopePath(value: string): { value: string; absolute: boolean; escapedRelativeRoot: boolean; }
+- scopePathIsWithin · function · L146-L161 — function scopePathIsWithin(parentPath: string, childPath: string): boolean
+- profileWorkspaceRoots · function · L163-L167 — function profileWorkspaceRoots(profile: AccessProfileDefinition): readonly string[]
+- filesystemRuleAllows · function · L169-L175 — function filesystemRuleAllows( rule: AccessFilesystemRule, operation: AccessScopeOperation, ): boolean
+- filesystemPathIsCovered · function · L177-L198 — function filesystemPathIsCovered( childRule: AccessFilesystemRule, parentProfile: AccessProfileDefinition, ): boolean
+- DomainPattern · type · L200-L204 — type DomainPattern = | { kind: "any" } | { kind: "exact"; value: string } | { kind: "subdomain"; suffix: string } | { kind: "subtree"; suffix: string };
+- parseDomainPattern · function · L206-L219 — function parseDomainPattern(pattern: string): DomainPattern
+- domainPatternIsWithin · function · L226-L251 — function domainPatternIsWithin(childPattern: string, parentPattern: string): boolean
+- mergeInheritedFilesystemRules · function · L253-L267 — function mergeInheritedFilesystemRules( parentRules: readonly AccessFilesystemRule[] | undefined, childRules: readonly AccessFilesystemRule[] | undefined, ): AccessFilesystemRule[] | undefined
+- mergeInheritedDomainRules · function · L269-L282 — function mergeInheritedDomainRules( parentRules: readonly AccessDomainRule[] | undefined, childRules: readonly AccessDomainRule[] | undefined, ): AccessDomainRule[] | undefined
+- mergeInheritedWorkspaceRoots · function · L284-L290 — function mergeInheritedWorkspaceRoots( parentRoots: readonly string[] | undefined, childRoots: readonly string[] | undefined, ): string[] | undefined
+- isScopedProfileAtMostPrivileged · function · L292-L391 — function isScopedProfileAtMostPrivileged( child: AccessProfileDefinition, parent: AccessProfileDefinition, ): boolean
+- resolveAccessProfileDefinitionWithStatus · function · L393-L461 — function resolveAccessProfileDefinitionWithStatus( profileId: AccessProfileId | undefined, customProfiles: readonly AccessProfileDefinition[] = [], ): AccessProfileResolution
+- getProfile · function · L415-L416 — getProfile = (id: AccessProfileId): AccessProfileDefinition | undefined
+- resolve · function · L418-L453 — resolve = ( id: AccessProfileId, visiting: Set<string>, ): { definition?: AccessProfileDefinition; status: AccessProfileResolutionStatus }
+- resolveAccessProfileDefinition · function · L463-L472 — function resolveAccessProfileDefinition( profileId: AccessProfileId | undefined, customProfiles: readonly AccessProfileDefinition[] = [], ): AccessProfileDefinition
+- validateAccessProfileInheritance · function · L479-L591 — function validateAccessProfileInheritance( customProfiles: readonly AccessProfileDefinition[] = [], ): AccessProfileInheritanceIssue[]
+- addIssue · function · L486-L491 — addIssue = (profileId: string, message: string): void
+- walk · function · L519-L587 — walk = (profileId: string): boolean
+- isFullAccessProfile · function · L593-L595 — function isFullAccessProfile(profile: AccessProfileDefinition): boolean
+- isRestrictedAccessProfile · function · L597-L604 — function isRestrictedAccessProfile(profile: AccessProfileDefinition): boolean
+- hasAccessProfileScope · function · L606-L615 — function hasAccessProfileScope(profile: AccessProfileDefinition): boolean
+- hasAccessProfileFilesystemScope · function · L622-L627 — function hasAccessProfileFilesystemScope(profile: AccessProfileDefinition): boolean
+- accessDimensionRank · function · L629-L632 — function accessDimensionRank(value: string, order: readonly string[]): number
+- isAccessProfileAtMostPrivileged · function · L640-L659 — function isAccessProfileAtMostPrivileged( child: AccessProfileDefinition, parent: AccessProfileDefinition, ): boolean
+- getLegacyPermissionModeForAccessProfile · function · L661-L670 — function getLegacyPermissionModeForAccessProfile( profile: AccessProfileDefinition, ): "default" | "plan" | "dangerous_only" | "bypass_permissions"

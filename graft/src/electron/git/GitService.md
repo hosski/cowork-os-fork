@@ -1,0 +1,26 @@
+# src/electron/git/GitService.ts
+
+- GitService · class · L8-L524 — class GitService
+- getRemotes · method · L12-L35 — static async getRemotes(repoPath: string): Promise<Array<{ name: string; url: string }>>
+- normalizeGithubRepoIdentity · method · L40-L54 — static normalizeGithubRepoIdentity(remoteUrl: string): string | null
+- isGitRepo · method · L59-L66 — static async isGitRepo(dirPath: string): Promise<boolean>
+- getCurrentBranch · method · L71-L74 — static async getCurrentBranch(repoPath: string): Promise<string>
+- getRepoRoot · method · L79-L82 — static async getRepoRoot(anyRepoPath: string): Promise<string>
+- getHeadCommit · method · L87-L90 — static async getHeadCommit(repoPath: string): Promise<string>
+- createWorktree · method · L96-L102 — static async createWorktree( repoPath: string, worktreePath: string, branchName: string, ): Promise<void>
+- removeWorktree · method · L108-L115 — static async removeWorktree(repoPath: string, worktreePath: string): Promise<void>
+- listWorktrees · method · L121-L145 — static async listWorktrees( repoPath: string, ): Promise<Array<{ path: string; branch: string; head: string }>>
+- commitAll · method · L151-L189 — static async commitAll( worktreePath: string, message: string, options?: { addAll?: boolean }, ): Promise<{ sha: string; filesChanged: number } | null>
+- getDiffStats · method · L194-L230 — static async getDiffStats( worktreePath: string, baseBranch: string, ): Promise<{ filesChanged: number; linesAdded: number; linesRemoved: number; diffOutput: string; }>
+- getFullDiff · method · L235-L238 — static async getFullDiff(worktreePath: string, baseBranch: string): Promise<string>
+- mergeToBase · method · L244-L328 — static async mergeToBase( repoPath: string, branchName: string, baseBranch: string, commitMessage: string, ): Promise<MergeResult>
+- hasUncommittedChanges · method · L333-L336 — static async hasUncommittedChanges(worktreePath: string): Promise<boolean>
+- deleteBranch · method · L341-L343 — static async deleteBranch(repoPath: string, branchName: string): Promise<void>
+- pushBranch · method · L348-L350 — static async pushBranch(worktreePath: string, branchName: string): Promise<void>
+- createPullRequest · method · L355-L419 — static async createPullRequest( repoPath: string, params: { branchName: string; baseBranch: string; title: string; body: string; }, ): Promise<PullRequestResult>
+- getStatus · method · L424-L427 — static async getStatus(worktreePath: string): Promise<string>
+- getDiff · method · L432-L441 — static async getDiff( worktreePath: string, options?: { staged?: boolean; file?: string }, ): Promise<string>
+- generateBranchName · method · L447-L456 — static generateBranchName(title: string, prefix: string, taskId: string): string
+- exec · method · L461-L463 — private static exec(args: string[], cwd: string): Promise<{ stdout: string; stderr: string }>
+- findPullRequest · method · L465-L501 — private static async findPullRequest( repoPath: string, branchName: string, baseBranch: string, ): Promise<PullRequestResult>
+- execExternal · method · L503-L523 — private static execExternal( command: string, args: string[], cwd: string, errorPrefix?: string, ): Promise<{ stdout: string; stderr: string }>

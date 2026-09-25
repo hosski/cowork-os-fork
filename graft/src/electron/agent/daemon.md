@@ -1,0 +1,322 @@
+# src/electron/agent/daemon.ts
+
+- AgentDaemonOptions · interface · L250-L253 — interface AgentDaemonOptions
+- detectsCorrection · function · L340-L342 — function detectsCorrection(text: string): boolean
+- buildStructuredInputSelectionMessage · function · L344-L374 — function buildStructuredInputSelectionMessage( request: InputRequest, answers?: Record<string, { optionLabel?: string; otherText?: string }>, ): string
+- normalizeText · function · L348-L349 — normalizeText = (value: unknown): string
+- truncate · function · L350-L351 — truncate = (value: string, maxChars: number): string
+- parseBooleanEnv · function · L386-L397 — function parseBooleanEnv(envName: string, fallback = false): boolean
+- normalizeReadOnlyRoleToolRestrictions · function · L406-L426 — function normalizeReadOnlyRoleToolRestrictions( role: Pick<AgentRole, "name" | "isSystem">, deniedTools: unknown, ): string[] | undefined
+- sanitizeTaskOverrides · function · L445-L457 — function sanitizeTaskOverrides(taskOverrides?: Partial<Task>): Partial<Task> | undefined
+- CachedExecutor · interface · L459-L463 — interface CachedExecutor
+- DaemonFollowUpOptions · type · L465-L490 — type DaemonFollowUpOptions = Pick< TaskFollowUpInput, | "permissionMode" | "shellAccess" | "accessProfileId" | "integrationMentions" | "agentConfigOverride" | "expectedTurnId" | "interactionMode" | "deliveryMode" | "messageSource" | "messageId" | "senderTaskId" | "senderLabel" > & { /** Return to the renderer once the follow-up is durably admitted, not after provider completion. */ returnOnAccepted?: boolean; /** Called once the executor has durably incorporated this message. */ onAccepted?: () => void | Promise<void>; /** Internal queue recovery flag; consumed by the executor before its turn. */ suppressUserMessageEvent?: boolean; /** Explicit bot-team delivery may wake the addressed persistent conversation. */ startAfterAccepted?: boolean; /** Full queue item retained until the executor's acceptance snapshot commits. */ queuedFollowUp?: TaskFollowUpInput; };
+- PendingApprovalEntry · interface · L492-L501 — interface PendingApprovalEntry
+- getAllElectronWindows · function · L503-L516 — function getAllElectronWindows(): Any[]
+- readDurableTaskEvents · function · L518-L529 — function readDurableTaskEvents(host: Any, taskId: string, type: string): TaskEvent[]
+- parseSessionRetentionDurationMs · function · L531-L551 — function parseSessionRetentionDurationMs(raw: unknown): number | undefined
+- AgentDaemon · class · L557-L14172 — class AgentDaemon extends EventEmitter
+- constructor · method · L667-L751 — constructor( private dbManager: DatabaseManager, private options: AgentDaemonOptions = {}, )
+- getWorktreeManager · method · L754-L756 — getWorktreeManager(): WorktreeManager
+- setComparisonService · method · L759-L761 — setComparisonService(service: ComparisonService): void
+- getComparisonService · method · L764-L766 — getComparisonService(): ComparisonService | null
+- getAdmittedStartOperations · method · L768-L770 — private getAdmittedStartOperations(): Set<Promise<void>>
+- waitForAdmittedStarts · method · L772-L791 — private async waitForAdmittedStarts(timeoutMs: number): Promise<boolean>
+- getSessionProgress · method · L794-L796 — getSessionProgress(taskId: string)
+- getWorkSessionProtocolService · method · L799-L801 — getWorkSessionProtocolService(): WorkSessionProtocolService
+- getWorkSessionContractService · method · L804-L806 — getWorkSessionContractService(): WorkSessionContractService
+- getWorkSessionReliabilityService · method · L809-L811 — getWorkSessionReliabilityService()
+- searchSessions · method · L813-L815 — searchSessions(query: string, workspaceId?: string, limit?: number)
+- getDatabase · method · L817-L819 — getDatabase(): Database.Database
+- getOrchestrationGraphEngine · method · L821-L823 — getOrchestrationGraphEngine(): OrchestrationGraphEngine
+- getOrchestrationGraphRepository · method · L825-L827 — getOrchestrationGraphRepository(): OrchestrationGraphRepository
+- isTransientRetryErrorMessage · method · L829-L833 — private isTransientRetryErrorMessage(message: unknown): boolean
+- isStaleAttachedCliTask · method · L835-L842 — private isStaleAttachedCliTask(task: Task): boolean
+- getCliTaskOwnership · method · L844-L848 — private getCliTaskOwnership(task: Task): CliTaskOwnership | undefined
+- isPidAlive · method · L850-L859 — private isPidAlive(pid: unknown): boolean
+- setTeamOrchestrator · method · L861-L863 — setTeamOrchestrator(orchestrator: AgentTeamOrchestrator | null): void
+- getTeamOrchestrator · method · L865-L867 — getTeamOrchestrator(): AgentTeamOrchestrator | null
+- runWorkspaceVerification · method · L875-L899 — async runWorkspaceVerification( workspacePath: string, command: string, _taskId: string, executeTool: ( name: string, args: Record<string, unknown>, ) => Promise<{ success: boolean; output?: string }>, ): Promise<{ success: boolean; output?: string }>
+- runDatabaseMaintenance · method · L905-L915 — private async runDatabaseMaintenance(): Promise<void>
+- runSessionAutoPrune · method · L917-L977 — private async runSessionAutoPrune(taskEventRepo: TaskEventRepository): Promise<void>
+- applyTaskWorkspaceOverrides · method · L979-L1001 — private applyTaskWorkspaceOverrides(task: Task, workspace: Workspace): Workspace
+- applyTaskWorkspaceOverridesForPath · method · L1008-L1046 — private applyTaskWorkspaceOverridesForPath( task: Task, workspace: Workspace, runtimePath?: string, ): Workspace
+- getEffectiveWorkspaceForTask · method · L1049-L1065 — getEffectiveWorkspaceForTask(taskId: string): Workspace | undefined
+- applyTaskFollowUpOverrides · method · L1067-L1127 — private applyTaskFollowUpOverrides( task: Task, options?: Pick< TaskFollowUpInput, | "permissionMode" | "shellAccess" | "accessProfileId" | "integrationMentions" | "agentConfigOverride" >, ): { task: Task; changed: boolean }
+- applyAgentRoleOverrides · method · L1138-L1231 — private applyAgentRoleOverrides(task: Task): { task: Task; changed: boolean }
+- addAll · function · L1182-L1189 — addAll = (values: unknown)
+- maybeCaptureMentionedAgentRoleIds · method · L1233-L1255 — private maybeCaptureMentionedAgentRoleIds(task: Task): void
+- sameAgentConfig · method · L1257-L1259 — private sameAgentConfig(a?: AgentConfig, b?: AgentConfig): boolean
+- deriveTaskStrategy · method · L1261-L1326 — private deriveTaskStrategy(input: { title: string; prompt: string; routingPrompt?: string; agentConfig?: AgentConfig; lastProgressScore?: number; }): { route: IntentRoute; strategy: DerivedTaskStrategy; prompt: string; agentConfig: AgentConfig; promptChanged: boolean; agentConfigChanged: boolean; }
+- resolveCronBudgetProfile · method · L1333-L1371 — private resolveCronBudgetProfile(input: { title: string; prompt: string; route: IntentRoute; }): Task["budgetProfile"]
+- applyRuntimeTaskStrategy · method · L1373-L1427 — private applyRuntimeTaskStrategy(task: Task): { task: Task; route: IntentRoute; strategy: DerivedTaskStrategy; promptChanged: boolean; agentConfigChanged: boolean; }
+- applyJevTaskStrategy · method · L1429-L1591 — private async applyJevTaskStrategy( task: Task, route: IntentRoute, ): Promise<{ task: Task; changed: boolean; profileSelected: boolean; status: string; strategy?: string; reason?: string; model?: string; }>
+- applyJevModelRouting · method · L1599-L1702 — private async applyJevModelRouting( task: Task, complexity?: "low" | "medium" | "high", ): Promise<{ task: Task; changed: boolean; status?: string; reason?: string; route?: "cheap" | "strong"; model?: string; }>
+- initialize · method · L1707-L1894 — async initialize(): Promise<void>
+- reconcileDurableWaitsOnStartup · method · L1896-L2078 — private reconcileDurableWaitsOnStartup(): void
+- cleanupOldExecutors · method · L2083-L2135 — private cleanupOldExecutors(): void
+- startTask · method · L2141-L2168 — async startTask(task: Task, images?: ImageAttachment[]): Promise<void>
+- startTaskImmediate · method · L2173-L2530 — async startTaskImmediate(task: Task): Promise<void>
+- resumeInterruptedTasks · method · L2536-L2549 — private async resumeInterruptedTasks(tasks: Task[]): Promise<void>
+- shouldResumeTaskOnStartup · method · L2551-L2564 — private shouldResumeTaskOnStartup(task: Task): boolean
+- skipStartupResume · method · L2566-L2584 — private skipStartupResume(task: Task): void
+- resumeInterruptedTask · method · L2590-L2774 — private async resumeInterruptedTask(task: Task, resumeMessage?: string): Promise<void>
+- readGuard · function · L2607-L2609 — readGuard = (candidatePath: string): boolean
+- isTurnLimitContinuationEligible · method · L2781-L2805 — private isTurnLimitContinuationEligible(task: Task, events: TaskEvent[]): boolean
+- shouldStartAsQueuedContinuation · method · L2807-L2826 — private shouldStartAsQueuedContinuation(task: Task): boolean
+- buildContinuationPlan · method · L2828-L2847 — private buildContinuationPlan(rawPlan: Plan, events: TaskEvent[]): Plan
+- createContinuationExecutor · method · L2849-L2883 — private createContinuationExecutor( task: Task, events: TaskEvent[], ): { effectiveTask: Task; executor: TaskExecutor }
+- launchContinuationExecution · method · L2885-L2916 — private launchContinuationExecution(effectiveTask: Task, executor: TaskExecutor): void
+- hasRecentEquivalentErrorEvent · method · L2918-L2950 — private hasRecentEquivalentErrorEvent( taskId: string, message: string, windowMs = 10_000, fingerprint?: string, ): boolean
+- startQueuedContinuation · method · L2952-L2996 — private async startQueuedContinuation(task: Task): Promise<void>
+- continueTask · method · L2998-L3057 — async continueTask(taskId: string): Promise<void>
+- forkTaskSession · method · L3059-L3157 — async forkTaskSession(params: { taskId: string; prompt?: string; branchLabel?: string; fromEventId?: string; sideChat?: boolean; initialMessage?: string; }): Promise<Task>
+- buildForkHistory · method · L3159-L3204 — private buildForkHistory( sourceEvents: TaskEvent[], options: { fromEventId?: string; useSelectedUserMessageAsPrompt?: boolean; }, ): { events: TaskEvent[]; prefillPrompt?: string }
+- isForkReplayEvent · method · L3206-L3210 — private isForkReplayEvent(event: TaskEvent): boolean
+- cloneForkHistoryEvents · method · L3212-L3253 — private cloneForkHistoryEvents(params: { sourceTaskId: string; targetTaskId: string; events: TaskEvent[]; startSeq?: number; }): void
+- getForkedFromEventId · method · L3255-L3263 — private getForkedFromEventId(event: TaskEvent, sourceTaskId: string): string | undefined
+- refreshSideChatParentSnapshot · method · L3265-L3319 — private refreshSideChatParentSnapshot(task: Task): void
+- isSideChatTask · method · L3321-L3323 — private isSideChatTask(task: Task): boolean
+- isSideChatStatusQuestion · method · L3325-L3332 — private isSideChatStatusQuestion(message: string): boolean
+- truncateSideChatContextText · method · L3334-L3338 — private truncateSideChatContextText(value: string, maxLength = 420): string
+- extractSideChatEventText · method · L3340-L3366 — private extractSideChatEventText(event: TaskEvent): string
+- formatSideChatStatusEvent · method · L3368-L3378 — private formatSideChatStatusEvent(event: TaskEvent): string
+- buildSideChatParentStatusContext · method · L3380-L3446 — private buildSideChatParentStatusContext(task: Task, message: string): string | undefined
+- buildSideChatTurnAgentConfigOverride · method · L3448-L3454 — private buildSideChatTurnAgentConfigOverride( task: Task, message: string, ): AgentConfig | undefined
+- createTask · method · L3460-L3479 — async createTask(params: { title: string; prompt: string; workspaceId: string; agentConfig?: AgentConfig; budgetTokens?: number; budgetCost?: number; source?: Task["source"]; taskOverrides?: Partial<Task>; autoStart?: boolean; }): Promise<Task>
+- createTaskRecord · method · L3481-L3559 — private createTaskRecord(params: { title: string; prompt: string; workspaceId: string; agentConfig?: AgentConfig; budgetTokens?: number; budgetCost?: number; source?: Task["source"]; taskOverrides?: Partial<Task>; })
+- attachDefaultBotTeam · method · L3566-L3589 — private attachDefaultBotTeam( workspaceId: string, assignedAgentRoleId: string | undefined, agentConfig: AgentConfig | undefined, ): AgentConfig | undefined
+- prepareBotTeamAgentConfig · method · L3592-L3605 — private prepareBotTeamAgentConfig(agentConfig: AgentConfig, teamId: string): AgentConfig
+- logTaskIntentRouted · method · L3607-L3618 — private logTaskIntentRouted( taskId: string, derived: ReturnType<AgentDaemon["deriveTaskStrategy"]>, ): void
+- getTaskById · method · L3623-L3625 — async getTaskById(taskId: string): Promise<Task | undefined>
+- getChildTasks · method · L3630-L3632 — async getChildTasks(parentTaskId: string): Promise<Task[]>
+- getBotTeamContext · method · L3634-L3658 — private getBotTeamContext(task: Task): | { team: ReturnType<AgentTeamRepository["findById"]>; roleIds: Set<string>; } | undefined
+- ensureBotTaskTeam · method · L3660-L3693 — private ensureBotTaskTeam(task: Task): Task
+- findReusableBotConversation · method · L3701-L3716 — private findReusableBotConversation(workspaceId: string, agentRoleId: string): Task | undefined
+- listBotTeamPeers · method · L3719-L3751 — async listBotTeamPeers(taskId: string): Promise< Array<{ taskId?: string; roleId: string; name: string; displayName: string; description?: string; status?: TaskStatus; available: boolean; }> >
+- resolveBotTeamPeer · method · L3757-L3860 — async resolveBotTeamPeer( senderTaskId: string, recipient: { taskId?: string; botName?: string }, ): Promise< | { ok: true; task: Task; role: AgentRole } | { ok: false; error: "BOT_TEAM_UNAVAILABLE" | "BOT_NOT_FOUND" | "FORBIDDEN"; message: string } >
+- createOrchestrationGraphRun · method · L3862-L3872 — async createOrchestrationGraphRun(params: { rootTaskId: string; workspaceId: string; kind: OrchestrationGraphRun["kind"]; maxParallel: number; metadata?: Record<string, unknown>; nodes: OrchestrationGraphNodeInput[]; edges?: Array<{ fromNodeKey: string; toNodeKey: string }>; })
+- appendOrchestrationGraphNodes · method · L3874-L3885 — async appendOrchestrationGraphNodes(params: { runId: string; nodes: OrchestrationGraphNodeInput[]; edges?: Array<{ fromNodeId?: string; fromNodeKey?: string; toNodeId?: string; toNodeKey?: string; }>; })
+- getOrchestrationGraphSnapshot · method · L3887-L3889 — getOrchestrationGraphSnapshot(runId: string)
+- findLatestOrchestrationGraphByRootTask · method · L3891-L3893 — findLatestOrchestrationGraphByRootTask(rootTaskId: string)
+- listOrchestrationGraphsByRootTask · method · L3895-L3897 — listOrchestrationGraphsByRootTask(rootTaskId: string)
+- findOrchestrationGraphByTeamRunId · method · L3899-L3901 — findOrchestrationGraphByTeamRunId(teamRunId: string)
+- findDelegatedNode · method · L3903-L3905 — findDelegatedNode(rootTaskId: string, handle: string)
+- waitForDelegatedNode · method · L3907-L3909 — async waitForDelegatedNode(rootTaskId: string, handle: string, timeoutSeconds: number)
+- cancelDelegatedNode · method · L3911-L3913 — async cancelDelegatedNode(rootTaskId: string, handle: string): Promise<boolean>
+- createChildTask · method · L3918-L4327 — async createChildTask(params: { title: string; prompt: string; userPrompt?: string; workspaceId: string; parentTaskId: string; agentType: AgentType; agentConfig?: AgentConfig; depth?: number; assignedAgentRoleId?: string; workerRole?: WorkerRoleKind; teamRunId?: string; teamItemId?: string; boardColumn?: BoardColumn; priority?: number; budgetTokens?: number; budgetCost?: number; }): Promise<Task>
+- addAll · function · L4113-L4120 — addAll = (values: unknown)
+- normalize · function · L4130-L4139 — normalize = (values: unknown): Set<string>
+- buildPlanSummary · method · L4329-L4344 — private buildPlanSummary(plan?: Plan): string | undefined
+- emitActivityEvent · method · L4346-L4357 — private emitActivityEvent(activity: Activity): void
+- emitMentionEvent · method · L4359-L4370 — private emitMentionEvent(mention: AgentMention): void
+- emitTeamRunEvent · method · L4372-L4383 — private emitTeamRunEvent(event: Any): void
+- ensureCollaborativeRunForParentTask · method · L4385-L4481 — ensureCollaborativeRunForParentTask(parentTaskId: string): AgentTeamRun | null
+- ensureChildTasksHaveTeamItems · method · L4483-L4532 — private ensureChildTasksHaveTeamItems( run: AgentTeamRun, childTasks: Task[], teamMemberRepo: AgentTeamMemberRepository, teamItemRepo: AgentTeamItemRepository, ): AgentTeamItem[]
+- mapChildTaskStatusToTeamItemStatus · method · L4534-L4542 — private mapChildTaskStatusToTeamItemStatus(status: TaskStatus): AgentTeamItemStatus
+- childTasksHaveActiveWork · method · L4544-L4546 — private childTasksHaveActiveWork(childTasks: Task[]): boolean
+- buildChildAgentRunSummary · method · L4548-L4553 — private buildChildAgentRunSummary(childTasks: Task[]): string
+- maybeLaunchCollaborativeTask · method · L4555-L4754 — private async maybeLaunchCollaborativeTask(task: Task): Promise<boolean>
+- dispatchMentionedAgents · method · L4760-L4865 — async dispatchMentionedAgents(taskId: string, plan?: Plan): Promise<void>
+- cancelTask · method · L4870-L4954 — async cancelTask(taskId: string): Promise<void>
+- wrapUpTask · method · L4960-L4992 — async wrapUpTask(taskId: string): Promise<void>
+- getLatestPausedTaskBlocker · method · L4994-L5070 — private getLatestPausedTaskBlocker(taskId: string): | { reasonCode?: string; message?: string; isVerificationFailure: boolean; } | undefined
+- getPayload · function · L5017-L5022 — getPayload = (event: TaskEvent): Record<string, unknown>
+- getText · function · L5023-L5029 — getText = (payload: Record<string, unknown>): string
+- isVerificationFailureText · function · L5030-L5033 — isVerificationFailureText = (value: string): boolean
+- acceptTaskCurrentProgress · method · L5072-L5210 — private async acceptTaskCurrentProgress(taskId: string, message: string): Promise<void>
+- handleTransientTaskFailure · method · L5216-L5283 — handleTransientTaskFailure( taskId: string, reason: string, delayMs: number = this.retryDelayMs, ): boolean
+- getTransientRetryCount · method · L5285-L5287 — getTransientRetryCount(taskId: string): number
+- pauseTask · method · L5292-L5298 — async pauseTask(taskId: string): Promise<void>
+- resumeTask · method · L5303-L5324 — async resumeTask(taskId: string): Promise<boolean>
+- sendStdinToTask · method · L5329-L5335 — sendStdinToTask(taskId: string, input: string): boolean
+- killCommandInTask · method · L5342-L5348 — killCommandInTask(taskId: string, force?: boolean): boolean
+- releaseComputerUseSession · method · L5353-L5355 — private releaseComputerUseSession(taskId: string): void
+- finishQueueSlot · method · L5357-L5360 — private finishQueueSlot(taskId: string): void
+- finishQueueSlotIfTracked · method · L5368-L5382 — private finishQueueSlotIfTracked(taskId: string): void
+- finishQueueSlotAsync · method · L5384-L5387 — private async finishQueueSlotAsync(taskId: string): Promise<void>
+- setSessionAutoApproveAll · method · L5392-L5395 — setSessionAutoApproveAll(enabled: boolean): void
+- getSessionAutoApproveAll · method · L5397-L5399 — getSessionAutoApproveAll(): boolean
+- recordSensitiveSourceRead · method · L5401-L5403 — recordSensitiveSourceRead(taskId: string, source: SensitiveSourceRef): void
+- listRecentSensitiveSources · method · L5405-L5407 — listRecentSensitiveSources(taskId: string): SensitiveSourceRef[]
+- canSessionAutoApproveType · method · L5409-L5411 — private canSessionAutoApproveType(type: ApprovalType | undefined): boolean
+- isAutoReviewSafeCommand · method · L5413-L5441 — private isAutoReviewSafeCommand(command: string): boolean
+- canAutoReviewApprove · method · L5443-L5482 — private canAutoReviewApprove( taskId: string, type: ApprovalType | undefined, details: Record<string, unknown>, profile?: EffectiveAccessProfile, ): { approved: boolean; reason?: string }
+- getEffectiveAccessProfile · method · L5484-L5502 — private getEffectiveAccessProfile( taskId: string, task?: Task, workspace?: Workspace, ): EffectiveAccessProfile
+- getExecutorForTask · method · L5504-L5507 — private getExecutorForTask(taskId: string): TaskExecutor | null
+- buildPermissionMode · method · L5509-L5548 — private buildPermissionMode(taskId: string, task?: Task): PermissionMode
+- enforceAllowedMode · function · L5511-L5527 — enforceAllowedMode = (mode: PermissionMode): PermissionMode
+- warnOnceAboutUntrustedManifestRules · method · L5554-L5562 — private warnOnceAboutUntrustedManifestRules(workspacePath: string, droppedCount: number): void
+- buildPermissionRules · method · L5564-L5640 — private buildPermissionRules( taskId: string, task: Task | undefined, workspace: Workspace | undefined, ): PermissionRule[]
+- inferToolNameFromApprovalType · method · L5642-L5656 — private inferToolNameFromApprovalType(approvalType: string): string
+- buildPermissionTrackingKey · method · L5658-L5660 — private buildPermissionTrackingKey(scope: PermissionRule["scope"]): string
+- inferPermissionToolName · method · L5662-L5667 — private inferPermissionToolName(type: string | undefined, details: Any): string
+- evaluatePermissionRequest · method · L5669-L5816 — private evaluatePermissionRequest( taskId: string, type: ApprovalType | undefined, details: Any, allowPersistence = true, ): { evaluation: PermissionEvaluationResult; promptDetails: PermissionPromptDetails; scope: PermissionRule["scope"]; trackingKey: string; runtime: TaskExecutor["runtime"] | null; workspace: Workspace | undefined; authorizationKey?: string; }
+- persistApprovalActionRule · method · L5818-L5929 — private persistApprovalActionRule( action: ApprovalResponseAction, approval: Any, ): { effect?: PermissionEffect; destination?: "session" | "workspace" | "profile" | "recurring"; dbPersisted?: boolean; manifestPersisted?: boolean; manifestError?: string; }
+- rememberDurableApprovalGrant · method · L5931-L5954 — private rememberDurableApprovalGrant(taskId: string, approval: ApprovalRequest): void
+- consumeDurableApprovalGrant · method · L5956-L5971 — private consumeDurableApprovalGrant( taskId: string, trackingKey: string, ): { approvalId: string; grantedAt: number } | undefined
+- buildRecurringApprovalInput · method · L5973-L5993 — private buildRecurringApprovalInput( type: string, details: Record<string, unknown>, workspace: Workspace, scope: PermissionRule["scope"], ): RecurringApprovalFingerprintInput
+- evaluateToolPermission · method · L5995-L6014 — evaluateToolPermission( taskId: string, opts: { approvalType?: ApprovalType; toolName: string; details?: Any; allowPersistence?: boolean; }, ): PermissionEvaluationResult
+- authorizeToolAction · method · L6017-L6056 — async authorizeToolAction( taskId: string, request: { toolName: string; approvalType: ApprovalType; details?: Any; description?: string; allowAutoApprove?: boolean; signal?: AbortSignal; requireExplicitApproval?: boolean; }, ): Promise<boolean>
+- listInputRequests · method · L6058-L6074 — listInputRequests(params?: { limit?: number; offset?: number; taskId?: string; status?: InputRequest["status"]; }): InputRequest[]
+- requestUserInput · method · L6076-L6114 — async requestUserInput( taskId: string, args: RequestUserInputArgs, ): Promise<InputRequestResponse>
+- requestAssistantApproval · method · L6122-L6227 — private async requestAssistantApproval( taskId: string, type: string, description: string, details: Any, runtime?: { recordPermissionSuccess?: (trackingKey: string) => void; recordPermissionDenial?: (trackingKey: string) => void; } | null, trackingKey = type, signal?: AbortSignal, ): Promise<boolean>
+- requestApproval · method · L6229-L6616 — async requestApproval( taskId: string, type: string, description: string, details: Any, opts?: { allowAutoApprove?: boolean; signal?: AbortSignal; requireExplicitApproval?: boolean; }, ): Promise<boolean>
+- abortListener · function · L6595-L6608 — abortListener = ()
+- isApprovalAuthorityCurrent · method · L6623-L6640 — private isApprovalAuthorityCurrent(approval: ApprovalRequest): boolean
+- respondToApproval · method · L6642-L6875 — async respondToApproval( approvalId: string, approved: boolean, action?: ApprovalResponseAction, attribution?: SessionActionAttribution, ): Promise<"handled" | "duplicate" | "not_found" | "in_progress">
+- cleanupPendingApprovalsForTask · method · L6877-L6904 — private cleanupPendingApprovalsForTask(taskId: string, rejectionMessage: string): number
+- resumeTaskAfterDurableWait · method · L6912-L6963 — private async resumeTaskAfterDurableWait( taskId: string, responseMessage?: string, ): Promise<void>
+- respondToInputRequest · method · L6965-L7083 — async respondToInputRequest( response: InputRequestResponse, ): Promise<{ status: "handled" | "duplicate" | "not_found" | "in_progress"; requestId: string }>
+- captureTaskMutationBaseline · method · L7088-L7098 — async captureTaskMutationBaseline(taskId: string, candidatePath: string): Promise<void>
+- recordTaskMutationImpact · method · L7100-L7143 — private recordTaskMutationImpact( taskId: string, event: TaskEvent, effectiveType: string, payload: Record<string, unknown>, ): void
+- recordCanonicalToolImpact · method · L7145-L7149 — private recordCanonicalToolImpact(taskId: string, event: TaskEvent, effectiveType: string): void
+- emitTaskTitleUpdated · method · L7155-L7167 — emitTaskTitleUpdated(taskId: string, title: string): void
+- logEvent · method · L7169-L7404 — logEvent(taskId: string, type: string, payload: Any): void
+- maybeEmitAssistantMediaPreview · method · L7406-L7485 — private maybeEmitAssistantMediaPreview( taskId: string, type: string, payload: Record<string, unknown>, ): void
+- quote · function · L7475-L7475 — quote = (value: string): string
+- shouldEmitInlineHtmlFramePreview · method · L7487-L7530 — private shouldEmitInlineHtmlFramePreview( task: Any, payload: Record<string, unknown>, rawPath: string, ): boolean
+- normalizeProviderTypeValue · method · L7532-L7534 — private normalizeProviderTypeValue(value: unknown): string | null
+- getProviderTypeFromLogMessage · method · L7536-L7540 — private getProviderTypeFromLogMessage(message: unknown): string | null
+- getProviderTypeFromPayload · method · L7542-L7549 — private getProviderTypeFromPayload(payloadObj: Record<string, unknown>): string | null
+- getTaskAgentConfigProviderType · method · L7551-L7555 — private getTaskAgentConfigProviderType(taskId: string): string | null
+- getActiveExecutorProviderType · method · L7557-L7560 — private getActiveExecutorProviderType(taskId: string): string | null
+- rememberTaskLlmProviderType · method · L7562-L7567 — private rememberTaskLlmProviderType(taskId: string, providerType?: string | null): string | null
+- resolveTaskLlmProviderType · method · L7569-L7579 — private resolveTaskLlmProviderType( taskId: string, payloadObj: Record<string, unknown>, ): string | null
+- maybeEnrichLlmTelemetryPayload · method · L7581-L7617 — private maybeEnrichLlmTelemetryPayload( taskId: string, type: string, payloadObj: Record<string, unknown>, ): void
+- persistTranscriptArtifacts · method · L7619-L7719 — private async persistTranscriptArtifacts( taskId: string, timelineEvent: TaskEvent, legacyType: string | undefined, legacyPayload: Record<string, unknown>, ): Promise<void>
+- canRead · function · L7662-L7664 — canRead = (candidatePath: string): boolean
+- canWrite · function · L7665-L7667 — canWrite = (candidatePath: string): boolean
+- extractCheckpointEventText · method · L7721-L7751 — private extractCheckpointEventText(payload: unknown): string
+- isMeaningfulExchangeEvent · method · L7753-L7758 — private isMeaningfulExchangeEvent(type: string | undefined, payload: unknown): boolean
+- getSnapshotSummaryBlock · method · L7760-L7779 — private getSnapshotSummaryBlock(payload: Record<string, unknown>): string
+- parseStructuredCheckpointSummary · method · L7781-L7843 — private parseStructuredCheckpointSummary( rawText: string, source: "snapshot" | "compaction_summary" | "completion" | "fallback", ): { source: "snapshot" | "compaction_summary" | "completion" | "fallback"; rawText?: string; decisions: string[]; openLoops: string[]; nextActions: string[]; keyFindings: string[]; }
+- buildStructuredCheckpointSummary · method · L7845-L7872 — private buildStructuredCheckpointSummary( task: Task, snapshotPayload?: Record<string, unknown>, ): { source: "snapshot" | "compaction_summary" | "completion" | "fallback"; rawText?: string; decisions: string[]; openLoops: string[]; nextActions: string[]; keyFindings: string[]; }
+- buildCheckpointEvidencePacket · method · L7874-L7926 — private buildCheckpointEvidencePacket( taskId: string, messageEvents: TaskEvent[], ): { generatedAt: number; spanHash: string; spanCount: number; spans: Array<{ sourceType: "task_message"; objectId: string; taskId: string; timestamp: number; type: string; excerpt: string; eventId?: string; seq?: number; }>; }
+- maybeCaptureRuntimeCheckpoint · method · L7928-L8102 — private async maybeCaptureRuntimeCheckpoint(params: { task: Task; workspacePath: string; event: TaskEvent; legacyType?: string; legacyPayload: Record<string, unknown>; readGuard?: (candidatePath: string) => boolean; writeGuard?: (candidatePath: string) => boolean; }): Promise<void>
+- scheduleMemoryConsolidation · method · L8104-L8174 — private scheduleMemoryConsolidation(task: Task): void
+- canRead · function · L8113-L8115 — canRead = (candidatePath: string): boolean
+- canWrite · function · L8116-L8118 — canWrite = (candidatePath: string): boolean
+- normalizeArtifactEventPayload · method · L8176-L8221 — private normalizeArtifactEventPayload( taskId: string, type: string, payload: Record<string, unknown>, ): void
+- getCurrentEventSeq · method · L8223-L8229 — private getCurrentEventSeq(taskId: string): number
+- nextEventSeq · method · L8231-L8235 — private nextEventSeq(taskId: string): number
+- transitionTimelineStage · method · L8237-L8265 — private transitionTimelineStage( taskId: string, nextStage: TimelineStage, subStageLabel?: string, ): void
+- normalizeStepIdForPlanTracking · method · L8267-L8271 — private normalizeStepIdForPlanTracking(rawStepId: string): string
+- isSyntheticNonPlanStepId · method · L8273-L8287 — private isSyntheticNonPlanStepId(rawStepId: string): boolean
+- addKnownPlanStepId · method · L8289-L8295 — private addKnownPlanStepId(taskId: string, rawStepId: string): void
+- isKnownPlanStepId · method · L8297-L8308 — private isKnownPlanStepId(taskId: string, rawStepId: string): boolean
+- trackTimelineStepState · method · L8310-L8403 — private trackTimelineStepState(taskId: string, event: TaskEvent): void
+- trackEvidenceRefs · method · L8405-L8417 — private trackEvidenceRefs(taskId: string, event: TaskEvent): void
+- getEvidenceRefsForTask · method · L8419-L8421 — getEvidenceRefsForTask(taskId: string): EvidenceRef[]
+- maybeMaterializeMailComposeInlineFrame · method · L8423-L8513 — private maybeMaterializeMailComposeInlineFrame( event: TaskEvent, effectiveType: string | undefined, task: Task | undefined, ): void
+- persistTimelineEvent · method · L8515-L8662 — private persistTimelineEvent( event: TaskEvent, options: { legacyType?: string; legacyPayload?: Record<string, unknown>; } = {}, ): void
+- maybeEmitTeamThought · method · L8668-L8785 — private maybeEmitTeamThought(taskId: string, eventType: string, payload: Any): void
+- handleOrchestrationNodeNotification · method · L8787-L8838 — private async handleOrchestrationNodeNotification( notification: OrchestrationNodeNotification, ): Promise<void>
+- emitTeamThoughtEvent · method · L8843-L8854 — private emitTeamThoughtEvent(event: TeamThoughtEvent): void
+- maybeEmitTeamStreamingProgress · method · L8860-L8944 — private maybeEmitTeamStreamingProgress(taskId: string, payload: Any): void
+- captureToMemory · method · L8949-L9132 — private async captureToMemory(taskId: string, type: string, payload: Any): Promise<void>
+- logActivityForEvent · method · L9137-L9170 — private logActivityForEvent(taskId: string, type: string, payload: Any): void
+- buildActivityFromEvent · method · L9172-L9419 — private buildActivityFromEvent( task: Task, type: string, payload: Any, ): CreateActivityRequest | undefined
+- registerArtifact · method · L9425-L9458 — registerArtifact(taskId: string, filePath: string, mimeType: string): void
+- emitTaskEvent · method · L9463-L9542 — private emitTaskEvent(event: TaskEvent): void
+- resolveLegacyTaskEventAlias · method · L9544-L9568 — private resolveLegacyTaskEventAlias(event: TaskEvent): { type: string; payload: Record<string, unknown>; } | null
+- updateTaskStatus · method · L9573-L9588 — updateTaskStatus(taskId: string, status: Task["status"]): void
+- beginFollowUpRun · method · L9590-L9618 — beginFollowUpRun(taskId: string): Task | undefined
+- getAgentRoleById · method · L9623-L9625 — getAgentRoleById(agentRoleId: string): AgentRole | undefined
+- getActiveAgentRoles · method · L9627-L9629 — getActiveAgentRoles(): AgentRole[]
+- getTask · method · L9634-L9636 — getTask(taskId: string): Task | undefined
+- setTransientTaskAgentConfig · method · L9644-L9659 — setTransientTaskAgentConfig(taskId: string, override?: AgentConfig): void
+- clearTransientTaskAgentConfig · method · L9661-L9663 — clearTransientTaskAgentConfig(taskId: string): void
+- getTaskWithTransientAgentConfig · method · L9665-L9676 — private getTaskWithTransientAgentConfig(task?: Task): Task | undefined
+- getExternalFileApprovalKey · method · L9678-L9721 — private getExternalFileApprovalKey( taskId: string, rawPath: unknown, operation: AccessFilesystemOperation, ): string | null
+- grantExternalFileApproval · method · L9723-L9730 — grantExternalFileApproval( taskId: string, rawPath: unknown, operation: AccessFilesystemOperation = "write", ): void
+- consumeExternalFileApproval · method · L9732-L9751 — consumeExternalFileApproval( taskId: string, rawPath: unknown, operation: AccessFilesystemOperation, ): boolean
+- grantExternalFileApprovalsFromDetails · method · L9753-L9792 — private grantExternalFileApprovalsFromDetails(taskId: string, details: Any): void
+- isRunTerminalEvent · method · L9794-L9803 — private isRunTerminalEvent(event: TaskEvent): boolean
+- isRunActivityEvent · method · L9805-L9818 — private isRunActivityEvent(event: TaskEvent): boolean
+- calculateLatestRunDurationMs · method · L9820-L9879 — private calculateLatestRunDurationMs( taskId: string, completedAt: number, fallbackStartedAt?: number, eventsOverride?: TaskEvent[], ): number
+- getTaskEventsForReplay · method · L9881-L9887 — private getTaskEventsForReplay(taskId: string): TaskEvent[]
+- getTaskEventsForResume · method · L9889-L9962 — private getTaskEventsForResume( taskId: string, workspacePath: string, readGuard?: (candidatePath: string) => boolean, ): TaskEvent[]
+- resolveLegacyEventType · method · L9964-L9968 — private resolveLegacyEventType(event: TaskEvent): string
+- isLegacyEventType · method · L9970-L9972 — private isLegacyEventType(event: TaskEvent, expected: string): boolean
+- clearTimelineTaskState · method · L9974-L9984 — private clearTimelineTaskState(taskId: string): void
+- getTaskEvents · method · L9986-L10010 — getTaskEvents(taskId: string, options?: { limit?: number; types?: string[] }): TaskEvent[]
+- legacyRead · function · L9994-L10002 — legacyRead = (): TaskEvent[]
+- queryTaskHistory · method · L10018-L10177 — queryTaskHistory(params: { period: "today" | "yesterday" | "last_7_days" | "last_30_days" | "custom"; from?: string | number; to?: string | number; limit?: number; workspaceId?: string; query?: string; includeMessages?: boolean; }): | { success: true; period: string; range: { startMs: number; endMs: number; startIso: string; endIso: string }; tasks: Any[]; } | { success: false; error: string }
+- clampLimit · function · L10040-L10043 — clampLimit = (value: unknown): number
+- truncate · function · L10045-L10050 — truncate = (value: unknown, maxChars: number): string
+- startOfDayMs · function · L10053-L10054 — startOfDayMs = (d: Date): number
+- parseTime · function · L10056-L10064 — parseTime = (v: unknown): number | null
+- queryTaskEvents · method · L10183-L10532 — queryTaskEvents(params: { period: "today" | "yesterday" | "last_7_days" | "last_30_days" | "custom"; from?: string | number; to?: string | number; limit?: number; workspaceId?: string; types?: string[]; includePayload?: boolean; }): | { success: true; period: string; range: { startMs: number; endMs: number; startIso: string; endIso: string }; stats: Any; events: Any[]; } | { success: false; error: string }
+- clampLimit · function · L10206-L10209 — clampLimit = (value: unknown): number
+- truncate · function · L10211-L10216 — truncate = (value: unknown, maxChars: number): string
+- startOfDayMs · function · L10219-L10220 — startOfDayMs = (d: Date): number
+- parseTime · function · L10222-L10230 — parseTime = (v: unknown): number | null
+- parseJson · function · L10354-L10362 — parseJson = (raw: unknown): Any
+- compactPayloadPreview · function · L10364-L10377 — compactPayloadPreview = (payload: Any): string
+- summarizeEvent · function · L10379-L10438 — summarizeEvent = (type: string, payload: Any): string
+- updateTaskWorkspace · method · L10537-L10577 — updateTaskWorkspace(taskId: string, workspaceId: string): Task
+- getWorkspaceById · method · L10582-L10584 — getWorkspaceById(id: string): Workspace | undefined
+- getWorkspaceByPath · method · L10589-L10591 — getWorkspaceByPath(path: string): Workspace | undefined
+- assertTaskWorkspaceFilesystemAccess · method · L10599-L10612 — assertTaskWorkspaceFilesystemAccess( taskId: string, rawPath: string, operation: AccessFilesystemOperation, label = "path", ): string
+- assertTaskBaseWorkspaceFilesystemAccess · method · L10619-L10631 — assertTaskBaseWorkspaceFilesystemAccess( taskId: string, rawPath: string, operation: AccessFilesystemOperation, label = "base repository path", ): string
+- updateWorkspacePermissions · method · L10636-L10654 — updateWorkspacePermissions( workspaceId: string, patch: Omit<Partial<WorkspacePermissions>, "shell">, ): Workspace | undefined
+- refreshActiveExecutorsForWorkspace · method · L10661-L10689 — refreshActiveExecutorsForWorkspace(workspaceId: string): void
+- refreshActiveExecutorsForAccessProfiles · method · L10692-L10716 — refreshActiveExecutorsForAccessProfiles(): void
+- getMostRecentNonTempWorkspace · method · L10721-L10730 — getMostRecentNonTempWorkspace(): Workspace | undefined
+- listWorkspaces · method · L10735-L10737 — listWorkspaces(): Workspace[]
+- listProjects · method · L10743-L10746 — listProjects(opts?: { includeArchived?: boolean }): Project[]
+- linkProjectWorkspace · method · L10752-L10759 — linkProjectWorkspace(input: { projectId: string; workspaceId: string; isPrimary?: boolean; }): ProjectWorkspaceLink
+- listProjectWorkspaces · method · L10764-L10767 — listProjectWorkspaces(projectId: string): ProjectWorkspaceLink[]
+- listGoals · method · L10772-L10775 — listGoals(companyId?: string): Goal[]
+- listIssues · method · L10780-L10783 — listIssues(filters?: IssueFilters): Issue[]
+- createIssue · method · L10788-L10791 — createIssue(input: Partial<Issue> & Pick<Issue, "title">): Issue
+- createWorkspace · method · L10796-L10805 — createWorkspace(name: string, path: string): Workspace
+- updateTask · method · L10810-L10863 — updateTask( taskId: string, updates: Partial< Pick< Task, | "currentAttempt" | "status" | "error" | "completedAt" | "lastRunDurationMs" | "terminalStatus" | "failureClass" | "awaitingUserInputReasonCode" | "budgetUsage" | "continuationCount" | "continuationWindow" | "lifetimeTurnsUsed" | "lastProgressScore" | "autoContinueBlockReason" | "compactionCount" | "lastCompactionAt" | "lastCompactionTokensBefore" | "lastCompactionTokensAfter" | "noProgressStreak" | "lastLoopFingerprint" | "bestKnownOutcome" | "agentConfig" | "rawPrompt" | "userPrompt" > >, ): void
+- failTask · method · L10865-L11012 — failTask( taskId: string, errorMessage: string, metadata?: Partial< Pick< Task, | "completedAt" | "resultSummary" | "terminalStatus" | "failureClass" | "budgetUsage" | "continuationCount" | "continuationWindow" | "lifetimeTurnsUsed" | "lastProgressScore" | "autoContinueBlockReason" | "compactionCount" | "lastCompactionAt" | "lastCompactionTokensBefore" | "lastCompactionTokensAfter" | "noProgressStreak" | "lastLoopFingerprint" | "bestKnownOutcome" | "semanticSummary" | "verificationVerdict" | "verificationReport" > >, ): void
+- cancelTaskRecord · method · L11014-L11076 — cancelTaskRecord( taskId: string, message: string, metadata?: { completedAt?: number; errorMessage?: string | null; }, ): void
+- clearRetryState · method · L11078-L11085 — private clearRetryState(taskId: string): void
+- runQuickQualityPass · method · L11087-L11131 — private runQuickQualityPass(params: { resultSummary?: string; outputSummary?: TaskOutputSummary; explicitEvidenceRequired: boolean; strictCompletionContract: boolean; riskReasons: string[]; verificationEvidenceBundle?: TaskVerificationEvidenceBundle; }): { passed: boolean; issues: string[] }
+- getUnresolvedFailedSteps · method · L11133-L11156 — private getUnresolvedFailedSteps(taskId: string): string[]
+- isTaskCompletedTimelineEvent · method · L11158-L11168 — private isTaskCompletedTimelineEvent(event: TaskEvent): boolean
+- compareEventOrder · method · L11170-L11186 — private compareEventOrder(a: TaskEvent, b: TaskEvent): number
+- computeTimelineTelemetryFromEvents · method · L11188-L11281 — private computeTimelineTelemetryFromEvents(events: TaskEvent[]): { timeline_event_drop_rate: number; timeline_order_violation_rate: number; step_state_mismatch_rate: number; completion_gate_block_count: number; evidence_gate_fail_count: number; }
+- backfillTaskCompletionTelemetry · method · L11283-L11356 — private backfillTaskCompletionTelemetry(taskId: string): void
+- extractKeyClaimSentences · method · L11358-L11397 — private extractKeyClaimSentences(summary: string): string[]
+- normalizePiece · function · L11361-L11367 — normalizePiece = (piece: string): string
+- isInstructionLike · function · L11368-L11371 — isInstructionLike = (piece: string): boolean
+- isStructuralListScaffold · function · L11372-L11380 — isStructuralListScaffold = (piece: string): boolean
+- hasEvidenceForKeyClaims · method · L11399-L11429 — private hasEvidenceForKeyClaims( taskId: string, summary?: string, verificationEvidenceBundle?: TaskVerificationEvidenceBundle, ): { passed: boolean; keyClaims: string[]; }
+- runPostCompletionVerification · method · L11431-L11488 — private async runPostCompletionVerification( parentTask: Task, parentSummary?: string, verificationEvidenceBundle?: TaskVerificationEvidenceBundle, timeoutMs = 120_000, gateContext: { explicit?: boolean; highRisk?: boolean; outputSummary?: TaskOutputSummary } = {}, ): Promise<VerificationRuntimeResult | undefined>
+- runPostTaskEntropySweep · method · L11494-L11558 — private async runPostTaskEntropySweep( parentTask: Task, params: { historicalEvents: TaskEvent[]; outputSummary?: TaskOutputSummary; parentSummary?: string; }, timeoutMs = 120_000, ): Promise<void>
+- runReadOnlyChildTaskAndWait · method · L11560-L11642 — async runReadOnlyChildTaskAndWait(params: { parentTask: Task; title: string; prompt: string; timeoutMs?: number; agentConfig?: AgentConfig; workerRole?: WorkerRoleKind; }): Promise<{ childTaskId: string; status: "completed" | "failed" | "cancelled" | "timeout" | "missing"; terminalStatus?: Task["terminalStatus"]; summary: string; }>
+- completeTask · method · L11648-L12753 — async completeTask( taskId: string, resultSummary?: string, metadata?: { terminalStatus?: Task["terminalStatus"]; failureClass?: Task["failureClass"]; budgetUsage?: Task["budgetUsage"]; outputSummary?: TaskOutputSummary; waiveFailedStepIds?: string[]; failedMutationRequiredStepIds?: string[]; waivedVerificationStepIds?: string[]; failedStepIds?: string[]; incompleteStepIds?: string[]; terminalKind?: TerminalKind; terminalStatusReason?: string; nonBlockingFailedStepIds?: string[]; bestKnownOutcome?: Task["bestKnownOutcome"]; verificationOutcome?: VerificationOutcome; verificationScope?: VerificationScope; verificationEvidenceMode?: VerificationEvidenceMode; pendingChecklist?: string[]; verificationMessage?: string; /** Deterministic checks run in verified mode (shell, files, http, etc.) */ verificationEvidenceBundle?: TaskVerificationEvidenceBundle; /** * Plan step failures that the executor explicitly recovered via a * completed alternate/recovery step. These are not silent waivers: the * original failure remains in the timeline, but must not block the final * completion gate once the recovery path has succeeded. */ recoveredFailedStepIds?: string[]; semanticSummary?: string; verificationVerdict?: VerificationVerdict; verificationReport?: string; agentConfig?: AgentConfig; }, ): Promise<void>
+- normalizeStepIdForComparison · function · L11741-L11744 — normalizeStepIdForComparison = (raw: string): string
+- isVerificationDescription · function · L11745-L11760 — isVerificationDescription = (description: string): boolean
+- isVerificationFailureStep · function · L11836-L11912 — isVerificationFailureStep = (rawStepId: string): boolean
+- isBudgetConstrainedFailureStep · function · L11913-L11992 — isBudgetConstrainedFailureStep = (rawStepId: string): boolean
+- isMatchingStep · function · L11917-L11932 — isMatchingStep = ( eventStepIdRaw: string, candidateStepObj: Record<string, unknown>, payloadObj: Record<string, unknown>, ): boolean
+- buildAnnotationFollowUpContext · method · L12755-L12808 — private buildAnnotationFollowUpContext( taskId: string, message: string, ): { message: string; annotations: Annotation[]; }
+- sendMessage · method · L12817-L13179 — async sendMessage( taskId: string, message: string, images?: ImageAttachment[], quotedAssistantMessage?: QuotedAssistantMessage, options?: DaemonFollowUpOptions, ): Promise<AgentMessageSendResult>
+- executeFollowUp · function · L13114-L13144 — executeFollowUp = async (): Promise<void>
+- queueMessageOnly · method · L13189-L13474 — private queueMessageOnly( task: Task, message: string, images: ImageAttachment[] | undefined, quotedAssistantMessage: QuotedAssistantMessage | undefined, options: Pick< TaskFollowUpInput, | "deliveryMode" | "interactionMode" | "messageSource" | "messageId" | "senderTaskId" | "senderLabel" | "integrationMentions" > & Pick<DaemonFollowUpOptions, "startAfterAccepted">, ): AgentMessageSendResult
+- wakeBotConversationAfterAccepted · method · L13476-L13502 — private wakeBotConversationAfterAccepted( task: Task, messageId: string, senderTaskId?: string, ): void
+- getQueuedAttachmentStore · method · L13504-L13506 — private getQueuedAttachmentStore(): QueuedAttachmentStore
+- getDurableTaskEvents · method · L13514-L13516 — private getDurableTaskEvents(taskId: string, type: string): TaskEvent[]
+- getQueuedAgentMessageDeliveryStatus · method · L13518-L13534 — private getQueuedAgentMessageDeliveryStatus( taskId: string, messageId: string, ): "queued" | "delivered" | undefined
+- markQueuedAgentMessageDelivered · method · L13537-L13612 — markQueuedAgentMessageDelivered(taskId: string, messageId: string): boolean
+- releaseQueuedAttachmentRefs · method · L13614-L13626 — private releaseQueuedAttachmentRefs( taskId: string, messageId: string, payload: Record<string, unknown> | undefined, ): void
+- captureQueuedAttachmentRefsForTask · method · L13633-L13663 — captureQueuedAttachmentRefsForTask(taskId: string): Array<{ messageId: string; refs: QueuedAttachmentRef[]; }>
+- releaseCapturedQueuedAttachmentRefs · method · L13666-L13679 — releaseCapturedQueuedAttachmentRefs( taskId: string, captured: Array<{ messageId: string; refs: QueuedAttachmentRef[] }>, ): void
+- handleStepFeedback · method · L13685-L13727 — async handleStepFeedback( taskId: string, stepId: string, action: StepFeedbackAction, message?: string, ): Promise<void>
+- processOrphanedFollowUps · method · L13733-L13865 — private processOrphanedFollowUps(taskId: string, executor: TaskExecutor): void
+- drain · function · L13737-L13863 — drain = async ()
+- updateQueuedTaskPrompt · method · L13874-L13897 — updateQueuedTaskPrompt(taskId: string, prompt: string): Task
+- getQueueStatus · method · L13902-L13904 — getQueueStatus(): QueueStatus
+- getQueueSettings · method · L13909-L13911 — getQueueSettings(): QueueSettings
+- saveQueueSettings · method · L13916-L13918 — saveQueueSettings(settings: Partial<QueueSettings>): void
+- clearStuckTasks · method · L13925-L13951 — async clearStuckTasks(): Promise<{ clearedRunning: number; clearedQueued: number }>
+- handleTaskTimeout · method · L13957-L13979 — async handleTaskTimeout(taskId: string): Promise<void>
+- emitQueueUpdate · method · L13984-L13995 — private emitQueueUpdate(status: QueueStatus): void
+- shutdown · method · L14001-L14006 — shutdown(): Promise<void>
+- shutdownInternal · method · L14008-L14159 — private async shutdownInternal(): Promise<void>
+- pruneOldSnapshots · method · L14165-L14171 — pruneOldSnapshots(taskId: string): void

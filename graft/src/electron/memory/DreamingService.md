@@ -1,0 +1,22 @@
+# src/electron/memory/DreamingService.ts
+
+- DreamingEvidenceBundle · interface · L22-L27 — interface DreamingEvidenceBundle
+- DreamingServiceDeps · interface · L29-L51 — interface DreamingServiceDeps
+- RunDreamingRequest · interface · L53-L64 — interface RunDreamingRequest
+- clamp · function · L66-L68 — function clamp(value: number, min: number, max: number): number
+- normalizeText · function · L70-L74 — function normalizeText(value: string): string
+- truncate · function · L76-L79 — function truncate(value: string, max: number): string
+- evidenceFromObservation · function · L81-L89 — function evidenceFromObservation(observation: MemoryObservationSearchResult): EvidenceRef
+- evidenceFromTranscript · function · L91-L101 — function evidenceFromTranscript(hit: TranscriptSearchResult | TranscriptSpanRecord): EvidenceRef
+- combinedEvidenceText · function · L103-L115 — function combinedEvidenceText(bundle: DreamingEvidenceBundle): string
+- inferCuratedTarget · function · L117-L123 — function inferCuratedTarget(action: DreamingCandidateAction): DreamingCandidateTarget
+- uniqueCandidates · function · L125-L143 — function uniqueCandidates( candidates: Array<Omit<DreamingCandidate, "id" | "createdAt">>, ): Array<Omit<DreamingCandidate, "id" | "createdAt">>
+- DreamingService · class · L145-L467 — class DreamingService
+- constructor · method · L146-L149 — constructor( private readonly repo: DreamingRepository, private readonly deps: DreamingServiceDeps = {}, )
+- run · method · L151-L197 — async run( request: RunDreamingRequest, ): Promise<{ run: DreamingRun; candidates: DreamingCandidate[] }>
+- applyAcceptedCandidate · method · L199-L263 — async applyAcceptedCandidate( candidateId: string, workspaceId: string, ): Promise<DreamingCandidate | undefined>
+- gatherEvidence · method · L265-L318 — private async gatherEvidence(request: RunDreamingRequest): Promise<DreamingEvidenceBundle>
+- proposeCandidates · method · L320-L443 — private proposeCandidates( run: DreamingRun, evidence: DreamingEvidenceBundle, ): Array<Omit<DreamingCandidate, "id" | "createdAt">>
+- push · function · L332-L353 — push = ( action: DreamingCandidateAction, proposedValue: string, rationale: string, confidence: number, currentValue?: string, )
+- findDuplicateCuratedEntries · method · L445-L457 — private findDuplicateCuratedEntries(entries: CuratedMemoryEntry[]): CuratedMemoryEntry[]
+- buildRunSummary · method · L459-L466 — private buildRunSummary(evidence: DreamingEvidenceBundle, candidateCount: number): string

@@ -1,0 +1,27 @@
+# src/electron/agent/timeline/timeline-normalizer.ts
+
+- asObject · function · L29-L32 — function asObject(value: unknown): Record<string, unknown>
+- safeStr · function · L34-L36 — function safeStr(value: unknown): string
+- toIso · function · L38-L40 — function toIso(timestamp: number): string
+- durationMs · function · L42-L44 — function durationMs(start: number, end: number): number
+- toCanonicalKind · function · L110-L191 — function toCanonicalKind(event: NormalizerInputEvent): CanonicalActionKind
+- inferPhase · function · L214-L236 — function inferPhase(event: NormalizerInputEvent, kind: CanonicalActionKind): TimelinePhase
+- extractEvidence · function · L242-L398 — function extractEvidence(events: NormalizerInputEvent[]): TimelineEvidence[]
+- inferApprovalRisk · function · L400-L411 — function inferApprovalRisk(payload: Record<string, unknown>): "low" | "medium" | "high"
+- buildSummary · function · L417-L581 — function buildSummary(events: NormalizerInputEvent[], kind: CanonicalActionKind): string
+- shortenPath · function · L587-L592 — function shortenPath(path: string): string
+- findCommonPrefix · function · L594-L611 — function findCommonPrefix(paths: string[]): string
+- truncate · function · L613-L616 — function truncate(s: string, max: number): string
+- capitalise · function · L618-L621 — function capitalise(s: string): string
+- resolveStatus · function · L627-L658 — function resolveStatus(events: NormalizerInputEvent[]): SemanticTimelineStatus
+- EventGroup · interface · L712-L719 — interface EventGroup
+- canMerge · function · L721-L741 — function canMerge( group: EventGroup, event: NormalizerInputEvent, kind: CanonicalActionKind, batchWindowMs: number, ): boolean
+- resolveActor · function · L743-L754 — function resolveActor(event: NormalizerInputEvent, defaultActor = "Main"): string
+- startGroup · function · L760-L776 — function startGroup( event: NormalizerInputEvent, kind: CanonicalActionKind, defaultActor: string, ): EventGroup
+- projectGroupToApproval · function · L782-L806 — function projectGroupToApproval(group: EventGroup): UiTimelineEvent
+- projectGroupToAgent · function · L808-L830 — function projectGroupToAgent(group: EventGroup): UiTimelineEvent
+- projectGroupToSummary · function · L832-L855 — function projectGroupToSummary(group: EventGroup): UiTimelineEvent
+- projectGroup · function · L857-L865 — function projectGroup(group: EventGroup): UiTimelineEvent
+- normalizeTaskEvents · function · L877-L901 — function normalizeTaskEvents( raw: NormalizerInputEvent[], options?: NormalizerOptions, ): UiTimelineEvent[]
+- CompletionSummaryResult · interface · L907-L913 — interface CompletionSummaryResult
+- buildCompletionSummaryFromUiEvents · function · L919-L963 — function buildCompletionSummaryFromUiEvents( events: UiTimelineEvent[], ): CompletionSummaryResult

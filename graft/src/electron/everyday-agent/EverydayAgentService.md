@@ -1,0 +1,63 @@
+# src/electron/everyday-agent/EverydayAgentService.ts
+
+- failClosedPolicies · function · L61-L98 — function failClosedPolicies(): AdminPolicies
+- JsonRecord · type · L100-L100 — type JsonRecord = Record<string, unknown>;
+- cloneJson · function · L102-L104 — function cloneJson<T>(value: T): T
+- safeJsonParse · function · L106-L113 — function safeJsonParse<T>(value: unknown, fallback: T): T
+- asStringArray · function · L115-L117 — function asStringArray(value: unknown): string[]
+- asCapability · function · L119-L122 — function asCapability(value: unknown): EverydayCapabilityBundle | undefined
+- uniqueCapabilities · function · L124-L129 — function uniqueCapabilities(values: unknown): EverydayCapabilityBundle[]
+- clampInteger · function · L131-L135 — function clampInteger(value: unknown, min: number, max: number, fallback: number): number
+- isRecord · function · L137-L139 — function isRecord(value: unknown): value is JsonRecord
+- buildIdempotencyKey · function · L141-L143 — function buildIdempotencyKey(payload: unknown): string
+- nowMs · function · L145-L147 — function nowMs(): number
+- isPauseActive · function · L149-L151 — function isPauseActive(scope: EverydayPauseScope, now = nowMs()): boolean
+- riskRequiresExplicitApproval · function · L153-L155 — function riskRequiresExplicitApproval(risk: EverydayActionRisk): boolean
+- requirePolicies · function · L157-L163 — function requirePolicies(): AdminPolicies
+- readPoliciesFailClosed · function · L165-L167 — function readPoliciesFailClosed(): AdminPolicies
+- EverydayAgentService · class · L169-L1866 — class EverydayAgentService
+- constructor · method · L175-L181 — constructor(private db: Database.Database)
+- getProfile · method · L183-L187 — getProfile(): EverydayAgentProfileResult
+- updateProfile · method · L189-L255 — updateProfile(updates: EverydayAgentUpdateProfileRequest): EverydayAgentProfileResult
+- acceptConsent · method · L257-L343 — acceptConsent(input?: { enabled?: boolean; workspaceId?: string; accepted?: boolean; }): EverydayAgentProfileResult
+- pause · method · L345-L384 — pause(input: Partial<EverydayPauseScope>): EverydayAgentProfileResult
+- revokeCapability · method · L386-L420 — revokeCapability(capability: EverydayCapabilityBundle): EverydayAgentProfileResult
+- listReceipts · method · L422-L447 — listReceipts(request?: EverydayAgentListReceiptsRequest): EverydayActionReceipt[]
+- clearData · method · L449-L560 — clearData( request?: EverydayAgentClearDataRequest & { profile?: boolean }, ): EverydayAgentProfileResult
+- deleteRequired · function · L455-L458 — deleteRequired = (key: string, sql: string, ...args: unknown[]): void
+- previewAction · method · L562-L694 — previewAction(input: EverydayActionPreviewInput): EverydayActionPreview
+- approveAction · method · L696-L759 — approveAction(request: EverydayAgentApproveActionRequest): EverydayActionReceipt
+- classifyActionRisk · method · L761-L817 — classifyActionRisk(input: EverydayActionPreviewInput | string): EverydayActionRisk
+- compilePolicy · method · L819-L882 — compilePolicy(profile = this.ensureProfile()): EverydayCompiledPolicy
+- ensureProfile · method · L884-L909 — private ensureProfile(profileId = EVERYDAY_AGENT_DEFAULT_PROFILE_ID): EverydayAgentProfile
+- saveProfile · method · L911-L929 — private saveProfile(profile: EverydayAgentProfile): void
+- updatePreview · method · L931-L950 — private updatePreview( preview: EverydayActionPreview, updates: Partial<EverydayActionPreview>, updatedAt = nowMs(), ): EverydayActionPreview
+- normalizeProfile · method · L952-L1046 — private normalizeProfile(input: Partial<EverydayAgentProfile>): EverydayAgentProfile
+- normalizeCapabilitySettings · method · L1048-L1073 — private normalizeCapabilitySettings( value: | Partial<Record<EverydayCapabilityBundle, Partial<EverydayCapabilitySetting>>> | undefined, ): Record<EverydayCapabilityBundle, EverydayCapabilitySetting>
+- mergeCapabilitySettings · method · L1075-L1094 — private mergeCapabilitySettings( current: Record<EverydayCapabilityBundle, EverydayCapabilitySetting>, updates: EverydayAgentUpdateProfileRequest["capabilitySettings"], ): Record<EverydayCapabilityBundle, EverydayCapabilitySetting>
+- normalizeConnectorAllowlists · method · L1096-L1117 — private normalizeConnectorAllowlists( value: EverydayAgentProfile["connectorAllowlists"] | undefined, ): EverydayAgentProfile["connectorAllowlists"]
+- mergeConnectorAllowlists · method · L1119-L1141 — private mergeConnectorAllowlists( current: EverydayAgentProfile["connectorAllowlists"], updates: Record<string, Partial<EverydayAgentProfile["connectorAllowlists"][string]>>, ): EverydayAgentProfile["connectorAllowlists"]
+- normalizeAccountScopes · method · L1143-L1152 — private normalizeAccountScopes(value: unknown): Record<string, string[]>
+- normalizeApprovalPosture · method · L1154-L1161 — private normalizeApprovalPosture( value: unknown, fallback: EverydayAgentProfile["approvalPosture"], ): EverydayAgentProfile["approvalPosture"]
+- normalizePauseScope · method · L1163-L1188 — private normalizePauseScope(input: Partial<EverydayPauseScope>): EverydayPauseScope
+- applyAdminPolicy · method · L1190-L1226 — private applyAdminPolicy( profile: EverydayAgentProfile, policies: AdminPolicies, ): EverydayAgentProfile
+- toAdminSnapshot · method · L1228-L1242 — private toAdminSnapshot(policies: AdminPolicies): EverydayAdminPolicySnapshot
+- loadPauseScopes · method · L1244-L1259 — private loadPauseScopes(profileId: string): EverydayPauseScope[]
+- buildPermissionRules · method · L1261-L1306 — private buildPermissionRules( profile: EverydayAgentProfile, allowedCapabilities: EverydayCapabilityBundle[], adminPolicy: EverydayAdminPolicySnapshot, ): EverydayCompiledPolicy["permissionRules"]
+- getCapabilityBlockedReason · method · L1308-L1321 — private getCapabilityBlockedReason( policy: EverydayCompiledPolicy, capability: EverydayCapabilityBundle, ): string | null
+- isApprovalRequired · method · L1323-L1338 — private isApprovalRequired( profile: EverydayAgentProfile, capability: EverydayCapabilityBundle, risk: EverydayActionRisk, input: EverydayActionPreviewInput, ): boolean
+- hasTrustedPattern · method · L1340-L1372 — private hasTrustedPattern( profileId: string, capability: EverydayCapabilityBundle, risk: EverydayActionRisk, input: EverydayActionPreviewInput, ): boolean
+- promoteTrustPatternFromPreview · method · L1374-L1468 — private promoteTrustPatternFromPreview( preview: EverydayActionPreview, ): EverydayTrustPattern | null
+- ensureDefaultManagedAgent · method · L1470-L1565 — private ensureDefaultManagedAgent(workspaceId?: string): { managedAgentId?: string; managedEnvironmentId?: string; }
+- tableExists · method · L1567-L1578 — private tableExists(tableName: string): boolean
+- deleteRowsIfTableExists · method · L1580-L1590 — private deleteRowsIfTableExists(tableName: string, whereSql: string, ...args: unknown[]): number
+- clearMemoryCandidateData · method · L1592-L1601 — private clearMemoryCandidateData(profileId: string): number
+- clearRoutineProvenance · method · L1603-L1658 — private clearRoutineProvenance(profile: EverydayAgentProfile): number
+- writeReceipt · method · L1660-L1743 — private writeReceipt(input: { profileId: string; workspaceId?: string; capability: EverydayCapabilityBundle; riskClass: EverydayActionRisk; status: EverydayReceiptStatus; title: string; summary: string; sourceSignals: string[]; approvalId?: string; previewId?: string; toolCalls: EverydayActionReceipt["toolCalls"]; externalIds: string[]; retryState?: EverydayActionReceipt["retryState"]; idempotencyKey: string; result?: Record<string, unknown>; }): EverydayActionReceipt
+- mapReceipt · method · L1745-L1771 — private mapReceipt(row: JsonRecord): EverydayActionReceipt
+- mapTrustPattern · method · L1773-L1794 — private mapTrustPattern(row: JsonRecord): EverydayTrustPattern
+- emptyPreview · method · L1796-L1817 — private emptyPreview(profileId: string): EverydayActionPreview
+- inferCapability · method · L1819-L1835 — private inferCapability(input: EverydayActionPreviewInput): EverydayCapabilityBundle
+- approvalReason · method · L1837-L1848 — private approvalReason(profile: EverydayAgentProfile, risk: EverydayActionRisk): string
+- defaultMutationSummary · method · L1850-L1858 — private defaultMutationSummary( input: EverydayActionPreviewInput, risk: EverydayActionRisk, ): string
+- bundleLabel · method · L1860-L1865 — private bundleLabel(capability: EverydayCapabilityBundle): string

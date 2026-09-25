@@ -1,0 +1,34 @@
+# src/electron/agents/AgentRoleRepository.ts
+
+- Any · type · L24-L24 — type Any = any;
+- safeJsonParse · function · L30-L38 — function safeJsonParse<T>(jsonString: string | null, defaultValue: T, context?: string): T
+- defaultHeartbeatProfile · function · L40-L44 — function defaultHeartbeatProfile(autonomyLevel?: AgentAutonomyLevel): HeartbeatProfile
+- derivePulseEveryMinutes · function · L46-L51 — function derivePulseEveryMinutes( requestedPulseEveryMinutes?: number, fallbackHeartbeatIntervalMinutes?: number, ): number
+- deriveDispatchCooldownMinutes · function · L53-L59 — function deriveDispatchCooldownMinutes( autonomyLevel?: AgentAutonomyLevel, requestedCooldown?: number, ): number
+- deriveMaxDispatchesPerDay · function · L61-L67 — function deriveMaxDispatchesPerDay( autonomyLevel?: AgentAutonomyLevel, requestedBudget?: number, ): number
+- defaultRoleKind · function · L69-L71 — function defaultRoleKind(isSystem: boolean): AgentRoleKind
+- extractTemplateMetadata · function · L73-L105 — function extractTemplateMetadata(soul?: string): { primaryCategories: CognitiveOffloadCategory[]; proactiveTasks: unknown[]; sourceTemplateId?: string; sourceTemplateVersion?: string; }
+- mergeAutomationProfileMetadataIntoSoul · function · L107-L135 — function mergeAutomationProfileMetadataIntoSoul( soul: string | undefined, heartbeatPolicy?: CreateAgentRoleRequest["heartbeatPolicy"], ): string | undefined
+- AgentRoleRepository · class · L140-L1011 — class AgentRoleRepository
+- constructor · method · L143-L145 — constructor(private db: Database.Database)
+- buildHeartbeatPolicyAlias · method · L147-L191 — private buildHeartbeatPolicyAlias(role: AgentRole): HeartbeatPolicy | undefined
+- attachHeartbeatPolicy · method · L193-L216 — private attachHeartbeatPolicy(role: AgentRole): AgentRole
+- create · method · L221-L382 — create(request: CreateAgentRoleRequest): AgentRole
+- findById · method · L387-L391 — findById(id: string): AgentRole | undefined
+- findByName · method · L396-L400 — findByName(name: string): AgentRole | undefined
+- findAll · method · L405-L413 — findAll(includeInactive = false): AgentRole[]
+- findActive · method · L418-L420 — findActive(): AgentRole[]
+- findByCompanyId · method · L422-L444 — findByCompanyId(companyId: string | null, includeInactive = false): AgentRole[]
+- update · method · L449-L585 — update(request: UpdateAgentRoleRequest): AgentRole | undefined
+- delete · method · L593-L630 — delete(id: string): boolean
+- seedDefaults · method · L635-L723 — seedDefaults(): AgentRole[]
+- hasAny · method · L728-L732 — hasAny(): boolean
+- syncNewDefaults · method · L738-L832 — syncNewDefaults(): AgentRole[]
+- mapRowToAgentRole · method · L837-L907 — private mapRowToAgentRole(row: Any): AgentRole
+- findHeartbeatEnabled · method · L914-L919 — findHeartbeatEnabled(): AgentRole[]
+- updateHeartbeatConfig · method · L924-L944 — updateHeartbeatConfig(id: string, config: HeartbeatConfig): AgentRole | undefined
+- updateHeartbeatStatus · method · L949-L954 — updateHeartbeatStatus(id: string, status: HeartbeatStatus, lastHeartbeatAt?: number): void
+- updateHeartbeatRunTimestamps · method · L956-L967 — updateHeartbeatRunTimestamps( id: string, updates: { lastPulseAt?: number; lastDispatchAt?: number; lastHeartbeatAt?: number; lastPulseResult?: AgentRole["lastPulseResult"]; lastDispatchKind?: AgentRole["lastDispatchKind"]; }, ): void
+- updateSoul · method · L972-L982 — updateSoul(id: string, soul: string): AgentRole | undefined
+- updateAutonomyLevel · method · L987-L999 — updateAutonomyLevel(id: string, level: AgentAutonomyLevel): AgentRole | undefined
+- findByAutonomyLevel · method · L1004-L1010 — findByAutonomyLevel(level: AgentAutonomyLevel): AgentRole[]

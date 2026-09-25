@@ -1,0 +1,29 @@
+# src/electron/knowledge-graph/KnowledgeGraphService.ts
+
+- asString · function · L23-L27 — function asString(value: unknown): string | undefined
+- asStringArray · function · L29-L33 — function asStringArray(value: unknown): string[]
+- compactText · function · L35-L40 — function compactText(text: string, max = 240): string
+- normalizeEdgeTime · function · L42-L44 — function normalizeEdgeTime(value: number | undefined, fallback: number): number
+- KnowledgeGraphService · class · L46-L597 — class KnowledgeGraphService
+- initialize · method · L51-L55 — static initialize(db: Database.Database): void
+- isInitialized · method · L57-L59 — static isInitialized(): boolean
+- getRepo · method · L61-L66 — private static getRepo(): KnowledgeGraphRepository
+- createEntity · method · L70-L115 — static createEntity( workspaceId: string, input: CreateEntityInput, source: "manual" | "auto" | "agent" = "agent", sourceTaskId?: string, ): KGEntity
+- updateEntity · method · L117-L124 — static updateEntity(input: UpdateEntityInput): KGEntity | undefined
+- deleteEntity · method · L126-L128 — static deleteEntity(entityId: string): boolean
+- getEntity · method · L130-L132 — static getEntity(entityId: string): KGEntity | undefined
+- createEdge · method · L136-L206 — static createEdge( workspaceId: string, input: CreateEdgeInput, source: "manual" | "auto" | "agent" = "agent", sourceTaskId?: string, ): KGEdge
+- deleteEdge · method · L208-L210 — static deleteEdge(edgeId: string): boolean
+- invalidateEdge · method · L212-L214 — static invalidateEdge(edgeId: string, validTo = Date.now()): KGEdge | undefined
+- addObservation · method · L218-L232 — static addObservation( input: AddObservationInput, source: "manual" | "auto" | "agent" = "agent", sourceTaskId?: string, ): KGObservation
+- search · method · L236-L238 — static search(workspaceId: string, query: string, limit = 10): KGSearchResult[]
+- getNeighbors · method · L240-L247 — static getNeighbors( entityId: string, depth = 1, edgeTypes?: string[], asOf?: number, ): KGNeighborResult[]
+- getSubgraph · method · L249-L251 — static getSubgraph(entityIds: string[], asOf?: number): KGSubgraph
+- getStats · method · L253-L255 — static getStats(workspaceId: string): KGStats
+- getEntityTypes · method · L257-L259 — static getEntityTypes(workspaceId: string)
+- getObservations · method · L261-L263 — static getObservations(entityId: string, limit = 20): KGObservation[]
+- ingestMailboxEvent · method · L265-L438 — static ingestMailboxEvent(workspaceId: string, event: MailboxEvent): void
+- buildContextForTask · method · L446-L491 — static buildContextForTask(workspaceId: string, taskPrompt: string): string
+- extractEntitiesFromTaskResult · method · L500-L573 — static extractEntitiesFromTaskResult( workspaceId: string, taskId: string, taskPrompt: string, resultSummary: string, ): void
+- maybeRunDecay · method · L580-L590 — private static maybeRunDecay(workspaceId: string): void
+- runDecay · method · L592-L596 — static runDecay(workspaceId: string): number

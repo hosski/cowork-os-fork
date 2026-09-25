@@ -1,0 +1,67 @@
+# src/electron/gateway/channels/email-client.ts
+
+- readKeychainCerts · function · L40-L54 — function readKeychainCerts(keychains: string[]): string[]
+- getSystemCA · function · L56-L76 — function getSystemCA(): string[]
+- DecodedMimeEntity · type · L78-L81 — type DecodedMimeEntity = { plainText?: string; html?: string; };
+- normalizeMimeLineEndings · function · L83-L85 — function normalizeMimeLineEndings(value: string): string
+- sanitizeHeaderValue · function · L88-L90 — function sanitizeHeaderValue(value: string): string
+- parseHeaderBlock · function · L92-L109 — function parseHeaderBlock(headerText: string): Map<string, string>
+- unquoteMimeParam · function · L111-L121 — function unquoteMimeParam(value: string): string
+- parseContentTypeHeader · function · L123-L143 — function parseContentTypeHeader(header: string | undefined): { mimeType: string; boundary?: string; charset?: string; }
+- splitMultipartBody · function · L145-L182 — function splitMultipartBody(body: string, boundary: string): string[]
+- stripHtml · function · L184-L203 — function stripHtml(html: string): string
+- decodeQuotedPrintable · function · L205-L220 — function decodeQuotedPrintable(text: string): Buffer
+- countUtf8MojibakeHints · function · L222-L225 — function countUtf8MojibakeHints(text: string): number
+- repairUtf8Mojibake · function · L227-L241 — function repairUtf8Mojibake(text: string): string
+- countReplacementCharacters · function · L243-L245 — function countReplacementCharacters(text: string): number
+- decodeWithTextDecoder · function · L247-L253 — function decodeWithTextDecoder(buffer: Buffer, charset: string): string | null
+- isValidUtf8 · function · L255-L262 — function isValidUtf8(buffer: Buffer): boolean
+- decodeLegacyFallback · function · L264-L291 — function decodeLegacyFallback( buffer: Buffer, previousText: string, options?: { requireInvalidUtf8?: boolean }, ): string
+- decodeMimeBuffer · function · L293-L326 — function decodeMimeBuffer(buffer: Buffer, charset?: string): string
+- extractImapLiteral · function · L328-L351 — function extractImapLiteral(response: string, section: "HEADER" | "TEXT"): string
+- quoteImapString · function · L353-L355 — function quoteImapString(value: string): string
+- parseSearchUids · function · L357-L367 — function parseSearchUids(response: string): number[]
+- EmailMessage · interface · L372-L401 — interface EmailMessage
+- EmailAddress · interface · L406-L409 — interface EmailAddress
+- EmailAttachment · interface · L414-L419 — interface EmailAttachment
+- EmailClientOptions · interface · L424-L455 — interface EmailClientOptions
+- EmailClient · class · L463-L1423 — class EmailClient extends EventEmitter
+- constructor · method · L475-L481 — constructor(options: EmailClientOptions)
+- resolveAccessToken · method · L483-L493 — private async resolveAccessToken(): Promise<string>
+- getImapAuthCommand · method · L495-L506 — private async getImapAuthCommand(): Promise<string>
+- getSmtpAuthCommand · method · L508-L519 — private async getSmtpAuthCommand(): Promise<string>
+- checkConnection · method · L524-L535 — async checkConnection(): Promise<{ success: boolean; email?: string; error?: string }>
+- startReceiving · method · L540-L557 — async startReceiving(): Promise<void>
+- connectImap · method · L562-L621 — private async connectImap(): Promise<void>
+- connect · function · L564-L617 — connect = ()
+- handleImapData · method · L626-L636 — private handleImapData(data: string): void
+- resetImapConnection · method · L638-L646 — private resetImapConnection(): void
+- waitForResponse · method · L651-L683 — private async waitForResponse(expectedType: string): Promise<string>
+- cb · function · L658-L670 — cb = (buffer: string): boolean
+- imapCommand · method · L688-L722 — private async imapCommand(command: string): Promise<string>
+- selectMailbox · method · L727-L734 — private async selectMailbox(): Promise<void>
+- startPolling · method · L739-L749 — private startPolling(): void
+- checkNewEmails · method · L754-L793 — private async checkNewEmails(): Promise<void>
+- fetchEmail · method · L798-L815 — private async fetchEmail(uid: number): Promise<EmailMessage | null>
+- fetchUnreadEmails · method · L821-L853 — async fetchUnreadEmails(limit: number): Promise<EmailMessage[]>
+- fetchRecentEmails · method · L855-L886 — async fetchRecentEmails(limit: number): Promise<EmailMessage[]>
+- parseEmailResponse · method · L891-L943 — private parseEmailResponse(response: string, uid: number): EmailMessage | null
+- parseEmailAddress · method · L948-L960 — private parseEmailAddress(header: string): EmailAddress
+- parseEmailAddresses · method · L965-L971 — private parseEmailAddresses(header: string): EmailAddress[]
+- decodeHeader · method · L976-L990 — private decodeHeader(header: string): string
+- decodeBody · method · L995-L1000 — private decodeBody(text: string): string
+- decodeMimeBody · method · L1002-L1066 — private decodeMimeBody( raw: string, contentTypeHeader?: string, transferEncodingHeader?: string, ): DecodedMimeEntity
+- decodeMimeText · method · L1068-L1088 — private decodeMimeText(body: string, transferEncoding: string, charset?: string): string
+- disconnectImap · method · L1093-L1106 — private async disconnectImap(): Promise<void>
+- stopReceiving · method · L1111-L1120 — async stopReceiving(): Promise<void>
+- sendEmail · method · L1125-L1357 — async sendEmail(options: { to: string | string[]; cc?: string | string[]; bcc?: string | string[]; subject: string; text?: string; html?: string; inReplyTo?: string; references?: string[]; attachments?: EmailAttachment[]; }): Promise<string>
+- connectSmtp · function · L1215-L1353 — connectSmtp = ()
+- attachSmtpHandlers · function · L1241-L1345 — attachSmtpHandlers = (activeSocket: net.Socket | tls.TLSSocket)
+- markAsRead · method · L1362-L1364 — async markAsRead(uid: number): Promise<void>
+- markAsUnread · method · L1369-L1371 — async markAsUnread(uid: number): Promise<void>
+- markMessageIdAsRead · method · L1373-L1375 — async markMessageIdAsRead(messageId: string): Promise<number | null>
+- markMessageIdAsUnread · method · L1377-L1379 — async markMessageIdAsUnread(messageId: string): Promise<number | null>
+- markMessageIdReadState · method · L1381-L1393 — private async markMessageIdReadState(messageId: string, read: boolean): Promise<number | null>
+- withSelectedMailbox · method · L1395-L1408 — private async withSelectedMailbox<T>(operation: () => Promise<T>): Promise<T>
+- isConnected · method · L1413-L1415 — isConnected(): boolean
+- getEmail · method · L1420-L1422 — getEmail(): string

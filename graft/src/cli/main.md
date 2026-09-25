@@ -1,0 +1,73 @@
+# src/cli/main.ts
+
+- Any · type · L42-L42 — type Any = Record<string, any>;
+- ParsedArgs · interface · L44-L48 — interface ParsedArgs
+- CommandContext · interface · L50-L58 — interface CommandContext
+- main · function · L130-L256 — async function main(argv = process.argv.slice(2)): Promise<number>
+- parseArgs · function · L258-L285 — function parseArgs(argv: string[]): ParsedArgs
+- parseInteractiveCommand · function · L287-L296 — function parseInteractiveCommand(input: string): string[]
+- interactive · function · L298-L324 — async function interactive(initialArgv: string[]): Promise<number>
+- printBanner · function · L326-L328 — function printBanner(): void
+- getCliVersion · function · L330-L344 — function getCliVersion(): string
+- splitCommandLine · function · L346-L387 — function splitCommandLine(input: string): string[]
+- resolveConnectionWithLocalDiscovery · function · L389-L414 — function resolveConnectionWithLocalDiscovery( connection: ResolvedConnection, parsed: ParsedArgs, ): { connection: ResolvedConnection; discoveryError?: string; discoverySource?: string; autoDiscovered?: boolean; }
+- doctor · function · L416-L452 — async function doctor(ctx: CommandContext): Promise<number>
+- version · function · L454-L456 — async function version(ctx: CommandContext): Promise<number>
+- status · function · L458-L460 — async function status(ctx: CommandContext): Promise<number>
+- login · function · L462-L477 — function login(ctx: CommandContext): number
+- logout · function · L479-L484 — function logout(ctx: CommandContext): number
+- whoami · function · L486-L514 — function whoami(ctx: CommandContext): number
+- configCommand · function · L516-L524 — function configCommand(ctx: CommandContext): number
+- daemon · function · L526-L559 — async function daemon(ctx: CommandContext): Promise<number>
+- workspace · function · L561-L614 — async function workspace(ctx: CommandContext): Promise<number>
+- runTask · function · L616-L673 — async function runTask(ctx: CommandContext): Promise<number>
+- runDirectTaskProcess · function · L675-L677 — function runDirectTaskProcess(ctx: CommandContext, prompt: string): Promise<number>
+- runDirectDetachedTaskProcess · function · L679-L713 — async function runDirectDetachedTaskProcess(ctx: CommandContext, prompt: string): Promise<number>
+- buildDirectTaskArgs · function · L715-L733 — function buildDirectTaskArgs(ctx: CommandContext, prompt: string): string[]
+- waitForDetachedReadyFile · function · L735-L756 — async function waitForDetachedReadyFile( readyFile: string, timeoutMs: number, ): Promise<{ taskId?: string; title?: string; status?: string; workspaceId?: string } | null>
+- runDirectCommandProcess · function · L758-L778 — function runDirectCommandProcess(ctx: CommandContext, directArgs: string[]): Promise<number>
+- resolveDirectRuntime · function · L780-L797 — function resolveDirectRuntime(): { executable: string; scriptPath: string; appPath: string; usesElectron: boolean; }
+- tail · function · L799-L826 — async function tail(ctx: CommandContext): Promise<number>
+- approvals · function · L828-L853 — async function approvals(ctx: CommandContext): Promise<number>
+- pulse · function · L855-L864 — async function pulse(ctx: CommandContext): Promise<number>
+- respondApproval · function · L866-L886 — async function respondApproval(ctx: CommandContext, approved: boolean): Promise<number>
+- runLocalApprovalResponseProcess · function · L888-L941 — function runLocalApprovalResponseProcess( ctx: CommandContext, approvalId: string, approved: boolean, ): Promise<number>
+- finish · function · L916-L926 — finish = (code: number)
+- providers · function · L943-L1034 — async function providers(ctx: CommandContext): Promise<number>
+- sessions · function · L1036-L1103 — async function sessions(ctx: CommandContext): Promise<number>
+- tasks · function · L1105-L1188 — async function tasks(ctx: CommandContext): Promise<number>
+- logs · function · L1190-L1209 — async function logs(ctx: CommandContext): Promise<number>
+- tools · function · L1211-L1222 — async function tools(ctx: CommandContext): Promise<number>
+- mcp · function · L1224-L1251 — async function mcp(ctx: CommandContext): Promise<number>
+- skills · function · L1253-L1265 — async function skills(ctx: CommandContext): Promise<number>
+- models · function · L1267-L1273 — async function models(ctx: CommandContext): Promise<number>
+- backup · function · L1275-L1300 — async function backup(ctx: CommandContext): Promise<number>
+- security · function · L1302-L1443 — async function security(ctx: CommandContext): Promise<number>
+- remoteAgentSecurity · function · L1445-L1541 — async function remoteAgentSecurity(ctx: CommandContext, sub: string): Promise<number>
+- promptSize · function · L1543-L1547 — async function promptSize(ctx: CommandContext): Promise<number>
+- promptPreview · function · L1549-L1553 — async function promptPreview(ctx: CommandContext): Promise<number>
+- completions · function · L1555-L1559 — function completions(ctx: CommandContext): number
+- dashboard · function · L1561-L1566 — async function dashboard(ctx: CommandContext): Promise<number>
+- openCommand · function · L1568-L1577 — async function openCommand(ctx: CommandContext): Promise<number>
+- connectedClient · function · L1579-L1618 — async function connectedClient(ctx: CommandContext): Promise<ControlPlaneClient>
+- createClient · function · L1620-L1626 — function createClient(ctx: CommandContext): ControlPlaneClient
+- resolveWorkspaceId · function · L1628-L1655 — async function resolveWorkspaceId( client: ControlPlaneClient, ctx: CommandContext, cwd: string, ): Promise<string>
+- streamTask · function · L1657-L1702 — async function streamTask( client: ControlPlaneClient, taskId: string, limit: number, json = false, ): Promise<number>
+- onSignal · function · L1695-L1698 — onSignal = ()
+- printLinesOrJson · function · L1704-L1710 — function printLinesOrJson(ctx: CommandContext, jsonValue: unknown, lines: string[]): void
+- formatConfigWarnings · function · L1712-L1716 — function formatConfigWarnings(config: unknown): string[]
+- formatProviders · function · L1718-L1728 — function formatProviders(llm: Any): string[]
+- parseLimit · function · L1730-L1732 — function parseLimit(ctx: CommandContext, fallback: number, flag = "--limit"): number
+- parseDays · function · L1734-L1738 — function parseDays(ctx: CommandContext, fallback: number): number
+- sessionPruneDirectArgs · function · L1740-L1766 — function sessionPruneDirectArgs(ctx: CommandContext): string[]
+- pushValue · function · L1742-L1746 — pushValue = (flag: string, directFlag = flag)
+- sanitizeLimit · function · L1768-L1771 — function sanitizeLimit(value: number, fallback: number): number
+- providerEnvKey · function · L1773-L1776 — function providerEnvKey(providerType: string): string
+- isLikelyCommandPrompt · function · L1809-L1812 — function isLikelyCommandPrompt(prompt: string): boolean
+- usageError · function · L1814-L1817 — function usageError(message: string): number
+- launchDesktopApp · function · L1819-L1839 — function launchDesktopApp(extraArgs: string[]): Promise<number>
+- renderCompletions · function · L1841-L1886 — function renderCompletions(shell: string): string
+- getFlag · function · L1888-L1891 — function getFlag(parsed: ParsedArgs, flag: string): string | undefined
+- hasFlag · function · L1893-L1895 — function hasFlag(parsed: ParsedArgs, flag: string): boolean
+- handleError · function · L1897-L1909 — function handleError(error: unknown): number
+- usage · function · L1911-L1971 — function usage(): void

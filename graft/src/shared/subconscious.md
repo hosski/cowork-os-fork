@@ -1,0 +1,41 @@
+# src/shared/subconscious.ts
+
+- SubconsciousTargetKind · type · L1-L6 — type SubconsciousTargetKind = | "global" | "workspace" | "agent_role" | "code_workspace" | "pull_request";
+- SubconsciousRunStage · type · L8-L16 — type SubconsciousRunStage = | "collecting_evidence" | "ideating" | "critiquing" | "synthesizing" | "dispatching" | "completed" | "blocked" | "failed";
+- SubconsciousRunOutcome · type · L18-L26 — type SubconsciousRunOutcome = | "sleep" | "suggest" | "dispatch" | "notify" | "defer" | "dismiss" | "blocked" | "failed";
+- SubconsciousHypothesisStatus · type · L28-L28 — type SubconsciousHypothesisStatus = "proposed" | "rejected" | "winner";
+- SubconsciousCritiqueVerdict · type · L29-L29 — type SubconsciousCritiqueVerdict = "support" | "mixed" | "reject";
+- SubconsciousBacklogStatus · type · L30-L30 — type SubconsciousBacklogStatus = "open" | "dispatched" | "done" | "rejected";
+- SubconsciousDispatchKind · type · L31-L31 — type SubconsciousDispatchKind = "task" | "suggestion" | "notify" | "code_change_task";
+- SubconsciousDispatchStatus · type · L32-L37 — type SubconsciousDispatchStatus = | "queued" | "dispatched" | "completed" | "failed" | "skipped";
+- SubconsciousHealth · type · L38-L38 — type SubconsciousHealth = "healthy" | "watch" | "blocked";
+- SubconsciousTargetState · type · L39-L39 — type SubconsciousTargetState = "idle" | "active" | "stale";
+- SubconsciousBrainStatus · type · L40-L40 — type SubconsciousBrainStatus = "idle" | "running" | "paused";
+- SubconsciousAutonomyMode · type · L41-L44 — type SubconsciousAutonomyMode = | "recommendation_first" | "balanced_autopilot" | "strong_autonomy";
+- SubconsciousPersistence · type · L45-L45 — type SubconsciousPersistence = "sessionOnly" | "durable";
+- SubconsciousMissedRunPolicy · type · L46-L46 — type SubconsciousMissedRunPolicy = "skip" | "catchUp" | "reconsider";
+- SubconsciousRiskLevel · type · L47-L47 — type SubconsciousRiskLevel = "low" | "medium" | "high";
+- SubconsciousPermissionDecision · type · L48-L48 — type SubconsciousPermissionDecision = "allowed" | "escalated" | "blocked";
+- SubconsciousNotificationIntent · type · L49-L52 — type SubconsciousNotificationIntent = | "input_needed" | "important_action_taken" | "completed_while_away";
+- SubconsciousMemoryBucket · type · L53-L59 — type SubconsciousMemoryBucket = | "user_preference" | "project_state" | "open_thread" | "reliable_pattern" | "watch_item" | "stale_or_invalidated";
+- SubconsciousJournalEntryKind · type · L60-L66 — type SubconsciousJournalEntryKind = | "observation" | "decision" | "action" | "notification" | "sleep" | "dream";
+- SubconsciousTargetRef · interface · L68-L77 — interface SubconsciousTargetRef
+- SubconsciousEvidence · interface · L79-L88 — interface SubconsciousEvidence
+- SubconsciousRun · interface · L90-L113 — interface SubconsciousRun
+- SubconsciousHypothesis · interface · L115-L126 — interface SubconsciousHypothesis
+- SubconsciousCritique · interface · L128-L138 — interface SubconsciousCritique
+- SubconsciousDecision · interface · L140-L152 — interface SubconsciousDecision
+- SubconsciousJournalEntry · interface · L154-L164 — interface SubconsciousJournalEntry
+- SubconsciousMemoryItem · interface · L166-L179 — interface SubconsciousMemoryItem
+- SubconsciousDreamArtifact · interface · L181-L189 — interface SubconsciousDreamArtifact
+- SubconsciousBacklogItem · interface · L191-L202 — interface SubconsciousBacklogItem
+- SubconsciousDispatchRecord · interface · L204-L217 — interface SubconsciousDispatchRecord
+- SubconsciousTargetSummary · interface · L219-L239 — interface SubconsciousTargetSummary
+- SubconsciousTargetDetail · interface · L241-L253 — interface SubconsciousTargetDetail
+- SubconsciousBrainSummary · interface · L255-L265 — interface SubconsciousBrainSummary
+- SubconsciousModelRouting · interface · L267-L272 — interface SubconsciousModelRouting
+- SubconsciousDispatchDefaults · interface · L274-L277 — interface SubconsciousDispatchDefaults
+- SubconsciousExecutorPolicy · interface · L279-L289 — interface SubconsciousExecutorPolicy
+- SubconsciousSettings · interface · L291-L316 — interface SubconsciousSettings
+- SubconsciousRefreshResult · interface · L318-L321 — interface SubconsciousRefreshResult
+- SubconsciousHistoryResetResult · interface · L323-L334 — interface SubconsciousHistoryResetResult

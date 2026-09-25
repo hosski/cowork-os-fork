@@ -1,0 +1,42 @@
+# src/electron/agent/runtime/PermissionEngine.ts
+
+- PermissionEngineRequest · interface · L62-L79 — interface PermissionEngineRequest
+- PermissionFacts · type · L81-L101 — type PermissionFacts = { toolName: string; normalizedPath: string; normalizedCommand: string; normalizedServerName: string; normalizedDomain: string; isReadOnly: boolean; isWriteLike: boolean; isWorkspaceWriteLike: boolean; isDeleteLike: boolean; isShell: boolean; isExternalFileAccess: boolean; isDataExport: boolean; isExternalSideEffect: boolean; isProtectedCredential: boolean; isNetworkAccess: boolean; isNonWorkspaceInteraction: boolean; isMcp: boolean; isLocationAccess: boolean; isExplicitConsentRequired: boolean; };
+- RuntimeAccessProfile · type · L103-L108 — type RuntimeAccessProfile = { sandbox?: AccessSandboxMode; approval?: AccessApprovalPolicy; reviewer?: AccessReviewer; network?: AccessNetworkMode; };
+- AccessPolicyVersion · type · L110-L110 — type AccessPolicyVersion = "legacy" | "boundary" | "shadow";
+- PermissionEngine · class · L249-L1577 — class PermissionEngine
+- evaluate · method · L250-L373 — static evaluate(request: PermissionEngineRequest): PermissionEvaluationResult
+- evaluateHardPolicies · method · L375-L517 — private static evaluateHardPolicies( request: PermissionEngineRequest, facts: PermissionFacts, ): { decision: PermissionEffect; reason: PermissionDecisionReason } | null
+- evaluateProfileDomainBoundary · method · L519-L561 — private static evaluateProfileDomainBoundary( request: PermissionEngineRequest, facts: PermissionFacts, ): { decision: PermissionEffect; reason: PermissionDecisionReason } | null
+- getAccessPolicyVersion · method · L568-L573 — private static getAccessPolicyVersion(request: PermissionEngineRequest): AccessPolicyVersion
+- getRuntimeAccessProfile · method · L575-L597 — private static getRuntimeAccessProfile( request: PermissionEngineRequest, ): RuntimeAccessProfile | undefined
+- withAccessProfileApprovalPolicy · method · L599-L647 — private static withAccessProfileApprovalPolicy( request: PermissionEngineRequest, facts: PermissionFacts, result: { decision: PermissionEffect; reason: PermissionDecisionReason; matchedRule?: PermissionRule; metadata?: Record<string, unknown>; }, ): PermissionEvaluationResult
+- requiresNetworkApproval · method · L649-L669 — private static requiresNetworkApproval( request: PermissionEngineRequest, facts: PermissionFacts, ): boolean
+- isRoutineNetworkRead · method · L671-L685 — private static isRoutineNetworkRead(facts: PermissionFacts): boolean
+- profileDomainGrantMatches · method · L687-L701 — private static profileDomainGrantMatches( request: PermissionEngineRequest, facts: PermissionFacts, ): boolean
+- externalFileCrossesBoundary · method · L703-L715 — private static externalFileCrossesBoundary( request: PermissionEngineRequest, facts: PermissionFacts, ): boolean
+- externalFileMutationRequested · method · L717-L727 — private static externalFileMutationRequested( request: PermissionEngineRequest, facts: PermissionFacts, ): boolean
+- evaluateNamedProfileDefaults · method · L735-L791 — private static evaluateNamedProfileDefaults( request: PermissionEngineRequest, facts: PermissionFacts, ): { decision: PermissionEffect; reason: PermissionDecisionReason } | null
+- evaluateFilesystemBoundary · method · L800-L828 — private static evaluateFilesystemBoundary( request: PermissionEngineRequest, facts: PermissionFacts, ): { decision: PermissionEffect; reason: PermissionDecisionReason } | null
+- extractFilesystemOperations · method · L830-L963 — private static extractFilesystemOperations( request: PermissionEngineRequest, toolName: string, ): Array<{ path: string; operation: AccessFilesystemOperation }>
+- add · function · L841-L846 — add = (value: unknown, operation: AccessFilesystemOperation): void
+- addMany · function · L847-L850 — addMany = (value: unknown, operation: AccessFilesystemOperation): void
+- firstString · function · L851-L856 — firstString = (...values: unknown[]): string | undefined
+- isNetworkBoundaryFact · method · L965-L977 — private static isNetworkBoundaryFact(facts: PermissionFacts): boolean
+- evaluateModeDefaults · method · L979-L1125 — private static evaluateModeDefaults( mode: PermissionMode, facts: PermissionFacts, ): { decision: PermissionEffect; reason: PermissionDecisionReason }
+- buildFacts · method · L1127-L1235 — private static buildFacts(request: PermissionEngineRequest): PermissionFacts
+- isWorkspaceWriteTool · method · L1237-L1264 — private static isWorkspaceWriteTool(toolName: string): boolean
+- isMutatingTool · method · L1266-L1294 — private static isMutatingTool(toolName: string): boolean
+- isNonWorkspaceInteractionTool · method · L1296-L1306 — private static isNonWorkspaceInteractionTool( toolName: string, approvalType?: ApprovalType, ): boolean
+- isReadOnlyHttpRequest · method · L1308-L1314 — private static isReadOnlyHttpRequest(toolInput: unknown, toolName: string): boolean
+- extractHttpMethod · method · L1316-L1321 — private static extractHttpMethod(toolInput: unknown): string
+- isDangerousOnlySafeCommand · method · L1323-L1350 — private static isDangerousOnlySafeCommand(command: string): boolean
+- isDangerousOnlyPromptWorthy · method · L1352-L1372 — private static isDangerousOnlyPromptWorthy(facts: PermissionFacts): boolean
+- extractCommand · method · L1374-L1378 — private static extractCommand(toolInput: unknown): string
+- extractPath · method · L1380-L1387 — private static extractPath(toolInput: unknown): string
+- normalizePathAgainstWorkspace · method · L1389-L1395 — private static normalizePathAgainstWorkspace(workspacePath: string, rawPath: string): string
+- findBestRule · method · L1397-L1425 — private static findBestRule( rules: PermissionRule[], facts: PermissionFacts, ): PermissionRule | undefined
+- ruleMatches · method · L1427-L1452 — private static ruleMatches(rule: PermissionRule, facts: PermissionFacts): boolean
+- buildSuggestions · method · L1454-L1525 — private static buildSuggestions( allowPersistence: boolean, facts: PermissionFacts, ): PermissionPromptActionOption[]
+- buildScopePreview · method · L1527-L1533 — private static buildScopePreview( request: PermissionEngineRequest, facts: PermissionFacts, ): string
+- inferScope · method · L1535-L1576 — static inferScope( request: PermissionEngineRequest, facts = this.buildFacts(request), ): PermissionRuleScope

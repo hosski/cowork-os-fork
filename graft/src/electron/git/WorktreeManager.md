@@ -1,0 +1,21 @@
+# src/electron/git/WorktreeManager.ts
+
+- WorktreeManager · class · L25-L435 — class WorktreeManager
+- constructor · method · L31-L34 — constructor(private db: Database.Database)
+- getInstance · method · L36-L38 — static getInstance(): WorktreeManager | null
+- getSettings · method · L43-L69 — getSettings(): WorktreeSettings
+- saveSettings · method · L74-L86 — saveSettings(settings: WorktreeSettings): void
+- loadLegacySettings · method · L88-L102 — private loadLegacySettings(): WorktreeSettings | null
+- shouldUseWorktree · method · L108-L122 — async shouldUseWorktree( workspacePath: string, isTemp?: boolean, requireIsolation = false, ): Promise<boolean>
+- getWorktreeStoragePath · method · L130-L133 — async getWorktreeStoragePath(workspacePath: string): Promise<string>
+- createForTask · method · L139-L191 — async createForTask( taskId: string, taskTitle: string, workspaceId: string, workspacePath: string, ): Promise<WorktreeInfo>
+- commitTaskChanges · method · L197-L215 — async commitTaskChanges( taskId: string, message?: string, ): Promise<{ sha: string; filesChanged: number } | null>
+- mergeToBase · method · L220-L262 — async mergeToBase(taskId: string): Promise<MergeResult>
+- openPullRequest · method · L267-L299 — async openPullRequest( taskId: string, options: { title: string; body: string }, ): Promise<PullRequestResult>
+- cleanup · method · L304-L336 — async cleanup(taskId: string, deleteBranch?: boolean): Promise<void>
+- getWorktreeInfo · method · L341-L343 — getWorktreeInfo(taskId: string): WorktreeInfo | undefined
+- listForWorkspace · method · L348-L350 — listForWorkspace(workspaceId: string): WorktreeInfo[]
+- getDiffStats · method · L355-L364 — async getDiffStats(taskId: string)
+- getFullDiff · method · L369-L378 — async getFullDiff(taskId: string): Promise<string | null>
+- ensureGitignore · method · L385-L415 — private async ensureGitignore(repoPath: string, workspacePath: string): Promise<void>
+- resolveRepoPath · method · L421-L434 — private async resolveRepoPath(info: WorktreeInfo): Promise<string>

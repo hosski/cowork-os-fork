@@ -1,0 +1,27 @@
+# src/shared/health.ts
+
+- HealthSourceKind · type · L1-L1 — type HealthSourceKind = "wearable" | "lab" | "record" | "manual";
+- HealthSourceConnectionMode · type · L2-L2 — type HealthSourceConnectionMode = "native" | "import";
+- HealthKitPermissionState · type · L3-L9 — type HealthKitPermissionState = | "not-determined" | "authorized" | "denied" | "restricted" | "import-only" | "unavailable";
+- HealthWritebackType · type · L10-L20 — type HealthWritebackType = | "steps" | "sleep" | "heart_rate" | "hrv" | "weight" | "workout" | "labs" | "glucose" | "nutrition" | "custom";
+- HealthSourceProvider · type · L22-L30 — type HealthSourceProvider = | "apple-health" | "fitbit" | "oura" | "garmin" | "whoop" | "lab-results" | "medical-records" | "custom";
+- HealthSourceStatus · type · L32-L32 — type HealthSourceStatus = "connected" | "syncing" | "needs-auth" | "disabled" | "error";
+- HealthWorkflowType · type · L34-L38 — type HealthWorkflowType = | "marathon-training" | "visit-prep" | "nutrition-plan" | "trend-analysis";
+- HealthInsightSeverity · type · L40-L40 — type HealthInsightSeverity = "info" | "watch" | "action";
+- HealthMetricKey · type · L42-L54 — type HealthMetricKey = | "steps" | "sleep_minutes" | "resting_hr" | "hrv" | "training_load" | "weight" | "glucose" | "a1c" | "ldl" | "hdl" | "triglycerides" | "symptom_score";
+- HealthSourceTemplate · interface · L56-L62 — interface HealthSourceTemplate
+- HealthSource · interface · L64-L87 — interface HealthSource
+- HealthMetric · interface · L89-L99 — interface HealthMetric
+- HealthRecord · interface · L101-L112 — interface HealthRecord
+- HealthSyncEvent · interface · L114-L121 — interface HealthSyncEvent
+- HealthInsight · interface · L123-L132 — interface HealthInsight
+- HealthWorkflowSection · interface · L134-L137 — interface HealthWorkflowSection
+- HealthWorkflow · interface · L139-L148 — interface HealthWorkflow
+- HealthState · interface · L150-L158 — interface HealthState
+- HealthDashboard · interface · L160-L177 — interface HealthDashboard
+- HealthSourceInput · interface · L179-L187 — interface HealthSourceInput
+- HealthSyncResult · interface · L189-L198 — interface HealthSyncResult
+- HealthWorkflowRequest · interface · L200-L203 — interface HealthWorkflowRequest
+- HealthWritebackItem · interface · L205-L214 — interface HealthWritebackItem
+- HealthWritebackPreview · interface · L216-L222 — interface HealthWritebackPreview
+- HealthWritebackRequest · interface · L224-L227 — interface HealthWritebackRequest

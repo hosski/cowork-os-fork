@@ -1,0 +1,35 @@
+# src/electron/knowledge-graph/KnowledgeGraphRepository.ts
+
+- safeJsonParse · function · L14-L21 — function safeJsonParse<T>(jsonString: string | null | undefined, defaultValue: T): T
+- clamp · function · L23-L25 — function clamp(value: number, min: number, max: number): number
+- buildValidityFilter · function · L27-L39 — function buildValidityFilter( asOf: number | undefined, columnPrefix = "", ): { clause: string; params: Any[] }
+- intervalStart · function · L41-L43 — function intervalStart(edge: Pick<KGEdge, "createdAt" | "validFrom">): number
+- intervalEnd · function · L45-L47 — function intervalEnd(edge: Pick<KGEdge, "validTo">): number | null
+- intervalsOverlap · function · L49-L58 — function intervalsOverlap( left: Pick<KGEdge, "createdAt" | "validFrom" | "validTo">, right: Pick<KGEdge, "createdAt" | "validFrom" | "validTo">, ): boolean
+- KnowledgeGraphRepository · class · L60-L705 — class KnowledgeGraphRepository
+- constructor · method · L61-L61 — constructor(private db: Database.Database)
+- getEntityTypes · method · L65-L71 — getEntityTypes(workspaceId: string): KGEntityType[]
+- getEntityTypeByName · method · L73-L79 — getEntityTypeByName(workspaceId: string, name: string): KGEntityType | undefined
+- getOrCreateEntityType · method · L81-L103 — getOrCreateEntityType(workspaceId: string, name: string, description?: string): KGEntityType
+- createEntity · method · L107-L153 — createEntity( workspaceId: string, entityTypeId: string, name: string, description?: string, properties?: Record<string, unknown>, confidence = 1.0, source: "manual" | "auto" | "agent" = "manual", sourceTaskId?: string, ): KGEntity
+- getEntity · method · L155-L164 — getEntity(entityId: string): KGEntity | undefined
+- getEntityByName · method · L166-L175 — getEntityByName(workspaceId: string, entityTypeId: string, name: string): KGEntity | undefined
+- updateEntity · method · L177-L209 — updateEntity( entityId: string, patch: { description?: string; properties?: Record<string, unknown>; confidence?: number; }, ): KGEntity | undefined
+- deleteEntity · method · L211-L228 — deleteEntity(entityId: string): boolean
+- createEdge · method · L232-L309 — createEdge( workspaceId: string, sourceEntityId: string, targetEntityId: string, edgeType: string, properties?: Record<string, unknown>, confidence = 1.0, source: "manual" | "auto" | "agent" = "manual", sourceTaskId?: string, validFrom?: number, validTo?: number, ): KGEdge
+- getEdge · method · L311-L315 — getEdge(edgeId: string): KGEdge | undefined
+- deleteEdge · method · L317-L320 — deleteEdge(edgeId: string): boolean
+- invalidateEdge · method · L322-L337 — invalidateEdge(edgeId: string, validTo = Date.now()): KGEdge | undefined
+- getRelationEdges · method · L339-L357 — getRelationEdges( workspaceId: string, sourceEntityId: string, targetEntityId: string, edgeType: string, ): KGEdge[]
+- getEdgesBetween · method · L359-L369 — getEdgesBetween(entityId1: string, entityId2: string, asOf?: number): KGEdge[]
+- addObservation · method · L373-L397 — addObservation( entityId: string, content: string, source: "manual" | "auto" | "agent" = "manual", sourceTaskId?: string, ): KGObservation
+- getObservations · method · L399-L405 — getObservations(entityId: string, limit = 20): KGObservation[]
+- searchEntities · method · L409-L460 — searchEntities(workspaceId: string, query: string, limit = 10): KGSearchResult[]
+- getNeighbors · method · L464-L527 — getNeighbors( entityId: string, depth = 1, edgeTypes?: string[], asOf?: number, ): KGNeighborResult[]
+- getSubgraph · method · L531-L566 — getSubgraph(entityIds: string[], asOf?: number): KGSubgraph
+- applyConfidenceDecay · method · L570-L587 — applyConfidenceDecay(workspaceId: string, decayRate = 0.95, floorConfidence = 0.3): number
+- getStats · method · L591-L638 — getStats(workspaceId: string): KGStats
+- mapEntityType · method · L642-L653 — private mapEntityType(row: Any): KGEntityType
+- mapEntity · method · L655-L670 — private mapEntity(row: Any): KGEntity
+- mapEdge · method · L672-L693 — private mapEdge(row: Any): KGEdge
+- mapObservation · method · L695-L704 — private mapObservation(row: Any): KGObservation

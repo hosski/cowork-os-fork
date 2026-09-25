@@ -1,0 +1,39 @@
+# src/electron/gateway/channels/teams.ts
+
+- MessageDeduplicationCache · class · L36-L76 — class MessageDeduplicationCache
+- constructor · method · L41-L44 — constructor(ttlMs: number = 60000)
+- has · method · L46-L54 — has(messageId: string): boolean
+- add · method · L56-L58 — add(messageId: string): void
+- cleanup · method · L60-L67 — private cleanup(): void
+- destroy · method · L69-L75 — destroy(): void
+- TeamsAdapter · class · L78-L808 — class TeamsAdapter implements ChannelAdapter
+- constructor · method · L95-L98 — constructor(config: TeamsConfig)
+- status · method · L100-L102 — get status(): ChannelStatus
+- botUsername · method · L104-L106 — get botUsername(): string | undefined
+- connect · method · L111-L160 — async connect(): Promise<void>
+- startWebhookServer · method · L165-L211 — private async startWebhookServer(): Promise<void>
+- processIncomingActivity · method · L216-L245 — private async processIncomingActivity( req: http.IncomingMessage, res: http.ServerResponse, body: string, ): Promise<void>
+- handleActivity · method · L250-L275 — private async handleActivity(context: TurnContext): Promise<void>
+- handleMessage · method · L280-L338 — private async handleMessage(context: TurnContext, activity: Activity): Promise<void>
+- getAttachmentTypeFromMime · method · L340-L347 — private getAttachmentTypeFromMime(mimeType?: string): MessageAttachment["type"]
+- getAttachmentTypeFromFilename · method · L349-L356 — private getAttachmentTypeFromFilename(fileName?: string): MessageAttachment["type"]
+- downloadToBuffer · method · L358-L386 — private async downloadToBuffer( url: string, maxBytes = 25 * 1024 * 1024, ): Promise<{ data: Buffer; mimeType?: string } | null>
+- extractAttachments · method · L388-L457 — private async extractAttachments(activity: Activity): Promise<MessageAttachment[]>
+- handleConversationUpdate · method · L462-L473 — private async handleConversationUpdate(context: TurnContext, activity: Activity): Promise<void>
+- scheduleReconnect · method · L478-L503 — private scheduleReconnect(): void
+- disconnect · method · L508-L527 — async disconnect(): Promise<void>
+- sendMessage · method · L532-L571 — async sendMessage(message: OutgoingMessage): Promise<string>
+- convertMarkdownForTeams · method · L577-L587 — private convertMarkdownForTeams(text: string): string
+- splitMessage · method · L592-L620 — private splitMessage(text: string, maxLength: number): string[]
+- editMessage · method · L625-L644 — async editMessage(chatId: string, messageId: string, text: string): Promise<void>
+- deleteMessage · method · L649-L666 — async deleteMessage(chatId: string, messageId: string): Promise<void>
+- sendDocument · method · L671-L711 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- getContentType · method · L716-L736 — private getContentType(fileName: string): string
+- onMessage · method · L741-L743 — onMessage(handler: MessageHandler): void
+- onError · method · L748-L750 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L755-L757 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L762-L770 — async getInfo(): Promise<ChannelInfo>
+- handleIncomingMessage · method · L774-L786 — private async handleIncomingMessage(message: IncomingMessage): Promise<void>
+- handleError · method · L788-L796 — private handleError(error: Error, context?: string): void
+- setStatus · method · L798-L807 — private setStatus(status: ChannelStatus, error?: Error): void
+- createTeamsAdapter · function · L813-L821 — function createTeamsAdapter(config: TeamsConfig): TeamsAdapter

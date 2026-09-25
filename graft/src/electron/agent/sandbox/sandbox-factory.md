@@ -1,0 +1,21 @@
+# src/electron/agent/sandbox/sandbox-factory.ts
+
+- SandboxType · type · L22-L22 — type SandboxType = "macos" | "docker" | "none";
+- SandboxOptions · interface · L27-L44 — interface SandboxOptions
+- SandboxResult · interface · L49-L56 — interface SandboxResult
+- SandboxedProcess · interface · L63-L66 — interface SandboxedProcess
+- ISandbox · interface · L72-L99 — interface ISandbox
+- NoSandbox · class · L105-L253 — class NoSandbox implements ISandbox
+- constructor · method · L109-L111 — constructor(workspace: Workspace)
+- initialize · method · L113-L115 — async initialize(): Promise<void>
+- execute · method · L117-L200 — async execute( command: string, args: string[] = [], options: SandboxOptions = {}, ): Promise<SandboxResult>
+- spawnProcess · method · L202-L233 — spawnProcess( command: string, args: string[] = [], options: SandboxOptions = {}, ): SandboxedProcess
+- executeCode · method · L235-L248 — async executeCode(code: string, language: "python" | "javascript"): Promise<SandboxResult>
+- cleanup · method · L250-L252 — cleanup(): void
+- isDockerAvailable · function · L266-L313 — async function isDockerAvailable(): Promise<boolean>
+- isMacOSSandboxAvailable · function · L321-L370 — async function isMacOSSandboxAvailable(): Promise<boolean>
+- finish · function · L339-L344 — finish = (available: boolean)
+- detectAvailableSandbox · function · L375-L388 — async function detectAvailableSandbox(): Promise<SandboxType>
+- createSandbox · function · L397-L440 — async function createSandbox( workspace: Workspace, preferredType?: SandboxType | "auto", ): Promise<ISandbox>
+- resetDockerCache · function · L445-L448 — function resetDockerCache(): void
+- resetMacOSSandboxCache · function · L450-L453 — function resetMacOSSandboxCache(): void

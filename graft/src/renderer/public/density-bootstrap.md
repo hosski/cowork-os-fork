@@ -1,0 +1,3 @@
+# src/renderer/public/density-bootstrap.js
+
+_No extracted symbols in this file._

@@ -1,0 +1,16 @@
+# scripts/build_numbat_runtime.mjs
+
+- fail · function · L67-L70 — function fail(message)
+- normalizeMacMachO · function · L72-L89 — function normalizeMacMachO(buffer)
+- sha256 · function · L91-L113 — function sha256(filePath, { stripMacSignature = false } = {})
+- verifyFile · function · L115-L121 — function verifyFile(filePath, expected, label, options = {})
+- run · function · L123-L139 — function run(command, args, options = {})
+- tarPath · function · L141-L144 — function tarPath(filePath)
+- tarSupportsForceLocal · function · L146-L157 — function tarSupportsForceLocal()
+- tarArgs · function · L161-L163 — function tarArgs(args)
+- download · function · L165-L179 — async function download(url, outputPath, expectedSha256, label)
+- hostTarget · function · L181-L183 — function hostTarget()
+- findGo · function · L185-L202 — function findGo(cacheDir)
+- ensureGo · function · L204-L236 — async function ensureGo(cacheDir)
+- recommendedRules · function · L238-L262 — function recommendedRules(sourceRoot)
+- verifyGeneratedTarget · function · L264-L285 — function verifyGeneratedTarget(targetKey)

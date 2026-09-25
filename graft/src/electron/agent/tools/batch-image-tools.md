@@ -1,0 +1,22 @@
+# src/electron/agent/tools/batch-image-tools.ts
+
+- Any · type · L22-L22 — type Any = any;
+- ImageOutputFormat · type · L26-L26 — type ImageOutputFormat = "png" | "jpeg" | "webp";
+- WatermarkPosition · type · L27-L32 — type WatermarkPosition = | "top-left" | "top-right" | "bottom-left" | "bottom-right" | "center";
+- BatchImageOperation · interface · L34-L47 — interface BatchImageOperation
+- BatchImageResult · interface · L49-L55 — interface BatchImageResult
+- BatchImageTools · class · L63-L493 — class BatchImageTools
+- constructor · method · L64-L68 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L70-L72 — setWorkspace(workspace: Workspace): void
+- getFileApprovalHandlers · method · L74-L95 — private getFileApprovalHandlers(): WorkspaceFilesystemApprovalHandlers
+- isProtectedWritePath · method · L97-L99 — private isProtectedWritePath(absolutePath: string): boolean
+- ensureReadablePath · method · L101-L141 — private async ensureReadablePath(inputPath: string): Promise<string>
+- ensureWritablePath · method · L143-L181 — private async ensureWritablePath(outputPath: string): Promise<string>
+- batchProcess · method · L183-L280 — async batchProcess(input: { inputPaths: string[]; operations: BatchImageOperation[]; outputDir?: string; }): Promise<BatchImageResult>
+- resolveOutputExtension · method · L282-L291 — private resolveOutputExtension(inputPath: string, operations: BatchImageOperation[]): string
+- applyOperation · method · L293-L311 — private async applyOperation( inputPath: string, outputPath: string, op: BatchImageOperation, ): Promise<void>
+- resize · method · L313-L332 — private async resize( inputPath: string, outputPath: string, op: BatchImageOperation, ): Promise<void>
+- convert · method · L334-L364 — private async convert( inputPath: string, outputPath: string, op: BatchImageOperation, ): Promise<void>
+- watermark · method · L366-L408 — private async watermark( inputPath: string, outputPath: string, op: BatchImageOperation, ): Promise<void>
+- positionToGravity · method · L410-L419 — private positionToGravity(position: WatermarkPosition): string
+- getToolDefinitions · method · L423-L492 — static getToolDefinitions(): LLMTool[]

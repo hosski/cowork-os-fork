@@ -1,0 +1,48 @@
+# src/electron/agent/tools/browser-tools.ts
+
+- Any · type · L41-L41 — type Any = any;
+- BrowserProvider · type · L42-L42 — type BrowserProvider = "local" | "browser-use-cloud";
+- getWhatsAppCompatibilityIssue · function · L44-L65 — function getWhatsAppCompatibilityIssue(content: { url?: string; title?: string; text?: string })
+- BrowserUseCloudSessionState · interface · L67-L78 — interface BrowserUseCloudSessionState
+- BrowserTools · class · L83-L2845 — class BrowserTools
+- constructor · method · L102-L112 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, private browserWorkbenchService: BrowserWorkbenchService = getBrowserWorkbenchService(), )
+- setWorkspace · method · L118-L133 — setWorkspace(workspace: Workspace): void
+- getTimeoutMs · method · L135-L142 — private getTimeoutMs(input: unknown): number | undefined
+- getSessionId · method · L144-L149 — private getSessionId(input: unknown): string | undefined
+- selectBrowserActionsWithJev · method · L151-L272 — private async selectBrowserActionsWithJev( input: Record<string, unknown>, actions: Array<Record<string, unknown>>, ): Promise<Array<Record<string, unknown>> | null>
+- syncVisibleAccessPolicy · method · L274-L282 — private syncVisibleAccessPolicy(input?: unknown): void
+- validateDebuggerUrl · method · L284-L300 — private validateDebuggerUrl(rawUrl: string): string
+- ensureVisibleNavigationAllowed · method · L302-L329 — private async ensureVisibleNavigationAllowed(rawUrl: unknown): Promise<string>
+- hasExplicitRealBrowserConsent · method · L331-L338 — private hasExplicitRealBrowserConsent(input: unknown): boolean
+- isSystemBrowserProfileRequest · method · L340-L345 — private isSystemBrowserProfileRequest(input: unknown): boolean
+- resolveWorkspaceReadablePath · method · L347-L362 — private async resolveWorkspaceReadablePath(rawPath: unknown): Promise<string>
+- resolveBrowserOutputPath · method · L364-L382 — private async resolveBrowserOutputPath( filename: unknown, fallbackName: string, label: string, ): Promise<{ path: string; externalApprovalGranted: boolean }>
+- shouldPreferVisibleWorkbench · method · L384-L404 — private shouldPreferVisibleWorkbench(input: unknown): boolean
+- hasExplicitVisibleWorkbenchRequest · method · L406-L409 — private hasExplicitVisibleWorkbenchRequest(input: unknown): boolean
+- canStartVisibleWorkbench · method · L411-L428 — private canStartVisibleWorkbench(input: unknown): boolean
+- visibleWorkbenchApprovalKey · method · L430-L432 — private visibleWorkbenchApprovalKey(input: unknown): string
+- requestVisibleWorkbenchApproval · method · L434-L456 — private async requestVisibleWorkbenchApproval(input: unknown, url: string): Promise<boolean>
+- shouldUseVisibleWorkbenchForNavigation · method · L458-L469 — private async shouldUseVisibleWorkbenchForNavigation(input: unknown): Promise<boolean>
+- isBrowserUseCloudProviderRequested · method · L471-L476 — private isBrowserUseCloudProviderRequested(input: unknown): boolean
+- isBrowserUseCloudConfigured · method · L478-L483 — private isBrowserUseCloudConfigured(): boolean
+- shouldRouteToBrowserUseCloud · method · L485-L487 — private shouldRouteToBrowserUseCloud(input: unknown): boolean
+- isBrowserUseCloudConfiguredForToolSchema · method · L489-L491 — private static isBrowserUseCloudConfiguredForToolSchema(): boolean
+- getBrowserUseCloudSettings · method · L493-L495 — private getBrowserUseCloudSettings(): BrowserUseCloudSettings
+- getBrowserUseCloudClient · method · L497-L503 — private getBrowserUseCloudClient(): BrowserUseCloudClient | null
+- readBrowserUseCloudOptions · method · L505-L556 — private readBrowserUseCloudOptions(input: unknown): { profileId?: string | null; proxyCountryCode?: string | null; timeoutMinutes?: number; browserScreenWidth?: number; browserScreenHeight?: number; allowResizing?: boolean; enableRecording?: boolean; }
+- browserUseSessionMatches · method · L558-L572 — private browserUseSessionMatches( existing: BrowserUseCloudSessionState | null, next: ReturnType<BrowserTools["readBrowserUseCloudOptions"]>, ): boolean
+- isRetryableBrowserUseCloudSessionError · method · L574-L579 — private isRetryableBrowserUseCloudSessionError(error: unknown): boolean
+- ensureBrowserUseCloudConfigured · method · L581-L641 — private async ensureBrowserUseCloudConfigured( input: unknown, ): Promise<BrowserUseCloudSessionState>
+- stopBrowserUseCloudSession · method · L643-L657 — private async stopBrowserUseCloudSession(): Promise<BrowserUseBrowserSession | null>
+- stopBrowserUseCloudSessionById · method · L659-L664 — private async stopBrowserUseCloudSessionById( client: BrowserUseCloudClient, sessionId: string, ): Promise<BrowserUseBrowserSession>
+- isProfileLaunchConflict · method · L666-L671 — private isProfileLaunchConflict(error: unknown): boolean
+- profileLaunchConflictResult · method · L673-L687 — private profileLaunchConflictResult(error: unknown): Any
+- resetLocalBrowserToDefaults · method · L689-L701 — private resetLocalBrowserToDefaults(): void
+- hasVisibleWorkbenchSession · method · L703-L705 — private hasVisibleWorkbenchSession(input: unknown): boolean
+- getPersistentUserDataDir · method · L707-L724 — private getPersistentUserDataDir(profile: string): string
+- getSystemChromeUserDataDir · method · L726-L736 — private getSystemChromeUserDataDir(): string
+- ensureBrowserConfigured · method · L738-L805 — private async ensureBrowserConfigured(opts: { headless?: unknown; profile?: unknown; browser_channel?: unknown; debugger_url?: unknown; }): Promise<void>
+- getToolDefinitions · method · L810-L1541 — static getToolDefinitions()
+- executeTool · method · L1546-L2829 — async executeTool(toolName: string, input: Any): Promise<Any>
+- isBrowserTool · method · L2834-L2836 — static isBrowserTool(toolName: string): boolean
+- cleanup · method · L2841-L2844 — async cleanup(): Promise<void>

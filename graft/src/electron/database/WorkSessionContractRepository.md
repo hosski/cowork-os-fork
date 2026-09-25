@@ -1,0 +1,77 @@
+# src/electron/database/WorkSessionContractRepository.ts
+
+- DbRow · type · L31-L31 — type DbRow = Record<string, unknown>;
+- requiredId · function · L103-L107 — function requiredId(value: unknown, label: string): string
+- optionalText · function · L109-L113 — function optionalText(value: unknown, max = MAX_TEXT_LENGTH): string | undefined
+- optionalId · function · L115-L117 — function optionalId(value: unknown): string | undefined
+- boundedNumber · function · L119-L122 — function boundedNumber(value: unknown, fallback = 0): number
+- clampConfidence · function · L124-L126 — function clampConfidence(value: unknown): number
+- parseJson · function · L128-L135 — function parseJson<T>(value: unknown, fallback: T): T
+- sanitizeMetadata · function · L137-L144 — function sanitizeMetadata(value: unknown, depth = 0): Record<string, unknown> | undefined
+- stableCanonicalize · function · L146-L156 — function stableCanonicalize(value: unknown): unknown
+- stableChecksum · function · L158-L162 — function stableChecksum(value: unknown): string
+- normalizeOutcomeStatus · function · L164-L169 — function normalizeOutcomeStatus(value: unknown): OutcomeContractStatus
+- normalizeRequirementKind · function · L171-L176 — function normalizeRequirementKind(value: unknown): OutcomeContractRequirementKind
+- normalizeRequirementStatus · function · L178-L183 — function normalizeRequirementStatus(value: unknown): OutcomeContractRequirementStatus
+- normalizeConstraintKind · function · L185-L190 — function normalizeConstraintKind(value: unknown): ConstraintLedgerEntryKind
+- normalizeConstraintStatus · function · L192-L197 — function normalizeConstraintStatus(value: unknown): ConstraintLedgerEntryStatus
+- normalizeEvidenceStatus · function · L199-L204 — function normalizeEvidenceStatus(value: unknown): EvidenceManifestEntryStatus
+- normalizeArtifactStatus · function · L206-L211 — function normalizeArtifactStatus(value: unknown): ArtifactRevisionStatus
+- normalizeWaitKind · function · L213-L216 — function normalizeWaitKind(value: unknown): WaitStateKind
+- normalizeWaitStatus · function · L218-L221 — function normalizeWaitStatus(value: unknown): WaitStateStatus
+- normalizeChildStatus · function · L223-L228 — function normalizeChildStatus(value: unknown): WorkSessionChildStatus
+- normalizeChildOutcome · function · L230-L235 — function normalizeChildOutcome(value: unknown): WorkSessionChildOutcome | undefined
+- OutcomeContractRequirementInput · interface · L237-L245 — interface OutcomeContractRequirementInput
+- CreateOutcomeContractInput · interface · L247-L255 — interface CreateOutcomeContractInput
+- UpdateOutcomeContractInput · interface · L257-L262 — interface UpdateOutcomeContractInput
+- ConstraintLedgerEntryInput · interface · L264-L275 — interface ConstraintLedgerEntryInput
+- EvidenceManifestEntryInput · interface · L277-L292 — interface EvidenceManifestEntryInput
+- ArtifactRevisionInput · interface · L294-L308 — interface ArtifactRevisionInput
+- WaitStateInput · interface · L310-L321 — interface WaitStateInput
+- ChildSessionLinkInput · interface · L323-L332 — interface ChildSessionLinkInput
+- WorkSessionContractRepositoryOptions · interface · L334-L336 — interface WorkSessionContractRepositoryOptions
+- WorkSessionContractRepository · class · L338-L1330 — class WorkSessionContractRepository
+- constructor · method · L341-L346 — constructor( private readonly db: Database.Database, options: WorkSessionContractRepositoryOptions = {}, )
+- createOutcomeContract · method · L348-L393 — createOutcomeContract(input: CreateOutcomeContractInput): OutcomeContract
+- findOutcomeContract · method · L395-L411 — findOutcomeContract(sessionId: string, version?: number): OutcomeContract | undefined
+- listOutcomeContracts · method · L413-L420 — listOutcomeContracts(sessionId: string): OutcomeContract[]
+- updateOutcomeContract · method · L422-L450 — updateOutcomeContract(id: string, input: UpdateOutcomeContractInput): OutcomeContract
+- appendConstraint · method · L452-L496 — appendConstraint(input: ConstraintLedgerEntryInput): ConstraintLedgerEntry
+- updateConstraint · method · L498-L528 — updateConstraint( id: string, updates: Partial<Pick<ConstraintLedgerEntry, "status" | "statement" | "owner" | "metadata">>, ): ConstraintLedgerEntry
+- listConstraints · method · L530-L547 — listConstraints( sessionId: string, options?: { status?: ConstraintLedgerEntryStatus }, ): ConstraintLedgerEntry[]
+- getConstraintLedger · method · L549-L556 — getConstraintLedger(sessionId: string): ConstraintLedger
+- appendEvidence · method · L558-L615 — appendEvidence(input: EvidenceManifestEntryInput): EvidenceManifestEntry
+- listEvidence · method · L617-L643 — listEvidence( sessionId: string, options?: { contractId?: string; claim?: string }, ): EvidenceManifestEntry[]
+- getEvidenceManifest · method · L645-L652 — getEvidenceManifest(sessionId: string): EvidenceManifest
+- createArtifactRevision · method · L654-L718 — createArtifactRevision(input: ArtifactRevisionInput): ArtifactRevision
+- listArtifactRevisions · method · L720-L746 — listArtifactRevisions( sessionId: string, options?: { path?: string; taskId?: string }, ): ArtifactRevision[]
+- findLatestArtifactRevision · method · L748-L757 — findLatestArtifactRevision(sessionId: string, path: string): ArtifactRevision | undefined
+- createWaitState · method · L759-L809 — createWaitState(input: WaitStateInput): WaitState
+- resolveWaitState · method · L811-L839 — resolveWaitState( id: string, status: Extract<WaitStateStatus, "resolved" | "expired" | "cancelled">, payload?: Record<string, unknown>, ): WaitState
+- expireWaitStates · method · L841-L850 — expireWaitStates(now = this.now()): number
+- findWaitStateByRequest · method · L852-L869 — findWaitStateByRequest( sessionId: string, kind: WaitStateKind, requestId: string, ): WaitState | undefined
+- listWaitStates · method · L871-L885 — listWaitStates(sessionId: string, options?: { status?: WaitStateStatus }): WaitState[]
+- linkChildSession · method · L887-L937 — linkChildSession(input: ChildSessionLinkInput): WorkSessionChildLink
+- updateChildSession · method · L939-L977 — updateChildSession( id: string, updates: Partial< Pick<WorkSessionChildLink, "status" | "outcome" | "owner" | "inheritedPolicySnapshot"> >, ): WorkSessionChildLink
+- listChildSessions · method · L979-L986 — listChildSessions(parentSessionId: string): WorkSessionChildLink[]
+- findChildSessionByTask · method · L988-L993 — findChildSessionByTask(childTaskId: string): WorkSessionChildLink | undefined
+- getContractAggregate · method · L995-L1013 — getContractAggregate(sessionId: string): WorkSessionContractAggregate
+- aggregateChildOutcomes · method · L1015-L1053 — aggregateChildOutcomes(parentSessionId: string): WorkSessionChildAggregate
+- normalizeRequirements · method · L1055-L1085 — private normalizeRequirements( requirements: OutcomeContractRequirementInput[] | OutcomeContractRequirement[] | undefined, ): OutcomeContractRequirement[]
+- findOutcomeContractById · method · L1087-L1092 — private findOutcomeContractById(id: string): OutcomeContract | undefined
+- findOutcomeContractByIdempotency · method · L1094-L1104 — private findOutcomeContractByIdempotency( sessionId: string, idempotencyKey: string, ): OutcomeContract | undefined
+- findConstraintById · method · L1106-L1111 — private findConstraintById(id: string): ConstraintLedgerEntry | undefined
+- findConstraintByIdempotency · method · L1113-L1123 — private findConstraintByIdempotency( sessionId: string, idempotencyKey: string, ): ConstraintLedgerEntry | undefined
+- findEvidenceById · method · L1125-L1130 — private findEvidenceById(id: string): EvidenceManifestEntry | undefined
+- findEvidenceByIdempotency · method · L1132-L1140 — private findEvidenceByIdempotency( sessionId: string, idempotencyKey: string, ): EvidenceManifestEntry | undefined
+- findArtifactRevisionById · method · L1142-L1147 — private findArtifactRevisionById(id: string): ArtifactRevision | undefined
+- findArtifactRevisionByIdempotency · method · L1149-L1159 — private findArtifactRevisionByIdempotency( sessionId: string, idempotencyKey: string, ): ArtifactRevision | undefined
+- findWaitStateById · method · L1161-L1166 — private findWaitStateById(id: string): WaitState | undefined
+- findWaitStateByIdempotency · method · L1168-L1178 — private findWaitStateByIdempotency( sessionId: string, idempotencyKey: string, ): WaitState | undefined
+- findChildSessionById · method · L1180-L1185 — private findChildSessionById(id: string): WorkSessionChildLink | undefined
+- mapOutcomeContract · method · L1187-L1207 — private mapOutcomeContract(row: DbRow): OutcomeContract
+- mapConstraint · method · L1209-L1227 — private mapConstraint(row: DbRow): ConstraintLedgerEntry
+- mapEvidence · method · L1229-L1254 — private mapEvidence(row: DbRow): EvidenceManifestEntry
+- mapArtifactRevision · method · L1256-L1276 — private mapArtifactRevision(row: DbRow): ArtifactRevision
+- mapWaitState · method · L1278-L1304 — private mapWaitState(row: DbRow): WaitState
+- mapChildSession · method · L1306-L1329 — private mapChildSession(row: DbRow): WorkSessionChildLink

@@ -1,0 +1,24 @@
+# src/renderer/hooks/useVoiceInput.ts
+
+- VoiceInputState · type · L3-L3 — type VoiceInputState = "idle" | "recording" | "processing";
+- VoiceProvider · type · L4-L4 — type VoiceProvider = "elevenlabs" | "openai" | "azure" | "local";
+- TranscriptionMode · type · L5-L5 — type TranscriptionMode = "provider" | "local_preferred";
+- VoiceSettingsSnapshot · interface · L7-L15 — interface VoiceSettingsSnapshot
+- BrowserSpeechRecognition · interface · L17-L28 — interface BrowserSpeechRecognition
+- SpeechRecognitionAlternativeLike · interface · L30-L32 — interface SpeechRecognitionAlternativeLike
+- SpeechRecognitionResultLike · interface · L34-L37 — interface SpeechRecognitionResultLike
+- SpeechRecognitionResultListLike · interface · L39-L42 — interface SpeechRecognitionResultListLike
+- SpeechRecognitionEventLike · interface · L44-L47 — interface SpeechRecognitionEventLike
+- SpeechRecognitionErrorEventLike · interface · L49-L51 — interface SpeechRecognitionErrorEventLike
+- BrowserSpeechRecognitionCtor · type · L53-L53 — type BrowserSpeechRecognitionCtor = new () => BrowserSpeechRecognition;
+- getSpeechRecognitionCtor · function · L55-L61 — getSpeechRecognitionCtor = (): BrowserSpeechRecognitionCtor | null
+- isElectronRenderer · function · L63-L63 — isElectronRenderer = (): boolean
+- isLocalSpeechRecognitionSupported · function · L65-L66 — isLocalSpeechRecognitionSupported = (): boolean
+- voiceNotConfiguredMessage · function · L68-L71 — voiceNotConfiguredMessage = (): string
+- mapSpeechRecognitionError · function · L79-L97 — mapSpeechRecognitionError = (errorCode?: string): string
+- mapMicrophoneAccessError · function · L99-L109 — mapMicrophoneAccessError = (error: unknown): string
+- canUseRemoteTranscription · function · L111-L128 — canUseRemoteTranscription = (settings: VoiceSettingsSnapshot): boolean
+- canUseConfiguredTranscription · function · L130-L143 — canUseConfiguredTranscription = ( settings: VoiceSettingsSnapshot, localSupported: boolean, ): boolean
+- UseVoiceInputOptions · interface · L145-L156 — interface UseVoiceInputOptions
+- UseVoiceInputReturn · interface · L158-L177 — interface UseVoiceInputReturn
+- useVoiceInput · function · L179-L624 — function useVoiceInput(options: UseVoiceInputOptions = {}): UseVoiceInputReturn

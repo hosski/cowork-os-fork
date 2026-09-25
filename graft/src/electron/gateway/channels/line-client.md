@@ -1,0 +1,30 @@
+# src/electron/gateway/channels/line-client.ts
+
+- LineMessageType · type · L32-L39 — type LineMessageType = | "text" | "image" | "video" | "audio" | "file" | "location" | "sticker";
+- LineSourceType · type · L44-L44 — type LineSourceType = "user" | "group" | "room";
+- LineMessage · interface · L49-L87 — interface LineMessage
+- LineUserProfile · interface · L92-L97 — interface LineUserProfile
+- LineClientOptions · interface · L102-L113 — interface LineClientOptions
+- LineClientEvents · interface · L118-L127 — interface LineClientEvents
+- LineClient · class · L132-L602 — class LineClient extends EventEmitter
+- constructor · method · L141-L144 — constructor(options: LineClientOptions)
+- verifySignature · method · L149-L155 — private verifySignature(body: string, signature: string): boolean
+- checkConnection · method · L160-L170 — async checkConnection(): Promise<{ success: boolean; botId?: string; error?: string }>
+- getBotInfo · method · L175-L182 — async getBotInfo(): Promise<LineUserProfile>
+- startReceiving · method · L187-L234 — async startReceiving(): Promise<void>
+- handleWebhook · method · L239-L281 — private handleWebhook(req: http.IncomingMessage, res: http.ServerResponse): void
+- processEvent · method · L286-L327 — private async processEvent(event: Record<string, unknown>): Promise<void>
+- handleMessageEvent · method · L332-L381 — private async handleMessageEvent(event: Record<string, unknown>): Promise<void>
+- stopReceiving · method · L386-L398 — async stopReceiving(): Promise<void>
+- replyMessage · method · L403-L411 — async replyMessage( replyToken: string, messages: Array<{ type: string; text?: string; [key: string]: unknown }>, ): Promise<void>
+- pushMessage · method · L416-L424 — async pushMessage( to: string, messages: Array<{ type: string; text?: string; [key: string]: unknown }>, ): Promise<void>
+- sendTextMessage · method · L429-L437 — async sendTextMessage(to: string, text: string, replyToken?: string): Promise<void>
+- getUserProfile · method · L442-L460 — async getUserProfile(userId: string): Promise<LineUserProfile>
+- getGroupMemberProfile · method · L465-L472 — async getGroupMemberProfile(groupId: string, userId: string): Promise<LineUserProfile>
+- getRoomMemberProfile · method · L477-L484 — async getRoomMemberProfile(roomId: string, userId: string): Promise<LineUserProfile>
+- leaveGroup · method · L489-L491 — async leaveGroup(groupId: string): Promise<void>
+- leaveRoom · method · L496-L498 — async leaveRoom(roomId: string): Promise<void>
+- getMessageContent · method · L503-L532 — async getMessageContent(messageId: string): Promise<Buffer>
+- apiRequest · method · L537-L587 — private async apiRequest( method: string, path: string, body?: Record<string, unknown>, ): Promise<Record<string, unknown>>
+- isConnected · method · L592-L594 — isConnected(): boolean
+- clearUserCache · method · L599-L601 — clearUserCache(): void

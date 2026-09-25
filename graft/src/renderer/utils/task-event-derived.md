@@ -1,0 +1,45 @@
+# src/renderer/utils/task-event-derived.ts
+
+- RendererEventVisibility · type · L47-L47 — type RendererEventVisibility = "live" | "inspect-only" | "debug-only";
+- CommandOutputSession · interface · L49-L57 — interface CommandOutputSession
+- FileInfo · interface · L59-L63 — interface FileInfo
+- ToolUsage · interface · L65-L69 — interface ToolUsage
+- EventTimelineItem · interface · L71-L76 — interface EventTimelineItem
+- ActionBlockTimelineItem · interface · L78-L84 — interface ActionBlockTimelineItem
+- BaseTimelineItem · type · L86-L86 — type BaseTimelineItem = EventTimelineItem | ActionBlockTimelineItem;
+- ToolCallPairing · interface · L88-L91 — interface ToolCallPairing
+- SharedTaskEventUiState · interface · L93-L121 — interface SharedTaskEventUiState
+- DeriveSharedTaskEventUiStateParams · interface · L123-L131 — interface DeriveSharedTaskEventUiStateParams
+- appendCommandOutputTail · function · L137-L141 — function appendCommandOutputTail(current: string, chunk: string): string
+- limitCommandOutputSessions · function · L143-L153 — function limitCommandOutputSessions(sessions: CommandOutputSession[]): CommandOutputSession[]
+- isLiveAnchorEvent · function · L177-L201 — function isLiveAnchorEvent(event: TaskEvent): boolean
+- liveAnchorKey · function · L203-L223 — function liveAnchorKey(event: TaskEvent): string | null
+- isConversationMessageEvent · function · L225-L228 — function isConversationMessageEvent(event: TaskEvent): boolean
+- selectLiveProjectionRawEvents · function · L230-L257 — function selectLiveProjectionRawEvents(events: TaskEvent[], liveWindowSize: number): TaskEvent[]
+- selectTaskStatusProjectionRawEvents · function · L307-L371 — function selectTaskStatusProjectionRawEvents(events: TaskEvent[]): TaskEvent[]
+- filterLiveProjectionEvents · function · L373-L399 — function filterLiveProjectionEvents(events: TaskEvent[]): TaskEvent[]
+- asObject · function · L401-L404 — function asObject(value: unknown): Record<string, unknown>
+- getAssistantStepDescription · function · L406-L411 — function getAssistantStepDescription(event: TaskEvent): string
+- shouldRevealInternalAssistantMessageInVerbose · function · L413-L425 — function shouldRevealInternalAssistantMessageInVerbose(event: TaskEvent): boolean
+- isVerificationNoiseEvent · function · L427-L448 — function isVerificationNoiseEvent(event: TaskEvent): boolean
+- classifyTaskEventForRenderer · function · L450-L472 — function classifyTaskEventForRenderer( event: TaskEvent, params: { taskStatus?: TaskStatus; verboseSteps?: boolean }, ): RendererEventVisibility
+- getCompletionSummaryText · function · L474-L484 — function getCompletionSummaryText(event: TaskEvent): string
+- normalizeCompletionTextForComparison · function · L486-L499 — function normalizeCompletionTextForComparison(value: string): string
+- getCompletionComparableTexts · function · L501-L514 — function getCompletionComparableTexts(event: TaskEvent): Set<string>
+- deriveChecklistState · function · L516-L575 — function deriveChecklistState(events: TaskEvent[]): SessionChecklistState | null
+- normalizeChecklistState · function · L517-L559 — normalizeChecklistState = (payload: unknown): SessionChecklistState | null
+- normalizeWorkspacePathKey · function · L577-L585 — function normalizeWorkspacePathKey(workspacePath: string | undefined, candidate: string): string
+- deriveOutputSummary · function · L587-L602 — function deriveOutputSummary( task: Task | null | undefined, events: TaskEvent[], ): TaskOutputSummary | null
+- deriveFiles · function · L604-L677 — function deriveFiles( events: TaskEvent[], workspace: Workspace | null | undefined, outputSummary: TaskOutputSummary | null, ): FileInfo[]
+- deriveToolUsage · function · L679-L701 — function deriveToolUsage(events: TaskEvent[]): ToolUsage[]
+- deriveReferencedFiles · function · L703-L717 — function deriveReferencedFiles(events: TaskEvent[]): string[]
+- deriveUsedToolNames · function · L719-L728 — function deriveUsedToolNames(events: TaskEvent[]): Set<string>
+- deriveCommandOutputSessions · function · L730-L802 — function deriveCommandOutputSessions(events: TaskEvent[]): CommandOutputSession[]
+- finalizeCurrentSession · function · L740-L744 — finalizeCurrentSession = ()
+- deriveToolCallPairing · function · L804-L847 — function deriveToolCallPairing( filteredEvents: TaskEvent[], suppressedParallelEventIds: Set<string>, ): ToolCallPairing
+- deriveBaseTimelineItems · function · L849-L961 — function deriveBaseTimelineItems(filteredEvents: TaskEvent[]): BaseTimelineItem[]
+- flushBlock · function · L866-L884 — flushBlock = ()
+- rendersAnAssistantBubble · function · L892-L899 — rendersAnAssistantBubble = (event: TaskEvent)
+- isBoundaryEvent · function · L901-L924 — isBoundaryEvent = (event: TaskEvent)
+- getLatestVisibleTaskEvent · function · L963-L973 — function getLatestVisibleTaskEvent( baseTimelineItems: BaseTimelineItem[], filteredEvents: TaskEvent[], ): TaskEvent | null
+- deriveSharedTaskEventUiState · function · L975-L1093 — function deriveSharedTaskEventUiState( params: DeriveSharedTaskEventUiStateParams, ): SharedTaskEventUiState

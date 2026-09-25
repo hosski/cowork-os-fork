@@ -1,0 +1,35 @@
+# src/electron/routines/workflow/action-executor.ts
+
+- RoutineWorkflowActionExecutorDeps · interface · L18-L42 — interface RoutineWorkflowActionExecutorDeps
+- createRoutineWorkflowActionExecutor · function · L44-L128 — function createRoutineWorkflowActionExecutor(deps: RoutineWorkflowActionExecutorDeps)
+- executeAgentBackedAction · function · L130-L185 — async function executeAgentBackedAction( params: RoutineWorkflowActionExecutorParams, deps: RoutineWorkflowActionExecutorDeps, now: () => number, sleep: (delayMs: number) => Promise<void>, ): Promise<Record<string, unknown>>
+- onAbort · function · L147-L147 — onAbort = ()
+- buildAgentActionPrompt · function · L187-L220 — function buildAgentActionPrompt(operation: string, input: Record<string, unknown>): string
+- executeGmailAction · function · L222-L330 — async function executeGmailAction( operation: string, input: Record<string, unknown>, settings: ReturnType<typeof GoogleWorkspaceSettingsManager.loadSettings>, signal: AbortSignal, ): Promise<Record<string, unknown>>
+- isDirectGoogleWorkspaceOperation · function · L345-L347 — function isDirectGoogleWorkspaceOperation(operation: string): boolean
+- executeGoogleWorkspaceAction · function · L349-L529 — async function executeGoogleWorkspaceAction( operation: string, input: Record<string, unknown>, settings: ReturnType<typeof GoogleWorkspaceSettingsManager.loadSettings>, signal: AbortSignal, ): Promise<Record<string, unknown>>
+- saveGmailAttachmentsToDrive · function · L531-L581 — async function saveGmailAttachmentsToDrive( input: Record<string, unknown>, settings: ReturnType<typeof GoogleWorkspaceSettingsManager.loadSettings>, signal: AbortSignal, ): Promise<Record<string, unknown>>
+- normalizeMcpArguments · function · L583-L618 — function normalizeMcpArguments( operation: string, input: Record<string, unknown>, ): Record<string, Any>
+- normalizeMcpResult · function · L620-L631 — function normalizeMcpResult(result: Any): Record<string, unknown>
+- googleJsonRequest · function · L633-L700 — async function googleJsonRequest( settings: ReturnType<typeof GoogleWorkspaceSettingsManager.loadSettings>, options: { method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"; baseUrl: string; path: string; query?: Record<string, string | number | boolean | undefined>; body?: Record<string, unknown>; signal?: AbortSignal; }, ): Promise<Record<string, Any>>
+- requestOnce · function · L649-L691 — requestOnce = async (accessToken: string)
+- abort · function · L653-L653 — abort = ()
+- normalizeRows · function · L702-L705 — function normalizeRows(value: unknown): unknown[][]
+- normalizeCalendarTime · function · L707-L711 — function normalizeCalendarTime(value: unknown, timeZone?: string): Record<string, unknown>
+- normalizeGoogleResource · function · L713-L716 — function normalizeGoogleResource(value: string, collection: string): string
+- buildRawEmail · function · L718-L741 — function buildRawEmail(input: Record<string, unknown>): string
+- resolveGmailLabelIds · function · L743-L756 — async function resolveGmailLabelIds( settings: Any, names: string[], signal: AbortSignal, ): Promise<string[]>
+- collectAttachmentParts · function · L758-L773 — function collectAttachmentParts( payload: Any, ): Array<{ filename: string; mimeType?: string; attachmentId: string }>
+- decodeBase64Url · function · L775-L778 — function decodeBase64Url(value: string): Uint8Array
+- stringOrCsv · function · L780-L783 — function stringOrCsv(value: unknown): string
+- requireString · function · L785-L789 — function requireString(value: unknown, field: string): string
+- requireStringArray · function · L791-L798 — function requireStringArray(value: unknown, field: string): string[]
+- assertConnectorPolicyAllowsTool · function · L800-L812 — function assertConnectorPolicyAllowsTool( routine: Routine, manager: MCPClientManager, toolName: string, ): void
+- validateMcpToolArguments · function · L814-L822 — function validateMcpToolArguments( manager: MCPClientManager, toolName: string, args: Record<string, unknown>, ): void
+- validateSchemaValue · function · L824-L854 — function validateSchemaValue(value: unknown, schema: Any, path: string): void
+- throwIfAborted · function · L856-L861 — function throwIfAborted(signal: AbortSignal): void
+- abortableSleep · function · L863-L886 — async function abortableSleep( sleep: (delayMs: number) => Promise<void>, delayMs: number, signal: AbortSignal, ): Promise<void>
+- requireRecord · function · L888-L891 — function requireRecord(value: unknown, field: string): Record<string, Any>
+- parsePotentialJson · function · L893-L904 — function parsePotentialJson(value: unknown): Any
+- isRecord · function · L906-L908 — function isRecord(value: unknown): value is Record<string, Any>
+- resolveGoogleSettings · function · L910-L915 — function resolveGoogleSettings(accountEmail?: string)

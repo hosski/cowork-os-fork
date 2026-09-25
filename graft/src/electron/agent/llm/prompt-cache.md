@@ -1,0 +1,34 @@
+# src/electron/agent/llm/prompt-cache.ts
+
+- normalizePromptCachingSettings · function · L36-L62 — function normalizePromptCachingSettings( settings?: PromptCachingSettings | null, ): typeof DEFAULT_PROMPT_CACHING_SETTINGS
+- hashPromptCacheValue · function · L64-L68 — function hashPromptCacheValue(value: unknown): string
+- buildSystemBlock · function · L70-L82 — function buildSystemBlock( stableKey: string, text: string, scope: LLMSystemBlock["scope"], cacheable = scope === "session", ): LLMSystemBlock
+- flattenSystemBlocks · function · L84-L90 — function flattenSystemBlocks(blocks?: LLMSystemBlock[]): string
+- areSystemBlocksEquivalent · function · L92-L110 — function areSystemBlocksEquivalent( left: LLMSystemBlock[] | undefined, right: LLMSystemBlock[] | undefined, ): boolean
+- mergeStableSystemBlocks · function · L112-L127 — function mergeStableSystemBlocks( blocks: LLMSystemBlock[], stableBlocks: LLMSystemBlock[], ): LLMSystemBlock[]
+- computeToolSchemaHash · function · L129-L140 — function computeToolSchemaHash( tools: Pick<LLMTool, "name" | "description" | "input_schema">[], ): string
+- computeStablePrefixHash · function · L142-L175 — function computeStablePrefixHash(params: { providerFamily: PromptCacheProviderFamily; modelId: string; toolSchemaHash: string; executionMode: string; taskDomain: string; systemBlocks: LLMSystemBlock[]; }): string
+- computePromptCacheKey · function · L177-L208 — function computePromptCacheKey(params: { providerFamily: PromptCacheProviderFamily; modelId: string; toolSchemaHash: string; executionMode: string; taskDomain: string; systemBlocks: LLMSystemBlock[]; }): string
+- isLikelyOpenAIModelId · function · L210-L225 — function isLikelyOpenAIModelId(modelId: string): boolean
+- isLikelyAnthropicModelId · function · L227-L229 — function isLikelyAnthropicModelId(modelId: string): boolean
+- isLikelyBedrockNovaModelId · function · L231-L233 — function isLikelyBedrockNovaModelId(modelId: string): boolean
+- isLikelyOpenRouterExplicitCacheModelId · function · L235-L245 — function isLikelyOpenRouterExplicitCacheModelId(modelId: string): boolean
+- resolvePromptCacheProviderFamily · function · L247-L292 — function resolvePromptCacheProviderFamily( providerType: LLMProviderType, modelId: string, ): PromptCacheProviderFamily
+- buildAnthropicCacheMarker · function · L294-L302 — function buildAnthropicCacheMarker(ttl: LLMPromptCacheConfig["ttl"]): { type: "ephemeral"; ttl?: "1h"; }
+- applyAnthropicCacheMarker · function · L304-L335 — function applyAnthropicCacheMarker( message: Record<string, Any>, cacheMarker: Record<string, Any>, nativeAnthropic = false, ): void
+- applyAnthropicExplicitCacheControl · function · L337-L380 — function applyAnthropicExplicitCacheControl<T extends Record<string, Any>>( apiMessages: T[], opts: { ttl: LLMPromptCacheConfig["ttl"]; nativeAnthropic?: boolean; includeSystem?: boolean; maxBreakpoints?: number; }, ): T[]
+- extractAnthropicUsage · function · L382-L414 — function extractAnthropicUsage(usage: Any): | { inputTokens: number; outputTokens: number; cachedTokens?: number; cacheWriteTokens?: number; cacheWriteTtl?: "5m" | "1h"; } | undefined
+- extractOpenAICompatibleCacheUsage · function · L416-L443 — function extractOpenAICompatibleCacheUsage(usage: Any): { cachedTokens?: number; cacheWriteTokens?: number; }
+- mapPromptCacheTtlToOpenAIRetention · function · L445-L449 — function mapPromptCacheTtlToOpenAIRetention( ttl: LLMPromptCacheConfig["ttl"], ): LLMPromptCacheConfig["retention"] | undefined
+- mapPromptCacheTtlToPiAiRetention · function · L451-L456 — function mapPromptCacheTtlToPiAiRetention( promptCache?: LLMPromptCacheConfig, ): "none" | "short" | "long"
+- buildOpenAIPromptCacheFields · function · L458-L501 — function buildOpenAIPromptCacheFields( promptCache?: LLMPromptCacheConfig, modelId?: string, ): { prompt_cache_key?: string; prompt_cache_retention?: "24h"; prompt_cache_options?: { mode: "implicit"; ttl: "30m" }; }
+- buildLegacySystemBlocks · function · L503-L507 — function buildLegacySystemBlocks(system: string): LLMSystemBlock[]
+- normalizeSystemBlocks · function · L509-L524 — function normalizeSystemBlocks( system: string, systemBlocks?: LLMSystemBlock[], ): LLMSystemBlock[]
+- orderSystemBlocksForStablePrefix · function · L531-L539 — function orderSystemBlocksForStablePrefix(blocks: LLMSystemBlock[]): LLMSystemBlock[]
+- splitSystemBlocksForOpenAIPrefix · function · L541-L560 — function splitSystemBlocksForOpenAIPrefix( system: string, systemBlocks?: LLMSystemBlock[], ): { allBlocks: LLMSystemBlock[]; stableText: string; volatileText: string; }
+- prependVolatileSystemContextToMessages · function · L567-L600 — function prependVolatileSystemContextToMessages( messages: LLMMessage[], volatileText: string, ): LLMMessage[]
+- convertSystemBlocksToTextParts · function · L602-L614 — function convertSystemBlocksToTextParts( system: string, systemBlocks?: LLMSystemBlock[], ): Array<{ type: "text"; text: string; cache_control?: ReturnType<typeof buildAnthropicCacheMarker>; }>
+- applyExplicitSystemBlockMarker · function · L616-L633 — function applyExplicitSystemBlockMarker( textParts: Array<{ type: "text"; text: string; cache_control?: ReturnType<typeof buildAnthropicCacheMarker>; }>, systemBlocks: LLMSystemBlock[], ttl: LLMPromptCacheConfig["ttl"], ): void
+- isPromptCacheAutoUnsupportedError · function · L635-L651 — function isPromptCacheAutoUnsupportedError( status: number | undefined, message: string, ): boolean
+- isPromptCacheRequestUnsupportedError · function · L654-L670 — function isPromptCacheRequestUnsupportedError( status: number | undefined, message: string, ): boolean
+- countCacheBreakpoints · function · L672-L689 — function countCacheBreakpoints(messages: LLMMessage[]): number

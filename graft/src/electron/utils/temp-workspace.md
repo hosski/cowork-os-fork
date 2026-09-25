@@ -1,0 +1,23 @@
+# src/electron/utils/temp-workspace.ts
+
+- TempWorkspacePruneOptions · interface · L6-L20 — interface TempWorkspacePruneOptions
+- TempWorkspacePruneResult · interface · L22-L30 — interface TempWorkspacePruneResult
+- TempWorkspaceDirectoryResult · interface · L32-L36 — interface TempWorkspaceDirectoryResult
+- TempWorkspaceRow · interface · L38-L43 — interface TempWorkspaceRow
+- TempDirectoryEntry · interface · L45-L48 — interface TempDirectoryEntry
+- isSafeTempSubPath · function · L68-L73 — isSafeTempSubPath = (candidatePath: string, rootPath: string): boolean
+- sanitizeTempPathSegment · function · L75-L81 — sanitizeTempPathSegment = (raw: string): string
+- isPosix · function · L83-L83 — isPosix = (): boolean
+- ensurePrivateDirectoryMode · function · L85-L95 — ensurePrivateDirectoryMode = (directoryPath: string): void
+- ensureTempWorkspaceRootSync · function · L97-L114 — function ensureTempWorkspaceRootSync(tempWorkspaceRoot: string): string
+- isSafeExistingTempDirectory · function · L116-L129 — isSafeExistingTempDirectory = (candidatePath: string, rootPath: string): boolean
+- ensureTempWorkspaceDirectorySync · function · L131-L157 — function ensureTempWorkspaceDirectorySync(tempWorkspaceRoot: string, slug: string): string
+- ensureTempWorkspaceDirectoryPathSync · function · L159-L172 — function ensureTempWorkspaceDirectoryPathSync( tempWorkspaceRoot: string, workspacePath: string, ): string
+- createUniqueScopedTempWorkspaceDirectorySync · function · L174-L193 — function createUniqueScopedTempWorkspaceDirectorySync( tempWorkspaceRoot: string, scope: string, keyPrefix: string = "session", ): TempWorkspaceDirectoryResult
+- quoteSqlIdentifier · function · L195-L195 — quoteSqlIdentifier = (identifier: string): string
+- deleteRowsByIds · function · L197-L208 — deleteRowsByIds = ( db: Database.Database, tableName: string, columnName: string, ids: string[], ): void
+- deleteWorkspaceAndRelatedData · function · L210-L289 — deleteWorkspaceAndRelatedData = (db: Database.Database, workspaceId: string): boolean
+- hasWorkspaceReferences · function · L291-L310 — hasWorkspaceReferences = ( db: Database.Database, workspaceId: string, activeTaskStatuses: string[], sessionActiveCutoffMs: number, ): boolean
+- listTempDirectories · function · L312-L333 — listTempDirectories = (rootPath: string): TempDirectoryEntry[]
+- pruneTempWorkspaces · function · L335-L616 — function pruneTempWorkspaces(options: TempWorkspacePruneOptions): TempWorkspacePruneResult
+- deleteDirectoryAndStaleRows · function · L534-L574 — deleteDirectoryAndStaleRows = (directoryPath: string): boolean

@@ -1,0 +1,37 @@
+# src/renderer/components/ScheduledTasksSettings.tsx
+
+- CronSchedule · type · L15-L18 — type CronSchedule = | { kind: "at"; atMs: number } | { kind: "every"; everyMs: number; anchorMs?: number } | { kind: "cron"; expr: string; tz?: string };
+- CronDeliveryConfig · interface · L20-L29 — interface CronDeliveryConfig
+- CronJobState · interface · L31-L52 — interface CronJobState
+- CronDeliveryMode · type · L54-L54 — type CronDeliveryMode = "direct" | "outbox";
+- CronDeliverableStatus · type · L55-L55 — type CronDeliverableStatus = "none" | "queued" | "sent" | "dead_letter";
+- CronJobRunMode · type · L56-L56 — type CronJobRunMode = "new_task" | "thread_follow_up";
+- CronRunHistoryEntry · interface · L58-L72 — interface CronRunHistoryEntry
+- CronRunHistoryResult · interface · L74-L81 — interface CronRunHistoryResult
+- CronJob · interface · L83-L102 — interface CronJob
+- CronStatusSummary · interface · L104-L112 — interface CronStatusSummary
+- isWarningLikeLastStatus · function · L114-L122 — function isWarningLikeLastStatus(status?: CronJobState["lastStatus"]): boolean
+- Workspace · interface · L125-L129 — interface Workspace
+- describeSchedule · function · L351-L379 — function describeSchedule(schedule: CronSchedule): string
+- getScheduleIcon · function · L381-L384 — function getScheduleIcon(schedule: CronSchedule)
+- formatRelativeTime · function · L386-L405 — function formatRelativeTime(ms: number): string
+- formatDuration · function · L407-L413 — function formatDuration(ms: number): string
+- formatStatusLabel · function · L415-L438 — function formatStatusLabel(status?: CronJobState["lastStatus"]): string
+- getStatusTone · function · L440-L447 — function getStatusTone( status?: CronJobState["lastStatus"], ): "success" | "warning" | "error" | "muted"
+- getToneColors · function · L449-L476 — function getToneColors(tone: "success" | "warning" | "error" | "muted")
+- getDeliveryLabel · function · L478-L488 — function getDeliveryLabel(job: CronJob, entry?: CronRunHistoryEntry): string
+- getDeliveryTone · function · L490-L500 — function getDeliveryTone( job: CronJob, entry?: CronRunHistoryEntry, ): "success" | "warning" | "error" | "muted"
+- calculateSuccessRate · function · L502-L505 — function calculateSuccessRate(totalRuns?: number, successfulRuns?: number): number | null
+- ScheduledTasksSettingsProps · interface · L796-L798 — interface ScheduledTasksSettingsProps
+- ScheduledTasksSettings · function · L800-L1710 — function ScheduledTasksSettings({ onOpenTask }: ScheduledTasksSettingsProps)
+- handleExpandJob · function · L875-L881 — handleExpandJob = (job: CronJob)
+- handleToggleJob · function · L895-L907 — handleToggleJob = async (job: CronJob, e: React.MouseEvent)
+- handleDeleteJob · function · L909-L923 — handleDeleteJob = async (job: CronJob, e: React.MouseEvent)
+- handleRunNow · function · L925-L942 — handleRunNow = async (job: CronJob, e: React.MouseEvent)
+- handleClearRunHistory · function · L944-L974 — handleClearRunHistory = async (job: CronJob)
+- handleEditJob · function · L976-L980 — handleEditJob = (job: CronJob, e: React.MouseEvent)
+- JobModalProps · interface · L1712-L1717 — interface JobModalProps
+- JobModal · function · L1719-L2578 — function JobModal({ job, workspaces, onClose, onSave }: JobModalProps)
+- loadChannels · function · L1778-L1787 — loadChannels = async ()
+- loadChats · function · L1797-L1804 — loadChats = async ()
+- handleSave · function · L1825-L1929 — handleSave = async ()

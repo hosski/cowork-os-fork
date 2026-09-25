@@ -1,0 +1,43 @@
+# src/electron/improvement/ImprovementCandidateService.ts
+
+- ImprovementCandidateService · class · L33-L1009 — class ImprovementCandidateService
+- constructor · method · L40-L45 — constructor(private readonly db: Database.Database)
+- start · method · L47-L76 — async start(agentDaemon: AgentDaemon): Promise<void>
+- refresh · method · L78-L85 — async refresh(): Promise<{ candidateCount: number }>
+- listCandidates · method · L87-L89 — listCandidates(workspaceId?: string): ImprovementCandidate[]
+- dismissCandidate · method · L91-L106 — dismissCandidate(candidateId: string): ImprovementCandidate | undefined
+- markCandidateRunning · method · L108-L125 — markCandidateRunning(candidateId: string): void
+- markCandidateReview · method · L127-L138 — markCandidateReview(candidateId: string): void
+- markCandidateResolved · method · L140-L151 — markCandidateResolved(candidateId: string): void
+- reopenCandidate · method · L153-L175 — reopenCandidate(candidateId: string): void
+- markCandidateParked · method · L177-L197 — markCandidateParked(candidateId: string, reason: string): void
+- recordCandidateSkip · method · L199-L214 — recordCandidateSkip(candidateId: string, reason: string): void
+- recordCampaignFailure · method · L216-L260 — recordCampaignFailure( candidateId: string, params: { failureClass: ImprovementFailureClass; attemptFingerprint: string; reason?: string }, ): void
+- getTopCandidateForWorkspace · method · L262-L268 — getTopCandidateForWorkspace(workspaceId: string): ImprovementCandidate | undefined
+- rebuildFromRecentSignals · method · L270-L323 — private async rebuildFromRecentSignals(): Promise<void>
+- ingestTaskFailureCandidate · method · L325-L372 — private async ingestTaskFailureCandidate(taskId: string): Promise<void>
+- ingestEventCandidate · method · L374-L429 — private async ingestEventCandidate( taskId: string, source: ImprovementCandidateSource, payload: Any, ): Promise<void>
+- ingestFeedbackCandidate · method · L431-L465 — private async ingestFeedbackCandidate(taskId: string, payload: Any): Promise<void>
+- ingestDevLogs · method · L467-L499 — private async ingestDevLogs(): Promise<void>
+- readLatestDevLogFailure · method · L501-L515 — private readLatestDevLogFailure( latestJsonlPath: string, latestTextPath: string, baseline: number, ): { logPath: string; format: "jsonl" | "text"; lines: string[]; summary: string; fingerprintKey: string; } | null
+- readLatestJsonlDevLogFailure · method · L517-L555 — private readLatestJsonlDevLogFailure( logPath: string, baseline: number, ): { logPath: string; format: "jsonl"; lines: string[]; summary: string; fingerprintKey: string; } | null
+- readLatestTextDevLogFailure · method · L557-L587 — private readLatestTextDevLogFailure( logPath: string, baseline: number, ): { logPath: string; format: "text"; lines: string[]; summary: string; fingerprintKey: string; } | null
+- isUsableDevLogPath · method · L589-L597 — private isUsableDevLogPath(logPath: string, baseline: number): boolean
+- upsertCandidate · method · L599-L716 — private upsertCandidate( workspaceId: string, input: { source: ImprovementCandidateSource; title: string; summary: string; evidence: ImprovementEvidence; lastTaskId?: string; lastEventType?: string; severity: number; fixabilityScore: number; /** When provided, used as the hash input instead of `summary`. * Pass stable structured data (e.g. `failureClass:normalizedTitle`) so * that semantically identical failures always map to the same candidate * regardless of how the LLM words its result summary each time. */ fingerprintKey?: string; }, ): ImprovementCandidate
+- buildFingerprint · method · L718-L721 — private buildFingerprint(source: ImprovementCandidateSource, summary: string): string
+- computePriorityScore · method · L723-L733 — private computePriorityScore( severity: number, recurrenceCount: number, fixabilityScore: number, ): number
+- inferFixabilityScore · method · L735-L749 — private inferFixabilityScore(source: ImprovementCandidateSource, summary: string): number
+- inferTaskSeverity · method · L751-L760 — private inferTaskSeverity(failureClass?: string | null, terminalStatus?: string): number
+- isProviderFailure · method · L762-L764 — private isProviderFailure(failureClass: ImprovementFailureClass): boolean
+- shouldIngestTaskFailure · method · L766-L795 — private shouldIngestTaskFailure( status: string | null | undefined, terminalStatus: string | null | undefined, summary: string, failureClass: string, ): boolean
+- reconcileExistingCandidates · method · L797-L846 — private reconcileExistingCandidates(): void
+- deriveReadiness · method · L848-L900 — private deriveReadiness( candidate: ImprovementCandidate, overrideReason?: string, ): { readiness: ImprovementCandidateReadiness; reason: string }
+- isLikelySuccessOnlyCandidate · method · L902-L911 — private isLikelySuccessOnlyCandidate(candidate: ImprovementCandidate): boolean
+- looksLikeSuccessCheckpoint · method · L913-L917 — private looksLikeSuccessCheckpoint(summary: string): boolean
+- normalizeTaskTitleForFingerprint · method · L919-L929 — private normalizeTaskTitleForFingerprint(title: unknown): string
+- extractFailureSignature · method · L931-L954 — private extractFailureSignature(summary: string, failureClass: string): string
+- normalizeDevLogSignature · method · L956-L966 — private normalizeDevLogSignature(line: string): string
+- getDevLogCandidateFingerprintKey · method · L968-L976 — private getDevLogCandidateFingerprintKey(candidate: ImprovementCandidate): string | undefined
+- parsePayload · method · L978-L993 — private parsePayload(payload: unknown): Record<string, unknown>
+- truncate · method · L995-L998 — private truncate(value: string, max = 280): string
+- getEvidenceKey · method · L1000-L1008 — private getEvidenceKey(evidence: ImprovementEvidence): string

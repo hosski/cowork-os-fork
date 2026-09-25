@@ -1,0 +1,61 @@
+# src/electron/agent/tools/computer-use-tools.ts
+
+- Any · type · L21-L21 — type Any = any;
+- normalizeKeysForBlocklist · function · L44-L49 — function normalizeKeysForBlocklist(keys: string[]): string
+- ComputerUseMouseButton · type · L51-L51 — type ComputerUseMouseButton = "left" | "right" | "wheel" | "back" | "forward";
+- ComputerUseTargetState · interface · L53-L65 — interface ComputerUseTargetState
+- ComputerUseCaptureState · interface · L67-L76 — interface ComputerUseCaptureState
+- PersistedComputerUseState · interface · L78-L81 — interface PersistedComputerUseState
+- ComputerUseToolResult · interface · L83-L101 — interface ComputerUseToolResult
+- ScreenshotSelection · interface · L103-L106 — interface ScreenshotSelection
+- ActionPreparationResult · interface · L108-L112 — interface ActionPreparationResult
+- sleep · function · L114-L118 — function sleep(ms: number): Promise<void>
+- normalizeQuery · function · L120-L124 — function normalizeQuery(value: string | undefined): string
+- formatWindowChoice · function · L126-L128 — function formatWindowChoice(appName: string, windowTitle: string): string
+- exactOrContainsScore · function · L130-L138 — function exactOrContainsScore(value: string | undefined, query: string): number
+- scoreWindow · function · L140-L149 — function scoreWindow(window: ComputerUseHelperWindow): number
+- requireFiniteCoordinate · function · L151-L156 — function requireFiniteCoordinate(label: string, value: number): number
+- requireIntegerInRange · function · L158-L167 — function requireIntegerInRange(label: string, value: number, min: number, max: number): number
+- validatePointInCapture · function · L169-L183 — function validatePointInCapture( x: number, y: number, capture: ComputerUseCaptureState, errorPrefix = "Coordinates", ): void
+- frameDistanceScore · function · L185-L194 — function frameDistanceScore( current: ComputerUseHelperFramePoints, previous: ComputerUseHelperFramePoints, ): number
+- parseKeypressSpec · function · L246-L346 — function parseKeypressSpec(pid: number, keys: string[]): ComputerUseHelperKeypressSpec
+- parseWindowsKeypressSpec · function · L348-L383 — function parseWindowsKeypressSpec(pid: number, keys: string[]): ComputerUseHelperKeypressSpec
+- ComputerUseTools · class · L391-L1455 — class ComputerUseTools
+- constructor · method · L398-L406 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- resetForTesting · method · L408-L411 — static resetForTesting(): void
+- setWorkspace · method · L413-L415 — setWorkspace(workspace: Workspace): void
+- helper · method · L417-L419 — private helper(): ComputerUseProvider
+- session · method · L421-L423 — private session(): ComputerUseSessionManager
+- persistState · method · L425-L430 — private persistState(): void
+- ensureReady · method · L432-L439 — private async ensureReady(): Promise<void>
+- bringTargetToFront · method · L441-L446 — private async bringTargetToFront(target: ComputerUseTargetState): Promise<void>
+- resolveNativeControlMode · method · L448-L452 — private resolveNativeControlMode(): NativeComputerUseMode
+- visibleControlGrantKey · method · L454-L456 — private visibleControlGrantKey(target: ComputerUseTargetState): string
+- hasVisibleControlGrant · method · L458-L464 — private hasVisibleControlGrant(target: ComputerUseTargetState): boolean
+- rememberVisibleControlGrant · method · L466-L473 — private rememberVisibleControlGrant(target: ComputerUseTargetState): void
+- isVisibleControlAllowed · method · L475-L477 — private isVisibleControlAllowed(target: ComputerUseTargetState): boolean
+- requestVisibleControlApproval · method · L479-L502 — private async requestVisibleControlApproval( toolName: string, target: ComputerUseTargetState, reason: string, ): Promise<boolean>
+- ensureVisibleControlAllowed · method · L504-L515 — private async ensureVisibleControlAllowed( toolName: string, target: ComputerUseTargetState, reason: string, ): Promise<void>
+- visibleControlRequiredMessage · method · L517-L519 — private visibleControlRequiredMessage(toolName: string, target: ComputerUseTargetState): string
+- makeCaptureState · method · L521-L537 — private makeCaptureState( target: ComputerUseTargetState, payload: { pngBase64: string; width: number; height: number; scaleFactor: number }, ): ComputerUseCaptureState
+- buildResult · method · L539-L562 — private buildResult(action?: string, note?: string): ComputerUseToolResult
+- captureTarget · method · L564-L607 — private async captureTarget(toolName: string, note?: string): Promise<ComputerUseToolResult>
+- toTargetState · method · L609-L631 — private toTargetState( app: ComputerUseHelperApp, window: ComputerUseHelperWindow, ): ComputerUseTargetState
+- resolveFrontmostTarget · method · L633-L649 — private async resolveFrontmostTarget(): Promise<ComputerUseTargetState>
+- chooseRefreshFallbackWindow · method · L651-L684 — private chooseRefreshFallbackWindow( windows: ComputerUseHelperWindow[], previous: ComputerUseTargetState, ): ComputerUseHelperWindow | null
+- findRetargetedApp · method · L686-L710 — private async findRetargetedApp( previous: ComputerUseTargetState, ): Promise<ComputerUseHelperApp | null>
+- refreshCurrentTarget · method · L712-L767 — private async refreshCurrentTarget(): Promise<ComputerUseTargetState>
+- pickSingleMatch · method · L769-L795 — private pickSingleMatch<T>( entries: T[], getLabel: (entry: T) => string, getScore: (entry: T) => number, emptyMessage: string, ambiguousMessage: string, ): T
+- resolveTargetFromSelection · method · L797-L883 — private async resolveTargetFromSelection( selection: ScreenshotSelection, ): Promise<ComputerUseTargetState>
+- requireCurrentCapture · method · L885-L900 — private requireCurrentCapture(captureId?: string): ComputerUseCaptureState
+- prepareAction · method · L902-L921 — private async prepareAction( toolName: string, captureId?: string, ): Promise<ActionPreparationResult>
+- screenshot · method · L923-L944 — async screenshot(selection: ScreenshotSelection = {}): Promise<ComputerUseToolResult>
+- click · method · L946-L1018 — async click( x: number, y: number, button: ComputerUseMouseButton = "left", captureId?: string, ): Promise<ComputerUseToolResult>
+- doubleClick · method · L1020-L1046 — async doubleClick(x: number, y: number, captureId?: string): Promise<ComputerUseToolResult>
+- moveMouse · method · L1048-L1072 — async moveMouse(x: number, y: number, captureId?: string): Promise<ComputerUseToolResult>
+- drag · method · L1074-L1108 — async drag( path: Array<{ x: number; y: number }>, captureId?: string, ): Promise<ComputerUseToolResult>
+- scroll · method · L1110-L1144 — async scroll( x: number, y: number, scrollX: number, scrollY: number, captureId?: string, ): Promise<ComputerUseToolResult>
+- typeText · method · L1146-L1205 — async typeText(text: string): Promise<ComputerUseToolResult>
+- pressKeys · method · L1207-L1239 — async pressKeys(keys: string[]): Promise<ComputerUseToolResult>
+- wait · method · L1241-L1253 — async wait(ms?: number): Promise<ComputerUseToolResult>
+- getToolDefinitions · method · L1255-L1454 — static getToolDefinitions(options?: { headless?: boolean }): LLMTool[]

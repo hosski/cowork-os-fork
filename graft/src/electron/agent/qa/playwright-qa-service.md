@@ -1,0 +1,33 @@
+# src/electron/agent/qa/playwright-qa-service.ts
+
+- Any · type · L35-L35 — type Any = any;
+- now · function · L41-L43 — function now(): number
+- waitForPort · function · L45-L69 — async function waitForPort(port: number, timeoutMs: number): Promise<boolean>
+- detectPortFromUrl · function · L71-L81 — function detectPortFromUrl(url: string): number | undefined
+- parseServerCommand · function · L83-L126 — function parseServerCommand(commandLine: string): { command: string; args: string[] }
+- push · function · L94-L97 — push = ()
+- PlaywrightQAService · class · L132-L1333 — class PlaywrightQAService
+- constructor · method · L139-L144 — constructor( private workspace: Workspace, private screenshotDir?: string, private requestServerCommandApproval?: (command: string, cwd: string) => Promise<boolean>, private filesystemApprovalHandlers: WorkspaceFilesystemApprovalHandlers = {}, )
+- onEvent · method · L150-L155 — onEvent(listener: (event: QAEvent) => void): () => void
+- emit · method · L157-L173 — private emit(type: QAEvent["type"], data: QAEvent["data"]): void
+- getCurrentRun · method · L179-L181 — getCurrentRun(): QARun | null
+- runCurrentPageCheck · method · L187-L226 — async runCurrentPageCheck(checkType: QACheckType): Promise<QACheck | null>
+- run · method · L238-L374 — async run(taskId: string, config: Partial<QARunConfig>): Promise<QARun>
+- executeStep · method · L379-L469 — async executeStep(step: QAInteractionStep): Promise<QAInteractionStep>
+- getConsoleErrors · method · L474-L487 — async getConsoleErrors(): Promise<string[]>
+- getPageReport · method · L492-L539 — async getPageReport(): Promise<{ url: string; title: string; bodyText: string; consoleErrors: string[]; elementCount: number; brokenImages: string[]; emptyLinks: string[]; }>
+- cleanup · method · L544-L559 — async cleanup(): Promise<void>
+- startServer · method · L565-L647 — private async startServer(config: QARunConfig): Promise<void>
+- runConsoleErrorCheck · method · L653-L716 — private async runConsoleErrorCheck(run: QARun, screenshotDir: string): Promise<void>
+- runNetworkErrorCheck · method · L718-L769 — private async runNetworkErrorCheck(run: QARun, screenshotDir: string): Promise<void>
+- runVisualSnapshotCheck · method · L771-L870 — private async runVisualSnapshotCheck(run: QARun, screenshotDir: string): Promise<void>
+- runInteractionCheck · method · L872-L1029 — private async runInteractionCheck( run: QARun, config: QARunConfig, screenshotDir: string, ): Promise<void>
+- runResponsiveCheck · method · L1031-L1092 — private async runResponsiveCheck( run: QARun, config: QARunConfig, screenshotDir: string, ): Promise<void>
+- runAccessibilityCheck · method · L1094-L1175 — private async runAccessibilityCheck(run: QARun, screenshotDir: string): Promise<void>
+- runPerformanceCheck · method · L1177-L1238 — private async runPerformanceCheck(run: QARun, screenshotDir: string): Promise<void>
+- updateStatus · method · L1244-L1249 — private async updateStatus(status: QARunStatus): Promise<void>
+- resolvePathWithApproval · method · L1251-L1267 — private async resolvePathWithApproval( rawPath: string, operation: "read" | "write" | "delete", label: string, ): Promise<string>
+- takeScreenshot · method · L1269-L1285 — private async takeScreenshot(dir: string, label: string, fullPage = false): Promise<string>
+- createIssue · method · L1287-L1304 — private createIssue(params: { type: QACheckType; severity: QASeverity; title: string; description: string; url: string; screenshotPath?: string; element?: string; consoleMessage?: string; networkDetails?: { url: string; status: number; method: string }; }): QAIssue
+- generateSummary · method · L1306-L1328 — private generateSummary(run: QARun): string
+- hasBlockingIssues · method · L1330-L1332 — hasBlockingIssues(run: QARun): boolean

@@ -1,0 +1,27 @@
+# src/electron/control-plane/node-manager.ts
+
+- NodeManagerEvents · interface · L23-L28 — interface NodeManagerEvents
+- NodeManager · class · L35-L298 — class NodeManager extends EventEmitter
+- constructor · method · L39-L41 — constructor()
+- attach · method · L46-L49 — attach(server: ControlPlaneServer): void
+- detach · method · L54-L57 — detach(): void
+- isAttached · method · L62-L64 — get isAttached(): boolean
+- setupEventHandlers · method · L69-L77 — private setupEventHandlers(): void
+- getNodes · method · L82-L85 — getNodes(): NodeInfo[]
+- nodeCount · method · L90-L93 — get nodeCount(): number
+- getNode · method · L98-L102 — getNode(idOrName: string): NodeInfo | null
+- hasNode · method · L107-L109 — hasNode(idOrName: string): boolean
+- getNodesByCapability · method · L114-L116 — getNodesByCapability(capability: NodeCapabilityType): NodeInfo[]
+- getNodesByPlatform · method · L121-L123 — getNodesByPlatform(platform: NodePlatform): NodeInfo[]
+- getNodesByCommand · method · L128-L130 — getNodesByCommand(command: string): NodeInfo[]
+- getDefaultNode · method · L135-L138 — getDefaultNode(): NodeInfo | null
+- invoke · method · L143-L213 — async invoke(params: NodeInvokeParams): Promise<NodeInvokeResult>
+- cameraSnap · method · L218-L227 — async cameraSnap( nodeId: string, options?: { facing?: "front" | "back"; maxWidth?: number; quality?: number }, ): Promise<NodeInvokeResult>
+- cameraClip · method · L232-L241 — async cameraClip( nodeId: string, options: { durationMs: number; facing?: "front" | "back"; noAudio?: boolean }, ): Promise<NodeInvokeResult>
+- locationGet · method · L246-L255 — async locationGet( nodeId: string, options?: { accuracy?: "coarse" | "precise"; maxAge?: number; timeout?: number }, ): Promise<NodeInvokeResult>
+- screenRecord · method · L260-L269 — async screenRecord( nodeId: string, options: { durationMs: number; fps?: number; noAudio?: boolean }, ): Promise<NodeInvokeResult>
+- smsSend · method · L274-L283 — async smsSend( nodeId: string, options: { to: string; message: string }, ): Promise<NodeInvokeResult>
+- systemNotify · method · L288-L297 — async systemNotify( nodeId: string, options: { title: string; message: string; sound?: boolean }, ): Promise<NodeInvokeResult>
+- getNodeManager · function · L306-L311 — function getNodeManager(): NodeManager
+- initNodeManager · function · L316-L320 — function initNodeManager(server: ControlPlaneServer): NodeManager
+- shutdownNodeManager · function · L325-L330 — function shutdownNodeManager(): void

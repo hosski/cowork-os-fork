@@ -1,0 +1,37 @@
+# src/electron/gateway/channels/signal-client.ts
+
+- SignalMessage · interface · L30-L35 — interface SignalMessage
+- SignalEnvelope · interface · L37-L54 — interface SignalEnvelope
+- SignalDataMessage · interface · L56-L75 — interface SignalDataMessage
+- SignalSyncMessage · interface · L77-L90 — interface SignalSyncMessage
+- SignalReceiptMessage · interface · L92-L103 — interface SignalReceiptMessage
+- SignalTypingMessage · interface · L105-L112 — interface SignalTypingMessage
+- SignalAttachment · interface · L114-L131 — interface SignalAttachment
+- SignalGroupInfo · interface · L133-L138 — interface SignalGroupInfo
+- SignalQuote · interface · L140-L151 — interface SignalQuote
+- SignalMention · interface · L153-L160 — interface SignalMention
+- SignalReaction · interface · L162-L171 — interface SignalReaction
+- SignalClientOptions · interface · L176-L189 — interface SignalClientOptions
+- SignalClientEvents · interface · L194-L201 — interface SignalClientEvents
+- SignalClient · class · L206-L722 — class SignalClient extends EventEmitter
+- constructor · method · L219-L238 — constructor(options: SignalClientOptions)
+- checkInstallation · method · L243-L257 — async checkInstallation(): Promise<{ installed: boolean; version?: string; error?: string }>
+- checkRegistration · method · L262-L293 — async checkRegistration(): Promise<{ registered: boolean; error?: string }>
+- startReceiving · method · L298-L308 — async startReceiving(): Promise<void>
+- startNativeReceiving · method · L313-L372 — private async startNativeReceiving(): Promise<void>
+- startDaemonReceiving · method · L377-L411 — private async startDaemonReceiving(): Promise<void>
+- handleJsonLine · method · L416-L440 — private handleJsonLine(line: string): void
+- handleJsonRpcResponse · method · L445-L471 — private handleJsonRpcResponse(line: string): void
+- scheduleReconnect · method · L476-L490 — private scheduleReconnect(): void
+- stopReceiving · method · L495-L513 — async stopReceiving(): Promise<void>
+- sendMessage · method · L518-L557 — async sendMessage( recipient: string, message: string, options?: { attachments?: string[]; quote?: { timestamp: number; author: string }; groupId?: string; }, ): Promise<{ timestamp: number }>
+- sendReaction · method · L562-L587 — async sendReaction( recipient: string, emoji: string, targetAuthor: string, targetTimestamp: number, remove = false, ): Promise<void>
+- sendTyping · method · L592-L600 — async sendTyping(recipient: string, stop = false): Promise<void>
+- sendReadReceipt · method · L605-L618 — async sendReadReceipt(sender: string, timestamps: number[]): Promise<void>
+- getContacts · method · L623-L633 — async getContacts(): Promise<Array<{ number: string; name?: string; uuid?: string }>>
+- getGroups · method · L638-L648 — async getGroups(): Promise<Array<{ id: string; name: string; members: string[] }>>
+- trustIdentity · method · L653-L661 — async trustIdentity(phoneNumber: string, trustAllKnownKeys = false): Promise<void>
+- downloadAttachment · method · L666-L679 — async downloadAttachment(attachmentId: string, outputPath: string): Promise<string>
+- execCommand · method · L684-L707 — private execCommand(args: string[]): Promise<string>
+- isConnected · method · L712-L714 — isConnected(): boolean
+- getPhoneNumber · method · L719-L721 — getPhoneNumber(): string

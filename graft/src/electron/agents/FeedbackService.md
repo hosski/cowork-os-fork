@@ -1,0 +1,21 @@
+# src/electron/agents/FeedbackService.ts
+
+- Any · type · L9-L9 — type Any = any;
+- FeedbackEntry · type · L11-L21 — type FeedbackEntry = { agent: string; decision: string; reason?: string; date: string; taskId: string; taskTitle?: string; channel?: string; userId?: string; userName?: string; };
+- Pattern · type · L23-L27 — type Pattern = { display: string; count: number; lastSeenAt: number; };
+- WorkspaceState · type · L29-L33 — type WorkspaceState = { pendingEntries: FeedbackEntry[]; patterns: Map<string, Pattern>; flushTimer: ReturnType<typeof setTimeout> | null; };
+- sanitizeInline · function · L47-L53 — function sanitizeInline(text: string): string
+- computeIsoWeek · function · L55-L64 — function computeIsoWeek(date: Date): { year: number; week: number }
+- upsertMarkedSection · function · L66-L89 — function upsertMarkedSection(markdown: string, bodyLines: string[]): string
+- defaultMistakesTemplate · function · L91-L107 — function defaultMistakesTemplate(): string
+- FeedbackService · class · L109-L380 — class FeedbackService
+- constructor · method · L116-L120 — constructor(private db: Database.Database)
+- start · method · L122-L142 — async start(agentDaemon: AgentDaemon): Promise<void>
+- getWorkspaceState · method · L144-L150 — private getWorkspaceState(workspaceId: string): WorkspaceState
+- formatAgentName · method · L152-L157 — private formatAgentName(agentRoleId: string | null): string
+- ensureKitDirExists · method · L159-L166 — private ensureKitDirExists(workspacePath: string): boolean
+- ingestFeedbackEvent · method · L168-L238 — private ingestFeedbackEvent( taskId: string, payload: Any, timestampMs: number, opts?: { queueWeekly?: boolean }, ): void
+- scheduleFlush · method · L240-L248 — private scheduleFlush(workspaceId: string): void
+- flushAll · method · L250-L255 — async flushAll(): Promise<void>
+- flushWorkspace · method · L257-L350 — private async flushWorkspace(workspaceId: string): Promise<void>
+- rebuildFromRecentFeedbackEvents · method · L352-L379 — private async rebuildFromRecentFeedbackEvents(): Promise<void>

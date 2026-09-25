@@ -1,0 +1,116 @@
+# src/electron/managed/ManagedSessionService.ts
+
+- appendTeamSteering · function · L103-L119 — function appendTeamSteering(rootPrompt: string, message: string): string
+- isRecord · function · L121-L123 — function isRecord(value: unknown): value is Record<string, unknown>
+- slugifyName · function · L125-L131 — function slugifyName(value: string): string
+- managedMirrorRoleBaseName · function · L133-L135 — function managedMirrorRoleBaseName(agentName: string): string
+- getStudioConfig · function · L137-L141 — function getStudioConfig(version: ManagedAgentVersion): ManagedAgentStudioConfig | undefined
+- roleMirrorsManagedAgent · function · L143-L151 — function roleMirrorsManagedAgent(role: AgentRole | undefined, agentId: string): boolean
+- isAgentRoleNameUniqueConstraint · function · L153-L166 — function isAgentRoleNameUniqueConstraint(error: unknown): boolean
+- setStudioConfigMetadata · function · L168-L176 — function setStudioConfigMetadata( metadata: Record<string, unknown> | undefined, studio: ManagedAgentStudioConfig, ): Record<string, unknown>
+- listManagedFileRefs · function · L178-L185 — function listManagedFileRefs( fileRefs: ManagedAgentFileRef[] | undefined, environment: ManagedEnvironment | undefined, ): string[]
+- toMemoryToolRestrictions · function · L187-L205 — function toMemoryToolRestrictions( memoryConfig?: ManagedAgentMemoryConfig, ): AgentToolRestrictions | undefined
+- toManagedApprovalTypes · function · L207-L218 — function toManagedApprovalTypes(approvalPolicy?: ManagedAgentApprovalPolicy): ApprovalType[]
+- toManagedAutonomyPolicy · function · L220-L230 — function toManagedAutonomyPolicy( approvalPolicy?: ManagedAgentApprovalPolicy, ): OperationalAutonomyPolicy | undefined
+- deriveCapabilities · function · L232-L253 — function deriveCapabilities( templateId: string | undefined, ): import("../../shared/types").AgentCapability[]
+- sanitizeManagedEventPayload · function · L262-L304 — function sanitizeManagedEventPayload(value: unknown, depth = 0, key?: string): unknown
+- toManagedSessionStatus · function · L306-L330 — function toManagedSessionStatus(task?: Task, hasPendingInput = false): ManagedSessionStatus
+- mapTaskEventType · function · L332-L352 — function mapTaskEventType(event: TaskEvent): ManagedSessionEventType
+- normalizeManagedSessionEventPayload · function · L354-L357 — function normalizeManagedSessionEventPayload(payload: unknown): Record<string, unknown>
+- resolveManagedAllowedMcpTools · function · L359-L363 — function resolveManagedAllowedMcpTools( environmentConfig: Pick<ManagedEnvironment["config"], "allowedMcpServerIds">, ): string[]
+- ManagedMcpToolAccessResolution · interface · L365-L370 — interface ManagedMcpToolAccessResolution
+- formatMissingMcpServerLabel · function · L372-L378 — function formatMissingMcpServerLabel(serverId: string): string
+- buildMissingMcpServerRequirement · function · L380-L396 — function buildMissingMcpServerRequirement( serverId: string, reason: string, ): AgentBuilderConnectionRequirement
+- normalizeManagedAccessProfileId · function · L398-L400 — function normalizeManagedAccessProfileId(value: unknown): AccessProfileId | undefined
+- getDefaultManagedAccessProfileId · function · L402-L407 — function getDefaultManagedAccessProfileId(): AccessProfileId
+- isLegacyManagedShellConfig · function · L409-L416 — function isLegacyManagedShellConfig( config: ManagedEnvironment["config"], ): config is ManagedEnvironment["config"] & { enableShell: boolean }
+- normalizeManagedEnvironmentConfig · function · L418-L428 — function normalizeManagedEnvironmentConfig( config: ManagedEnvironment["config"], ): ManagedEnvironment["config"]
+- resolveManagedMcpToolAccess · function · L430-L483 — function resolveManagedMcpToolAccess( environmentConfig: Pick<ManagedEnvironment["config"], "allowedMcpServerIds">, ): ManagedMcpToolAccessResolution
+- cloneWorkspaceForManagedEnvironment · function · L485-L512 — function cloneWorkspaceForManagedEnvironment( workspace: Workspace, environment: ManagedEnvironment, ): Workspace
+- deriveManagedToolFamily · function · L514-L590 — function deriveManagedToolFamily(tool: LLMTool): ManagedAgentToolFamily | undefined
+- toolMatchesManagedFamily · function · L592-L594 — function toolMatchesManagedFamily(tool: LLMTool, family: ManagedAgentToolFamily): boolean
+- isToolEnabledForManagedEnvironment · function · L596-L619 — function isToolEnabledForManagedEnvironment( tool: LLMTool, environment: ManagedEnvironment, allowedMcpTools: Set<string>, hasMcpServerAllowlist: boolean, ): boolean
+- deriveApprovalBehavior · function · L621-L633 — function deriveApprovalBehavior( tool: LLMTool, approvalType: ApprovalType | null, autoApproveTypes: Set<ApprovalType>, ): ManagedAgentRuntimeToolCatalogEntry["approvalBehavior"]
+- mapRuntimeToolCatalogEntry · function · L635-L655 — function mapRuntimeToolCatalogEntry( tool: LLMTool, approvalType: ApprovalType | null, autoApproveTypes: Set<ApprovalType>, mcpServerName: string | null, ): ManagedAgentRuntimeToolCatalogEntry
+- safeJsonParse · function · L657-L664 — function safeJsonParse<T>(value: string | null | undefined, fallback: T): T
+- normalizePrincipalId · function · L666-L668 — function normalizePrincipalId(value?: string): string
+- getWorkspaceRoleRank · function · L670-L684 — function getWorkspaceRoleRank(role: import("../../shared/types").AgentWorkspaceRole): number
+- getPermissionSnapshot · function · L686-L724 — function getPermissionSnapshot( workspaceId: string, principalId: string, role: import("../../shared/types").AgentWorkspaceRole | undefined, ): AgentWorkspacePermissionSnapshot
+- summarizeRoutineTrigger · function · L726-L744 — function summarizeRoutineTrigger(trigger: ManagedAgentRoutineTriggerConfig): string
+- ManagedSessionService · class · L746-L3536 — class ManagedSessionService
+- constructor · method · L766-L793 — constructor( private readonly db: import("better-sqlite3").Database, private readonly agentDaemon: AgentDaemon, private readonly options: { getRoutineService?: () => RoutineService | null; workContextService?: WorkContextService; } = {}, )
+- buildReviewCheckpoints · method · L795-L803 — private buildReviewCheckpoints(studio?: ManagedAgentStudioConfig): string[]
+- ensureGovernanceSchema · method · L805-L832 — private ensureGovernanceSchema(): void
+- resolveWorkspaceIdForAgent · method · L834-L846 — private resolveWorkspaceIdForAgent(agentId: string): string | undefined
+- getStoredWorkspaceRole · method · L848-L871 — private getStoredWorkspaceRole( workspaceId: string, principalId = normalizePrincipalId(), ): import("../../shared/types").AgentWorkspaceRole | undefined
+- ensureWorkspaceMembershipSeeded · method · L873-L890 — private ensureWorkspaceMembershipSeeded(workspaceId: string): void
+- assertWorkspacePermission · method · L892-L911 — private assertWorkspacePermission( workspaceId: string, check: | "canViewAgents" | "canRunAgents" | "canResumeSessions" | "canAnswerApprovals" | "canEditDrafts" | "canManageEnvironments" | "canPublishAgents" | "canManageRoutines" | "canManageMemberships" | "canAuditAgents", principalId = normalizePrincipalId(), ): void
+- getMyWorkspacePermissions · method · L913-L923 — getMyWorkspacePermissions( workspaceId: string, _principalId = normalizePrincipalId(), ): AgentWorkspacePermissionSnapshot
+- listWorkspaceMemberships · method · L925-L957 — listWorkspaceMemberships(workspaceId?: string): AgentWorkspaceMembership[]
+- updateWorkspaceMembership · method · L959-L1004 — updateWorkspaceMembership(input: { workspaceId: string; principalId: string; role: import("../../shared/types").AgentWorkspaceRole; }): AgentWorkspaceMembership
+- listAuditEntries · method · L1006-L1027 — listAuditEntries(agentId: string, limit = 50): ManagedAgentAuditEntry[]
+- appendAudit · method · L1029-L1064 — private appendAudit(input: { agentId: string; workspaceId: string; action: ManagedAgentAuditEntry["action"]; summary: string; metadata?: Record<string, unknown>; actorId?: string; }): ManagedAgentAuditEntry
+- listAgents · method · L1066-L1072 — listAgents(params?: { limit?: number; offset?: number; status?: ManagedAgent["status"]; }): ManagedAgent[]
+- getAgent · method · L1074-L1083 — getAgent( agentId: string, ): { agent: ManagedAgent; currentVersion?: ManagedAgentVersion } | undefined
+- mapManagedAgentRoutineRow · method · L1085-L1139 — private mapManagedAgentRoutineRow(agentId: string, row: Any): ManagedAgentRoutineRecord
+- listManagedAgentRoutines · method · L1141-L1159 — listManagedAgentRoutines(agentId: string): ManagedAgentRoutineRecord[]
+- buildManagedAgentRoutineDefinition · method · L1161-L1210 — buildManagedAgentRoutineDefinition( request: CreateManagedAgentRoutineRequest | UpdateManagedAgentRoutineRequest, ): { name?: string; description?: string; enabled?: boolean; workspaceId: string; environmentId: string; trigger: ManagedAgentRoutineTriggerConfig; instructions: string; }
+- toManagedRoutinePayload · method · L1212-L1318 — private toManagedRoutinePayload( input: { name?: string; description?: string; enabled?: boolean; workspaceId: string; environmentId: string; trigger: ManagedAgentRoutineTriggerConfig; instructions: string; }, agentId: string, ): RoutineCreate
+- updateCurrentStudioConfig · method · L1320-L1339 — private updateCurrentStudioConfig( agentId: string, mutate: ( studio: ManagedAgentStudioConfig, version: ManagedAgentVersion, ) => ManagedAgentStudioConfig, ): ManagedAgentVersion
+- syncManagedAgentRoutineRefs · method · L1341-L1362 — syncManagedAgentRoutineRefs(agentId: string): ManagedAgentLinkedRoutineRef[]
+- setRoutineEnabledInDb · method · L1364-L1384 — private setRoutineEnabledInDb(routineId: string, enabled: boolean): void
+- setRoutineEnabled · method · L1386-L1393 — private async setRoutineEnabled(routineId: string, enabled: boolean): Promise<void>
+- getRuntimeToolCatalog · method · L1395-L1467 — getRuntimeToolCatalog(agentId: string): ManagedAgentRuntimeToolCatalog
+- buildSurfaceCatalog · function · L1430-L1456 — buildSurfaceCatalog = (gatewayContext?: GatewayContextType)
+- createAgent · method · L1469-L1517 — createAgent(input: { name: string; description?: string; systemPrompt: string; executionMode: ManagedAgentVersion["executionMode"]; model?: ManagedAgentVersion["model"]; runtimeDefaults?: ManagedAgentVersion["runtimeDefaults"]; skills?: string[]; mcpServers?: string[]; teamTemplate?: ManagedAgentVersion["teamTemplate"]; metadata?: Record<string, unknown>; }): { agent: ManagedAgent; version: ManagedAgentVersion }
+- createAgentFromBuilderPlan · method · L1519-L1687 — async createAgentFromBuilderPlan( request: AgentBuilderCreateRequest, ): Promise<AgentBuilderCreateResult>
+- updateAgent · method · L1689-L1745 — updateAgent( agentId: string, input: { name?: string; description?: string; systemPrompt?: string; executionMode?: ManagedAgentVersion["executionMode"]; model?: ManagedAgentVersion["model"]; runtimeDefaults?: ManagedAgentVersion["runtimeDefaults"]; skills?: string[]; mcpServers?: string[]; teamTemplate?: ManagedAgentVersion["teamTemplate"]; metadata?: Record<string, unknown>; }, ): { agent: ManagedAgent; version: ManagedAgentVersion }
+- archiveAgent · method · L1747-L1770 — async archiveAgent(agentId: string): Promise<ManagedAgent | undefined>
+- publishAgent · method · L1772-L1795 — async publishAgent(agentId: string): Promise<ManagedAgent | undefined>
+- suspendAgent · method · L1797-L1821 — async suspendAgent(agentId: string): Promise<ManagedAgent | undefined>
+- listAgentVersions · method · L1823-L1825 — listAgentVersions(agentId: string): ManagedAgentVersion[]
+- getAgentVersion · method · L1827-L1829 — getAgentVersion(agentId: string, version: number): ManagedAgentVersion | undefined
+- listEnvironments · method · L1831-L1837 — listEnvironments(params?: { limit?: number; offset?: number; status?: ManagedEnvironment["status"]; }): ManagedEnvironment[]
+- getEnvironment · method · L1839-L1841 — getEnvironment(environmentId: string): ManagedEnvironment | undefined
+- createEnvironment · method · L1843-L1862 — createEnvironment(input: { name: string; kind?: ManagedEnvironment["kind"]; config: ManagedEnvironment["config"]; }): ManagedEnvironment
+- updateEnvironment · method · L1864-L1886 — updateEnvironment( environmentId: string, input: { name?: string; config?: ManagedEnvironment["config"] }, ): ManagedEnvironment | undefined
+- archiveEnvironment · method · L1888-L1893 — archiveEnvironment(environmentId: string): ManagedEnvironment | undefined
+- createSession · method · L1895-L2064 — async createSession(input: ManagedSessionCreateInput): Promise<ManagedSession>
+- listSessions · method · L2066-L2084 — listSessions(params?: { limit?: number; offset?: number; agentId?: string; workspaceId?: string; status?: ManagedSession["status"]; surface?: ManagedSession["surface"]; }): ManagedSession[]
+- getSession · method · L2086-L2088 — getSession(sessionId: string): ManagedSession | undefined
+- listSessionEvents · method · L2090-L2094 — listSessionEvents(sessionId: string, limit = 500): ManagedSessionEvent[]
+- cancelSession · method · L2096-L2113 — async cancelSession(sessionId: string): Promise<ManagedSession | undefined>
+- resumeSession · method · L2115-L2127 — async resumeSession(sessionId: string): Promise<{ resumed: boolean; session?: ManagedSession }>
+- sendUserMessage · method · L2129-L2135 — async sendUserMessage( sessionId: string, content: ManagedSessionInputContent[], expectedTurnId?: string, ): Promise<ManagedSession | undefined>
+- ensureCanonicalTask · method · L2137-L2145 — private ensureCanonicalTask(task: Task): void
+- registerWorkContext · method · L2147-L2155 — private registerWorkContext(session: ManagedSession): void
+- steerManagedTeamSession · method · L2157-L2226 — private async steerManagedTeamSession( session: ManagedSession, content: ManagedSessionInputContent[], expectedTurnId?: string, ): Promise<void>
+- sendEvent · method · L2228-L2298 — async sendEvent( sessionId: string, event: | { type: "user.message"; content: ManagedSessionInputContent[]; expectedTurnId?: string; } | { type: "input.received"; requestId: string; answers?: InputRequestResponse["answers"]; status?: InputRequestResponse["status"]; }, ): Promise<ManagedSession | undefined>
+- generateAudioSummary · method · L2300-L2380 — async generateAudioSummary( sessionId: string, input?: Partial<AudioSummaryConfig>, ): Promise<AudioSummaryResult>
+- getAgentInsights · method · L2382-L2492 — getAgentInsights(agentId: string): ManagedAgentInsights
+- getSlackDeploymentHealth · method · L2494-L2538 — getSlackDeploymentHealth( agentId: string, ): import("../../shared/types").ManagedAgentSlackDeploymentHealth
+- getSessionWorkpaper · method · L2540-L2613 — getSessionWorkpaper(sessionId: string): ManagedSessionWorkpaper
+- convertAgentRoleToManagedAgent · method · L2615-L2716 — convertAgentRoleToManagedAgent(request: ConvertAgentRoleToManagedAgentRequest): Omit< ManagedAgentConversionResult, "routines" > & { routineDrafts: CreateManagedAgentRoutineRequest[]; }
+- convertAutomationProfileToManagedAgent · method · L2718-L2779 — convertAutomationProfileToManagedAgent( request: ConvertAutomationProfileToManagedAgentRequest, ): Omit<ManagedAgentConversionResult, "routines"> & { routineDrafts: CreateManagedAgentRoutineRequest[]; }
+- bridgeTaskEventNotification · method · L2781-L2811 — bridgeTaskEventNotification( taskId: string, taskEvent: { eventId?: string; timestamp?: number; type: string; payload?: unknown; status?: string; }, ): { session?: ManagedSession; appended?: ManagedSessionEvent }
+- refreshSession · method · L2813-L2882 — refreshSession(sessionId: string): ManagedSession | undefined
+- syncTaskEvents · method · L2884-L2898 — private syncTaskEvents(session: ManagedSession): void
+- composeRootPrompt · method · L2900-L2940 — private composeRootPrompt( version: ManagedAgentVersion, userPrompt: string, missingConnections: AgentBuilderConnectionRequirement[] = [], ): string
+- materializeContent · method · L2942-L2959 — private materializeContent(content: ManagedSessionInputContent[]): string
+- buildAgentConfig · method · L2961-L3031 — private buildAgentConfig( environment: ManagedEnvironment, version: ManagedAgentVersion, ): AgentConfig
+- resolveMcpToolAccess · method · L3033-L3035 — private resolveMcpToolAccess(environment: ManagedEnvironment): ManagedMcpToolAccessResolution
+- validateManagedAccountRefs · method · L3037-L3043 — private validateManagedAccountRefs(managedAccountRefs?: string[]): void
+- createManagedTeamRun · method · L3045-L3102 — private async createManagedTeamRun( rootTask: Task, agent: ManagedAgent, version: ManagedAgentVersion, ): Promise<{ teamId: string; teamRunId: string }>
+- tickManagedTeamRun · method · L3104-L3109 — private async tickManagedTeamRun(teamRunId: string): Promise<void>
+- cancelManagedTeamRun · method · L3111-L3116 — private async cancelManagedTeamRun(teamRunId: string): Promise<void>
+- mapDaemonTaskEvent · method · L3118-L3141 — private mapDaemonTaskEvent(type: string): ManagedSessionEventType
+- syncLegacyMirror · method · L3143-L3266 — private syncLegacyMirror( agent: ManagedAgent, version: ManagedAgentVersion, previousStudio?: ManagedAgentStudioConfig, ): ManagedAgentVersion
+- createLegacyMirrorRole · method · L3268-L3296 — private createLegacyMirrorRole(agent: ManagedAgent, request: CreateAgentRoleRequest): AgentRole
+- allocateManagedMirrorRoleName · method · L3298-L3332 — private allocateManagedMirrorRoleName( agent: ManagedAgent, reservedNames: Set<string> = new Set(), ): string
+- syncSlackTargets · method · L3334-L3381 — private syncSlackTargets( mirroredRoleId: string, previousTargets?: ManagedAgentChannelTarget[], nextTargets?: ManagedAgentChannelTarget[], ): void
+- listRoutineRunsForAgent · method · L3383-L3439 — private listRoutineRunsForAgent(agentId: string): Array<{ run: import("../routines/types").RoutineRun; definition: Routine; surface: "slack" | "chatgpt"; }>
+- hasDatabaseTable · method · L3441-L3448 — private hasDatabaseTable(tableName: string): boolean
+- isSuccessfulSlackRun · method · L3450-L3453 — private isSuccessfulSlackRun(run: import("../routines/types").RoutineRun): boolean
+- extractUserKeysFromPayload · method · L3455-L3489 — private extractUserKeysFromPayload(payload: unknown): string[]
+- visit · function · L3457-L3486 — visit = (value: unknown, depth = 0): void
+- buildAudioSummaryScript · method · L3491-L3535 — private buildAudioSummaryScript( session: ManagedSession, style: AudioSummaryConfig["style"], ): string

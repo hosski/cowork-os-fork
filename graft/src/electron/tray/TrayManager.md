@@ -1,0 +1,49 @@
+# src/electron/tray/TrayManager.ts
+
+- escapeHtml · function · L69-L76 — function escapeHtml(value: string): string
+- TrayManagerOptions · interface · L78-L82 — interface TrayManagerOptions
+- TraySettings · interface · L84-L91 — interface TraySettings
+- normalizeTraySettings · function · L107-L130 — function normalizeTraySettings(raw: Partial<TraySettings> | null | undefined): TraySettings
+- TrayManager · class · L132-L1274 — class TrayManager
+- getInstance · method · L153-L158 — static getInstance(): TrayManager
+- constructor · method · L160-L164 — private constructor()
+- initialize · method · L169-L239 — async initialize( mainWindow: BrowserWindow, gateway: ChannelGateway, dbManager: DatabaseManager, agentDaemon?: AgentDaemon, options: TrayManagerOptions = {}, ): Promise<void>
+- setupTaskEventListener · method · L244-L356 — private setupTaskEventListener(): void
+- formatResponseForDisplay · method · L361-L378 — private formatResponseForDisplay(text: string): string
+- formatResponseWithQuestion · method · L383-L396 — private formatResponseWithQuestion(text: string): string
+- getOrCreateTempWorkspace · method · L401-L486 — private async getOrCreateTempWorkspace(): Promise<Workspace>
+- ensureTempWorkspace · function · L406-L456 — ensureTempWorkspace = ( workspaceId: string, workspacePath: string, existing?: Workspace, ): Workspace
+- handleQuickTaskSubmit · method · L491-L556 — private async handleQuickTaskSubmit(prompt: string, workspaceId?: string): Promise<void>
+- showQuickInput · method · L561-L563 — showQuickInput(): void
+- toggleQuickInput · method · L568-L570 — toggleQuickInput(): void
+- registerGlobalShortcut · method · L575-L594 — private registerGlobalShortcut(): void
+- unregisterGlobalShortcut · method · L599-L606 — private unregisterGlobalShortcut(): void
+- createTray · method · L611-L643 — private createTray(): void
+- getTrayIcon · method · L648-L650 — private getTrayIcon(_state: "idle" | "active" | "error"): NativeImage
+- createProgrammaticIcon · method · L656-L806 — private createProgrammaticIcon(): NativeImage
+- setPixel · function · L664-L678 — setPixel = (x: number, y: number, alpha: number)
+- drawHLine · function · L681-L691 — drawHLine = (x1: number, x2: number, y: number, thickness: number)
+- drawVLine · function · L693-L702 — drawVLine = (x: number, y1: number, y2: number, thickness: number)
+- strokeRoundedRect · function · L705-L741 — strokeRoundedRect = ( rx: number, ry: number, rw: number, rh: number, radius: number, strokeWidth: number, )
+- fillCircle · function · L744-L756 — fillCircle = (cx: number, cy: number, r: number)
+- updateContextMenu · method · L811-L913 — private updateContextMenu(): void
+- buildChannelsSubmenu · method · L918-L939 — private buildChannelsSubmenu(): Electron.MenuItemConstructorOptions[]
+- getStatusText · method · L944-L962 — private getStatusText(): string
+- buildChronicleMenuItems · method · L964-L977 — private buildChronicleMenuItems(): Electron.MenuItemConstructorOptions[]
+- toggleChroniclePause · method · L979-L984 — private async toggleChroniclePause(paused: boolean): Promise<void>
+- getStatusIcon · method · L989-L992 — private getStatusIcon(): NativeImage | undefined
+- getWorkspaces · method · L997-L1010 — private getWorkspaces(): Array<{ id: string; name: string; path: string }>
+- toggleMainWindow · method · L1015-L1026 — private toggleMainWindow(): void
+- showMainWindow · method · L1031-L1041 — private showMainWindow(): void
+- setupCloseToTray · method · L1046-L1060 — private setupCloseToTray(): void
+- applyDockIconSetting · method · L1065-L1073 — private applyDockIconSetting(): void
+- startStatusUpdates · method · L1078-L1084 — private startStatusUpdates(): void
+- updateTrayIcon · method · L1089-L1096 — private updateTrayIcon(): void
+- setActiveTaskCount · method · L1101-L1105 — setActiveTaskCount(count: number): void
+- migrateFromLegacyFile · method · L1110-L1161 — private migrateFromLegacyFile(): void
+- loadSettings · method · L1166-L1186 — private loadSettings(): void
+- saveSettings · method · L1191-L1222 — saveSettings(settings: Partial<TraySettings>): void
+- getSettings · method · L1227-L1229 — getSettings(): TraySettings
+- showNotification · method · L1234-L1251 — showNotification(title: string, body: string, taskId?: string): void
+- showOverlayFallback · function · L1243-L1245 — showOverlayFallback = ()
+- destroy · method · L1256-L1273 — destroy(): void

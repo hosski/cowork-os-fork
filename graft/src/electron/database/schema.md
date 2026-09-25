@@ -1,0 +1,41 @@
+# src/electron/database/schema.ts
+
+- DatabaseManager · class · L16-L8496 — class DatabaseManager
+- constructor · method · L20-L69 — constructor()
+- logStartupPhase · function · L22-L30 — logStartupPhase = (name: string, startedAt: number): void
+- runPostStartupMaintenance · method · L71-L93 — async runPostStartupMaintenance(): Promise<void>
+- runMaintenanceStep · function · L74-L84 — runMaintenanceStep = (name: string, step: () => void): void
+- ensureMaintenanceStateTable · method · L95-L103 — private ensureMaintenanceStateTable(): void
+- getMaintenanceState · method · L105-L110 — private getMaintenanceState(key: string): string | null
+- setMaintenanceState · method · L112-L124 — private setMaintenanceState(key: string, value: string): void
+- repairLegacyHeartbeatRunReferences · method · L126-L178 — private repairLegacyHeartbeatRunReferences(): void
+- repairControlPlaneForeignKeyOrphans · method · L180-L466 — private repairControlPlaneForeignKeyOrphans(): void
+- tableExists · method · L468-L474 — private tableExists(name: string): boolean
+- getInstance · method · L480-L487 — static getInstance(): DatabaseManager
+- parseJsonObject · method · L489-L499 — private static parseJsonObject(value: unknown): Record<string, unknown>
+- resolveTaskEventType · method · L501-L514 — private static resolveTaskEventType(row: { type?: unknown; legacy_type?: unknown; payload?: unknown; }): string
+- isRunTerminalEvent · method · L516-L527 — private static isRunTerminalEvent(row: { type?: unknown; legacy_type?: unknown; payload?: unknown; }): boolean
+- isRunActivityEvent · method · L529-L543 — private static isRunActivityEvent(row: { type?: unknown; legacy_type?: unknown; payload?: unknown; }): boolean
+- calculateLastRunDurationMs · method · L545-L603 — private static calculateLastRunDurationMs(params: { createdAt: number; completedAt: number; events: Array<{ timestamp?: unknown; type?: unknown; legacy_type?: unknown; payload?: unknown; }>; }): number
+- backfillTaskLastRunDurations · method · L605-L657 — private backfillTaskLastRunDurations(): void
+- sanitizeLargeTaskEventPayloads · method · L659-L711 — private sanitizeLargeTaskEventPayloads(): void
+- migrateFromLegacyDirectory · method · L720-L874 — private migrateFromLegacyDirectory(newDataPath: string): void
+- ensureRestrictedDirectory · method · L880-L889 — private ensureRestrictedDirectory(dirPath: string): void
+- ensureRestrictedFile · method · L894-L902 — private ensureRestrictedFile(filePath: string): void
+- databasePassesIntegrityCheck · method · L904-L924 — private databasePassesIntegrityCheck(filePath: string): boolean
+- countFilesRecursive · method · L929-L944 — private countFilesRecursive(dirPath: string): number
+- copyDirectoryRecursive · method · L949-L966 — private copyDirectoryRecursive(src: string, dest: string): void
+- initializeSchema · method · L968-L2832 — private initializeSchema()
+- initializeMemoryFTS · method · L2834-L2935 — private initializeMemoryFTS()
+- initializeMarkdownMemoryFTS · method · L2937-L2957 — private initializeMarkdownMemoryFTS()
+- initializeMailboxSearchFTS · method · L2959-L2981 — private initializeMailboxSearchFTS()
+- runMigrations · method · L2983-L7327 — private runMigrations()
+- initializeKnowledgeGraphFTS · method · L7329-L7369 — private initializeKnowledgeGraphFTS()
+- seedKnowledgeGraphTypes · method · L7371-L7457 — private seedKnowledgeGraphTypes()
+- seedLlmPricing · method · L7459-L8268 — private seedLlmPricing()
+- P · type · L7462-L7469 — type P = { key: string; provider: string; display: string; input: number; output: number; cached: number; };
+- seedDefaultModels · method · L8270-L8325 — private seedDefaultModels()
+- getDatabase · method · L8327-L8329 — getDatabase(): Database.Database
+- close · method · L8331-L8333 — close()
+- upgradeMemoryEmbeddingsCascade · method · L8335-L8396 — private upgradeMemoryEmbeddingsCascade(): void
+- upgradeKnowledgeGraphEdgesForTemporalValidity · method · L8398-L8495 — private upgradeKnowledgeGraphEdgesForTemporalValidity(): void

@@ -1,0 +1,78 @@
+# src/electron/main.ts
+
+- shouldAutoEnableDesktopControlPlane · function · L314-L318 — function shouldAutoEnableDesktopControlPlane(): boolean
+- logStartupLane · function · L320-L328 — logStartupLane = (lane: string, extra: Record<string, unknown> = {}): void
+- MainWindowState · interface · L356-L363 — interface MainWindowState
+- normalizeTwinCoreBoundary · function · L365-L447 — function normalizeTwinCoreBoundary(): void
+- buildDefaultAutomationProfile · function · L449-L493 — function buildDefaultAutomationProfile(role: import("../shared/types").AgentRole): { enabled: boolean; cadenceMinutes: number; staggerOffsetMinutes: number; dispatchCooldownMinutes: number; maxDispatchesPerDay: number; profile: import("../shared/types").HeartbeatProfile; activeHours?: import("../shared/types").HeartbeatActiveHours; }
+- ensureCoreAutomationProfiles · function · L495-L554 — function ensureCoreAutomationProfiles(): void
+- ensureCoreBotTeams · function · L556-L573 — function ensureCoreBotTeams(): void
+- submitHeartbeatSignalForAll · function · L603-L609 — submitHeartbeatSignalForAll = (input: { text?: string; mode?: "now" | "next-heartbeat"; source?: "hook" | "cron" | "api" | "manual"; }): void
+- getDevServerUrl · function · L611-L619 — function getDevServerUrl(): string
+- installMcpInstallConfirmationHandler · function · L631-L668 — function installMcpInstallConfirmationHandler(): void
+- isAppOwnedUrl · function · L684-L710 — function isAppOwnedUrl(url: string): boolean
+- applyStableUserDataPath · function · L712-L726 — function applyStableUserDataPath(): string
+- getMainWindowStatePath · function · L728-L730 — function getMainWindowStatePath(): string
+- readMainWindowState · function · L732-L740 — function readMainWindowState(): MainWindowState | null
+- isFinitePositiveNumber · function · L742-L744 — function isFinitePositiveNumber(value: unknown): value is number
+- isWindowBoundsOnScreen · function · L746-L753 — function isWindowBoundsOnScreen(bounds: Electron.Rectangle): boolean
+- getInitialMainWindowBounds · function · L755-L791 — function getInitialMainWindowBounds(): Pick< BrowserWindowConstructorOptions, "x" | "y" | "width" | "height" > & { isMaximized: boolean; isFullScreen: boolean; }
+- writeMainWindowState · function · L793-L818 — function writeMainWindowState( window: BrowserWindow, options: { allowMinimized?: boolean } = {}, ): Electron.Rectangle | null
+- installMainWindowStatePersistence · function · L820-L870 — function installMainWindowStatePersistence(window: BrowserWindow): void
+- scheduleSave · function · L823-L831 — scheduleSave = ()
+- installNativeApplicationMenu · function · L872-L966 — function installNativeApplicationMenu(): void
+- sendToMainWindow · function · L883-L888 — sendToMainWindow = (channel: string)
+- installDevelopmentBranding · function · L968-L987 — function installDevelopmentBranding(): void
+- logCron · function · L989-L995 — function logCron(level: "debug" | "info" | "warn" | "error", msg: string, data?: unknown): void
+- healResettableSecureSettings · function · L1004-L1021 — function healResettableSecureSettings(): void
+- toErrorMessage · function · L1023-L1035 — function toErrorMessage(reason: unknown): string
+- parseTaskDeeplink · function · L1046-L1065 — function parseTaskDeeplink(value: string): string | null
+- parseBotDeeplink · function · L1067-L1089 — function parseBotDeeplink(value: string): { botId: string; conversationId?: string } | null
+- extractTaskDeeplinkArg · function · L1091-L1097 — function extractTaskDeeplinkArg(argv: string[]): string | null
+- extractBotDeeplinkArg · function · L1099-L1105 — function extractBotDeeplinkArg(argv: string[]): { botId: string; conversationId?: string } | null
+- registerTaskDeeplinkProtocol · function · L1107-L1121 — function registerTaskDeeplinkProtocol(): void
+- isTransientMainProcessError · function · L1123-L1128 — function isTransientMainProcessError(reason: unknown): boolean
+- installProcessErrorGuards · function · L1130-L1151 — function installProcessErrorGuards(): void
+- isEnvFlagEnabled · function · L1153-L1155 — function isEnvFlagEnabled(name: string): boolean
+- isBackgroundAutostartDisabled · function · L1157-L1159 — function isBackgroundAutostartDisabled(): boolean
+- isStartupQuietMode · function · L1161-L1167 — function isStartupQuietMode(): boolean
+- isCliDirectRunMode · function · L1194-L1196 — function isCliDirectRunMode(): boolean
+- getCliDirectRunArgv · function · L1198-L1201 — function getCliDirectRunArgv(): string[]
+- getArgValueFrom · function · L1203-L1208 — function getArgValueFrom(argv: string[], flag: string): string | undefined
+- getCliApprovalResponseArgv · function · L1210-L1220 — function getCliApprovalResponseArgv( argv: string[], ): { approvalId: string; approved: boolean } | null
+- handleCliApprovalResponse · function · L1222-L1234 — async function handleCliApprovalResponse(request: { approvalId: string; approved: boolean; }): Promise<void>
+- runCliDirectMode · function · L1236-L1257 — async function runCliDirectMode(): Promise<void>
+- isForegroundUserTask · function · L1276-L1281 — function isForegroundUserTask(task: Task): boolean
+- flushPendingTaskDeeplink · function · L1293-L1298 — function flushPendingTaskDeeplink(): void
+- flushPendingBotDeeplink · function · L1300-L1305 — function flushPendingBotDeeplink(): void
+- openTaskDeeplink · function · L1307-L1319 — function openTaskDeeplink(taskId: string): void
+- openBotDeeplink · function · L1321-L1333 — function openBotDeeplink(route: { botId: string; conversationId?: string }): void
+- createWindow · function · L1383-L1564 — function createWindow()
+- loadMainWindowContent · function · L1450-L1495 — loadMainWindowContent = ()
+- logPhase · function · L1572-L1574 — logPhase = (name: string, phaseStartedAt: number): void
+- deferStartupTask · function · L1583-L1585 — deferStartupTask = (name: string, task: () => Promise<void>): void
+- runDeferredStartupTasks · function · L1586-L1612 — runDeferredStartupTasks = (): void
+- runTempWorkspacePrune · function · L1667-L1677 — runTempWorkspacePrune = ()
+- runTempSandboxProfilePrune · function · L1684-L1690 — runTempSandboxProfilePrune = ()
+- initializeMcpClientManager · function · L2057-L2076 — initializeMcpClientManager = async (): Promise<void>
+- ensureManagedWorkspaceForCronJob · function · L2147-L2162 — ensureManagedWorkspaceForCronJob = async ( job: { id: string; name: string }, nowMs: number, )
+- lookupUser · function · L2343-L2349 — lookupUser = (id: string)
+- initializeCustomSkillLoader · function · L2660-L2669 — initializeCustomSkillLoader = async (): Promise<void>
+- initializePluginRegistry · function · L2671-L2686 — initializePluginRegistry = async (): Promise<void>
+- startXMentionBridge · function · L2716-L2726 — startXMentionBridge = ()
+- resolveDefaultWorkspace · function · L2741-L2749 — resolveDefaultWorkspace = (): | ReturnType<typeof workspaceRepo.findById> | undefined
+- hasActiveForegroundTask · function · L2751-L2757 — hasActiveForegroundTask = (workspaceId?: string): boolean
+- runCoreDistill · function · L3073-L3084 — runCoreDistill = async ()
+- resolveDefaultWorkspace · function · L3317-L3325 — resolveDefaultWorkspace = (): | ReturnType<typeof workspaceRepo.findById> | undefined
+- extractConnectorTriggerSubscription · function · L3326-L3351 — extractConnectorTriggerSubscription = (trigger: { source: string; conditions: Array<{ field: string; value: string }>; }): { serverId?: string; connectorId?: string; resourceUri?: string; } | null
+- getConditionValue · function · L3337-L3345 — getConditionValue = (...fields: string[]): string | undefined
+- syncMcpTriggerSubscriptions · function · L3410-L3416 — syncMcpTriggerSubscriptions = async (): Promise<void>
+- refreshRoutineRunsForTask · function · L3603-L3609 — refreshRoutineRunsForTask = (payload: { taskId?: string })
+- loadWebAccessSettings · function · L3820-L3854 — loadWebAccessSettings = (): WebAccessConfig
+- saveWebAccessSettings · function · L3856-L3864 — saveWebAccessSettings = (settings: WebAccessConfig): void
+- getDefaultWebWorkspaceId · function · L3869-L3874 — getDefaultWebWorkspaceId = (): string
+- getAnnotationRepo · function · L4398-L4398 — getAnnotationRepo = ()
+- logAnnotationEvent · function · L4400-L4416 — logAnnotationEvent = ( type: string, annotation: Any, extra: Record<string, unknown> = {}, )
+- resolveDialogDefaultPath · function · L4494-L4572 — resolveDialogDefaultPath = async (candidate?: string | null)
+- isBlockedDialogRoot · function · L4508-L4523 — isBlockedDialogRoot = (candidatePath: string)
+- showOpenDialogWithLogging · function · L4574-L4616 — showOpenDialogWithLogging = async ( dialogKind: "folder" | "files", options: Electron.OpenDialogOptions, ownerWindow?: BrowserWindow | null, )

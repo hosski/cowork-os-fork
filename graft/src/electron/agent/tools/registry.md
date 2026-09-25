@@ -1,0 +1,198 @@
+# src/electron/agent/tools/registry.ts
+
+- sanitizeFilename · function · L193-L200 — function sanitizeFilename(raw: string, maxLen = 120): string
+- guessExtFromMime · function · L202-L210 — function guessExtFromMime(mimeType?: string): string
+- getApprovalTypeForRuntimeKind · function · L238-L253 — function getApprovalTypeForRuntimeKind( approvalKind: RuntimeToolApprovalKind | undefined, ): ApprovalType | null
+- SpawnAgentRuntimeMode · type · L296-L296 — type SpawnAgentRuntimeMode = "native" | "acpx";
+- SpawnAgentRuntimeAgent · type · L297-L297 — type SpawnAgentRuntimeAgent = "codex" | "claude";
+- isExplicitCodexSpawnRequest · function · L299-L319 — function isExplicitCodexSpawnRequest(input: { runtime_agent?: string; title?: string; prompt?: string; }): boolean
+- resolveExternalRuntimePermissionMode · function · L321-L331 — function resolveExternalRuntimePermissionMode(input: { prompt: string; title?: string; autonomousMode?: boolean; }): "approve-reads" | "approve-all" | "deny-all"
+- resolveSpawnAgentExternalRuntime · function · L333-L371 — function resolveSpawnAgentExternalRuntime(input: { runtime?: SpawnAgentRuntimeMode; runtime_agent?: SpawnAgentRuntimeAgent; title?: string; prompt: string; autonomousMode?: boolean; defaultCodexRuntimeMode?: "native" | "acpx"; }): AgentConfig["externalRuntime"] | undefined
+- parseBoundedIntEnv · function · L373-L383 — function parseBoundedIntEnv( envName: string, fallback: number, minValue: number, maxValue: number, ): number
+- parseBooleanEnv · function · L385-L394 — function parseBooleanEnv(envName: string, fallback = true): boolean
+- isExtractionLikePrompt · function · L396-L420 — function isExtractionLikePrompt(prompt: string): boolean
+- applyExtractionOutputContract · function · L422-L433 — function applyExtractionOutputContract(prompt: string): string
+- parsePaymentAmount · function · L435-L444 — function parsePaymentAmount(rawAmount: unknown): number | null
+- getSchemaProperty · function · L446-L478 — function getSchemaProperty( schema: MCPTool["inputSchema"] | undefined, path: readonly string[], ): MCPToolProperty | undefined
+- getInputValue · function · L480-L487 — function getInputValue(input: unknown, path: readonly string[]): unknown
+- extractPaymentAmountFromX402Tool · function · L489-L513 — function extractPaymentAmountFromX402Tool( input: unknown, toolSchema?: MCPTool, ): number | null
+- getMcpPaymentLimitError · function · L515-L531 — function getMcpPaymentLimitError(input: unknown, toolSchema?: MCPTool): string | null
+- ToolRegistry · class · L537-L13599 — class ToolRegistry
+- constructor · method · L611-L687 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, gatewayContext?: GatewayContextType, toolRestrictions?: string[], )
+- applyToolRestrictions · method · L689-L714 — private applyToolRestrictions(restrictions?: string[]): void
+- invalidateToolCaches · method · L716-L720 — private invalidateToolCaches(): void
+- setJevSkillOrder · method · L726-L733 — setJevSkillOrder(order: readonly string[]): void
+- buildToolCatalogVersion · method · L735-L819 — private buildToolCatalogVersion(): string
+- getToolCatalogVersion · method · L821-L823 — getToolCatalogVersion(): string
+- buildToolDefinitionsCacheKey · method · L825-L838 — private buildToolDefinitionsCacheKey(): string
+- buildToolDescriptionsCacheKey · method · L840-L877 — private buildToolDescriptionsCacheKey( visibleTools?: string[], options?: { renderContext?: LLMToolPromptRenderContext; skillRoutingQuery?: string; skillShortlistSize?: number; skillLowConfidenceThreshold?: number; skillTextBudgetChars?: number; }, ): string
+- renderToolsForContext · method · L879-L881 — renderToolsForContext(tools: LLMTool[], context: LLMToolPromptRenderContext): LLMTool[]
+- buildCompactToolDescriptions · method · L883-L974 — private buildCompactToolDescriptions( visibleTools: string[], options?: { renderContext?: LLMToolPromptRenderContext; skillRoutingQuery?: string; skillShortlistSize?: number; skillLowConfidenceThreshold?: number; skillTextBudgetChars?: number; }, ): string
+- compact · function · L896-L902 — compact = (text: unknown, maxChars = 180): string
+- validateToolSemanticsInvariant · method · L976-L1039 — private validateToolSemanticsInvariant(tools: LLMTool[]): void
+- setCitationTracker · method · L1044-L1046 — setCitationTracker(tracker: CitationTracker): void
+- getCitationTracker · method · L1048-L1050 — getCitationTracker(): CitationTracker | undefined
+- setDeepWorkMode · method · L1053-L1056 — setDeepWorkMode(enabled: boolean): void
+- setWebSearchDomainPolicy · method · L1061-L1065 — setWebSearchDomainPolicy( policy: { allowedDomains?: string[]; blockedDomains?: string[] } | null, ): void
+- setWorkspacePathAliasPolicy · method · L1067-L1069 — setWorkspacePathAliasPolicy(policy: WorkspacePathAliasPolicy | undefined): void
+- getScratchpadData · method · L1072-L1074 — getScratchpadData(): Map<string, { content: string; timestamp: number }>
+- getWorkspace · method · L1079-L1081 — getWorkspace(): Workspace
+- assertMcpReadablePath · method · L1083-L1097 — private async assertMcpReadablePath(candidatePath: string): Promise<string>
+- assertMcpOutputPath · method · L1099-L1106 — private assertMcpOutputPath(outputPath: string): string
+- setWorkspace · method · L1112-L1159 — setWorkspace(workspace: Workspace): void
+- setCanvasSessionCutoff · method · L1165-L1167 — setCanvasSessionCutoff(cutoff: number | null): void
+- getLatestCanvasSessionId · method · L1169-L1172 — getLatestCanvasSessionId(): string | null
+- setGatewayContext · method · L1178-L1181 — setGatewayContext(context: GatewayContextType | undefined): void
+- sendStdin · method · L1186-L1188 — sendStdin(input: string): boolean
+- hasActiveShellProcess · method · L1193-L1195 — hasActiveShellProcess(): boolean
+- killShellProcess · method · L1201-L1203 — killShellProcess(force?: boolean): boolean
+- deriveChronicleDestinationHints · method · L1205-L1220 — private deriveChronicleDestinationHints(input: { appName?: string; windowTitle?: string; localTextSnippet?: string; }): string[]
+- isToolAllowed · method · L1225-L1239 — isToolAllowed(toolName: string): boolean
+- getTools · method · L1246-L1591 — getTools(): LLMTool[]
+- getRuntimeMetadata · method · L1593-L1598 — getRuntimeMetadata(toolName: string)
+- getApprovalType · method · L1600-L1602 — getApprovalType(toolName: string, input?: Any): ApprovalType | null
+- getMcpServerName · method · L1604-L1618 — getMcpServerName(toolName: string): string | null
+- getMcpEndpointForTool · method · L1620-L1635 — private getMcpEndpointForTool(toolName: string): string | null
+- evaluateMcpEndpointNetworkPolicy · method · L1637-L1653 — private evaluateMcpEndpointNetworkPolicy(toolName: string)
+- isReadOnlyHttpRequestInput · method · L1655-L1670 — private isReadOnlyHttpRequestInput(input: Any): boolean
+- getExternalFilesystemBoundary · method · L1672-L1724 — private getExternalFilesystemBoundary( toolName: string, input?: Any, ): { path: string; paths: string[]; pathOperations: Array<{ path: string; operation: "read" | "write" | "delete" }>; operation: "read" | "write" | "delete"; } | null
+- getSkillManagementFilesystemBoundary · method · L1733-L1799 — private getSkillManagementFilesystemBoundary( toolName: string, input?: Any, ): { path: string; paths: string[]; pathOperations: Array<{ path: string; operation: "read" | "write" | "delete" }>; operation: "read" | "write" | "delete"; } | null
+- assertSkillFilesystemAccess · method · L1801-L1817 — private async assertSkillFilesystemAccess( requestedPath: string, operation: "read" | "write" | "delete", label = "skill storage", ): Promise<string>
+- getApprovalTypeForTool · method · L1819-L1883 — private getApprovalTypeForTool(toolName: string, input?: Any): ApprovalType | null
+- toolHandlesApprovalInternally · method · L1885-L1898 — private toolHandlesApprovalInternally(toolName: string): boolean
+- getSchedulerSpec · method · L1900-L1911 — getSchedulerSpec(toolName: string, input: Any): RuntimeToolSchedulerSpec
+- getDeferredTools · method · L1913-L1915 — getDeferredTools(): LLMTool[]
+- searchDeferredTools · method · L1917-L1929 — searchDeferredTools( query: string, limit = 8, ): { query: string; matches: Array<{ name: string; description: string; score: number }>; }
+- buildBrowserUseApprovalDetails · method · L1931-L1949 — private buildBrowserUseApprovalDetails(toolName: string, input: Any)
+- buildJevSemanticReviewEvaluation · method · L1951-L2040 — private buildJevSemanticReviewEvaluation(input: { toolName: string; toolInput: unknown; toolCallId: string; approvalType?: ApprovalType | null; sideEffectLevel?: RuntimeToolSideEffectLevel; signal?: AbortSignal; })
+- buildExecutionMiddlewares · method · L2042-L2288 — private buildExecutionMiddlewares(): ToolExecutionMiddleware[]
+- policyMiddleware · function · L2043-L2285 — policyMiddleware: ToolExecutionMiddleware = async (context, next)
+- executeWithRegisteredHandler · method · L2290-L2306 — private executeWithRegisteredHandler( name: string, input: Any, runtime?: Record<string, unknown>, ): Promise<Any>
+- registerRuntimeHandlers · method · L2308-L3287 — private registerRuntimeHandlers(): void
+- register · function · L2309-L2315 — register = ( name: string, handler: ToolExecutionHandler, schedulerSpecResolver?: ReturnType<typeof createStaticRuntimeToolSchedulerSpecResolver>, )
+- registerPredicate · function · L2316-L2322 — registerPredicate = ( matches: (name: string) => boolean, handler: ToolExecutionHandler, schedulerSpecResolver?: ReturnType<typeof createStaticRuntimeToolSchedulerSpecResolver>, )
+- getMCPToolDefinitions · method · L3292-L3322 — private getMCPToolDefinitions(): LLMTool[]
+- setPlanRevisionHandler · method · L3336-L3344 — setPlanRevisionHandler( handler: ( newSteps: Array<{ description: string }>, reason: string, clearRemaining: boolean, ) => void, ): void
+- setTaskListHandler · method · L3346-L3352 — setTaskListHandler(handler: { create: (items: SessionChecklistToolItemInput[]) => SessionChecklistState; update: (items: SessionChecklistToolItemInput[]) => SessionChecklistState; list: () => SessionChecklistState; }): void
+- setWorkspaceSwitchHandler · method · L3362-L3364 — setWorkspaceSwitchHandler(handler: (newWorkspace: Workspace) => Promise<void>): void
+- switchWorkspace · method · L3370-L3459 — async switchWorkspace(input: { path?: string; workspace_id?: string }): Promise<{ success: boolean; workspace?: { id: string; name: string; path: string }; error?: string; }>
+- taskHistory · method · L3465-L3495 — private taskHistory(input: { period: "today" | "yesterday" | "last_7_days" | "last_30_days" | "custom"; from?: string; to?: string; limit?: number; workspace_id?: string; query?: string; include_messages?: boolean; }): Any
+- taskEvents · method · L3501-L3531 — private taskEvents(input: { period: "today" | "yesterday" | "last_7_days" | "last_30_days" | "custom"; from?: string; to?: string; limit?: number; workspace_id?: string; types?: string[]; include_payload?: boolean; }): Any
+- requestUserInput · method · L3533-L3689 — private async requestUserInput(input: { questions: Array<{ header: string; id: string; question: string; options: Array<{ label: string; description: string }>; }>; }): Promise<{ requestId: string; status: "submitted"; answers?: Record<string, { optionLabel?: string; otherText?: string }>; }>
+- toText · function · L3567-L3568 — toText = (value: unknown): string
+- truncateHeader · function · L3570-L3574 — truncateHeader = (value: string): string
+- toSnakeCaseId · function · L3576-L3585 — toSnakeCaseId = (value: string, fallback: string): string
+- ensureUniqueId · function · L3587-L3596 — ensureUniqueId = (candidate: string, usedIds: Set<string>): string
+- normalizeOptions · function · L3598-L3636 — normalizeOptions = ( optionsInput: unknown, ): Array<{ label: string; description: string }>
+- getTaskExecutionMode · method · L3691-L3694 — private async getTaskExecutionMode(): Promise<string>
+- withImmediateTaskListReminder · method · L3696-L3706 — private withImmediateTaskListReminder(state: SessionChecklistState): SessionChecklistState & { immediateReminder?: string; }
+- taskListCreate · method · L3708-L3723 — private async taskListCreate(input: { items?: SessionChecklistToolItemInput[]; }): Promise<SessionChecklistState & { immediateReminder?: string }>
+- taskListUpdate · method · L3725-L3740 — private async taskListUpdate(input: { items?: SessionChecklistToolItemInput[]; }): Promise<SessionChecklistState & { immediateReminder?: string }>
+- taskListList · method · L3742-L3753 — private async taskListList(): Promise<SessionChecklistState>
+- getToolDescriptions · method · L3758-L4165 — getToolDescriptions( visibleTools?: string[], options?: { renderContext?: LLMToolPromptRenderContext; skillRoutingQuery?: string; skillShortlistSize?: number; skillLowConfidenceThreshold?: number; skillTextBudgetChars?: number; }, ): string
+- isVisible · function · L3777-L3778 — isVisible = (toolName: string): boolean
+- hasAnyVisibleTools · function · L3779-L3780 — hasAnyVisibleTools = (...toolNames: string[]): boolean
+- executeToolWithRuntime · method · L4170-L4180 — async executeToolWithRuntime( name: string, input: Any, runtime?: Record<string, unknown>, ): Promise<{ result: Any; policyTrace?: Any }>
+- executeTool · method · L4182-L5033 — async executeTool(name: string, input: Any, _runtime?: Record<string, unknown>): Promise<Any>
+- tryExecuteMCPTool · method · L5038-L5133 — private async tryExecuteMCPTool(name: string, input: Any): Promise<Any | null>
+- formatMCPResult · method · L5139-L5299 — private async formatMCPResult(result: Any, toolName?: string, input?: Any): Promise<Any>
+- cleanup · method · L5304-L5314 — async cleanup(): Promise<void>
+- storeResolvedSkillInvocation · method · L5316-L5321 — private storeResolvedSkillInvocation(application: SkillApplication): string
+- takeResolvedSkillInvocation · method · L5323-L5332 — takeResolvedSkillInvocation(invocationId: string): SkillApplication | null
+- buildSkillRuntimeDescriptor · method · L5334-L5336 — private buildSkillRuntimeDescriptor(skill: CustomSkill)
+- resolveSkillArgsToParameters · method · L5338-L5433 — private resolveSkillArgsToParameters( skill: CustomSkill, args: string, ): { success: boolean; parameters?: Record<string, Any>; error?: string; }
+- applySkillParameterDefaults · method · L5435-L5446 — private applySkillParameterDefaults( skill: CustomSkill, parameters: Record<string, Any>, ): Record<string, Any>
+- executeSkillCommand · method · L5452-L5773 — private async executeSkillCommand(input: { skill: string; args?: string; trigger?: SkillApplicationTrigger; }): Promise<Any>
+- buildCodexCliRuntimePrompt · method · L5775-L5822 — private async buildCodexCliRuntimePrompt(): Promise<string>
+- extractCurrentTaskText · method · L5824-L5827 — private extractCurrentTaskText(value: unknown): string
+- deriveCodexChildTaskTitle · method · L5829-L5835 — private deriveCodexChildTaskTitle(taskTitle: string, taskPrompt: string): string
+- deriveCodexChildTaskPrompt · method · L5837-L5869 — private deriveCodexChildTaskPrompt(taskPrompt: string, fallbackTitle: string): string
+- passesSkillKeywordGate · method · L5879-L5900 — private async passesSkillKeywordGate( skill: CustomSkill, trigger: SkillApplicationTrigger = "model", ): Promise<boolean>
+- executeSkillList · method · L5902-L5949 — private async executeSkillList(input: { source?: "all" | "bundled" | "managed" | "workspace"; include_disabled?: boolean; }): Promise<Any>
+- executeSkillGet · method · L5954-L5993 — private async executeSkillGet(input: { skill_id: string }): Promise<Any>
+- executeSkillCreate · method · L5998-L6080 — private async executeSkillCreate(input: { id: string; name: string; description: string; prompt: string; icon?: string; category?: string; parameters?: Array<{ name: string; type: "string" | "number" | "boolean" | "select"; description: string; required?: boolean; default?: string | number | boolean; options?: string[]; }>; enabled?: boolean; }): Promise<Any>
+- executeSkillDuplicate · method · L6085-L6179 — private async executeSkillDuplicate(input: { source_skill_id: string; new_id: string; modifications?: { name?: string; description?: string; prompt?: string; icon?: string; category?: string; parameters?: Any[]; }; }): Promise<Any>
+- executeSkillUpdate · method · L6184-L6253 — private async executeSkillUpdate(input: { skill_id: string; updates: { name?: string; description?: string; prompt?: string; icon?: string; category?: string; parameters?: Any[]; enabled?: boolean; }; }): Promise<Any>
+- executeSkillDelete · method · L6258-L6313 — private async executeSkillDelete(input: { skill_id: string }): Promise<Any>
+- executeSkillProposal · method · L6318-L6699 — private async executeSkillProposal(input: { action?: "create" | "list" | "approve" | "reject" | "eval"; proposal_id?: string; status?: "pending" | "approved" | "rejected" | "all"; problem_statement?: string; evidence?: string[]; required_tools?: string[]; risk_note?: string; draft_skill?: { id?: string; name?: string; description?: string; prompt?: string; icon?: string; category?: string; parameters?: Any[]; enabled?: boolean; }; eval_cases?: SkillEvalCase[]; rejection_reason?: string; }): Promise<Any>
+- deniedStoragePath · function · L6343-L6356 — deniedStoragePath = (operation: "read" | "write", targets: string[]): Any | null
+- validateSkillPlaceholderIntegrity · method · L6701-L6724 — private validateSkillPlaceholderIntegrity(prompt: string, parameters?: Any[]): string[]
+- getFileToolDefinitions · method · L6729-L6937 — private getFileToolDefinitions(): LLMTool[]
+- getSkillToolDefinitions · method · L6942-L7525 — private getSkillToolDefinitions(): LLMTool[]
+- getSearchToolDefinitions · method · L7530-L7597 — private getSearchToolDefinitions(): LLMTool[]
+- getXSearchToolDefinitions · method · L7602-L7648 — private getXSearchToolDefinitions(): LLMTool[]
+- getXToolDefinitions · method · L7653-L7722 — private getXToolDefinitions(): LLMTool[]
+- getNotionToolDefinitions · method · L7727-L7860 — private getNotionToolDefinitions(): LLMTool[]
+- getBoxToolDefinitions · method · L7865-L7970 — private getBoxToolDefinitions(): LLMTool[]
+- getOneDriveToolDefinitions · method · L7975-L8036 — private getOneDriveToolDefinitions(): LLMTool[]
+- getGoogleDriveToolDefinitions · method · L8041-L8100 — private getGoogleDriveToolDefinitions(): LLMTool[]
+- getGmailToolDefinitions · method · L8105-L8217 — private getGmailToolDefinitions(): LLMTool[]
+- getMailboxToolDefinitions · method · L8219-L8385 — private getMailboxToolDefinitions(): LLMTool[]
+- getGoogleCalendarToolDefinitions · method · L8390-L8487 — private getGoogleCalendarToolDefinitions(): LLMTool[]
+- getAppleCalendarToolDefinitions · method · L8492-L8564 — private getAppleCalendarToolDefinitions(): LLMTool[]
+- getAppleRemindersToolDefinitions · method · L8569-L8639 — private getAppleRemindersToolDefinitions(): LLMTool[]
+- getDropboxToolDefinitions · method · L8644-L8702 — private getDropboxToolDefinitions(): LLMTool[]
+- getSharePointToolDefinitions · method · L8707-L8774 — private getSharePointToolDefinitions(): LLMTool[]
+- getVoiceCallToolDefinitions · method · L8779-L8852 — private getVoiceCallToolDefinitions(): LLMTool[]
+- getShellToolDefinitions · method · L8857-L8886 — private getShellToolDefinitions(): LLMTool[]
+- integrationSetup · method · L8888-L9264 — private async integrationSetup(input: { action?: string; provider?: string; auth_method?: "auto" | IntegrationAuthMethod; env?: Record<string, unknown>; oauth?: { client_id?: string; client_secret?: string; scopes?: string[]; login_url?: string; subdomain?: string; team_domain?: string; }; expected_plan_hash?: string; dry_run?: boolean; api_key?: string; webhook_secret?: string; base_url?: string; enable_inbound?: boolean; connect_now?: boolean; allow_unsafe_external_content?: boolean; }): Promise<Any>
+- resolveTier1Provider · method · L9266-L9273 — private resolveTier1Provider(rawProvider: string): Tier1IntegrationProvider | null
+- findConnectorServer · method · L9275-L9289 — private findConnectorServer( settings: { servers: MCPServerConfig[] }, capability: ConnectorCapability, ): MCPServerConfig | undefined
+- isConnectorConnected · method · L9291-L9297 — private isConnectorConnected(mcpClient: MCPClientManager, serverId: string): boolean
+- normalizeIntegrationEnvInput · method · L9299-L9315 — private normalizeIntegrationEnvInput( inputEnv: Record<string, unknown> | undefined, ): Record<string, string>
+- buildMergedIntegrationEnv · method · L9317-L9330 — private buildMergedIntegrationEnv( currentEnv: Record<string, string> | undefined, inputEnv: Record<string, string>, provider: Tier1IntegrationProvider, ): Record<string, string>
+- buildIntegrationMissingInputs · method · L9332-L9354 — private buildIntegrationMissingInputs( capability: ConnectorCapability, missingKeys: string[], ): Array<{ field: string; label: string; prompt: string; create_url?: string; docs_url?: string; }>
+- buildDefaultInputHint · method · L9356-L9369 — private buildDefaultInputHint( capability: ConnectorCapability, key: string, ): IntegrationInputHint
+- buildIntegrationPlanHash · method · L9371-L9374 — private buildIntegrationPlanHash(payload: Any): string
+- stableStringify · method · L9376-L9392 — private stableStringify(value: Any): string
+- normalize · function · L9377-L9390 — normalize = (input: Any): Any
+- buildIntegrationEnvFingerprint · method · L9394-L9413 — private buildIntegrationEnvFingerprint( env: Record<string, string>, capability: ConnectorCapability, ): Record<string, string>
+- getOAuthClientEnvKeys · method · L9415-L9429 — private getOAuthClientEnvKeys(provider: Tier1IntegrationProvider): { clientIdKey?: string; clientSecretKey?: string; }
+- applyConnectorOAuth · method · L9431-L9539 — private async applyConnectorOAuth(params: { capability: ConnectorCapability; provider: Tier1IntegrationProvider; input: { oauth?: { client_id?: string; client_secret?: string; scopes?: string[]; login_url?: string; subdomain?: string; team_domain?: string; }; }; env: Record<string, string>; }): Promise< | { success: true; env: Record<string, string>; message: string } | { success: false; error: string; message: string } >
+- getResendInboundState · method · L9541-L9557 — private getResendInboundState(): { hooks_enabled: boolean; preset_enabled: boolean; endpoint_path: string; token_configured: boolean; signing_secret_configured: boolean; }
+- configureResendInbound · method · L9559-L9603 — private configureResendInbound(input: { webhookSecret?: string; allowUnsafeExternalContent?: boolean; }): { hooks_enabled: boolean; preset_enabled: boolean; endpoint_path: string; token_configured: boolean; signing_secret_configured: boolean; }
+- extractMcpTextContent · method · L9605-L9611 — private extractMcpTextContent(result: Any): string
+- setPersonality · method · L9616-L9667 — private setPersonality(input: { personality?: string; preset?: string; adjust?: Record<string, number>; }): { success: boolean; personality?: string; description: string; message: string; }
+- addBehavioralRule · method · L9672-L9693 — private addBehavioralRule(input: { type: string; rule: string }): { success: boolean; message: string; }
+- setExpertise · method · L9698-L9720 — private setExpertise(input: { domain: string; level: string }): { success: boolean; message: string; }
+- setAgentName · method · L9725-L9750 — private setAgentName(input: { name: string }): { success: boolean; name: string; message: string; }
+- setPersona · method · L9755-L9805 — private setPersona(input: { persona: string }): { success: boolean; persona: string; name: string; description: string; message: string; }
+- setUserName · method · L9810-L9844 — private setUserName(input: { name: string }): { success: boolean; name: string; message: string; }
+- setResponseStyle · method · L9849-L9924 — private setResponseStyle(input: { emoji_usage?: string; response_length?: string; code_comments?: string; explanation_depth?: string; }): { success: boolean; changes: string[]; message: string; }
+- sanitizeQuirkInput · method · L9930-L9955 — private sanitizeQuirkInput(input: string): string
+- setQuirks · method · L9960-L10042 — private setQuirks(input: { catchphrase?: string; sign_off?: string; analogy_domain?: string }): { success: boolean; changes: string[]; message: string; }
+- assertWorkspaceKitPathAccess · method · L10046-L10058 — private assertWorkspaceKitPathAccess(filePath: string, operation: "read" | "write"): string
+- setVibes · method · L10063-L10174 — private setVibes(input: { mode: string; energy?: string; notes?: string }): { success: boolean; message: string; }
+- updateLore · method · L10179-L10317 — private updateLore(input: { entry: string; section?: string }): { success: boolean; message: string; }
+- getCurrentTaskDepth · method · L10324-L10327 — private async getCurrentTaskDepth(): Promise<number>
+- resolveDescendantTask · method · L10329-L10375 — private async resolveDescendantTask(taskIdInput: unknown): Promise< | { ok: true; taskId: string; task: Task } | { ok: false; taskId?: string; error: "TASK_ID_REQUIRED" | "TASK_NOT_FOUND" | "FORBIDDEN"; message: string; } >
+- parseDocument · method · L10380-L10398 — private async parseDocument(input: { path: string; format?: "text" | "structured"; max_chars?: number; })
+- executeCode · method · L10403-L10425 — private async executeCode(input: { language: "python" | "javascript" | "shell"; code: string; timeout_seconds?: number; allow_network?: boolean; })
+- getOrchestrationStatus · method · L10430-L10517 — private async getOrchestrationStatus(input: { run_id?: string }): Promise<{ success: boolean; run?: { run_id: string; root_task_id: string; workspace_id: string; status: string; created_at: number; completed_at?: number; summary: { total: number; pending: number; spawned: number; running: number; completed: number; failed: number; }; tasks: Array<{ id: string; title: string; status: string; depends_on: string[]; task_id?: string; output?: string; error?: string; capability_hint?: string; started_at?: number; completed_at?: number; }>; }; message: string; }>
+- acpDiscover · method · L10522-L10561 — private async acpDiscover(input: { capability?: string; query?: string; origin?: "local" | "remote"; status?: "available" | "busy" | "offline"; }): Promise<{ success: boolean; agents: Array<{ id: string; name: string; origin: "local" | "remote"; status: string; endpoint?: string; capabilities: string[]; }>; message: string; }>
+- waitForRemoteAgent · method · L10563-L10620 — private async waitForRemoteAgent( invoker: RemoteAgentInvoker, acpAgentId: string, remoteTaskId: string, timeoutSeconds: number, ): Promise<{ success: boolean; status: string; message: string; resultSummary?: string; error?: string; }>
+- getDelegationParentTask · method · L10622-L10626 — private async getDelegationParentTask(): Promise<Task | null>
+- getDelegationCurrentStepContext · method · L10628-L10647 — private async getDelegationCurrentStepContext(): Promise<string | undefined>
+- getDelegationKnownFindings · method · L10649-L10687 — private async getDelegationKnownFindings(): Promise<string | undefined>
+- buildStructuredDelegationBrief · method · L10689-L10777 — private buildStructuredDelegationBrief(params: { originalPrompt: string; workerRole: WorkerRoleKind; taskTitle: string; parentTaskTitle?: string; parentTaskPrompt?: string; currentStepContext?: string; knownFindings?: string; extractionMode: boolean; }): string
+- prepareSpawnAgentNode · method · L10779-L10918 — private async prepareSpawnAgentNode(input: { prompt: string; title?: string; model_preference?: string; capability_hint?: string; acp_agent_id?: string; personality?: string; worker_role?: string; runtime?: SpawnAgentRuntimeMode; runtime_agent?: SpawnAgentRuntimeAgent; max_turns?: number; }): Promise<{ taskTitle: string; contractedPrompt: string; agentConfig: AgentConfig; dispatchTarget: "native_child_task" | "local_role" | "remote_acp" | "external_runtime"; assignedAgentRoleId?: string; acpAgentId?: string; workerRole: WorkerRoleKind; extractionMode: boolean; externalRuntime?: AgentConfig["externalRuntime"]; }>
+- spawnAgent · method · L10920-L11179 — private async spawnAgent(input: { prompt: string; title?: string; model_preference?: string; capability_hint?: string; acp_agent_id?: string; personality?: string; worker_role?: string; runtime?: SpawnAgentRuntimeMode; runtime_agent?: SpawnAgentRuntimeAgent; wait?: boolean; max_turns?: number; }): Promise<{ success: boolean; task_id?: string; title?: string; message: string; result?: Any; error?: string; }>
+- waitForAgentInternal · method · L11184-L11285 — private async waitForAgentInternal( taskId: string, timeoutSeconds: number, ): Promise<{ success: boolean; status: string; message: string; resultSummary?: string; error?: string; }>
+- waitForAgent · method · L11290-L11314 — private async waitForAgent(input: { task_id: string; timeout_seconds?: number }): Promise<{ success: boolean; status: string; task_id: string; message: string; result_summary?: string; error?: string; }>
+- orchestrateAgents · method · L11319-L11456 — private async orchestrateAgents(input: { tasks: Array<{ prompt: string; title?: string; model_preference?: string; capability_hint?: string; acp_agent_id?: string; worker_role?: string; }>; timeout_seconds?: number; }): Promise<{ success: boolean; results: Array<{ task_id: string; title: string; status: string; result_summary?: string; error?: string; }>; completed: number; failed: number; message: string; }>
+- getAgentStatus · method · L11461-L11576 — private async getAgentStatus(input: { task_ids?: string[] }): Promise<{ agents: Array<{ task_id: string; title: string; status: string; agent_type: string; model_key?: string; result_summary?: string; error?: string; created_at: number; completed_at?: number; }>; message: string; }>
+- listAgents · method · L11581-L11696 — private async listAgents(input: { status_filter?: "all" | "running" | "completed" | "failed"; }): Promise<{ agents: Array<{ task_id: string; title: string; status: string; agent_type: string; model_key?: string; depth: number; created_at: number; }>; summary: { total: number; running: number; completed: number; failed: number; }; message: string; }>
+- truncateForSummary · method · L11698-L11701 — private truncateForSummary(text: string, maxChars: number): string
+- summarizeAgentEvent · method · L11703-L11807 — private summarizeAgentEvent(event: TaskEvent): { timestamp: number; type: string; summary: string; }
+- sendAgentMessage · method · L11809-L12032 — private async sendAgentMessage(input: { task_id?: unknown; bot?: unknown; message: unknown; message_id?: unknown; }): Promise<{ success: boolean; task_id?: string; message_id?: string; queued?: boolean; duplicate?: boolean; teammate_reply?: string; message: string; error?: string; }>
+- captureAgentEvents · method · L12034-L12091 — private async captureAgentEvents(input: { task_id: unknown; limit?: unknown; types?: unknown; }): Promise<{ success: boolean; task_id?: string; events?: Array<{ timestamp: number; type: string; summary: string }>; message: string; error?: string; }>
+- cancelAgent · method · L12093-L12139 — private async cancelAgent(input: { task_id: unknown }): Promise<{ success: boolean; task_id?: string; message: string; error?: string; }>
+- pauseAgent · method · L12141-L12174 — private async pauseAgent(input: { task_id: unknown }): Promise<{ success: boolean; task_id?: string; message: string; error?: string; }>
+- resumeAgent · method · L12176-L12221 — private async resumeAgent(input: { task_id: unknown }): Promise<{ success: boolean; task_id?: string; message: string; error?: string; }>
+- getMermaidDiagramToolDefinition · method · L12226-L12254 — private getMermaidDiagramToolDefinition(): LLMTool
+- initializeMermaidValidation · method · L12256-L12264 — private static initializeMermaidValidation(): void
+- validateMermaidDiagram · method · L12266-L12290 — private static async validateMermaidDiagram(diagram: string): Promise<{ success: boolean; error?: string; warning?: string; }>
+- isRecoverableMermaidValidationRuntimeError · method · L12292-L12299 — private static isRecoverableMermaidValidationRuntimeError(message: string): boolean
+- getProtectedCredentialToolDefinition · method · L12301-L12327 — private getProtectedCredentialToolDefinition(): LLMTool
+- getMetaToolDefinitions · method · L12332-L13543 — private getMetaToolDefinitions(): LLMTool[]
+- manageHeartbeat · method · L13548-L13598 — private manageHeartbeat(input: { agent_name?: string; enabled?: boolean }): { success: boolean; message: string; }

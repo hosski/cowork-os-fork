@@ -1,0 +1,84 @@
+# src/electron/agent/skill-registry.ts
+
+- ParsedFrontmatterResult · interface · L70-L73 — interface ParsedFrontmatterResult
+- sanitizeSkillId · function · L79-L105 — function sanitizeSkillId(skillId: string): string | null
+- normalizeSkillSlug · function · L107-L113 — function normalizeSkillSlug(value: string): string
+- stripQuotes · function · L115-L124 — function stripQuotes(value: string): string
+- parseScalar · function · L126-L132 — function parseScalar(value: string): unknown
+- parseFrontmatter · function · L134-L178 — function parseFrontmatter(raw: string): ParsedFrontmatterResult
+- stringValue · function · L180-L182 — function stringValue(value: unknown): string | undefined
+- arrayValue · function · L184-L194 — function arrayValue(value: unknown): string[]
+- numberValue · function · L196-L198 — function numberValue(value: unknown): number | undefined
+- getResponseContentLength · function · L200-L205 — function getResponseContentLength(response: Response): number | undefined
+- readResponseBytesWithLimit · function · L207-L222 — async function readResponseBytesWithLimit( response: Response, maxBytes: number, context: string, ): Promise<Uint8Array>
+- readResponseTextWithLimit · function · L224-L231 — async function readResponseTextWithLimit( response: Response, maxBytes: number, context: string, ): Promise<string>
+- parseGitUrl · function · L233-L255 — function parseGitUrl(input: string): { url: string; name: string } | null
+- parseClawHubInput · function · L257-L292 — function parseClawHubInput(input: string): { slug: string; url?: string } | null
+- SkillRegistryConfig · interface · L294-L297 — interface SkillRegistryConfig
+- InstallProgressCallback · type · L299-L299 — type InstallProgressCallback = (progress: SkillInstallProgress) => void;
+- SkillInstallResult · type · L300-L305 — type SkillInstallResult = { success: boolean; skill?: CustomSkill; error?: string; security?: InstallSecurityOutcome; };
+- SkillRegistry · class · L307-L1965 — class SkillRegistry
+- constructor · method · L313-L320 — constructor(config?: SkillRegistryConfig)
+- isStaticCatalog · method · L326-L334 — private isStaticCatalog(): boolean
+- fetchCatalog · method · L339-L363 — private async fetchCatalog(): Promise<SkillRegistryEntry[]>
+- ensureSkillsDirectory · method · L368-L373 — private ensureSkillsDirectory(): void
+- fetchWithTimeout · method · L375-L383 — private async fetchWithTimeout(url: string): Promise<Response>
+- buildTempDir · method · L385-L389 — private buildTempDir(hint: string): string
+- makeWritableRecursive · method · L391-L408 — private makeWritableRecursive(targetPath: string): void
+- removeTempDir · method · L410-L442 — private removeTempDir(tempDir: string): void
+- isSkillMetadataFile · method · L444-L447 — private isSkillMetadataFile(fileName: string): boolean
+- removeManagedSkillArtifacts · method · L449-L464 — private removeManagedSkillArtifacts(skillId: string): void
+- moveManagedSkillArtifacts · method · L466-L481 — private moveManagedSkillArtifacts(skillId: string, targetDir: string): void
+- restoreManagedSkillArtifacts · method · L483-L498 — private restoreManagedSkillArtifacts(skillId: string, sourceDir: string): void
+- writeSkillStage · method · L500-L527 — private writeSkillStage(stageDir: string, skill: CustomSkill, sourceDir?: string): CustomSkill
+- toInstallOutcome · method · L529-L550 — private toInstallOutcome( report: CapabilitySecurityReport | undefined, fallbackState: InstallSecurityOutcome["state"] = "failed", ): InstallSecurityOutcome | undefined
+- buildImportedSkillPrompt · method · L552-L568 — private buildImportedSkillPrompt(name: string, bundleDir: string): string
+- detectSkillBundleRoot · method · L570-L600 — private detectSkillBundleRoot(rootDir: string): string | null
+- findCustomSkillManifest · method · L602-L635 — private findCustomSkillManifest( rootDir: string, ): { manifestPath: string; supportDir?: string } | null
+- importSkillBundle · method · L637-L707 — private importSkillBundle(bundleDir: string, sourceRef: string): CustomSkill
+- copyImportBundle · method · L709-L726 — private copyImportBundle(sourceDir: string, targetDir: string): void
+- validateImportBundleDir · method · L728-L771 — private validateImportBundleDir(rootDir: string): void
+- visit · function · L732-L768 — visit = (dirPath: string)
+- installImportedSkill · method · L773-L832 — private async installImportedSkill( skill: CustomSkill, options: { sourceDir?: string; source: "registry" | "clawhub" | "url" | "git"; }, ): Promise<SkillInstallResult>
+- isGitAvailable · method · L834-L841 — private async isGitAvailable(): Promise<boolean>
+- fetchJson · method · L843-L853 — private async fetchJson(url: string): Promise<unknown | null>
+- fetchClawHubConvex · method · L855-L892 — private async fetchClawHubConvex( kind: "query" | "action", udfPath: string, args: Record<string, unknown>, ): Promise<unknown | null>
+- normalizeClawHubTags · method · L894-L902 — private normalizeClawHubTags(tags: unknown): string[]
+- clawHubStatsFields · method · L904-L913 — private clawHubStatsFields( stats: Record<string, unknown> | undefined, ): Pick<SkillRegistryEntry, "downloads" | "stars" | "installsCurrent" | "installsAllTime">
+- buildClawHubCandidates · method · L915-L940 — private buildClawHubCandidates(query: string): string[]
+- getClawHubSkill · method · L942-L969 — private async getClawHubSkill(slug: string): Promise<{ skill: Record<string, unknown>; latestVersion?: Record<string, unknown>; owner?: Record<string, unknown>; } | null>
+- mapClawHubEntry · method · L971-L1011 — private mapClawHubEntry( payload: { skill: Record<string, unknown>; latestVersion?: Record<string, unknown>; owner?: Record<string, unknown>; }, fallbackSlug: string, ): SkillRegistryEntry
+- mapClawHubListItem · method · L1013-L1064 — private mapClawHubListItem(item: Record<string, unknown>): SkillRegistryEntry | null
+- findInstalledClawHubSkill · method · L1066-L1085 — private findInstalledClawHubSkill(slug: string): CustomSkill | null
+- inspectClawHub · method · L1087-L1096 — private async inspectClawHub(query: string): Promise<SkillRegistryEntry | null>
+- resolveClawHubVersion · method · L1098-L1134 — private async resolveClawHubVersion( slug: string, payload: { skill: Record<string, unknown>; latestVersion?: Record<string, unknown>; }, ): Promise<string | null>
+- downloadClawHubFiles · method · L1136-L1191 — private async downloadClawHubFiles( slug: string, version: string, ): Promise<Record<string, string>>
+- writeImportedFiles · method · L1193-L1202 — private async writeImportedFiles(tempDir: string, files: Record<string, string>): Promise<void>
+- getManagedSkillsDir · method · L1207-L1209 — getManagedSkillsDir(): string
+- search · method · L1214-L1251 — async search( query: string, options?: { page?: number; pageSize?: number }, ): Promise<SkillSearchResult>
+- searchClawHub · method · L1253-L1326 — async searchClawHub( query: string, options?: { page?: number; pageSize?: number }, ): Promise<SkillSearchResult>
+- searchCatalog · method · L1331-L1365 — private async searchCatalog( query: string, page: number, pageSize: number, ): Promise<SkillSearchResult>
+- getSkillDetails · method · L1370-L1404 — async getSkillDetails(skillId: string): Promise<SkillRegistryEntry | null>
+- install · method · L1409-L1495 — async install( skillId: string, version?: string, onProgress?: InstallProgressCallback, ): Promise<SkillInstallResult>
+- notify · function · L1425-L1431 — notify = (progress: Partial<SkillInstallProgress>)
+- installFromClawHub · method · L1497-L1569 — async installFromClawHub(identifierOrUrl: string): Promise<SkillInstallResult>
+- installFromUrl · method · L1571-L1640 — async installFromUrl(url: string): Promise<SkillInstallResult>
+- installFromGit · method · L1642-L1706 — async installFromGit(gitUrl: string): Promise<SkillInstallResult>
+- update · method · L1711-L1750 — async update( skillId: string, version?: string, onProgress?: InstallProgressCallback, ): Promise<SkillInstallResult>
+- updateAll · method · L1755-L1776 — async updateAll( onProgress?: (skillId: string, progress: SkillInstallProgress) => void, ): Promise<{ updated: string[]; failed: string[] }>
+- uninstall · method · L1781-L1803 — uninstall(skillId: string): { success: boolean; error?: string }
+- listManagedSkills · method · L1808-L1833 — listManagedSkills(): CustomSkill[]
+- verifyManagedSkillIntegrity · method · L1835-L1843 — async verifyManagedSkillIntegrity(skillId: string): Promise<CapabilitySecurityReport | null>
+- inspectExternalSkill · method · L1845-L1847 — async inspectExternalSkill(skill: CustomSkill): Promise<CapabilitySecurityReport | null>
+- listQuarantinedImports · method · L1849-L1853 — listQuarantinedImports(): QuarantinedImportRecord[]
+- getImportSecurityReport · method · L1855-L1857 — getImportSecurityReport(request: ImportSecurityReportRequest): CapabilitySecurityReport | null
+- retryQuarantinedImport · method · L1859-L1861 — async retryQuarantinedImport(recordId: string): Promise<RetryQuarantinedImportResult>
+- removeQuarantinedImport · method · L1863-L1865 — removeQuarantinedImport(recordId: string): { success: boolean; error?: string }
+- isInstalled · method · L1870-L1879 — isInstalled(skillId: string): boolean
+- getInstalledVersion · method · L1884-L1904 — getInstalledVersion(skillId: string): string | null
+- checkForUpdates · method · L1909-L1934 — async checkForUpdates(skillId: string): Promise<{ hasUpdate: boolean; currentVersion: string | null; latestVersion: string | null; }>
+- validateSkillData · method · L1939-L1950 — private validateSkillData(data: unknown): data is CustomSkill
+- setRegistryUrl · method · L1955-L1957 — setRegistryUrl(url: string): void
+- getRegistryUrl · method · L1962-L1964 — getRegistryUrl(): string
+- getSkillRegistry · function · L1970-L1975 — function getSkillRegistry(config?: SkillRegistryConfig): SkillRegistry
+- resetSkillRegistry · function · L1980-L1982 — function resetSkillRegistry(): void

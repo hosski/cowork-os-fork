@@ -1,0 +1,26 @@
+# src/electron/security/concurrency.ts
+
+- AsyncMutex · class · L11-L61 — class AsyncMutex
+- acquire · method · L18-L30 — async acquire(): Promise<() => void>
+- tryAcquire · function · L20-L27 — tryAcquire = ()
+- release · method · L35-L41 — private release(): void
+- withLock · method · L46-L53 — async withLock<T>(fn: () => Promise<T>): Promise<T>
+- isLocked · method · L58-L60 — isLocked(): boolean
+- NamedMutexManager · class · L66-L98 — class NamedMutexManager
+- getMutex · method · L72-L79 — getMutex(key: string): AsyncMutex
+- withLock · method · L84-L86 — async withLock<T>(key: string, fn: () => Promise<T>): Promise<T>
+- cleanup · method · L91-L97 — cleanup(): void
+- IdempotencyEntry · interface · L103-L109 — interface IdempotencyEntry
+- IdempotencyManager · class · L117-L339 — class IdempotencyManager
+- constructor · method · L122-L130 — constructor(defaultTTLMs = 5 * 60 * 1000)
+- generateKey · method · L135-L138 — static generateKey(operation: string, ...args: (string | number | undefined)[]): string
+- check · method · L143-L165 — check(key: string): { exists: boolean; status?: "pending" | "completed" | "failed"; result?: Any; }
+- start · method · L171-L189 — start(key: string, ttlMs?: number): boolean
+- complete · method · L194-L200 — complete(key: string, result: Any): void
+- fail · method · L205-L211 — fail(key: string, error?: Any): void
+- remove · method · L216-L218 — remove(key: string): void
+- execute · method · L225-L257 — async execute<T>( key: string, operation: () => Promise<T>, ttlMs?: number, ): Promise<{ result: T; cached: boolean }>
+- waitForCompletion · method · L262-L285 — private async waitForCompletion<T>(key: string, timeoutMs = 30000): Promise<T>
+- cleanupExpired · method · L290-L297 — private cleanupExpired(): void
+- getStats · method · L302-L327 — getStats(): { total: number; pending: number; completed: number; failed: number }
+- destroy · method · L332-L338 — destroy(): void

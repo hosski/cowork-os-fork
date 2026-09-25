@@ -1,0 +1,38 @@
+# src/electron/memory/__tests__/MemoryService.test.ts
+
+- MemoryType · type · L18-L18 — type MemoryType = "observation" | "decision" | "insight" | "error";
+- PrivacyMode · type · L19-L19 — type PrivacyMode = "normal" | "strict" | "disabled";
+- Memory · interface · L21-L33 — interface Memory
+- MemorySettings · interface · L35-L44 — interface MemorySettings
+- MemorySearchResult · interface · L46-L52 — interface MemorySearchResult
+- MemoryStats · interface · L54-L59 — interface MemoryStats
+- containsSensitiveData · function · L84-L91 — function containsSensitiveData(content: string): boolean
+- estimateTokens · function · L94-L97 — function estimateTokens(text: string): number
+- createDefaultSettings · function · L105-L115 — function createDefaultSettings(workspaceId: string): MemorySettings
+- MockMemoryRepository · class · L118-L237 — class MockMemoryRepository
+- create · method · L119-L130 — create(data: Omit<Memory, "id" | "createdAt" | "updatedAt">): Memory
+- findById · method · L132-L134 — findById(id: string): Memory | undefined
+- update · method · L136-L141 — update(id: string, updates: Partial<Memory>): void
+- search · method · L143-L164 — search(workspaceId: string, query: string, limit: number = 20): MemorySearchResult[]
+- getRecentForWorkspace · method · L166-L174 — getRecentForWorkspace(workspaceId: string, limit: number = 20): Memory[]
+- getStats · method · L176-L195 — getStats(workspaceId: string): MemoryStats
+- deleteByWorkspace · method · L197-L205 — deleteByWorkspace(workspaceId: string): void
+- deleteOlderThan · method · L207-L216 — deleteOlderThan(workspaceId: string, cutoff: number): number
+- findByTask · method · L218-L226 — findByTask(taskId: string): Memory[]
+- getUncompressed · method · L228-L236 — getUncompressed(limit: number): Memory[]
+- MockMemorySettingsRepository · class · L240-L255 — class MockMemorySettingsRepository
+- getOrCreate · method · L241-L248 — getOrCreate(workspaceId: string): MemorySettings
+- update · method · L250-L254 — update(workspaceId: string, updates: Partial<MemorySettings>): void
+- MockMemoryService · class · L258-L389 — class MockMemoryService
+- constructor · method · L262-L265 — constructor()
+- capture · method · L267-L309 — capture( workspaceId: string, taskId: string | undefined, type: MemoryType, content: string, isPrivate = false, ): Memory | null
+- search · method · L311-L313 — search(workspaceId: string, query: string, limit = 20): MemorySearchResult[]
+- getRecent · method · L315-L317 — getRecent(workspaceId: string, limit = 20): Memory[]
+- getByTask · method · L319-L321 — getByTask(taskId: string): Memory[]
+- getSettings · method · L323-L325 — getSettings(workspaceId: string): MemorySettings
+- updateSettings · method · L327-L329 — updateSettings(workspaceId: string, updates: Partial<MemorySettings>): void
+- getStats · method · L331-L333 — getStats(workspaceId: string): MemoryStats
+- clearWorkspace · method · L335-L337 — clearWorkspace(workspaceId: string): void
+- getContextForInjection · method · L339-L364 — getContextForInjection(workspaceId: string, _taskPrompt: string): string
+- shouldExclude · method · L366-L383 — private shouldExclude(content: string, settings: MemorySettings): boolean
+- truncate · method · L385-L388 — private truncate(text: string, maxLength: number): string

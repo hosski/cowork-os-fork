@@ -1,0 +1,56 @@
+# src/electron/identity/ContactIdentityService.ts
+
+- ContactIdentityRow · type · L19-L29 — type ContactIdentityRow = { id: string; workspace_id: string; display_name: string; primary_email: string | null; company_hint: string | null; kg_entity_id: string | null; confidence: number; created_at: number; updated_at: number; };
+- ContactIdentityHandleRow · type · L31-L44 — type ContactIdentityHandleRow = { id: string; contact_identity_id: string; workspace_id: string; handle_type: ContactIdentityHandleType; normalized_value: string; display_value: string; source: ContactIdentityHandle["source"]; channel_id: string | null; channel_type: string | null; channel_user_id: string | null; created_at: number; updated_at: number; };
+- ContactIdentitySuggestionRow · type · L46-L63 — type ContactIdentitySuggestionRow = { id: string; workspace_id: string; contact_identity_id: string; handle_type: ContactIdentityHandleType; normalized_value: string; display_value: string; source: ContactIdentityCandidate["source"]; source_label: string; channel_id: string | null; channel_type: string | null; channel_user_id: string | null; confidence: number; status: ContactIdentityCandidate["status"]; reason_codes_json: string; created_at: number; updated_at: number; };
+- ChannelUserCandidateRow · type · L65-L75 — type ChannelUserCandidateRow = { channel_id: string; channel_type: string; channel_name: string; channel_user_id: string; display_name: string; username: string | null; allowed: number; created_at: number; last_seen_at: number; };
+- ChannelMessageRow · type · L77-L87 — type ChannelMessageRow = { id: string; channel_id: string; chat_id: string; user_id: string | null; direction: "incoming" | "outgoing" | "outgoing_user"; content: string; timestamp: number; channel_type: string; channel_name: string; };
+- ContactIdentitySearchRow · type · L89-L104 — type ContactIdentitySearchRow = { id: string; workspace_id: string; handle_type: ContactIdentityHandleType; normalized_value: string; display_value: string; source: ContactIdentitySearchResult["source"]; source_label: string; channel_id: string | null; channel_type: string | null; channel_user_id: string | null; linked_identity_id: string | null; linked_identity_name: string | null; confidence: number; reason_codes_json: string; };
+- TimelineAccumulator · type · L106-L112 — type TimelineAccumulator = { events: RelationshipTimelineEvent[]; responseSamplesByChannel: Map<string, number[]>; lastInboundAtByChannel: Map<string, number>; lastOutboundAtByChannel: Map<string, number>; messageCountByChannel: Map<string, number>; };
+- parseJsonArray · function · L114-L122 — function parseJsonArray<T>(value: string | null | undefined): T[]
+- compactText · function · L124-L130 — function compactText(value: string | null | undefined, max = 180): string
+- normalizeEmail · function · L132-L137 — function normalizeEmail(value?: string | null): string | null
+- normalizePhone · function · L139-L143 — function normalizePhone(value?: string | null): string | null
+- normalizeName · function · L145-L150 — function normalizeName(value?: string | null): string
+- uniqueStrings · function · L152-L159 — function uniqueStrings(values: Array<string | null | undefined>): string[]
+- scoreNameSimilarity · function · L161-L175 — function scoreNameSimilarity(a?: string | null, b?: string | null): number
+- mapChannelTypeToHandleType · function · L177-L192 — function mapChannelTypeToHandleType(channelType?: string | null): ContactIdentityHandleType | null
+- normalizeHandleValue · function · L194-L213 — function normalizeHandleValue( handleType: ContactIdentityHandleType, value?: string | null, ): string | null
+- toChannelLabel · function · L215-L240 — function toChannelLabel(source: RelationshipTimelineSource): string
+- stableTimelineSort · function · L242-L246 — function stableTimelineSort(a: RelationshipTimelineEvent, b: RelationshipTimelineEvent): number
+- ContactIdentityService · class · L248-L1766 — class ContactIdentityService
+- constructor · method · L249-L249 — constructor(private db: Database.Database)
+- resolveMailboxContact · method · L251-L361 — resolveMailboxContact(input: { workspaceId: string; email?: string | null; displayName?: string | null; companyHint?: string | null; phoneHints?: string[]; crmHints?: string[]; learnedFacts?: string[]; }): ContactIdentityResolution
+- getIdentity · method · L363-L384 — getIdentity(identityId: string): ContactIdentity | null
+- listIdentities · method · L386-L398 — listIdentities(workspaceId?: string): ContactIdentity[]
+- findIdentityByCompanyHint · method · L400-L412 — findIdentityByCompanyHint(workspaceId: string, companyHint: string): ContactIdentity | null
+- listCandidates · method · L414-L437 — listCandidates( workspaceId?: string, status?: ContactIdentityCandidate["status"], ): ContactIdentityCandidate[]
+- searchLinkTargets · method · L439-L566 — searchLinkTargets(workspaceId: string, query: string, limit = 20): ContactIdentitySearchResult[]
+- addResult · function · L449-L469 — addResult = (row: ContactIdentitySearchRow): void
+- linkManualHandle · method · L568-L609 — linkManualHandle(input: { workspaceId: string; contactIdentityId: string; handleType: ContactIdentityHandleType; normalizedValue: string; displayValue: string; source?: ContactIdentityHandle["source"]; channelId?: string; channelType?: string; channelUserId?: string; }): ContactIdentityHandle | null
+- getReplyTargets · method · L611-L671 — getReplyTargets(contactIdentityId: string): ContactIdentityReplyTarget[]
+- confirmCandidate · method · L673-L700 — confirmCandidate(candidateId: string): ContactIdentityCandidate | null
+- rejectCandidate · method · L702-L718 — rejectCandidate(candidateId: string): ContactIdentityCandidate | null
+- unlinkHandle · method · L720-L749 — unlinkHandle(handleId: string): boolean
+- getCoverageStats · method · L751-L825 — getCoverageStats(workspaceId?: string): ContactIdentityCoverageStats
+- unresolvedByType · function · L766-L787 — unresolvedByType = ( channelType: "slack" | "teams" | "whatsapp" | "signal" | "imessage", )
+- countFor · function · L810-L811 — countFor = (status: string)
+- getChannelPreferenceSummary · method · L827-L896 — getChannelPreferenceSummary(contactIdentityId: string): ChannelPreferenceSummary
+- getTimeline · method · L898-L900 — getTimeline(query: RelationshipTimelineQuery): RelationshipTimelineEvent[]
+- buildTimelineAccumulator · method · L902-L1083 — private buildTimelineAccumulator(query: RelationshipTimelineQuery): TimelineAccumulator
+- pushMailboxEvents · method · L1085-L1132 — private pushMailboxEvents( acc: TimelineAccumulator, contactIdentityId: string, rows: Array<{ id: string; thread_id: string; direction: "incoming" | "outgoing"; subject: string; body_text: string; received_at: number; sensitive_content_json: string | null; }>, ): void
+- pushChannelEvents · method · L1134-L1238 — private pushChannelEvents( acc: TimelineAccumulator, identity: ContactIdentity, startAt?: number, endAt?: number, ): void
+- recordChannelStats · method · L1240-L1254 — private recordChannelStats( acc: TimelineAccumulator, channel: "email" | "slack" | "teams" | "whatsapp" | "signal" | "imessage", direction: "incoming" | "outgoing", timestamp: number, ): void
+- upsertMailboxCandidates · method · L1256-L1281 — private upsertMailboxCandidates(input: { identity: ContactIdentity; email: string; displayName: string; companyHint?: string; phoneHints: string[]; crmHints: string[]; learnedFacts: string[]; }): ContactIdentityCandidate[]
+- evaluateCandidate · method · L1283-L1393 — private evaluateCandidate( input: { identity: ContactIdentity; email: string; displayName: string; companyHint?: string; phoneHints: string[]; crmHints: string[]; learnedFacts: string[]; }, row: ChannelUserCandidateRow, ): Omit<ContactIdentityCandidate, "id" | "createdAt" | "updatedAt"> | null
+- upsertSuggestion · method · L1395-L1479 — private upsertSuggestion( input: Omit<ContactIdentityCandidate, "id" | "createdAt" | "updatedAt">, ): ContactIdentityCandidate
+- createIdentity · method · L1481-L1507 — private createIdentity(input: { workspaceId: string; displayName: string; primaryEmail?: string | null; companyHint?: string; confidence: number; }): ContactIdentity
+- touchIdentity · method · L1509-L1542 — private touchIdentity( identityId: string, patch: { displayName?: string; primaryEmail?: string | null; companyHint?: string; kgEntityId?: string; }, ): void
+- ensureHandle · method · L1544-L1642 — private ensureHandle(input: { workspaceId: string; contactIdentityId: string; handleType: ContactIdentityHandleType; normalizedValue: string; displayValue: string; source: ContactIdentityHandle["source"]; channelId?: string; channelType?: string; channelUserId?: string; }): ContactIdentityHandle | null
+- findIdentityByHandle · method · L1644-L1657 — private findIdentityByHandle( workspaceId: string, handleType: ContactIdentityHandleType, normalizedValue: string, ): ContactIdentity | null
+- listHandles · method · L1659-L1669 — private listHandles(contactIdentityId: string): ContactIdentityHandle[]
+- getCandidateRow · method · L1671-L1679 — private getCandidateRow(candidateId: string): ContactIdentitySuggestionRow | undefined
+- mapHandleRow · method · L1681-L1696 — private mapHandleRow(row: ContactIdentityHandleRow): ContactIdentityHandle
+- mapSuggestionRow · method · L1698-L1717 — private mapSuggestionRow(row: ContactIdentitySuggestionRow): ContactIdentityCandidate
+- insertAudit · method · L1719-L1743 — private insertAudit(input: { workspaceId: string; contactIdentityId?: string; handleId?: string; suggestionId?: string; action: string; detail?: Record<string, unknown>; }): void
+- findPersonEntityId · method · L1745-L1765 — private findPersonEntityId(input: { workspaceId: string; email: string; displayName: string; companyHint?: string; }): string | undefined

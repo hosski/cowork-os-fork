@@ -1,0 +1,176 @@
+# src/electron/gateway/router.ts
+
+- Any · type · L128-L128 — type Any = any;
+- quoteSkillSlashValue · function · L130-L137 — function quoteSkillSlashValue(value: string): string
+- MessageSecurityContext · type · L139-L153 — type MessageSecurityContext = { contextType?: "dm" | "group"; deniedTools?: string[]; agentRoleId?: string; /** Set when research chat routing applies; forwarded into new task agentConfig */ researchWorkflowPreset?: boolean; channelSpecialization?: { id: string; workspaceId?: string; agentRoleId?: string; systemGuidance?: string; toolRestrictions?: string[]; allowSharedContextMemory?: boolean; }; };
+- ConnectAllOptions · interface · L155-L157 — interface ConnectAllOptions
+- withTimeout · function · L159-L175 — function withTimeout<T>( promise: Promise<T>, timeoutMs: number | undefined, message: string, ): Promise<T>
+- MessageRouter · class · L177-L9706 — class MessageRouter
+- constructor · method · L290-L358 — constructor(db: Database.Database, config: RouterConfig = {}, agentDaemon?: AgentDaemon)
+- setupTaskEventListener · method · L363-L366 — private setupTaskEventListener(): void
+- setMainWindow · method · L371-L373 — setMainWindow(window: BrowserWindow): void
+- getMainWindow · method · L378-L380 — getMainWindow(): BrowserWindow | null
+- getMessageContext · method · L385-L402 — private getMessageContext(): ChannelMessageContext
+- getRemoteSessionGeneration · method · L404-L406 — private getRemoteSessionGeneration(sessionId: string): number
+- bumpRemoteSessionGeneration · method · L408-L412 — private bumpRemoteSessionGeneration(sessionId: string): number
+- isPendingTaskResponseCurrent · method · L414-L423 — private isPendingTaskResponseCurrent( pending: NonNullable< MessageRouter["pendingTaskResponses"] extends Map<string, infer T> ? T : never >, ): boolean
+- normalizeSimpleChannelMessage · method · L425-L446 — private normalizeSimpleChannelMessage(text: string, context: ChannelMessageContext): string
+- compactExternalChannelStatusUpdate · method · L453-L534 — private compactExternalChannelStatusUpdate(text: string): string | null
+- curateExternalChannelStatusUpdate · method · L536-L577 — private curateExternalChannelStatusUpdate(text: string): string | null
+- getExternalProgressRelayMode · method · L579-L589 — private getExternalProgressRelayMode( channelType: ChannelType | undefined, channelId?: string, ): "minimal" | "curated"
+- prepareTaskUpdateForChannel · method · L591-L615 — private prepareTaskUpdateForChannel( channelType: ChannelType | undefined, channelId: string | undefined, text: string, isStreaming: boolean, ): string | null
+- shouldUseEditableProgressRelay · method · L617-L630 — private shouldUseEditableProgressRelay( pending: | { adapter: ChannelAdapter; channelId: string; } | undefined, ): boolean
+- clearProgressRelayMessage · method · L632-L650 — private async clearProgressRelayMessage(taskId: string): Promise<void>
+- isSimpleChannelToolNoise · method · L652-L723 — private isSimpleChannelToolNoise(text: string): boolean
+- isTextOnlyChannel · method · L725-L730 — private isTextOnlyChannel(channelType?: ChannelType): boolean
+- getChannelBasedToolRestrictions · method · L769-L774 — private getChannelBasedToolRestrictions(channelType?: ChannelType): string[]
+- buildTaskToolRestrictions · method · L776-L795 — private buildTaskToolRestrictions( channelType: ChannelType, baseRestrictions?: string[], ): string[]
+- normalizeIncomingTextForRouting · method · L797-L848 — private normalizeIncomingTextForRouting(channelType: ChannelType, text: string): string
+- stripWhatsAppReplyContextForRouting · method · L850-L871 — private stripWhatsAppReplyContextForRouting(text: string): string
+- getUiCopy · method · L873-L878 — private getUiCopy( key: Parameters<typeof getChannelUiCopy>[0], replacements?: Record<string, string | number>, ): string
+- ensureTempWorkspaceRecord · method · L880-L929 — private ensureTempWorkspaceRecord( workspaceId: string, workspacePath: string, existing?: Workspace, ): Workspace
+- isPersistedWorkspaceId · method · L931-L935 — private isPersistedWorkspaceId(workspaceId: string | undefined): boolean
+- isUserSelectableWorkspace · method · L937-L951 — private isUserSelectableWorkspace(workspace: Workspace | undefined): boolean
+- getSessionChatKey · method · L953-L959 — private getSessionChatKey(message: IncomingMessage): string
+- resolveChannelSpecialization · method · L961-L972 — private resolveChannelSpecialization(channelId: string, message: IncomingMessage)
+- canApplySpecializationToSession · method · L974-L981 — private canApplySpecializationToSession( session: { taskId?: string } | undefined | null, ): boolean
+- formatSpecializedPrompt · method · L983-L994 — private formatSpecializedPrompt(messageText: string, guidance?: string): string
+- getOrCreateTempWorkspace · method · L1000-L1055 — private getOrCreateTempWorkspace( sessionId?: string, options?: { createNew?: boolean }, ): Workspace
+- createDedicatedWorkspaceForScheduledJob · method · L1057-L1075 — private createDedicatedWorkspaceForScheduledJob(jobName: string): Workspace
+- registerAdapter · method · L1080-L1149 — registerAdapter(adapter: ChannelAdapter, channelId?: string): void
+- unregisterAdapter · method · L1151-L1167 — unregisterAdapter(channelId: string): void
+- getAdapter · method · L1172-L1174 — getAdapter(type: ChannelType): ChannelAdapter | undefined
+- getAdapterByChannelId · method · L1176-L1178 — getAdapterByChannelId(channelId: string): ChannelAdapter | undefined
+- getAllAdapters · method · L1183-L1185 — getAllAdapters(): ChannelAdapter[]
+- getChannelIdForAdapter · method · L1187-L1189 — private getChannelIdForAdapter(adapter: ChannelAdapter): string | undefined
+- getChannelForAdapter · method · L1191-L1196 — private getChannelForAdapter(adapter: ChannelAdapter): Channel | undefined
+- connectAll · method · L1201-L1233 — async connectAll(options: ConnectAllOptions = {}): Promise<void>
+- restorePendingTaskRoutes · method · L1235-L1286 — private async restorePendingTaskRoutes(adapter: ChannelAdapter): Promise<void>
+- makeInlineActionGuardKey · method · L1288-L1294 — private makeInlineActionGuardKey( channelType: ChannelType, chatId: string, messageId: string, ): string
+- registerInlineActionGuard · method · L1296-L1319 — private registerInlineActionGuard(params: { action: "workspace" | "provider" | "model"; channelType: ChannelType; chatId: string; messageId: string; requestingUserId: string; requestingUserName?: string; }): void
+- registerFeedbackRequest · method · L1321-L1342 — private registerFeedbackRequest(params: { taskId: string; sessionId: string; channelType: ChannelType; chatId: string; messageId: string; requestingUserId?: string; requestingUserName?: string; contextType: "dm" | "group"; }): void
+- buildFeedbackKeyboard · method · L1344-L1355 — private buildFeedbackKeyboard(): InlineKeyboardButton[][]
+- logUserFeedback · method · L1357-L1389 — private logUserFeedback( taskId: string, data: { decision: "approved" | "rejected" | "edit" | "next"; reason?: string; source: "inline" | "command" | "message"; channelType: ChannelType; userId?: string; userName?: string; }, ): void
+- resolveTaskRequesterFromSessionContext · method · L1391-L1414 — private resolveTaskRequesterFromSessionContext( session: { context?: unknown } | undefined | null, ): { requestingUserId?: string; requestingUserName?: string; lastChannelMessageId?: string; }
+- getSessionPreferredAgentRoleId · method · L1416-L1423 — private getSessionPreferredAgentRoleId( session: { context?: unknown } | undefined, ): string | undefined
+- resolveAgentRoleForSelector · method · L1425-L1459 — private resolveAgentRoleForSelector(selector: string): { role?: AgentRole; matches: AgentRole[]; }
+- resolveRouteForTask · method · L1466-L1518 — private resolveRouteForTask(taskId: string): | { adapter: ChannelAdapter; channelId: string; chatId: string; sessionId: string; requestingUserId?: string; requestingUserName?: string; lastChannelMessageId?: string; routedTaskId: string; } | undefined
+- disconnectAll · method · L1523-L1534 — async disconnectAll(): Promise<void>
+- sendMessage · method · L1539-L1545 — async sendMessage( channelType: ChannelType, message: OutgoingMessage, channelId?: string, ): Promise<string>
+- sendAdapterMessage · method · L1547-L1554 — private async sendAdapterMessage( adapter: ChannelAdapter, message: OutgoingMessage, channelId?: string, ): Promise<string>
+- cleanupIdempotencyCache · method · L1556-L1572 — private cleanupIdempotencyCache(): void
+- getIdempotencyCacheKey · method · L1574-L1585 — private getIdempotencyCacheKey( channelType: ChannelType, message: OutgoingMessage, channelId?: string, ): string | null
+- onEvent · method · L1590-L1592 — onEvent(handler: GatewayEventHandler): void
+- toDbAttachments · method · L1596-L1622 — private toDbAttachments( attachments?: MessageAttachment[], ): Array<{ type: string; url?: string; fileName?: string }> | undefined
+- persistInboundAttachments · method · L1624-L1782 — private async persistInboundAttachments( channelType: ChannelType, message: IncomingMessage, workspace: Workspace, ): Promise<Array<{ type: string; relPath: string; absPath: string; mimeType?: string }>>
+- maybeUpdatePrioritiesFromVoiceMessage · method · L1784-L1944 — private async maybeUpdatePrioritiesFromVoiceMessage(params: { message: IncomingMessage; workspace: Workspace; contextType: "dm" | "group"; }): Promise<void>
+- handleMessage · method · L1949-L2068 — private async handleMessage(adapter: ChannelAdapter, message: IncomingMessage): Promise<void>
+- handleUnauthorizedMessage · method · L2073-L2125 — private async handleUnauthorizedMessage( adapter: ChannelAdapter, message: IncomingMessage, securityResult: { reason?: string; pairingRequired?: boolean }, opts?: { silent?: boolean }, ): Promise<void>
+- routeMessage · method · L2130-L2533 — private async routeMessage( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, securityContext?: MessageSecurityContext, ): Promise<void>
+- handleCommand · method · L2538-L2836 — private async handleCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, securityContext?: MessageSecurityContext, ): Promise<void>
+- resolveRemoteSkillSlash · method · L2838-L2870 — private resolveRemoteSkillSlash(commandName: string): { skillId?: string; error?: string; } | null
+- handleGenericSkillSlashCommand · method · L2872-L2885 — private async handleGenericSkillSlashCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, skillId: string, args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- formatRemoteCommandLine · method · L2887-L2896 — private formatRemoteCommandLine(command: { name: string; aliases?: string[]; description: string; argsHint?: string; }): string
+- handleCommandsCommand · method · L2898-L2976 — private async handleCommandsCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- isSessionTaskController · method · L2978-L2988 — private isSessionTaskController( session: { context?: unknown } | undefined, userId: string, ): boolean
+- handlePauseCommand · method · L2993-L3095 — private async handlePauseCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleResumeCommand · method · L3100-L3207 — private async handleResumeCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleTaskCommand · method · L3212-L3290 — private async handleTaskCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleActivationCommand · method · L3292-L3375 — private async handleActivationCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- resolveWhatsAppGroupMode · method · L3377-L3433 — private resolveWhatsAppGroupMode( value: string, ): "all" | "mentionsOnly" | "mentionsOrCommands" | "commandsOnly" | undefined
+- handleMemoryTrustCommand · method · L3435-L3502 — private async handleMemoryTrustCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- formatWhatsAppGroupRoutingMode · method · L3504-L3519 — private formatWhatsAppGroupRoutingMode(mode: string): string
+- handleSelfChatCommand · method · L3521-L3591 — private async handleSelfChatCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleAmbientModeCommand · method · L3593-L3657 — private async handleAmbientModeCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleIngestOnlyCommand · method · L3659-L3737 — private async handleIngestOnlyCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleResponsePrefixCommand · method · L3739-L3819 — private async handleResponsePrefixCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleAllowedNumbersCommand · method · L3821-L3888 — private async handleAllowedNumbersCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleAllowedNumberCommand · method · L3890-L3980 — private async handleAllowedNumberCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], action: "add" | "remove", ): Promise<void>
+- parseBooleanCommandValue · method · L3982-L3991 — private parseBooleanCommandValue(value: string): boolean | undefined
+- parseWhatsAppNumbers · method · L3993-L4001 — private parseWhatsAppNumbers(args: string[]): string[]
+- getWhatsAppAllowedNumbers · method · L4003-L4012 — private getWhatsAppAllowedNumbers(channelConfig: unknown): string[]
+- applyWhatsAppConfigPatch · method · L4014-L4032 — private applyWhatsAppConfigPatch( adapter: ChannelAdapter, channel: { id: string; config?: unknown }, patch: Partial<ChannelConfig>, ): Record<string, unknown>
+- handleAgentCommand · method · L4034-L4142 — private async handleAgentCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- sendRoleList · function · L4047-L4076 — sendRoleList = async (): Promise<void>
+- handleStatusCommand · method · L4147-L4179 — private async handleStatusCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleBriefCommand · method · L4185-L4238 — private async handleBriefCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- handleInboxCommand · method · L4240-L4315 — private async handleInboxCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- getSkillSlashUsage · method · L4317-L4346 — private getSkillSlashUsage(command: "/simplify" | "/batch" | "/llm-wiki"): string
+- serializeParsedSkillSlashCommand · method · L4348-L4379 — private serializeParsedSkillSlashCommand(parsed: ParsedSkillSlashCommand): string
+- handleSkillSlashCommand · method · L4381-L4409 — private async handleSkillSlashCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, command: "/simplify" | "/batch" | "/llm-wiki", args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- startIsolatedOneShotTask · method · L4418-L4553 — private async startIsolatedOneShotTask( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, params: { title: string; prompt: string }, securityContext?: MessageSecurityContext, ): Promise<void>
+- startBackgroundTask · method · L4555-L4652 — private async startBackgroundTask( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, params: { title: string; prompt: string }, securityContext?: MessageSecurityContext, ): Promise<void>
+- handleBackgroundCommand · method · L4654-L4674 — private async handleBackgroundCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- handleDigestCommand · method · L4676-L4805 — private async handleDigestCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- handleFollowupsCommand · method · L4807-L4935 — private async handleFollowupsCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- handleBriefScheduleCommand · method · L4937-L5117 — private async handleBriefScheduleCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- handleBriefListSchedulesCommand · method · L5119-L5164 — private async handleBriefListSchedulesCommand( adapter: ChannelAdapter, message: IncomingMessage, ): Promise<void>
+- handleBriefUnscheduleCommand · method · L5166-L5224 — private async handleBriefUnscheduleCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleScheduleCommand · method · L5226-L5577 — private async handleScheduleCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- listScheduledJobsForChat · method · L5579-L5593 — private async listScheduledJobsForChat(adapter: ChannelAdapter, chatId: string)
+- handleScheduleListCommand · method · L5595-L5622 — private async handleScheduleListCommand( adapter: ChannelAdapter, message: IncomingMessage, ): Promise<void>
+- resolveScheduledJobSelector · method · L5624-L5679 — private async resolveScheduledJobSelector( adapter: ChannelAdapter, message: IncomingMessage, selectorRaw: string, ): Promise<{ jobs: Any[]; job: Any | null; error?: string }>
+- handleScheduleToggleCommand · method · L5681-L5718 — private async handleScheduleToggleCommand( adapter: ChannelAdapter, message: IncomingMessage, enabled: boolean, args: string[], ): Promise<void>
+- handleScheduleDeleteCommand · method · L5720-L5755 — private async handleScheduleDeleteCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleWorkspacesCommand · method · L5760-L5832 — private async handleWorkspacesCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleWorkspaceCommand · method · L5837-L5919 — private async handleWorkspaceCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- handleAddWorkspaceCommand · method · L5924-L6021 — private async handleAddWorkspaceCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- handleModelsCommand · method · L6026-L6205 — private async handleModelsCommand( adapter: ChannelAdapter, message: IncomingMessage, ): Promise<void>
+- handleModelCommand · method · L6210-L6398 — private async handleModelCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleProviderCommand · method · L6403-L6503 — private async handleProviderCommand( adapter: ChannelAdapter, message: IncomingMessage, args: string[], ): Promise<void>
+- handleShellCommand · method · L6513-L6524 — private async handleShellCommand( adapter: ChannelAdapter, message: IncomingMessage, _sessionId: string, _args: string[], ): Promise<void>
+- selectOllamaModel · method · L6529-L6580 — private async selectOllamaModel( selector: string, originalArgs: string[], ): Promise<{ success: boolean; model?: string; error?: string }>
+- selectClaudeModel · method · L6585-L6617 — private selectClaudeModel( selector: string, models: Array<{ key: string; displayName: string }>, ): { success: boolean; model?: { key: string; displayName: string }; error?: string; }
+- looksLikePairingCode · method · L6622-L6625 — private looksLikePairingCode(text: string): boolean
+- handlePairingAttempt · method · L6630-L6669 — private async handlePairingAttempt( adapter: ChannelAdapter, message: IncomingMessage, code: string, ): Promise<void>
+- forwardToDesktopApp · method · L6674-L6984 — private async forwardToDesktopApp( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, securityContext?: MessageSecurityContext, ): Promise<void>
+- sendTaskUpdate · method · L6990-L7099 — async sendTaskUpdate(taskId: string, text: string, isStreaming = false): Promise<void>
+- isPendingTaskTextOnlyChannel · method · L7101-L7105 — isPendingTaskTextOnlyChannel(taskId: string): boolean
+- sendPreparedTaskUpdate · method · L7107-L7192 — private async sendPreparedTaskUpdate( pendingEntry: NonNullable< MessageRouter["pendingTaskResponses"] extends Map<string, infer T> ? T : never >, rawText: string, options?: { allowEditableProgressRelay?: boolean; }, ): Promise<void>
+- clearStreamingUpdate · method · L7194-L7200 — private clearStreamingUpdate(taskId: string): void
+- flushStreamingUpdateForTask · method · L7207-L7234 — async flushStreamingUpdateForTask(taskId: string): Promise<void>
+- clearTransientTaskProgress · method · L7236-L7239 — async clearTransientTaskProgress(taskId: string): Promise<void>
+- finalizeDraftStreamForTask · method · L7246-L7288 — async finalizeDraftStreamForTask(taskId: string, finalText: string): Promise<void>
+- cancelDraftStreamForTask · method · L7293-L7305 — async cancelDraftStreamForTask(taskId: string): Promise<void>
+- sendTypingIndicator · method · L7310-L7324 — async sendTypingIndicator(taskId: string): Promise<void>
+- sendArtifacts · method · L7330-L7337 — async sendArtifacts(taskId: string): Promise<void>
+- handleTaskCompletion · method · L7343-L7448 — async handleTaskCompletion(taskId: string, result?: string): Promise<void>
+- maybeSendTaskFeedbackControls · method · L7450-L7528 — private async maybeSendTaskFeedbackControls(opts: { taskId: string; pending: { adapter: ChannelAdapter; chatId: string; sessionId: string; requestingUserId?: string; requestingUserName?: string; lastChannelMessageId?: string; }; completionMessageId: string | null; contextType: "dm" | "group"; }): Promise<void>
+- sendTaskArtifacts · method · L7533-L7597 — private async sendTaskArtifacts( taskId: string, adapter: ChannelAdapter, chatId: string, ): Promise<void>
+- handleTaskFailure · method · L7602-L7655 — async handleTaskFailure(taskId: string, error: string): Promise<void>
+- handleTaskCancelled · method · L7661-L7719 — async handleTaskCancelled(taskId: string, reason?: string): Promise<void>
+- sendApprovalRequest · method · L7724-L7819 — async sendApprovalRequest(taskId: string, approval: Any): Promise<void>
+- clearPendingApproval · method · L7821-L7824 — clearPendingApproval(approvalId: string): void
+- compactExternalApprovalDescription · method · L7826-L7861 — private compactExternalApprovalDescription(approval: Any): string
+- handleApproveCommand · method · L7866-L7873 — private async handleApproveCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- handleDenyCommand · method · L7878-L7885 — private async handleDenyCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- sendFollowupToTaskFromGateway · method · L7887-L7939 — private async sendFollowupToTaskFromGateway(opts: { taskId: string; adapter: ChannelAdapter; channelId: string; chatId: string; sessionId: string; requestingUserId?: string; requestingUserName?: string; lastChannelMessageId?: string; text: string; statusText?: string; }): Promise<void>
+- sendCommandFollowupToCurrentTask · method · L7941-L7995 — private async sendCommandFollowupToCurrentTask( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, text: string, statusText: string, ): Promise<boolean>
+- handleSteerCommand · method · L7997-L8027 — private async handleSteerCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- handleFeedbackCommand · method · L8029-L8175 — private async handleFeedbackCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], securityContext?: MessageSecurityContext, ): Promise<void>
+- formatPendingApprovalChoices · method · L8177-L8189 — private formatPendingApprovalChoices(approvals: Array<[string, { approval: Any }]>): string
+- handleApprovalTextCommand · method · L8191-L8353 — private async handleApprovalTextCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], approved: boolean, ): Promise<void>
+- handleQueueCommand · method · L8358-L8414 — private async handleQueueCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- splitMessage · method · L8420-L8450 — private splitMessage(text: string, maxLength: number): string[]
+- handleCancelCommand · method · L8455-L8518 — private async handleCancelCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleNewTaskCommand · method · L8523-L8562 — private async handleNewTaskCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[] = [], ): Promise<void>
+- handleForkSessionCommand · method · L8564-L8596 — private async handleForkSessionCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- handleRemoveWorkspaceCommand · method · L8601-L8644 — private async handleRemoveWorkspaceCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, args: string[], ): Promise<void>
+- handleRetryCommand · method · L8649-L8693 — private async handleRetryCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleHistoryCommand · method · L8698-L8747 — private async handleHistoryCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleSkillsCommand · method · L8752-L8805 — private async handleSkillsCommand( adapter: ChannelAdapter, message: IncomingMessage, _sessionId: string, ): Promise<void>
+- handleSkillCommand · method · L8810-L8859 — private async handleSkillCommand( adapter: ChannelAdapter, message: IncomingMessage, _sessionId: string, args: string[], ): Promise<void>
+- handleProvidersCommand · method · L8864-L8967 — private async handleProvidersCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleSettingsCommand · method · L8972-L9057 — private async handleSettingsCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleDebugCommand · method · L9062-L9078 — private async handleDebugCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- handleVersionCommand · method · L9083-L9107 — private async handleVersionCommand( adapter: ChannelAdapter, message: IncomingMessage, ): Promise<void>
+- handleStartCommand · method · L9112-L9176 — private async handleStartCommand( adapter: ChannelAdapter, message: IncomingMessage, sessionId: string, ): Promise<void>
+- getHelpText · method · L9181-L9189 — private getHelpText(channelType?: ChannelType): string
+- handleCallbackQuery · method · L9194-L9325 — private async handleCallbackQuery(adapter: ChannelAdapter, query: CallbackQuery): Promise<void>
+- answer · function · L9203-L9209 — answer = async (text?: string, showAlert?: boolean): Promise<void>
+- handleWorkspaceCallback · method · L9330-L9369 — private async handleWorkspaceCallback( adapter: ChannelAdapter, query: CallbackQuery, sessionId: string, workspaceId: string, ): Promise<void>
+- handleProviderCallback · method · L9374-L9408 — private async handleProviderCallback( adapter: ChannelAdapter, query: CallbackQuery, providerType: string, ): Promise<void>
+- handleModelCallback · method · L9413-L9442 — private async handleModelCallback( adapter: ChannelAdapter, query: CallbackQuery, modelKey: string, ): Promise<void>
+- handleApprovalCallback · method · L9447-L9545 — private async handleApprovalCallback( adapter: ChannelAdapter, query: CallbackQuery, sessionId: string, approvalId: string, approved: boolean, ): Promise<void>
+- handleFeedbackCallback · method · L9547-L9692 — private async handleFeedbackCallback( adapter: ChannelAdapter, query: CallbackQuery, sessionId: string, param: string, ): Promise<void>
+- emitEvent · method · L9697-L9705 — private emitEvent(event: GatewayEvent): void

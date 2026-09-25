@@ -1,0 +1,43 @@
+# src/renderer/components/AutomationStudioPanel.tsx
+
+- StudioView · type · L30-L30 — type StudioView = "discover" | "library" | "builder" | "activity";
+- PendingConnection · type · L31-L31 — type PendingConnection = { sourceNodeId: string; sourcePort: "true" | "false" };
+- RoutineSummary · type · L33-L42 — type RoutineSummary = { id: string; name: string; description?: string; enabled: boolean; workspaceId: string; workflow?: RoutineWorkflowDefinition; activeWorkflowVersionId?: string; updatedAt: number; };
+- WorkspaceSummary · type · L44-L44 — type WorkspaceSummary = { id: string; name: string; path?: string };
+- WorkflowSecretSummary · type · L46-L52 — type WorkflowSecretSummary = { id: string; name: string; configured: true; createdAt: number; updatedAt: number; };
+- TestResult · type · L54-L57 — type TestResult = { run: RoutineWorkflowRunRecord; steps: RoutineWorkflowStepRecord[]; };
+- AutomationStudioPanel · function · L101-L1356 — function AutomationStudioPanel({ workspaceId, onOpenTask, }: { workspaceId?: string; onOpenTask?: (taskId: string) => void; })
+- openWorkflow · function · L252-L264 — function openWorkflow(routine: RoutineSummary)
+- openTemplate · function · L266-L277 — function openTemplate(template: RoutineWorkflowTemplate)
+- newBlankWorkflow · function · L279-L290 — function newBlankWorkflow()
+- generateFromPrompt · function · L292-L327 — async function generateFromPrompt()
+- selectStarter · function · L329-L347 — function selectStarter(operation: WorkflowOperationDefinition)
+- addOperation · function · L349-L354 — function addOperation(operation: WorkflowOperationDefinition)
+- removeNode · function · L356-L381 — function removeNode(nodeId: string)
+- updateSelectedNode · function · L383-L392 — function updateSelectedNode(patch: Partial<RoutineWorkflowNode>)
+- updateNodeField · function · L394-L404 — function updateNodeField(field: WorkflowFieldDefinition, raw: string | boolean)
+- insertVariable · function · L406-L414 — function insertVariable(path: string)
+- persistDraft · function · L416-L453 — async function persistDraft(): Promise<{ routineId: string; versionId: string }>
+- saveDraft · function · L455-L467 — async function saveDraft()
+- activateFlow · function · L469-L493 — async function activateFlow()
+- testFlow · function · L495-L513 — async function testFlow()
+- runNow · function · L515-L528 — async function runNow()
+- deactivateFlow · function · L530-L548 — async function deactivateFlow()
+- respondToApproval · function · L550-L573 — async function respondToApproval(step: RoutineWorkflowStepRecord, approved: boolean)
+- createWorkflowSecret · function · L575-L603 — async function createWorkflowSecret()
+- removeWorkflowSecret · function · L605-L630 — async function removeWorkflowSecret(id: string)
+- StudioField · function · L1358-L1427 — function StudioField({ field, value, onChange, onFocus, optionsOverride, }: { field: WorkflowFieldDefinition; value: WorkflowInputValue | undefined; onChange: (value: string | boolean) => void; onFocus: () => void; optionsOverride?: Array<{ value: string; label: string }>; })
+- StudioSkeleton · function · L1429-L1441 — function StudioSkeleton()
+- StudioEmpty · function · L1443-L1466 — function StudioEmpty({ title, body, action, onAction, }: { title: string; body: string; action?: string; onAction?: () => void; })
+- appendWorkflowOperation · function · L1468-L1514 — function appendWorkflowOperation( workflow: RoutineWorkflowDefinition, operation: WorkflowOperationDefinition, connection?: PendingConnection, nodeId: string = crypto.randomUUID(), ): { workflow: RoutineWorkflowDefinition; nodeId: string }
+- createBlankWorkflow · function · L1516-L1541 — function createBlankWorkflow(): RoutineWorkflowDefinition
+- defaultOperationConfig · function · L1543-L1551 — function defaultOperationConfig( operation: WorkflowOperationDefinition, ): Record<string, WorkflowInputValue>
+- orderWorkflowNodes · function · L1553-L1570 — function orderWorkflowNodes(workflow: RoutineWorkflowDefinition): RoutineWorkflowNode[]
+- flattenNodes · function · L1572-L1574 — function flattenNodes(nodes: RoutineWorkflowNode[]): RoutineWorkflowNode[]
+- buildVariableOptions · function · L1576-L1590 — function buildVariableOptions( workflow: RoutineWorkflowDefinition, capabilities: WorkflowCapabilities | null, ): string[]
+- parseFieldValue · function · L1592-L1608 — function parseFieldValue( field: WorkflowFieldDefinition, raw: string | boolean, ): WorkflowInputValue
+- displayFieldValue · function · L1610-L1619 — function displayFieldValue(value: WorkflowInputValue | undefined): string
+- groupBy · function · L1621-L1627 — function groupBy<T>(items: T[], key: (item: T) => string): Record<string, T[]>
+- formatRisk · function · L1629-L1634 — function formatRisk(risk?: string): string
+- deriveNameFromPrompt · function · L1636-L1639 — function deriveNameFromPrompt(value: string): string
+- formatRelativeTime · function · L1641-L1647 — function formatRelativeTime(timestamp: number): string

@@ -1,0 +1,37 @@
+# src/electron/agent/tools/gmail-tools.ts
+
+- GmailAction · type · L10-L22 — type GmailAction = | "get_profile" | "list_messages" | "get_message" | "get_thread" | "list_labels" | "create_draft" | "send_message" | "reply_to_thread" | "archive_thread" | "modify_thread_labels" | "batch_modify_messages" | "trash_message";
+- GmailCodexStyleTool · type · L24-L36 — type GmailCodexStyleTool = | "gmail_search_emails" | "gmail_search_email_ids" | "gmail_batch_read_email" | "gmail_read_email_thread" | "gmail_create_draft" | "gmail_list_drafts" | "gmail_update_draft" | "gmail_send_draft" | "gmail_send_email" | "gmail_apply_labels_to_emails" | "gmail_bulk_label_matching_emails" | "gmail_forward_emails";
+- GmailActionInput · interface · L38-L58 — interface GmailActionInput
+- GmailHeader · type · L60-L60 — type GmailHeader = { name?: string; value?: string };
+- GmailMessage · type · L61-L74 — type GmailMessage = { id?: string; threadId?: string; labelIds?: string[]; snippet?: string; internalDate?: string; payload?: { mimeType?: string; filename?: string; headers?: GmailHeader[]; body?: { data?: string; size?: number; attachmentId?: string }; parts?: GmailMessage["payload"][]; }; };
+- GmailPayload · type · L75-L75 — type GmailPayload = NonNullable<GmailMessage["payload"]>;
+- RawEmailInput · type · L76-L82 — type RawEmailInput = { to?: unknown; cc?: unknown; bcc?: unknown; subject?: unknown; body?: unknown; };
+- GmailAttachmentSummary · type · L84-L89 — type GmailAttachmentSummary = { filename?: string; mime_type?: string; attachment_id?: string; size?: number; };
+- encodeMessage · function · L106-L112 — function encodeMessage(raw: string): string
+- decodeBody · function · L114-L118 — function decodeBody(data?: string): string
+- stripHtml · function · L120-L134 — function stripHtml(html: string): string
+- getHeader · function · L136-L140 — function getHeader(message: GmailMessage | undefined, name: string): string | undefined
+- collectParts · function · L142-L149 — function collectParts(payload: GmailMessage["payload"] | undefined): GmailPayload[]
+- extractBody · function · L151-L158 — function extractBody(message: GmailMessage | undefined): string
+- extractAttachments · function · L160-L169 — function extractAttachments(message: GmailMessage | undefined): GmailAttachmentSummary[]
+- hasAttachments · function · L171-L173 — function hasAttachments(message: GmailMessage | undefined): boolean
+- formatMessageSummary · function · L175-L194 — function formatMessageSummary(message: GmailMessage, includeBody = false): Record<string, unknown>
+- parseCsv · function · L196-L199 — function parseCsv(value: unknown): string | undefined
+- encodeBase64MimeBody · function · L201-L204 — function encodeBase64MimeBody(value: string): string
+- buildRawEmail · function · L206-L229 — function buildRawEmail( input: RawEmailInput, extraHeaders: Record<string, string | undefined> = {}, ): string
+- chunk · function · L231-L237 — function chunk<T>(items: T[], size: number): T[][]
+- GmailTools · class · L239-L1013 — class GmailTools
+- constructor · method · L240-L244 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L246-L248 — setWorkspace(workspace: Workspace): void
+- isEnabled · method · L250-L257 — static isEnabled(): boolean
+- isCodexStyleTool · method · L259-L261 — static isCodexStyleTool(name: string): name is GmailCodexStyleTool
+- formatAuthError · method · L263-L280 — private formatAuthError(error: unknown): string | null
+- requireApproval · method · L282-L293 — private async requireApproval(summary: string, details: Record<string, unknown>): Promise<void>
+- loadEnabledSettings · method · L295-L303 — private loadEnabledSettings()
+- getMessage · method · L305-L316 — private async getMessage( settings: ReturnType<typeof GoogleWorkspaceSettingsManager.loadSettings>, messageId: string, format: "full" | "metadata" | "minimal" | "raw" = "full", ): Promise<GmailMessage>
+- getThread · method · L318-L338 — private async getThread( settings: ReturnType<typeof GoogleWorkspaceSettingsManager.loadSettings>, threadId: string, maxMessages?: number, ): Promise<Record<string, unknown>>
+- resolveReplyContext · method · L340-L357 — private async resolveReplyContext( settings: ReturnType<typeof GoogleWorkspaceSettingsManager.loadSettings>, replyMessageId?: unknown, ): Promise<{ threadId?: string; headers: Record<string, string | undefined> }>
+- resolveLabelIds · method · L359-L401 — private async resolveLabelIds( settings: ReturnType<typeof GoogleWorkspaceSettingsManager.loadSettings>, names: unknown, createMissing: boolean, ): Promise<string[]>
+- executeCodexStyleTool · method · L403-L773 — async executeCodexStyleTool(name: GmailCodexStyleTool, input: Record<string, Any>): Promise<Any>
+- executeAction · method · L775-L1012 — async executeAction(input: GmailActionInput): Promise<Any>

@@ -1,0 +1,59 @@
+# src/electron/memory/TranscriptStore.ts
+
+- TranscriptSpanRecord · interface · L10-L17 — interface TranscriptSpanRecord
+- TranscriptSearchResult · interface · L19-L27 — interface TranscriptSearchResult
+- TranscriptDatabase · type · L29-L29 — type TranscriptDatabase = Pick<import("better-sqlite3").Database, "exec" | "prepare">;
+- TranscriptReadGuard · type · L31-L31 — type TranscriptReadGuard = (candidatePath: string) => boolean;
+- TranscriptCheckpointKind · type · L33-L33 — type TranscriptCheckpointKind = "snapshot" | "pre_compaction" | "periodic" | "completion";
+- TranscriptCheckpointStructuredSummary · interface · L35-L42 — interface TranscriptCheckpointStructuredSummary
+- TranscriptCheckpointEvidenceSpan · interface · L44-L53 — interface TranscriptCheckpointEvidenceSpan
+- TranscriptCheckpointEvidencePacket · interface · L55-L60 — interface TranscriptCheckpointEvidencePacket
+- TranscriptCheckpointIntegrity · interface · L62-L66 — interface TranscriptCheckpointIntegrity
+- TranscriptCheckpointPayload · interface · L68-L90 — interface TranscriptCheckpointPayload
+- compareSearchResults · function · L92-L99 — function compareSearchResults(a: TranscriptSearchResult, b: TranscriptSearchResult): number
+- rootDir · function · L101-L103 — function rootDir(workspacePath: string): string
+- spansDir · function · L105-L107 — function spansDir(workspacePath: string): string
+- checkpointsDir · function · L109-L111 — function checkpointsDir(workspacePath: string): string
+- taskSpanPath · function · L113-L115 — function taskSpanPath(workspacePath: string, taskId: string): string
+- taskCheckpointPath · function · L117-L119 — function taskCheckpointPath(workspacePath: string, taskId: string): string
+- taskPreviousCheckpointPath · function · L121-L123 — function taskPreviousCheckpointPath(workspacePath: string, taskId: string): string
+- configuredCheckpointLockRoot · function · L127-L133 — function configuredCheckpointLockRoot(): string
+- taskCheckpointLockPath · function · L135-L150 — async function taskCheckpointLockPath(workspacePath: string, taskId: string): Promise<string>
+- CheckpointLockHandle · interface · L155-L157 — interface CheckpointLockHandle
+- CheckpointCandidate · interface · L159-L163 — interface CheckpointCandidate
+- sleepFor · function · L165-L167 — function sleepFor(ms: number): Promise<void>
+- acquireCheckpointLock · function · L169-L201 — async function acquireCheckpointLock(lockPath: string): Promise<CheckpointLockHandle>
+- releaseCheckpointLock · function · L203-L216 — async function releaseCheckpointLock(lock: CheckpointLockHandle): Promise<void>
+- syncDirectory · function · L218-L232 — async function syncDirectory(directoryPath: string): Promise<void>
+- copyCheckpointDurably · function · L234-L253 — async function copyCheckpointDurably( sourcePath: string, destinationPath: string, directoryPath: string, ): Promise<void>
+- checkpointTimestamp · function · L255-L265 — function checkpointTimestamp(checkpoint: TranscriptCheckpointPayload): number | null
+- checkpointMeaningfulExchangeCount · function · L267-L270 — function checkpointMeaningfulExchangeCount(checkpoint: TranscriptCheckpointPayload): number | null
+- checkpointMessageCount · function · L272-L275 — function checkpointMessageCount(checkpoint: TranscriptCheckpointPayload): number | null
+- compareCheckpointFreshness · function · L277-L307 — function compareCheckpointFreshness( left: TranscriptCheckpointPayload, right: TranscriptCheckpointPayload, ): number
+- compareCheckpointCandidates · function · L309-L317 — function compareCheckpointCandidates( left: CheckpointCandidate, right: CheckpointCandidate, ): number
+- readCheckpointCandidate · function · L319-L328 — async function readCheckpointCandidate(candidatePath: string): Promise<CheckpointCandidate | null>
+- checkpointChecksum · function · L330-L332 — function checkpointChecksum(payload: Record<string, unknown>): string
+- parseCheckpoint · function · L334-L361 — function parseCheckpoint(raw: string): TranscriptCheckpointPayload | null
+- checkpointGeneration · function · L363-L368 — function checkpointGeneration(checkpoint: TranscriptCheckpointPayload | null): number
+- isSafeTaskId · function · L370-L372 — function isSafeTaskId(taskId: string): boolean
+- allowsRead · function · L374-L381 — function allowsRead(readGuard: TranscriptReadGuard | undefined, candidatePath: string): boolean
+- normalizeWorkspacePath · function · L383-L385 — function normalizeWorkspacePath(workspacePath: string): string
+- hashText · function · L387-L389 — function hashText(text: string): string
+- buildSpanId · function · L391-L398 — function buildSpanId(workspacePath: string, record: TranscriptSpanRecord, rawLine: string): string
+- payloadToSearchText · function · L400-L407 — function payloadToSearchText(payload: unknown): string
+- buildFtsQuery · function · L409-L411 — function buildFtsQuery(query: string): string
+- shouldPersistSpan · function · L413-L441 — function shouldPersistSpan(type: string): boolean
+- safeParseLine · function · L443-L452 — function safeParseLine(line: string): TranscriptSpanRecord | null
+- TranscriptStore · class · L454-L892 — class TranscriptStore
+- setDatabaseForTests · method · L459-L462 — static setDatabaseForTests(db: TranscriptDatabase | null): void
+- ensureLayout · method · L464-L469 — static async ensureLayout(workspacePath: string): Promise<void>
+- appendEvent · method · L471-L487 — static async appendEvent(workspacePath: string, event: TaskEvent): Promise<void>
+- writeCheckpoint · method · L489-L586 — static async writeCheckpoint( workspacePath: string, taskId: string, checkpoint: TranscriptCheckpointPayload, ): Promise<void>
+- loadCheckpoint · method · L588-L606 — static async loadCheckpoint( workspacePath: string, taskId: string, readGuard?: TranscriptReadGuard, ): Promise<TranscriptCheckpointPayload | null>
+- loadCheckpointSync · method · L608-L637 — static loadCheckpointSync( workspacePath: string, taskId: string, readGuard?: TranscriptReadGuard, ): TranscriptCheckpointPayload | null
+- loadRecentSpans · method · L639-L659 — static async loadRecentSpans( workspacePath: string, taskId: string, limit = 40, readGuard?: TranscriptReadGuard, ): Promise<TranscriptSpanRecord[]>
+- searchSpans · method · L661-L729 — static async searchSpans(params: { workspacePath: string; query: string; taskId?: string; limit?: number; readGuard?: TranscriptReadGuard; }): Promise<TranscriptSearchResult[]>
+- getDatabase · method · L731-L738 — private static getDatabase(): TranscriptDatabase | null
+- ensureDbSchema · method · L740-L789 — private static ensureDbSchema(db: TranscriptDatabase): boolean
+- indexSpan · method · L791-L821 — private static indexSpan( workspacePath: string, record: TranscriptSpanRecord, rawLine: string, ): void
+- searchIndexedSpans · method · L823-L891 — private static searchIndexedSpans(params: { workspacePath: string; query: string; taskId?: string; limit: number; readGuard?: TranscriptReadGuard; }): TranscriptSearchResult[]

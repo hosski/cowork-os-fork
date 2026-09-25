@@ -1,0 +1,28 @@
+# src/electron/mission-control/MissionControlIntelligenceService.ts
+
+- Any · type · L19-L19 — type Any = any;
+- parseJson · function · L25-L32 — function parseJson<T>(value: string | null | undefined, fallback: T): T
+- normalizeScopeId · function · L34-L36 — function normalizeScopeId(value?: string | null): string | undefined
+- truncate · function · L38-L42 — function truncate(value: string | undefined | null, max = 220): string
+- humanize · function · L44-L46 — function humanize(value?: string | null): string
+- hasRawToolShape · function · L48-L60 — function hasRawToolShape(activity: ActivityRow): boolean
+- activityCategory · function · L62-L84 — function activityCategory(activity: ActivityRow): MissionControlCategory
+- activitySeverity · function · L86-L105 — function activitySeverity(activity: ActivityRow): MissionControlSeverity
+- signalText · function · L107-L113 — function signalText(signal?: HeartbeatSignal): string
+- ActivityRow · interface · L115-L128 — interface ActivityRow
+- TaskRow · interface · L130-L142 — interface TaskRow
+- MentionRow · interface · L144-L155 — interface MentionRow
+- HeartbeatRunRow · interface · L157-L174 — interface HeartbeatRunRow
+- MissionControlIntelligenceService · class · L176-L742 — class MissionControlIntelligenceService
+- constructor · method · L179-L181 — constructor(private readonly db: Database.Database)
+- refresh · method · L183-L191 — refresh(scope: MissionControlScopeRequest = {}): MissionControlBrief
+- listItems · method · L193-L195 — listItems(request: MissionControlListRequest = {}): MissionControlItem[]
+- getEvidence · method · L197-L199 — getEvidence(itemId: string): MissionControlItemEvidence[]
+- getBrief · method · L201-L234 — getBrief(scope: MissionControlScopeRequest = {}): MissionControlBrief
+- recordHeartbeatEvent · method · L236-L311 — recordHeartbeatEvent(event: HeartbeatEvent): void
+- refreshTasks · method · L313-L382 — private refreshTasks(scope: MissionControlScopeRequest): void
+- refreshMentions · method · L384-L434 — private refreshMentions(scope: MissionControlScopeRequest): void
+- refreshActivities · method · L436-L540 — private refreshActivities(scope: MissionControlScopeRequest): void
+- refreshHeartbeatRuns · method · L542-L620 — private refreshHeartbeatRuns(scope: MissionControlScopeRequest): void
+- refreshCoreMemory · method · L622-L691 — private refreshCoreMemory(scope: MissionControlScopeRequest): void
+- refreshSubconscious · method · L693-L741 — private refreshSubconscious(scope: MissionControlScopeRequest): void

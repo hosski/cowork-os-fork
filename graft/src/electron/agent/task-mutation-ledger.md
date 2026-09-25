@@ -1,0 +1,26 @@
+# src/electron/agent/task-mutation-ledger.ts
+
+- MutationBaselineRecord · interface · L12-L22 — interface MutationBaselineRecord
+- PersistedMutationLedger · interface · L24-L32 — interface PersistedMutationLedger
+- TaskMutationLedgerOptions · interface · L34-L37 — interface TaskMutationLedgerOptions
+- hashBuffer · function · L39-L41 — function hashBuffer(buffer: Buffer): string
+- isBinaryBuffer · function · L43-L49 — function isBinaryBuffer(buffer: Buffer): boolean
+- safeTaskKey · function · L51-L53 — function safeTaskKey(taskId: string): string
+- isWithinRoot · function · L55-L58 — function isWithinRoot(root: string, candidate: string): boolean
+- unique · function · L60-L62 — function unique(values: string[]): string[]
+- runGit · function · L64-L76 — function runGit(workspaceRoot: string, args: string[]): Promise<string>
+- TaskMutationLedger · class · L78-L531 — class TaskMutationLedger
+- constructor · method · L84-L89 — constructor(options: TaskMutationLedgerOptions = {})
+- taskDirectory · method · L91-L93 — private taskDirectory(taskId: string): string
+- metadataPath · method · L95-L97 — private metadataPath(taskId: string): string
+- exclusive · method · L99-L108 — private async exclusive<T>(taskId: string, operation: () => Promise<T>): Promise<T>
+- load · method · L110-L139 — private load(taskId: string, workspaceRoot: string): PersistedMutationLedger
+- persist · method · L141-L148 — private persist(ledger: PersistedMutationLedger): void
+- resolveCandidate · method · L150-L166 — private resolveCandidate( workspaceRoot: string, candidatePath: string, ): { absolutePath: string; relativePath: string; } | null
+- initializeTask · method · L168-L185 — async initializeTask( taskId: string, workspaceRoot: string, options: { isolatedWorktree?: boolean } = {}, ): Promise<void>
+- captureBaseline · method · L187-L253 — async captureBaseline( taskId: string, workspaceRoot: string, candidatePath: string, options: { isolatedWorktree?: boolean } = {}, ): Promise<void>
+- diffNumstat · method · L255-L296 — private async diffNumstat( beforePath: string, afterPath: string, ): Promise<{ added: number; removed: number; attributable: boolean; }>
+- currentState · method · L298-L318 — private currentState(record: MutationBaselineRecord): { exists: boolean; file: boolean; binary: boolean; hash?: string; }
+- diffIsolatedWorktree · method · L320-L395 — private async diffIsolatedWorktree( workspaceRoot: string, baselineGitHead: string, ): Promise<{ filesChanged: number; linesAdded: number; linesRemoved: number; lineAttributionComplete: boolean; } | null>
+- recordMutation · method · L397-L509 — async recordMutation(args: { taskId: string; workspaceRoot: string; candidatePaths: string[]; sourceEventId: string; final?: boolean; }): Promise<TaskImpactMetric[]>
+- pruneExpiredLedgers · method · L511-L530 — private pruneExpiredLedgers(): void

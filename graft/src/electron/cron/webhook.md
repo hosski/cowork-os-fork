@@ -1,0 +1,21 @@
+# src/electron/cron/webhook.ts
+
+- WebhookServerConfig · interface · L11-L16 — interface WebhookServerConfig
+- WebhookTriggerPayload · interface · L18-L23 — interface WebhookTriggerPayload
+- WebhookTriggerResult · interface · L25-L30 — interface WebhookTriggerResult
+- TriggerHandler · type · L32-L32 — type TriggerHandler = (jobId: string, force: boolean) => Promise<CronRunResult>;
+- CronWebhookServer · class · L34-L316 — class CronWebhookServer
+- constructor · method · L40-L42 — constructor(config: WebhookServerConfig)
+- setTriggerHandler · method · L47-L49 — setTriggerHandler(handler: TriggerHandler): void
+- setJobLookup · method · L54-L56 — setJobLookup(lookup: () => Promise<Array<{ id: string; name: string }>>): void
+- start · method · L61-L91 — async start(): Promise<void>
+- stop · method · L96-L106 — async stop(): Promise<void>
+- isRunning · method · L111-L113 — isRunning(): boolean
+- getAddress · method · L118-L123 — getAddress(): { host: string; port: number } | null
+- handleRequest · method · L128-L164 — private async handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+- handleTrigger · method · L169-L240 — private async handleTrigger(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+- handleListJobs · method · L245-L269 — private async handleListJobs(req: http.IncomingMessage, res: http.ServerResponse): Promise<void>
+- verifySecret · method · L274-L283 — private verifySecret(provided: string | undefined): boolean
+- parseJsonBody · method · L288-L307 — private parseJsonBody<T>(req: http.IncomingMessage): Promise<T | null>
+- sendJsonResponse · method · L312-L315 — private sendJsonResponse(res: http.ServerResponse, status: number, data: unknown): void
+- generateWebhookSecret · function · L319-L321 — function generateWebhookSecret(): string

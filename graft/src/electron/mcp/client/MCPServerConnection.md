@@ -1,0 +1,33 @@
+# src/electron/mcp/client/MCPServerConnection.ts
+
+- MCPServerConnectionEvents · interface · L41-L48 — interface MCPServerConnectionEvents
+- MCPConnectorEvent · interface · L50-L58 — interface MCPConnectorEvent
+- MCPServerConnection · class · L60-L630 — class MCPServerConnection extends EventEmitter
+- constructor · method · L76-L87 — constructor( config: MCPServerConfig, options: { maxReconnectAttempts?: number; reconnectDelayMs?: number; } = {}, )
+- getStatus · method · L92-L105 — getStatus(): MCPServerStatus
+- getTools · method · L110-L112 — getTools(): MCPTool[]
+- getResources · method · L114-L116 — getResources(): MCPResource[]
+- getPrompts · method · L118-L120 — getPrompts(): MCPPrompt[]
+- connect · method · L125-L162 — async connect(): Promise<void>
+- disconnect · method · L167-L191 — async disconnect(): Promise<void>
+- callTool · method · L196-L220 — async callTool(name: string, args: Record<string, Any> = {}): Promise<MCPCallResult>
+- subscribeResource · method · L222-L235 — async subscribeResource(uri: string): Promise<void>
+- unsubscribeResource · method · L237-L249 — async unsubscribeResource(uri: string): Promise<void>
+- syncResourceSubscriptions · method · L251-L267 — async syncResourceSubscriptions(resourceUris: Iterable<string>): Promise<void>
+- updateConfig · method · L272-L274 — updateConfig(config: MCPServerConfig): void
+- createTransport · method · L279-L301 — private createTransport(): MCPTransport
+- setupTransportHandlers · method · L306-L325 — private setupTransportHandlers(): void
+- initialize · method · L330-L364 — private async initialize(): Promise<void>
+- discoverCapabilities · method · L369-L409 — private async discoverCapabilities(): Promise<void>
+- handleMessage · method · L414-L419 — private handleMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- handleNotification · method · L424-L473 — private handleNotification(notification: JSONRPCNotification): void
+- emitConnectorEvent · method · L475-L488 — private emitConnectorEvent( type: MCPConnectorEvent["type"], payload?: Record<string, Any>, resourceUri?: string, ): void
+- refreshTools · method · L493-L503 — private async refreshTools(): Promise<void>
+- refreshResources · method · L508-L518 — private async refreshResources(): Promise<void>
+- refreshPrompts · method · L523-L533 — private async refreshPrompts(): Promise<void>
+- handleDisconnection · method · L538-L552 — private handleDisconnection(error?: Error): void
+- scheduleReconnect · method · L557-L578 — private scheduleReconnect(): void
+- calculateReconnectDelay · method · L583-L590 — private calculateReconnectDelay(): number
+- cancelReconnect · method · L595-L600 — private cancelReconnect(): void
+- cleanup · method · L605-L615 — private async cleanup(): Promise<void>
+- setStatus · method · L620-L629 — private setStatus(status: MCPConnectionStatus, error?: string): void

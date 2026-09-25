@@ -1,0 +1,22 @@
+# src/electron/monitoring/AmbientMonitoringService.ts
+
+- AmbientWorkspaceContext · interface · L53-L57 — interface AmbientWorkspaceContext
+- AmbientMonitoringServiceDeps · interface · L59-L81 — interface AmbientMonitoringServiceDeps
+- GitSnapshot · type · L83-L87 — type GitSnapshot = { branch: string; dirtyCount: number; fingerprint: string; };
+- AmbientMonitoringService · class · L89-L485 — class AmbientMonitoringService
+- constructor · method · L99-L99 — constructor(private readonly deps: AmbientMonitoringServiceDeps)
+- start · method · L101-L111 — async start(): Promise<void>
+- stop · method · L113-L122 — async stop(): Promise<void>
+- startFileWatchers · method · L124-L170 — private startFileWatchers(): void
+- getMonitoredWorkspaces · method · L172-L197 — private getMonitoredWorkspaces(): AmbientWorkspaceContext[]
+- push · function · L184-L188 — push = (workspace: AmbientWorkspaceContext | undefined)
+- shouldMonitorWorkspace · method · L199-L212 — private shouldMonitorWorkspace(workspace: AmbientWorkspaceContext): boolean
+- isBlockedRootPath · method · L214-L227 — private isBlockedRootPath(workspacePath: string): boolean
+- resolveWatchTargets · method · L229-L264 — private resolveWatchTargets(workspacePath: string): { paths: string[]; depth: number } | null
+- logSkipSummary · method · L266-L283 — private logSkipSummary(): void
+- handleFileChange · method · L285-L320 — private handleFileChange( workspace: AmbientWorkspaceContext, activityType: Extract<ActivityType, "file_created" | "file_modified" | "file_deleted">, filePath: string, ): void
+- pollGit · method · L322-L362 — private async pollGit(): Promise<void>
+- getGitSnapshot · method · L364-L383 — private async getGitSnapshot(workspacePath: string): Promise<GitSnapshot | null>
+- pollCalendars · method · L385-L432 — private async pollCalendars(): Promise<void>
+- getGoogleCalendarSnapshot · method · L434-L455 — private async getGoogleCalendarSnapshot(): Promise<string>
+- getAppleCalendarSnapshot · method · L457-L484 — private async getAppleCalendarSnapshot(): Promise<string>

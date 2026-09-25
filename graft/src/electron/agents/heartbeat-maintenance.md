@@ -1,0 +1,23 @@
+# src/electron/agents/heartbeat-maintenance.ts
+
+- HeartbeatChecklistCadence · type · L15-L15 — type HeartbeatChecklistCadence = "heartbeat" | "hourly" | "daily" | "weekly" | "monthly";
+- HeartbeatChecklistItem · interface · L17-L25 — interface HeartbeatChecklistItem
+- getLocalDateStamp · function · L27-L32 — function getLocalDateStamp(now: Date): string
+- readTextFile · function · L34-L45 — function readTextFile(absPath: string, maxChars = 3000): string
+- PersistedHeartbeatMaintenanceState · interface · L47-L51 — interface PersistedHeartbeatMaintenanceState
+- normalizeBullet · function · L59-L61 — function normalizeBullet(text: string): string
+- hashId · function · L63-L65 — function hashId(input: string): string
+- getCadence · function · L67-L85 — function getCadence(sectionTitle: string): { cadence: HeartbeatChecklistCadence; cadenceMs: number; }
+- getHeartbeatChecklistPath · function · L87-L91 — function getHeartbeatChecklistPath(workspacePath?: string): string | undefined
+- readHeartbeatChecklist · function · L93-L133 — function readHeartbeatChecklist( workspacePath?: string, workspaceId?: string, ): HeartbeatChecklistItem[]
+- buildHeartbeatWorkspaceContext · function · L135-L169 — function buildHeartbeatWorkspaceContext(workspacePath?: string, now = new Date()): string
+- pushSection · function · L141-L145 — pushSection = (title: string, relPath: string, maxChars = 2200)
+- HeartbeatMaintenanceStateStore · class · L171-L245 — class HeartbeatMaintenanceStateStore
+- filePath · method · L175-L177 — private get filePath(): string
+- ensureLoaded · method · L179-L196 — private ensureLoaded(): void
+- save · method · L198-L208 — private save(): void
+- getChecklistLastRunAt · method · L210-L214 — getChecklistLastRunAt(key: string): number
+- setChecklistLastRunAt · method · L216-L220 — setChecklistLastRunAt(key: string, timestamp: number): void
+- getProactiveLastRunAt · method · L222-L226 — getProactiveLastRunAt(key: string): number
+- setProactiveLastRunAt · method · L228-L232 — setProactiveLastRunAt(key: string, timestamp: number): void
+- clearAgent · method · L234-L244 — clearAgent(agentRoleId: string): void

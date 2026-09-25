@@ -1,0 +1,58 @@
+# native/healthkit-bridge/Sources/HealthKitBridge/main.swift
+
+- BridgeRuntimeError · enum · L5-L11 — enum BridgeRuntimeError: Error
+- healthStore · variable · L13-L13 — private let healthStore = HKHealthStore()
+- readableTypes · variable · L14-L22 — private let readableTypes: [String] = [ "steps", "sleep", "heart_rate", "hrv", "weight", "glucose", "workout", ]
+- writableTypes · variable · L24-L32 — private let writableTypes: [String] = [ "steps", "sleep", "heart_rate", "hrv", "weight", "glucose", "workout", ]
+- now · function · L34-L34 — private func now() -> Double
+- decodeRequest · function · L36-L52 — private func decodeRequest() throws -> BridgeRequest
+- responseOutputPath · function · L54-L60 — private func responseOutputPath() -> String?
+- emit · function · L62-L73 — private func emit<T: Codable>(_ envelope: BridgeEnvelope<T>) -> Never
+- healthDataAvailable · function · L75-L77 — private func healthDataAvailable() -> Bool
+- authorizationStatusString · function · L79-L91 — private func authorizationStatusString(for type: HKObjectType) -> String
+- makeMetricLabel · function · L93-L104 — private func makeMetricLabel(_ key: String) -> (String, String)
+- workoutActivityName · function · L106-L125 — private func workoutActivityName(_ type: HKWorkoutActivityType) -> String
+- quantityType · function · L127-L142 — private func quantityType(for key: String) -> HKQuantityType?
+- categoryType · function · L144-L151 — private func categoryType(for key: String) -> HKCategoryType?
+- quantityUnit · function · L153-L168 — private func quantityUnit(for key: String) -> HKUnit
+- sourceMode · function · L170-L172 — private func sourceMode(_ request: BridgeRequest) -> String
+- defaultSince · function · L174-L179 — private func defaultSince(_ request: BridgeRequest) -> Date
+- sampleQueryResults · function · L181-L193 — private func sampleQueryResults(for type: HKSampleType, limit: Int = 1, descending: Bool = true) async throws -> [HKSample]
+- latestQuantitySample · function · L195-L217 — private func latestQuantitySample(_ key: String) async throws -> (MetricPayload, RecordPayload?)?
+- aggregatedSteps · function · L219-L242 — private func aggregatedSteps(since: Date) async throws -> MetricPayload?
+- aggregatedSleep · function · L244-L253 — private func aggregatedSleep(since: Date) async throws -> MetricPayload?
+- latestWorkout · function · L255-L270 — private func latestWorkout() async throws -> (MetricPayload, RecordPayload?)?
+- since · variable · L285-L285 — let since = defaultSince(request)
+- requestedTypes · variable · L286-L286 — let requestedTypes = request.readTypes?.isEmpty == false ? request.readTypes! : readableTypes
+- metrics · variable · L287-L287 — var metrics: [MetricPayload] = []
+- records · variable · L288-L288 — var records: [RecordPayload] = []
+- readObjects · variable · L347-L352 — let readObjects: Set<HKObjectType> = Set((request.readTypes ?? readableTypes).compactMap { key in if let quantity = quantityType(for: key) { return quantity } if let category = categoryType(for: key) { return category } if key == "workout" { return HKObjectType.workoutType() } return nil })
+- writeObjects · variable · L353-L358 — let writeObjects: Set<HKSampleType> = Set((request.writeTypes ?? writableTypes).compactMap { key in if let quantity = quantityType(for: key) { return quantity } if let category = categoryType(for: key) { return category } if key == "workout" { return HKObjectType.workoutType() } return nil })
+- groups · variable · L360-L360 — let groups: Set<HKObjectType> = readObjects.union(Set(writeObjects))
+- granted · variable · L371-L379 — let granted = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in healthStore.requestAuthorization(toShare: writeObjects, read: groups) { success, error in if let error = error { continuation.resume(throwing: error) return } continuation.resume(returning: success) } }
+- status · variable · L381-L381 — let status = granted ? "authorized" : "denied"
+- items · variable · L396-L396 — let items = request.items ?? []
+- samplesToSave · variable · L397-L397 — var samplesToSave: [HKSample] = []
+- warnings · variable · L398-L398 — var warnings: [String] = []
+- value · variable · L404-L404 — let value = Double(item.value) ?? 0
+- unit · variable · L405-L405 — let unit = item.unit.flatMap { HKUnit(from: $0) } ?? quantityUnit(for: item.type)
+- quantity · variable · L406-L406 — let quantity = HKQuantity(unit: unit, doubleValue: value)
+- timestamp · variable · L407-L407 — let timestamp = Date(timeIntervalSince1970: (item.endDate ?? item.startDate ?? now()) / 1000)
+- sample · variable · L408-L408 — let sample = HKQuantitySample(type: quantityType, quantity: quantity, start: timestamp, end: timestamp)
+- start · variable · L412-L412 — let start = Date(timeIntervalSince1970: (item.startDate ?? now()) / 1000)
+- end · variable · L413-L413 — let end = Date(timeIntervalSince1970: (item.endDate ?? item.startDate ?? now()) / 1000)
+- value · variable · L414-L414 — let value = HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue
+- sample · variable · L415-L415 — let sample = HKCategorySample(type: categoryType, value: value, start: start, end: end)
+- start · variable · L418-L418 — let start = Date(timeIntervalSince1970: (item.startDate ?? now()) / 1000)
+- end · variable · L419-L419 — let end = Date(timeIntervalSince1970: (item.endDate ?? item.startDate ?? now()) / 1000)
+- duration · variable · L420-L420 — let duration = max(1.0, end.timeIntervalSince(start))
+- workout · variable · L421-L432 — let workout = HKWorkout( activityType: .running, start: start, end: end, duration: duration, totalEnergyBurned: nil, totalDistance: nil, metadata: [ HKMetadataKeyIndoorWorkout: true, HKMetadataKeySyncIdentifier: item.id ] )
+- request · variable · L473-L473 — let request = try decodeRequest()
+- method · variable · L474-L474 — let method = request.method.lowercased()
+- data · variable · L489-L489 — let data = try await requestAuthorization(request: request)
+- data · variable · L492-L492 — let data = try await readSnapshot(request: request)
+- data · variable · L495-L495 — let data = try await writeSamples(request: request)
+- HealthKitBridgeMain · struct · L507-L521 — @main struct HealthKitBridgeMain
+- main · method · L509-L520 — static func main() async
+- BridgeAppDelegate · class · L523-L530 — final class BridgeAppDelegate: NSObject, NSApplicationDelegate
+- applicationDidFinishLaunching · method · L524-L529 — func applicationDidFinishLaunching(_ notification: Notification)

@@ -1,0 +1,16 @@
+# resources/skills/llm-wiki/scripts/wiki-graph-report.mjs
+
+- parseArgs · function · L26-L46 — function parseArgs(argv)
+- listFilesRecursive · function · L48-L61 — function listFilesRecursive(dir)
+- readText · function · L63-L65 — function readText(filePath)
+- slugifyTarget · function · L67-L80 — function slugifyTarget(rawTarget)
+- parseFrontmatter · function · L82-L115 — function parseFrontmatter(text)
+- extractWikiLinks · function · L117-L127 — function extractWikiLinks(text)
+- getPageTitle · function · L129-L131 — function getPageTitle(page)
+- getPageSection · function · L133-L135 — function getPageSection(relPath)
+- resolveLinkTarget · function · L137-L153 — function resolveLinkTarget(linkSlug, pageBySlug, pagesByBasename)
+- computeBetweennessCentrality · function · L155-L202 — function computeBetweennessCentrality(adjacency)
+- buildPageRecords · function · L204-L227 — function buildPageRecords(vaultPath)
+- buildReport · function · L229-L496 — function buildReport(vaultPath)
+- formatMarkdown · function · L498-L646 — function formatMarkdown(report)
+- main · function · L648-L660 — function main()

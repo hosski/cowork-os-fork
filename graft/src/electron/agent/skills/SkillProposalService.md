@@ -1,0 +1,22 @@
+# src/electron/agent/skills/SkillProposalService.ts
+
+- SkillProposalStatus · type · L5-L5 — type SkillProposalStatus = "pending" | "approved" | "rejected";
+- SkillProposalDraftSkill · interface · L7-L16 — interface SkillProposalDraftSkill
+- SkillProposalRecord · interface · L18-L34 — interface SkillProposalRecord
+- SkillProposalCreateInput · interface · L36-L42 — interface SkillProposalCreateInput
+- nowMs · function · L49-L51 — function nowMs(): number
+- toNonEmptyString · function · L53-L55 — function toNonEmptyString(value: unknown): string
+- normalizeStringArray · function · L57-L60 — function normalizeStringArray(values: unknown): string[]
+- normalizeDraftSkill · function · L62-L73 — function normalizeDraftSkill(input: SkillProposalDraftSkill): SkillProposalDraftSkill
+- proposalSignature · function · L75-L93 — function proposalSignature(input: { problemStatement: string; requiredTools: string[]; draftSkill: SkillProposalDraftSkill; }): string
+- SkillProposalService · class · L95-L277 — class SkillProposalService
+- constructor · method · L98-L100 — constructor(private workspacePath: string)
+- ensureDir · method · L102-L104 — private async ensureDir(): Promise<void>
+- isSafeRecordId · method · L106-L108 — private isSafeRecordId(id: string): boolean
+- proposalPath · method · L110-L113 — private proposalPath(id: string): string
+- readProposalFile · method · L115-L150 — private async readProposalFile(filePath: string): Promise<SkillProposalRecord | null>
+- list · method · L152-L172 — async list(status: SkillProposalStatus | "all" = "pending"): Promise<SkillProposalRecord[]>
+- get · method · L174-L178 — async get(id: string): Promise<SkillProposalRecord | null>
+- create · method · L180-L242 — async create(input: SkillProposalCreateInput): Promise<{ proposal?: SkillProposalRecord; blocked?: string; duplicateOf?: string; cooldownUntil?: number; }>
+- approve · method · L244-L259 — async approve(id: string, approvedSkillId: string): Promise<SkillProposalRecord | null>
+- reject · method · L261-L276 — async reject(id: string, reason?: string): Promise<SkillProposalRecord | null>

@@ -1,0 +1,49 @@
+# connectors/google-workspace-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L35 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L37-L46 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L48-L55 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- ToolProvider · type · L78-L81 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L85-L266 — class StdioMCPServer
+- constructor · method · L89-L92 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L94-L106 — start(): void
+- stop · method · L108-L114 — stop(): void
+- handleLine · method · L116-L126 — private handleLine(line: string): void
+- handleMessage · method · L128-L137 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L139-L172 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L174-L179 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L181-L195 — private handleInitialize(_params: any): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsList · method · L197-L199 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L201-L228 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L230-L233 — private handleShutdown(): Record<string, never>
+- sendResult · method · L235-L238 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L240-L247 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L249-L251 — private sendMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- requireInitialized · method · L253-L257 — private requireInitialized(): void
+- createError · method · L259-L265 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }
+- normalizeScopeList · function · L297-L307 — function normalizeScopeList(scopeText: string): string[]
+- getMissingRequiredScopes · function · L309-L314 — function getMissingRequiredScopes(scopeText: string): string[]
+- refreshAccessToken · function · L316-L341 — async function refreshAccessToken(): Promise<string>
+- getAccessToken · function · L343-L348 — async function getAccessToken(): Promise<string>
+- googleRequest · function · L350-L384 — async function googleRequest( method: string, url: string, body?: unknown, params?: Record<string, string>, ): Promise<unknown>
+- hasOwn · function · L386-L388 — function hasOwn(args: Record<string, any>, key: string): boolean
+- pickPresentFields · function · L390-L398 — function pickPresentFields(args: Record<string, any>, fields: string[]): Record<string, any>
+- pickQueryParams · function · L400-L408 — function pickQueryParams(args: Record<string, any>, fields: string[]): Record<string, string>
+- requireNonEmptyString · function · L410-L415 — function requireNonEmptyString(value: unknown, label: string): string
+- requireConfirmation · function · L417-L423 — function requireConfirmation(args: Record<string, any>, action: string): void
+- randomObjectId · function · L425-L427 — function randomObjectId(prefix: string): string
+- numberOrDefault · function · L429-L431 — function numberOrDefault(value: unknown, fallback: number): number
+- calendarUrl · function · L433-L435 — function calendarUrl(path: string): string
+- encodeCalendarId · function · L437-L440 — function encodeCalendarId(calendarId?: unknown): string
+- requireStringArray · function · L442-L453 — function requireStringArray(value: unknown, label: string): string[]
+- normalizeCalendarDateField · function · L455-L468 — function normalizeCalendarDateField(value: unknown, label: string): Record<string, any>
+- buildCalendarEventBody · function · L470-L526 — function buildCalendarEventBody( args: Record<string, any>, requireCoreFields: boolean, ): Record<string, any>
+- requireRfc3339DateTime · function · L528-L534 — function requireRfc3339DateTime(value: unknown, label: string): string
+- requireValidTimeWindow · function · L536-L546 — function requireValidTimeWindow( timeMinValue: unknown, timeMaxValue: unknown, ): { timeMin: string; timeMax: string }
+- listGoogleWorkspaceToolsForTest · function · L2236-L2238 — function listGoogleWorkspaceToolsForTest(): MCPTool[]
+- executeGoogleWorkspaceToolForTest · function · L2240-L2245 — async function executeGoogleWorkspaceToolForTest( name: string, args: Record<string, any>, ): Promise<any>
+- startGoogleWorkspaceMcpServer · function · L2256-L2259 — function startGoogleWorkspaceMcpServer(): void

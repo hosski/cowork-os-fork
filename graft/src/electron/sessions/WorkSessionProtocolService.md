@@ -1,0 +1,31 @@
+# src/electron/sessions/WorkSessionProtocolService.ts
+
+- normalizeEventType · function · L125-L135 — function normalizeEventType(event: TaskEvent): string
+- payloadRecord · function · L137-L142 — function payloadRecord(event: TaskEvent): Record<string, unknown>
+- boundedMessage · function · L144-L148 — function boundedMessage(value: unknown): string | undefined
+- actorForEvent · function · L150-L159 — function actorForEvent(event: TaskEvent, eventType: string): WorkSessionActor | string
+- mapTaskEventKind · function · L162-L202 — function mapTaskEventKind(eventType: string): WorkSessionItemKind
+- protocolStatusForTask · function · L204-L221 — function protocolStatusForTask(taskStatus: Task["status"]): WorkSessionStatus
+- statusForEvent · function · L223-L265 — function statusForEvent(eventType: string, event: TaskEvent): WorkSessionTurnStatus | undefined
+- isTerminalTurnStatus · function · L267-L274 — function isTerminalTurnStatus(status: WorkSessionTurnStatus): boolean
+- terminalReason · function · L276-L279 — function terminalReason(event: TaskEvent): string | undefined
+- WorkSessionTaskEventResult · interface · L281-L285 — interface WorkSessionTaskEventResult
+- WorkSessionProtocolService · class · L287-L722 — class WorkSessionProtocolService
+- constructor · method · L293-L298 — constructor(private readonly db: Database.Database)
+- getRepository · method · L300-L302 — getRepository(): WorkSessionProtocolRepository
+- getReliabilityService · method · L304-L306 — getReliabilityService(): WorkSessionReliabilityService
+- ensureForTask · method · L308-L332 — ensureForTask( task: Pick<Task, "id" | "workspaceId" | "sessionId" | "status">, ): WorkSessionAggregate
+- backfillTaskEvents · method · L334-L351 — private backfillTaskEvents( task: Pick<Task, "id" | "workspaceId" | "sessionId" | "status">, aggregate: Pick<WorkSessionAggregate, "session">, ): void
+- getSessionForTask · method · L353-L357 — getSessionForTask(taskId: string): WorkSessionAggregate | undefined
+- getSession · method · L359-L361 — getSession(sessionId: string): WorkSessionAggregate | undefined
+- getReadModeForTask · method · L364-L371 — getReadModeForTask(taskId: string): WorkSessionReadMode
+- readWithRollout · method · L378-L409 — readWithRollout<T>(taskId: string, vnext: () => T, legacy: () => T): T
+- readTaskEvents · method · L416-L426 — readTaskEvents( taskId: string, options: { limit?: number; types?: string[] } | undefined, legacy: () => TaskEvent[], ): TaskEvent[]
+- readCanonicalTaskEvents · method · L428-L470 — private readCanonicalTaskEvents( taskId: string, options?: { limit?: number; types?: string[] }, ): TaskEvent[]
+- mapCanonicalItemToTaskEvent · method · L472-L543 — private mapCanonicalItemToTaskEvent(taskId: string, item: WorkSessionItem): TaskEvent
+- replay · method · L545-L547 — replay(sessionId: string)
+- assertExpectedTurnForTask · method · L549-L554 — assertExpectedTurnForTask(taskId: string, expectedTurnId: string): WorkSessionTurn
+- beginUserMessage · method · L556-L578 — beginUserMessage( taskId: string, message: string, options?: { expectedTurnId?: string; idempotencyKey?: string; policySnapshot?: Record<string, unknown>; }, ): { session: WorkSession; turn: WorkSessionTurn; item: WorkSessionItem }
+- recordTaskEvent · method · L584-L600 — recordTaskEvent(taskId: string, event: TaskEvent): WorkSessionTaskEventResult | undefined
+- recordTaskEventForAggregate · method · L602-L714 — private recordTaskEventForAggregate( task: Pick<Task, "id" | "workspaceId" | "sessionId" | "status">, aggregate: Pick<WorkSessionAggregate, "session">, event: TaskEvent, ): WorkSessionTaskEventResult | undefined
+- policySnapshot · method · L716-L721 — private policySnapshot(payload: Record<string, unknown>): Record<string, unknown> | undefined

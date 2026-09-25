@@ -1,0 +1,59 @@
+# src/electron/health/HealthManager.ts
+
+- now · function · L38-L40 — function now(): number
+- hashString · function · L42-L48 — function hashString(value: string): number
+- clamp · function · L50-L52 — function clamp(value: number, min: number, max: number): number
+- createId · function · L54-L56 — function createId(prefix: string): string
+- titleCase · function · L58-L64 — function titleCase(value: string): string
+- isHealthyRepoAvailable · function · L66-L68 — function isHealthyRepoAvailable(): boolean
+- isAppleHealthSource · function · L90-L92 — function isAppleHealthSource(source: HealthSource | HealthSourceInput): boolean
+- defaultConnectionModeForSource · function · L94-L100 — function defaultConnectionModeForSource(input: HealthSourceInput): HealthSourceConnectionMode
+- defaultPermissionStateForSource · function · L102-L107 — function defaultPermissionStateForSource( input: HealthSourceInput, ): HealthSource["permissionState"]
+- appendSyncEvent · function · L109-L128 — function appendSyncEvent( source: HealthSource, event: Omit<HealthSyncEvent, "id" | "sourceId" | "createdAt"> & Partial<Pick<HealthSyncEvent, "id" | "sourceId" | "createdAt">>, ): HealthSource
+- sourceReadTypes · function · L130-L137 — function sourceReadTypes(source: HealthSource): HealthWritebackType[]
+- sourceWriteTypes · function · L139-L146 — function sourceWriteTypes(source: HealthSource): HealthWritebackType[]
+- defaultState · function · L148-L158 — function defaultState(): HealthState
+- normalizeSourceInput · function · L160-L194 — function normalizeSourceInput(input: HealthSourceInput, existing?: HealthSource): HealthSource
+- scoreTrend · function · L196-L201 — function scoreTrend(previous: number | undefined, current: number): "up" | "down" | "stable"
+- metricLabelForKey · function · L203-L232 — function metricLabelForKey(key: HealthMetricKey): { label: string; unit: string }
+- sourceLabel · function · L234-L236 — function sourceLabel(source: HealthSource): string
+- extractNumber · function · L238-L246 — function extractNumber(text: string, patterns: RegExp[]): number | null
+- parseImportedText · function · L248-L287 — function parseImportedText(content: string): { metrics: Array<{ key: HealthMetricKey; value: number }>; summary: string; }
+- makeMetric · function · L289-L306 — function makeMetric( source: HealthSource, key: HealthMetricKey, value: number, recordedAt = now(), ): HealthMetric
+- makeRecord · function · L308-L326 — function makeRecord( source: HealthSource, title: string, summary: string, tags: string[], recordedAt = now(), ): HealthRecord
+- mergeMetrics · function · L328-L337 — function mergeMetrics(existing: HealthMetric[], next: HealthMetric[]): HealthMetric[]
+- deriveInsights · function · L339-L471 — function deriveInsights(state: HealthState): HealthInsight[]
+- toDashboard · function · L473-L494 — function toDashboard(state: HealthState, isDemo: boolean): HealthDashboard
+- createDemoState · function · L496-L590 — function createDemoState(): HealthState
+- loadState · function · L592-L633 — function loadState(): HealthState
+- saveState · function · L635-L638 — function saveState(state: HealthState): void
+- updateState · function · L640-L646 — function updateState(mutator: (state: HealthState) => HealthState): HealthState
+- sourceSeed · function · L648-L661 — function sourceSeed(provider: HealthSourceProvider): { kind: HealthSourceKind; name: string; description: string; }
+- metricKeyForWritebackType · function · L663-L686 — function metricKeyForWritebackType(type: HealthWritebackType): HealthMetricKey
+- sourceModeForAppleHealth · function · L688-L690 — function sourceModeForAppleHealth(source: HealthSource): HealthSourceConnectionMode
+- buildAppleHealthSourcePatch · function · L692-L705 — function buildAppleHealthSourcePatch( source: HealthSource, status: Awaited<ReturnType<typeof AppleHealthBridge.getStatus>>, ): Partial<HealthSource>
+- buildHealthSyncHistoryEvent · function · L707-L721 — function buildHealthSyncHistoryEvent( sourceId: string, action: HealthSyncEvent["action"], status: HealthSyncEvent["status"], message?: string, ): HealthSyncEvent
+- buildAppleHealthPreview · function · L723-L743 — function buildAppleHealthPreview( source: HealthSource, items: HealthWritebackItem[], bridgeStatus?: Awaited<ReturnType<typeof AppleHealthBridge.getStatus>>, ): HealthWritebackPreview
+- pickMetricTrend · function · L745-L765 — function pickMetricTrend( previous?: HealthMetric, current?: HealthMetric, ): "up" | "down" | "stable"
+- generateWearableSnapshot · function · L767-L804 — function generateWearableSnapshot(source: HealthSource): { metrics: HealthMetric[]; records: HealthRecord[]; }
+- generateLabSnapshot · function · L806-L834 — function generateLabSnapshot(source: HealthSource): { metrics: HealthMetric[]; records: HealthRecord[]; }
+- generateRecordSnapshot · function · L836-L854 — function generateRecordSnapshot(source: HealthSource): { metrics: HealthMetric[]; records: HealthRecord[]; }
+- buildSourceSnapshot · function · L856-L881 — function buildSourceSnapshot(source: HealthSource): { metrics: HealthMetric[]; records: HealthRecord[]; }
+- withSourceUpdate · function · L883-L893 — function withSourceUpdate( sourceId: string, updater: (source: HealthSource) => HealthSource, ): HealthState
+- parseImportedFile · function · L895-L942 — function parseImportedFile( filePath: string, ): Promise<{ metrics: HealthMetric[]; records: HealthRecord[] }>
+- generateWorkflowFromLLM · function · L944-L1095 — async function generateWorkflowFromLLM( dashboard: HealthDashboard, request: HealthWorkflowRequest, ): Promise<HealthWorkflow | null>
+- buildWorkflowFallback · function · L1097-L1246 — function buildWorkflowFallback( dashboard: HealthDashboard, request: HealthWorkflowRequest, ): HealthWorkflow
+- HealthManager · class · L1248-L2006 — class HealthManager
+- getDashboard · method · L1249-L1259 — static getDashboard(): HealthDashboard
+- listSources · method · L1261-L1263 — static listSources(): HealthSource[]
+- upsertSource · method · L1265-L1287 — static upsertSource(input: HealthSourceInput): HealthSource
+- removeSource · method · L1289-L1313 — static removeSource(sourceId: string): { success: boolean }
+- getAppleHealthStatus · method · L1315-L1361 — static async getAppleHealthStatus(sourceId?: string): Promise<{ available: boolean; authorizationStatus: string; readableTypes: string[]; writableTypes: string[]; sourceMode: HealthSourceConnectionMode; lastSyncedAt?: number; lastError?: string; }>
+- connectAppleHealth · method · L1363-L1487 — static async connectAppleHealth(payload: { sourceId?: string; connectionMode?: HealthSourceConnectionMode; }): Promise<{ success: boolean; source?: HealthSource; error?: string }>
+- disconnectAppleHealth · method · L1489-L1518 — static disconnectAppleHealth(sourceId: string): { success: boolean }
+- resetAppleHealth · method · L1520-L1558 — static resetAppleHealth(sourceId?: string): { success: boolean; removedCount: number }
+- syncSource · method · L1560-L1777 — static async syncSource(sourceId: string): Promise<HealthSyncResult>
+- importFiles · method · L1779-L1889 — static async importFiles(sourceId: string, filePaths: string[]): Promise<HealthSyncResult>
+- previewAppleHealthWriteback · method · L1891-L1914 — static async previewAppleHealthWriteback(request: HealthWritebackRequest): Promise<{ success: boolean; preview?: HealthWritebackPreview; error?: string; }>
+- applyAppleHealthWriteback · method · L1916-L1992 — static async applyAppleHealthWriteback(request: HealthWritebackRequest): Promise<{ success: boolean; writtenCount?: number; warnings?: string[]; error?: string; }>
+- generateWorkflow · method · L1994-L2005 — static async generateWorkflow( request: HealthWorkflowRequest, ): Promise<{ success: boolean; workflow?: HealthWorkflow; error?: string }>

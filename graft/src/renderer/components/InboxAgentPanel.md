@@ -1,0 +1,95 @@
+# src/renderer/components/InboxAgentPanel.tsx
+
+- QueueMode · type · L62-L62 — type QueueMode = "cleanup" | "follow_up" | null;
+- RightRailTab · type · L63-L63 — type RightRailTab = "agent_rail" | "ask_inbox";
+- ThreadSortOrder · type · L64-L64 — type ThreadSortOrder = "recent" | "priority";
+- InboxMode · type · L65-L65 — type InboxMode = "classic" | "today";
+- createMailboxAskRunId · function · L73-L76 — function createMailboxAskRunId(): string
+- mergeMailboxAskEvents · function · L78-L93 — function mergeMailboxAskEvents( current: MailboxAskRunEvent[], incoming: MailboxAskRunEvent[] = [], ): MailboxAskRunEvent[]
+- latestMailboxAskStepEvents · function · L95-L102 — function latestMailboxAskStepEvents(events: MailboxAskRunEvent[]): MailboxAskRunEvent[]
+- FocusFilter · type · L104-L104 — type FocusFilter = "unread" | "needsReply" | "queue" | "commitments" | null;
+- ThreadMailboxView · type · L105-L105 — type ThreadMailboxView = MailboxThreadMailboxView;
+- DomainFilter · type · L106-L106 — type DomainFilter = MailboxDomainCategory | "all" | "work";
+- ManualComposeMode · type · L107-L107 — type ManualComposeMode = "reply" | "reply_all" | "forward";
+- AskInboxRun · type · L108-L116 — type AskInboxRun = { runId: string; query: string; createdAt: number; status: "running" | "done" | "error"; steps: MailboxAskRunEvent[]; result?: MailboxAskResult; error?: string; };
+- ThreadGroup · type · L117-L122 — type ThreadGroup = { id: string; label: string; description: string; threads: MailboxThreadListItem[]; };
+- retainSelectedThreadInUnreadList · function · L126-L142 — function retainSelectedThreadInUnreadList( threads: MailboxThreadListItem[], retainedThread: MailboxThreadListItem | null, selectedThreadId: string | null, focusFilter: FocusFilter, ): MailboxThreadListItem[]
+- formatTime · function · L144-L156 — function formatTime(timestamp?: number): string
+- formatFullTime · function · L158-L166 — function formatFullTime(timestamp?: number): string
+- formatDateTimeLocalValue · function · L168-L176 — function formatDateTimeLocalValue(timestamp?: number): string
+- pad · function · L171-L171 — pad = (value: number): string
+- priorityBadge · function · L178-L189 — function priorityBadge(band: MailboxPriorityBand): { color: string; bg: string; label: string }
+- proposalActionLabel · function · L191-L204 — function proposalActionLabel(proposal: MailboxActionProposal): string
+- formatChannelLabel · function · L206-L213 — function formatChannelLabel(channelType: string): string
+- formatMailboxAccountLabel · function · L215-L217 — function formatMailboxAccountLabel(account: MailboxSyncStatus["accounts"][number]): string
+- previewStringList · function · L219-L225 — function previewStringList(preview: Record<string, unknown> | undefined, key: string): string[]
+- initials · function · L227-L236 — function initials(name?: string, email?: string): string
+- formatEmailBody · function · L239-L263 — function formatEmailBody(raw: string): string
+- htmlToEmailPreviewText · function · L265-L285 — function htmlToEmailPreviewText(html: string): string
+- getMailboxMessageDisplayText · function · L287-L295 — function getMailboxMessageDisplayText( message: Pick<MailboxThreadDetail["messages"][number], "body" | "bodyHtml" | "snippet">, ): string
+- isShortMailboxThread · function · L297-L302 — function isShortMailboxThread(messages: MailboxThreadDetail["messages"]): boolean
+- splitMailboxRecipients · function · L304-L309 — function splitMailboxRecipients(value: string): string[]
+- prefixMailboxSubject · function · L311-L314 — function prefixMailboxSubject(subject: string, prefix: "Re:" | "Fwd:"): string
+- installEmailLinkInterceptor · function · L316-L345 — function installEmailLinkInterceptor(doc: Document): () => void
+- handleClick · function · L317-L341 — handleClick = (event: MouseEvent)
+- EmailHtmlBody · function · L352-L504 — function EmailHtmlBody({ html }: { html: string })
+- scheduleUpdate · function · L455-L460 — scheduleUpdate = ()
+- Avatar · function · L506-L528 — function Avatar({ name, email, size = 32 }: { name?: string; email?: string; size?: number })
+- SectionLabel · function · L530-L545 — function SectionLabel({ children }: { children: React.ReactNode })
+- ActionBtn · function · L547-L611 — function ActionBtn({ onClick, icon, label, variant = "default", disabled, title, }: { onClick: () => void; icon: React.ReactNode; label: string; variant?: "default" | "primary" | "danger"; disabled?: boolean; title?: string; })
+- IconBtn · function · L613-L678 — function IconBtn({ onClick, icon, title, active, disabled, size = 32, }: { onClick: () => void; icon: React.ReactNode; title?: string; active?: boolean; disabled?: boolean; size?: number; })
+- InboxAgentPanelProps · type · L680-L685 — type InboxAgentPanelProps = { /** Ask Inbox request created from the global prompt composer. */ externalAskRequest?: { id: number; query: string } | null; /** Open Mission Control focused on a company issue (e.g. from an inbox handoff). */ onOpenMissionControlIssue?: (companyId: string, issueId: string) => void; };
+- InboxAgentPanel · function · L689-L7604 — function InboxAgentPanel(props: InboxAgentPanelProps = {})
+- setUnreadFilterRetainedThread · function · L797-L799 — setUnreadFilterRetainedThread = (thread: MailboxThreadListItem | null)
+- retainReadThreadInUnreadFilter · function · L801-L808 — retainReadThreadInUnreadFilter = (thread: MailboxThreadListItem)
+- clearUnreadFilterRetainedThread · function · L810-L817 — clearUnreadFilterRetainedThread = (options: { removeFromList?: boolean } = {})
+- loadSnippets · function · L819-L822 — loadSnippets = async ()
+- loadStatus · function · L824-L831 — loadStatus = async ()
+- loadMissionControlOptions · function · L833-L840 — loadMissionControlOptions = async ()
+- loadDigest · function · L842-L851 — loadDigest = async ()
+- loadAutomations · function · L853-L860 — loadAutomations = async (threadId?: string)
+- loadThreads · function · L862-L924 — loadThreads = async (opts?: { accountId?: string | undefined; query?: string; category?: string; domainFilter?: DomainFilter; mailboxView?: ThreadMailboxView | undefined; focusFilter?: FocusFilter | undefined; sortBy?: ThreadSortOrder | undefined; })
+- loadThread · function · L926-L929 — loadThread = async (threadId: string)
+- loadHandoffContext · function · L931-L955 — loadHandoffContext = async (threadId: string)
+- reloadAll · function · L957-L971 — reloadAll = async (threadId?: string)
+- markThreadReadAfterOpen · function · L1097-L1153 — markThreadReadAfterOpen = async (thread: MailboxThreadListItem)
+- openThread · function · L1155-L1165 — openThread = (thread: MailboxThreadListItem)
+- clearThreadSelection · function · L1167-L1169 — clearThreadSelection = ()
+- toggleThreadSelection · function · L1171-L1177 — toggleThreadSelection = (threadId: string)
+- beginCommitmentEdit · function · L1179-L1184 — beginCommitmentEdit = (commitment: MailboxCommitment)
+- cancelCommitmentEdit · function · L1186-L1191 — cancelCommitmentEdit = ()
+- saveCommitmentEdit · function · L1193-L1207 — saveCommitmentEdit = async (commitment: MailboxCommitment)
+- runAction · function · L1508-L1518 — runAction = async (work: () => Promise<void>)
+- copyTextToClipboard · function · L1520-L1528 — copyTextToClipboard = async (text: string)
+- resetLabelSimilarPreview · function · L1530-L1535 — resetLabelSimilarPreview = ()
+- syncMailboxInBackground · function · L1582-L1605 — syncMailboxInBackground = async ()
+- syncMailboxWithProgress · function · L1623-L1639 — syncMailboxWithProgress = async ()
+- reviewQueue · function · L1641-L1649 — reviewQueue = async (type: QueueMode)
+- acknowledgeMailboxClassificationWarning · function · L1651-L1654 — acknowledgeMailboxClassificationWarning = ()
+- confirmServerMailboxAction · function · L1656-L1674 — confirmServerMailboxAction = ( type: "archive" | "trash" | "mark_read" | "mark_unread", threadCount = 1, ): boolean
+- reclassifySelectedThread · function · L1676-L1682 — reclassifySelectedThread = async ()
+- reclassifyMailboxBackfill · function · L1684-L1700 — reclassifyMailboxBackfill = async ()
+- handleApplyProposal · function · L1702-L1734 — handleApplyProposal = async (proposal: MailboxActionProposal)
+- handleCommitmentState · function · L1736-L1744 — handleCommitmentState = async ( commitment: MailboxCommitment, state: MailboxCommitment["state"], )
+- handleThreadAction · function · L1746-L1758 — handleThreadAction = async ( type: "archive" | "trash" | "mark_read" | "mark_unread" | "mark_done", )
+- getCrossChannelReplySeed · function · L1760-L1771 — getCrossChannelReplySeed = (): string
+- openReplyComposer · function · L1773-L1778 — openReplyComposer = (handleId: string)
+- sendReplyViaChannel · function · L1780-L1797 — sendReplyViaChannel = async ()
+- openManualCompose · function · L1799-L1855 — openManualCompose = (mode: ManualComposeMode)
+- addRecipient · function · L1814-L1820 — addRecipient = (participant?: { email?: string; name?: string })
+- closeManualCompose · function · L1857-L1864 — closeManualCompose = ()
+- sendManualCompose · function · L1866-L1896 — sendManualCompose = async ()
+- handleBulkThreadAction · function · L1898-L1930 — handleBulkThreadAction = async ( type: "archive" | "trash" | "mark_read" | "mark_unread", )
+- createRuleFromCurrentContext · function · L1932-L1978 — createRuleFromCurrentContext = async ()
+- createForwardAutomationFromCurrentContext · function · L1980-L2064 — createForwardAutomationFromCurrentContext = async ()
+- snoozeSelectedThread · function · L2066-L2094 — snoozeSelectedThread = async ()
+- runThreadWorkflow · function · L2096-L2115 — runThreadWorkflow = async ()
+- refreshThreadIntel · function · L2117-L2135 — refreshThreadIntel = async ()
+- openHandoffPanel · function · L2137-L2144 — openHandoffPanel = async ()
+- createMissionControlHandoff · function · L2146-L2167 — createMissionControlHandoff = async ()
+- runMailboxAsk · function · L2169-L2226 — runMailboxAsk = async (queryOverride?: string)
+- onKeyDown · function · L2384-L2433 — onKeyDown = (event: KeyboardEvent)
+- pushSection · function · L2464-L2466 — pushSection = (title: string, messages: MailboxThreadDetail["messages"])
+- renderMessageCard · function · L2486-L2586 — renderMessageCard = (message: MailboxThreadDetail["messages"][number])
+- renderAskInboxRun · function · L2588-L2905 — renderAskInboxRun = (run: AskInboxRun)
+- renderAskInbox · function · L2907-L3005 — renderAskInbox = ()

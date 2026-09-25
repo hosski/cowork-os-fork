@@ -1,0 +1,21 @@
+# src/electron/agent/tools/apple-calendar-tools.ts
+
+- CalendarAction · type · L12-L18 — type CalendarAction = | "list_calendars" | "list_events" | "get_event" | "create_event" | "update_event" | "delete_event";
+- AppleCalendarActionInput · interface · L20-L33 — interface AppleCalendarActionInput
+- ParsedCalendar · type · L35-L39 — type ParsedCalendar = { calendar_id: string; name: string; writable: boolean; };
+- ParsedEvent · type · L41-L51 — type ParsedEvent = { event_id: string; calendar_id: string; calendar_name: string; summary?: string; description?: string; location?: string; start?: string; end?: string; all_day?: boolean; };
+- parseEpochSeconds · function · L56-L63 — function parseEpochSeconds(iso?: string): number | null
+- epochToIso · function · L65-L70 — function epochToIso(epochSeconds: string | number | undefined): string | undefined
+- parseBool · function · L72-L77 — function parseBool(value: string | undefined): boolean | undefined
+- splitRecords · function · L79-L83 — function splitRecords(output: string): string[]
+- splitFields · function · L85-L87 — function splitFields(record: string): string[]
+- AppleCalendarTools · class · L352-L617 — class AppleCalendarTools
+- constructor · method · L353-L357 — constructor( private workspace: Workspace, private daemon: AgentDaemon, private taskId: string, )
+- setWorkspace · method · L359-L361 — setWorkspace(workspace: Workspace): void
+- isAvailable · method · L363-L365 — static isAvailable(): boolean
+- requireApproval · method · L367-L377 — private async requireApproval(summary: string, details: Record<string, unknown>): Promise<void>
+- runAppleScript · method · L379-L395 — private async runAppleScript(argv: string[]): Promise<string>
+- formatPermissionHint · method · L397-L409 — private formatPermissionHint(message: string): string | null
+- parseCalendars · method · L411-L424 — private parseCalendars(output: string): ParsedCalendar[]
+- parseEvents · method · L426-L455 — private parseEvents(output: string): ParsedEvent[]
+- executeAction · method · L457-L616 — async executeAction(input: AppleCalendarActionInput): Promise<Any>

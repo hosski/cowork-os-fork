@@ -1,0 +1,15 @@
+# scripts/qa/backfill_timeline_completion_telemetry.cjs
+
+- parseArgs · function · L19-L33 — function parseArgs(argv)
+- printHelp · function · L35-L48 — function printHelp()
+- fail · function · L50-L53 — function fail(message)
+- sqliteExec · function · L55-L60 — function sqliteExec(dbPath, sql)
+- sqliteJson · function · L62-L69 — function sqliteJson(dbPath, sql)
+- sqlEscape · function · L71-L73 — function sqlEscape(value)
+- safeJsonParse · function · L75-L82 — function safeJsonParse(value, fallback)
+- coerceNumber · function · L84-L87 — function coerceNumber(value, fallback = 0)
+- compareEvents · function · L89-L99 — function compareEvents(a, b)
+- getLegacyType · function · L101-L112 — function getLegacyType(event)
+- isTaskCompletedTimelineEvent · function · L114-L117 — function isTaskCompletedTimelineEvent(event)
+- computeTelemetry · function · L119-L190 — function computeTelemetry(events)
+- main · function · L192-L324 — function main()

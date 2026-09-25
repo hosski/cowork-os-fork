@@ -1,0 +1,22 @@
+# src/renderer/components/BotsPane.tsx
+
+- BotRole · interface · L17-L30 — interface BotRole
+- BotsPaneProps · interface · L32-L45 — interface BotsPaneProps
+- isBotConversationTask · function · L58-L60 — function isBotConversationTask(task: Task): boolean
+- normalizeBotHandle · function · L62-L68 — function normalizeBotHandle(value: string): string
+- flattenTaskText · function · L70-L74 — function flattenTaskText(value: string | undefined): string
+- stripMarkdownForBotPreview · function · L76-L95 — function stripMarkdownForBotPreview(value: string | undefined): string
+- flattenBotPreviewText · function · L97-L99 — function flattenBotPreviewText(value: string | undefined): string
+- getBotLatestTask · function · L101-L103 — function getBotLatestTask(tasks: Task[], roleId: string): Task | undefined
+- getBotPreview · function · L105-L120 — function getBotPreview(task: Task | undefined): string
+- isDormantSeed · function · L110-L111 — isDormantSeed = (value: string)
+- getBotHandle · function · L122-L124 — function getBotHandle(bot: BotRole): string
+- getBotRelativeTime · function · L126-L140 — function getBotRelativeTime(timestamp?: number, now = Date.now()): string
+- filterBots · function · L142-L159 — function filterBots(roles: BotRole[], tasks: Task[], query: string): BotRole[]
+- getSafeBotIcon · function · L161-L166 — function getSafeBotIcon(icon: string | undefined)
+- getBotTimestamp · function · L168-L170 — function getBotTimestamp(bot: BotRole, task: Task | undefined): number
+- sortBots · function · L172-L184 — function sortBots(roles: BotRole[], tasks: Task[]): BotRole[]
+- BotRow · function · L186-L261 — function BotRow({ bot, latestTask, selected, onSelect, onOpenBot, onOpenAgents, onEditBot, }: { bot: BotRole; latestTask?: Task; selected: boolean; onSelect: () => void; onOpenBot?: () => void | Promise<void>; onOpenAgents?: () => void; onEditBot?: () => void; })
+- CreateBotDialog · function · L263-L412 — function CreateBotDialog({ onClose, onCreated, }: { onClose: () => void; onCreated: (bot: BotRole) => void | Promise<void>; })
+- handleSubmit · function · L278-L311 — handleSubmit = async (event: FormEvent<HTMLFormElement>)
+- BotsPane · function · L414-L566 — function BotsPane({ roles, tasks, selectedTaskId, isLoading = false, error = null, onRetry, onSelectTask, onOpenBot, onOpenAgents, onBotCreated, onBotUpdated, onBotDeleted, }: BotsPaneProps)

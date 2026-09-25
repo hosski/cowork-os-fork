@@ -1,0 +1,32 @@
+# src/electron/agent/llm/moa-provider.ts
+
+- ResolvedMoaSlot · interface · L12-L15 — interface ResolvedMoaSlot
+- MoaProviderOptions · interface · L17-L21 — interface MoaProviderOptions
+- ReferenceResult · interface · L23-L30 — interface ReferenceResult
+- ReferenceCacheEntry · interface · L32-L35 — interface ReferenceCacheEntry
+- MoaProvider · class · L37-L457 — class MoaProvider implements LLMProvider
+- constructor · method · L45-L49 — constructor(options: MoaProviderOptions)
+- createMessage · method · L51-L69 — async createMessage(request: LLMRequest): Promise<LLMResponse>
+- createMessageWithSlotFailover · method · L71-L95 — private async createMessageWithSlotFailover( slot: MoaModelSlot, request: LLMRequest, ): Promise<LLMResponse>
+- resolveSlotCandidates · method · L97-L106 — private resolveSlotCandidates(slot: MoaModelSlot): ResolvedMoaSlot[]
+- testConnectionWithSlotFailover · method · L108-L123 — private async testConnectionWithSlotFailover( slot: MoaModelSlot, ): Promise<{ success: boolean; error?: string }>
+- testConnection · method · L125-L136 — async testConnection(): Promise<{ success: boolean; error?: string }>
+- resolvePreset · method · L138-L147 — private resolvePreset(requestedPreset?: string): MoaPreset
+- validatePreset · method · L149-L167 — private validatePreset(preset: MoaPreset): void
+- getReferenceResults · method · L169-L191 — private async getReferenceResults( cacheKey: string, preset: MoaPreset, request: LLMRequest, ): Promise<ReferenceResult[]>
+- runReferenceModel · method · L193-L242 — private async runReferenceModel( preset: MoaPreset, request: LLMRequest, slot: MoaModelSlot, index: number, ): Promise<ReferenceResult>
+- buildReferencePrompt · method · L244-L266 — private buildReferencePrompt(preset: MoaPreset, request: LLMRequest, slot: MoaModelSlot): string
+- renderMessagesForReference · method · L268-L276 — private renderMessagesForReference(messages: LLMMessage[]): string
+- renderContent · method · L278-L299 — private renderContent(content: LLMMessage["content"]): string
+- buildAdvisoryContext · method · L301-L322 — private buildAdvisoryContext(preset: MoaPreset, referenceResults: ReferenceResult[]): string
+- withAdvisoryContext · method · L324-L340 — private withAdvisoryContext(messages: LLMMessage[], advisory: string): LLMMessage[]
+- responseToText · method · L342-L354 — private responseToText(response: LLMResponse): string
+- buildReferenceCacheKey · method · L356-L370 — private buildReferenceCacheKey(preset: MoaPreset, request: LLMRequest): string
+- getReferenceMaxTokens · method · L372-L379 — private getReferenceMaxTokens(preset: MoaPreset, slot: MoaModelSlot): number
+- mergeUsage · method · L381-L395 — private mergeUsage( ...usages: Array<LLMResponse["usage"] | undefined> ): LLMResponse["usage"] | undefined
+- runWithConcurrency · method · L397-L413 — private async runWithConcurrency<T, R>( items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>, ): Promise<R[]>
+- pruneReferenceCache · method · L415-L425 — private pruneReferenceCache(): void
+- truncate · method · L427-L432 — private truncate(value: string, maxChars: number): string
+- clampInteger · method · L434-L442 — private clampInteger( value: number | undefined, min: number, max: number, fallback: number, ): number
+- safeJson · method · L444-L450 — private safeJson(value: unknown): string
+- throwIfAborted · method · L452-L456 — private throwIfAborted(signal?: AbortSignal): void

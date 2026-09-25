@@ -1,0 +1,22 @@
+# src/cli/local-control-plane-discovery.ts
+
+- LocalControlPlaneDiscoveryResult · interface · L7-L12 — interface LocalControlPlaneDiscoveryResult
+- StoredControlPlaneSettings · interface · L14-L19 — interface StoredControlPlaneSettings
+- SecureSettingsRow · interface · L21-L24 — interface SecureSettingsRow
+- discoverLocalControlPlane · function · L28-L52 — function discoverLocalControlPlane(profileName?: string): LocalControlPlaneDiscoveryResult
+- readLocalConnectionDescriptor · function · L54-L75 — function readLocalConnectionDescriptor(userDataDir: string): LocalControlPlaneDiscoveryResult
+- discoverUserDataDirs · function · L77-L106 — function discoverUserDataDirs(profileName?: string): string[]
+- readLegacySettings · function · L108-L121 — function readLegacySettings(userDataDir: string): LocalControlPlaneDiscoveryResult
+- readDatabaseSettings · function · L123-L153 — function readDatabaseSettings(userDataDir: string): LocalControlPlaneDiscoveryResult
+- readDatabaseSettingsWithSqliteCli · function · L155-L183 — function readDatabaseSettingsWithSqliteCli( dbPath: string, userDataDir: string, ): LocalControlPlaneDiscoveryResult
+- normalizeSettings · function · L185-L203 — function normalizeSettings( settings: StoredControlPlaneSettings, source: string, ): LocalControlPlaneDiscoveryResult
+- decryptSecureSettings · function · L205-L248 — function decryptSecureSettings(row: SecureSettingsRow, userDataDir: string): string
+- verifyChecksum · function · L255-L260 — function verifyChecksum(ciphertext: string, expected: string, plaintext: string): void
+- sha256 · function · L256-L256 — sha256 = (value: string)
+- readMachineIdentifierStrict · function · L266-L271 — function readMachineIdentifierStrict(userDataDir: string): string
+- deriveAppKey · function · L273-L277 — function deriveAppKey(userDataDir: string): Buffer
+- readMachineIdentifier · function · L279-L290 — function readMachineIdentifier(userDataDir: string): string
+- getPlatformElectronUserDataRoot · function · L292-L302 — function getPlatformElectronUserDataRoot(): string | undefined
+- isProcessRunning · function · L304-L311 — function isProcessRunning(pid: number): boolean
+- normalizeProfileId · function · L313-L320 — function normalizeProfileId(input: string): string
+- Any · type · L322-L322 — type Any = Record<string, any>;

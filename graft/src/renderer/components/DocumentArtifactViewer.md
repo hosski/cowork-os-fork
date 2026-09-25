@@ -1,0 +1,28 @@
+# src/renderer/components/DocumentArtifactViewer.tsx
+
+- DocumentArtifactViewerMode · type · L46-L46 — type DocumentArtifactViewerMode = "sidebar" | "fullscreen";
+- DocumentSettingsTab · type · L47-L47 — type DocumentSettingsTab = Any;
+- PendingDocumentAttachment · type · L48-L54 — type PendingDocumentAttachment = { id: string; path: string; name: string; size: number; mimeType?: string; };
+- DocumentArtifactViewerProps · type · L56-L79 — type DocumentArtifactViewerProps = { filePath: string; workspacePath: string; mode: DocumentArtifactViewerMode; onClose: () => void; onFullscreen: () => void; onExitFullscreen: () => void; onSendMessage?: (message: string, images?: ImageAttachment[]) => Promise<void>; selectedModelLabel?: string; selectedModel?: string; selectedProvider?: LLMProviderType; selectedReasoningEffort?: LLMReasoningEffort; availableModels?: LLMModelInfo[]; availableProviders?: LLMProviderInfo[]; workspaceId?: string; onModelChange?: (selection: { providerType?: LLMProviderType; modelKey: string; reasoningEffort?: LLMReasoningEffort; }) => void; onOpenSettings?: (tab?: DocumentSettingsTab) => void; turnContext?: SpreadsheetTurnContext | null; refreshKey?: string | number | null; };
+- ViewerData · type · L81-L81 — type ViewerData = NonNullable<FileViewerResult["data"]>;
+- getFileName · function · L83-L85 — function getFileName(filePath: string): string
+- getDocumentViewerIconLabel · function · L87-L93 — function getDocumentViewerIconLabel(filePath: string, fileType?: ViewerData["fileType"]): string
+- formatAttachmentSize · function · L95-L101 — function formatAttachmentSize(size: number): string
+- isImageAttachment · function · L103-L105 — function isImageAttachment(attachment: PendingDocumentAttachment): boolean
+- buildFallbackPreview · function · L107-L127 — function buildFallbackPreview(data: ViewerData): DocumentPreview
+- textToHtml · function · L129-L141 — function textToHtml(text: string): string
+- escapeHtml · function · L143-L149 — function escapeHtml(text: string): string
+- blockText · function · L151-L153 — function blockText(block: EditableDocumentBlock): string
+- renderEditableDocumentHtml · function · L155-L178 — function renderEditableDocumentHtml(blocks: EditableDocumentBlock[] | undefined): string
+- extractRunsFromNode · function · L180-L198 — function extractRunsFromNode( node: Node, inherited: Omit<EditableDocumentRun, "text"> = {}, ): EditableDocumentRun[]
+- collapseRuns · function · L200-L217 — function collapseRuns(runs: EditableDocumentRun[]): EditableDocumentRun[]
+- blockFromElement · function · L219-L278 — function blockFromElement(element: HTMLElement): EditableDocumentBlock[]
+- extractEditableDocumentBlocks · function · L280-L289 — function extractEditableDocumentBlocks(root: HTMLElement): EditableDocumentBlock[]
+- DocumentArtifactViewer · function · L291-L942 — function DocumentArtifactViewer({ filePath, workspacePath, mode, onClose, onFullscreen, onExitFullscreen, onSendMessage, selectedModelLabel, selectedModel, selectedProvider, selectedReasoningEffort, availableModels = [], availableProviders = [], workspaceId, onModelChange, onOpenSettings, turnContext, refreshKey, }: DocumentArtifactViewerProps)
+- handleCopyText · function · L415-L424 — handleCopyText = async ()
+- handleOpenExternal · function · L426-L428 — handleOpenExternal = ()
+- handleShowInFinder · function · L430-L432 — handleShowInFinder = ()
+- runEditorCommand · function · L434-L438 — runEditorCommand = (command: string, value?: string)
+- handleSaveDocument · function · L440-L464 — handleSaveDocument = async ()
+- handleFullscreenSend · function · L520-L540 — handleFullscreenSend = async ()
+- renderDocumentBody · function · L542-L590 — renderDocumentBody = ()

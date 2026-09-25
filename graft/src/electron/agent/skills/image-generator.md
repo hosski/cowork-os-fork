@@ -1,0 +1,78 @@
+# src/electron/agent/skills/image-generator.ts
+
+- ImageProvider · type · L21-L21 — type ImageProvider = "gemini" | "openai" | "openai-codex" | "azure" | "openrouter";
+- ImageModel · type · L31-L38 — type ImageModel = | "gpt-image-1" | "gpt-image-1.5" | "gpt-image-2" | "dall-e-3" | "dall-e-2" // Allow future models without code changes | (string & {});
+- ImageSize · type · L43-L43 — type ImageSize = "1K" | "2K";
+- OpenAIImageSize · type · L44-L44 — type OpenAIImageSize = "auto" | "1024x1024" | "1024x1536" | "1536x1024";
+- OpenRouterImageParameter · type · L46-L51 — type OpenRouterImageParameter = { type?: "enum" | "range" | "boolean"; values?: unknown[]; min?: number; max?: number; };
+- OpenRouterImageModelCapabilities · type · L53-L53 — type OpenRouterImageModelCapabilities = Record<string, OpenRouterImageParameter>;
+- OpenRouterImageEndpoint · type · L55-L58 — type OpenRouterImageEndpoint = { providerTag?: string | null; supportedParameters: OpenRouterImageModelCapabilities; };
+- OpenRouterImageCapabilities · type · L60-L63 — type OpenRouterImageCapabilities = { modelParameters: OpenRouterImageModelCapabilities; endpoints: OpenRouterImageEndpoint[]; };
+- ImageGenerationRequest · interface · L72-L107 — interface ImageGenerationRequest
+- ImageGenerationResult · interface · L112-L125 — interface ImageGenerationResult
+- throwIfImageGenerationAborted · function · L127-L131 — function throwIfImageGenerationAborted(signal?: AbortSignal): void
+- formatImageGenerationError · function · L137-L149 — function formatImageGenerationError(error: unknown): string
+- isTransientImageProviderError · function · L151-L173 — function isTransientImageProviderError(error: string | undefined): boolean
+- imageProviderTimeoutKey · function · L175-L179 — function imageProviderTimeoutKey( provider: ImageProvider, ): "openai" | "openaiCodex" | "azure" | "openrouter" | "gemini"
+- normalizeImageProviderTimeoutSeconds · function · L181-L188 — function normalizeImageProviderTimeoutSeconds(value: unknown): number | undefined
+- getImageProviderTimeoutMs · function · L190-L199 — function getImageProviderTimeoutMs( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, provider: ImageProvider, ): number
+- runWithImageProviderTimeout · function · L201-L226 — async function runWithImageProviderTimeout<T>( parentSignal: AbortSignal | undefined, timeoutMs: number, run: (signal: AbortSignal) => Promise<T>, ): Promise<{ result: T; timedOut: boolean }>
+- onParentAbort · function · L208-L208 — onParentAbort = ()
+- getDefaultOpenAICodexImageModel · function · L256-L258 — function getDefaultOpenAICodexImageModel(): ImageModel
+- resolveOpenAICodexImageModelOverride · function · L260-L267 — function resolveOpenAICodexImageModelOverride(modelOverride?: string): string | null
+- buildSetupHint · function · L269-L280 — function buildSetupHint(provider: ImageProvider): { type: string; label: string; target: string }
+- isOpenAIImageModel · function · L282-L292 — function isOpenAIImageModel(model?: string): boolean
+- resolveOpenAIModelOverride · function · L294-L298 — function resolveOpenAIModelOverride(modelOverride?: string): string | null
+- normalizeOpenAIImageModel · function · L300-L311 — function normalizeOpenAIImageModel(model?: string): string | undefined
+- inferOpenAIImageModelFromText · function · L313-L323 — function inferOpenAIImageModelFromText(text: string): string | null
+- normalizeOpenRouterImageModel · function · L325-L334 — function normalizeOpenRouterImageModel(model?: string): string | undefined
+- getSafeImageBaseFilename · function · L336-L345 — function getSafeImageBaseFilename(filename?: string): string
+- decodeBase64Image · function · L347-L360 — function decodeBase64Image( value: string, mimeType: string, ): { buffer: Buffer; mimeType: string } | null
+- parseImageDataUrl · function · L362-L369 — function parseImageDataUrl( dataUrl: string, maxBytes = MAX_OPENROUTER_OUTPUT_BYTES, ): { buffer: Buffer; mimeType: string } | null
+- prepareOpenRouterReferenceImages · function · L371-L447 — async function prepareOpenRouterReferenceImages( workspace: Workspace, references: string[] | undefined, approvalHandlers: WorkspaceFilesystemApprovalHandlers = {}, ): Promise<string[]>
+- getOpenRouterImageModelCapabilities · function · L449-L538 — async function getOpenRouterImageModelCapabilities(args: { apiKey: string; baseUrl: string; model: string; signal?: AbortSignal; networkPolicyGuard?: (url: string) => void; }): Promise<OpenRouterImageCapabilities | undefined>
+- supportsOpenRouterImageParameter · function · L540-L547 — function supportsOpenRouterImageParameter( capabilities: OpenRouterImageCapabilities | undefined, name: string, ): boolean
+- getOpenRouterParameter · function · L549-L554 — function getOpenRouterParameter( capabilities: OpenRouterImageCapabilities | undefined, name: string, ): OpenRouterImageParameter | undefined
+- selectOpenRouterImageEndpoint · function · L556-L597 — function selectOpenRouterImageEndpoint( capabilities: OpenRouterImageCapabilities | undefined, requested: { count: number; referenceCount: number; resolution?: ImageSize; aspectRatio?: string; quality?: string; background?: string; outputFormat?: string; outputCompression?: number; seed?: number; }, ): OpenRouterImageEndpoint | undefined
+- selectOpenRouterResolution · function · L599-L610 — function selectOpenRouterResolution( capabilities: OpenRouterImageCapabilities | undefined, requested: ImageSize, ): string | undefined
+- clampOpenRouterImageCount · function · L612-L621 — function clampOpenRouterImageCount( capabilities: OpenRouterImageCapabilities | undefined, requested: number, ): number | undefined
+- uniqStrings · function · L623-L631 — function uniqStrings(values: Array<string | undefined | null>): string[]
+- looksLikeImageDeployment · function · L633-L636 — function looksLikeImageDeployment(name: string): boolean
+- looksLikeKnownImageModelId · function · L638-L641 — function looksLikeKnownImageModelId(name: string): boolean
+- normalizeAzureImageBaseEndpoint · function · L648-L653 — function normalizeAzureImageBaseEndpoint(endpoint: string): string
+- getAzureConfiguredDeployments · function · L655-L663 — function getAzureConfiguredDeployments( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): string[]
+- getAzureImageDeployments · function · L665-L673 — function getAzureImageDeployments( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): string[]
+- selectAzureImageDeployments · function · L675-L720 — function selectAzureImageDeployments(args: { settings: ReturnType<typeof LLMProviderFactory.loadSettings>; modelOverride?: string; prompt: string; allowFallback?: boolean; }): string[]
+- inferImageProviderFromText · function · L722-L737 — function inferImageProviderFromText(text: string): ImageProvider | null
+- hasOpenAIOAuthTokens · function · L739-L746 — function hasOpenAIOAuthTokens( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): boolean
+- getConfiguredImageProviders · function · L748-L777 — function getConfiguredImageProviders( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): ImageProvider[]
+- sortProvidersByDefaultPreference · function · L779-L788 — function sortProvidersByDefaultPreference(providers: ImageProvider[]): ImageProvider[]
+- ImageModelPreset · type · L790-L790 — type ImageModelPreset = "gpt-image-2" | "gpt-image-1.5" | "nano-banana-2" | (string & {});
+- getCompatibleImageModelPreset · function · L792-L804 — function getCompatibleImageModelPreset( provider: ImageProvider, preset?: ImageModelPreset, ): ImageModelPreset | undefined
+- pushConfiguredImageRoute · function · L806-L818 — function pushConfiguredImageRoute( order: Array<{ provider: ImageProvider; modelPreset?: ImageModelPreset }>, configured: ImageProvider[], provider: ImageProvider | undefined, modelPreset?: ImageModelPreset, ): void
+- buildProviderOrderFromImageSettings · function · L821-L859 — function buildProviderOrderFromImageSettings( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): Array<{ provider: ImageProvider; modelPreset?: ImageModelPreset }>
+- shouldPreferOpenAICodexFromActiveProvider · function · L861-L869 — function shouldPreferOpenAICodexFromActiveProvider( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): boolean
+- buildOpenAICodexPreferredOrder · function · L871-L885 — function buildOpenAICodexPreferredOrder( configured: ImageProvider[], ): Array<{ provider: ImageProvider; modelPreset?: ImageModelPreset }>
+- selectImageProviderOrder · function · L887-L962 — function selectImageProviderOrder(args: { settings: ReturnType<typeof LLMProviderFactory.loadSettings>; providerOverride?: ImageProvider | "auto"; modelOverride?: string; prompt: string; preferOpenRouter?: boolean; }): Array<{ provider: ImageProvider; modelPreset?: ImageModelPreset }>
+- extractChatGPTAccountId · function · L964-L975 — function extractChatGPTAccountId(token: string): string
+- persistUpdatedOpenAITokens · function · L977-L988 — function persistUpdatedOpenAITokens(tokens: OpenAIOAuthTokens): void
+- OpenAICodexCredentials · interface · L990-L993 — interface OpenAICodexCredentials
+- resolveOpenAICodexCredentials · function · L995-L1033 — async function resolveOpenAICodexCredentials( settings: ReturnType<typeof LLMProviderFactory.loadSettings>, ): Promise<OpenAICodexCredentials>
+- resolveOpenAICodexHostModel · function · L1035-L1046 — async function resolveOpenAICodexHostModel(): Promise<string>
+- ImageGenerator · class · L1051-L2464 — class ImageGenerator
+- constructor · method · L1052-L1055 — constructor( private workspace: Workspace, private filesystemApprovalHandlers: WorkspaceFilesystemApprovalHandlers = {}, )
+- assertNetworkAccess · method · L1062-L1073 — private assertNetworkAccess(url: string, toolName = "generate_image"): void
+- assertOutputPathAllowed · method · L1075-L1088 — private assertOutputPathAllowed(outputPath: string): void
+- generate · method · L1090-L1601 — async generate(request: ImageGenerationRequest): Promise<ImageGenerationResult>
+- considerError · function · L1170-L1181 — considerError = (provider: ImageProvider, error: string, model?: string)
+- emitProviderFallback · function · L1182-L1200 — emitProviderFallback = ( provider: ImageProvider, model: string, timeoutMs: number, nextEntry?: { provider: ImageProvider; modelPreset?: ImageModelPreset }, timedOut = true, )
+- isAvailable · method · L1603-L1606 — static isAvailable(): boolean
+- getAvailableModels · method · L1608-L1646 — static getAvailableModels(): Array<{ id: ImageModel; name: string; description: string; modelId: string; }>
+- mapOpenAIImageSize · method · L1648-L1653 — private mapOpenAIImageSize(size: ImageSize): OpenAIImageSize
+- generateWithGemini · method · L1655-L1779 — private async generateWithGemini(args: { apiKey: string; modelId: string; prompt: string; filename?: string; imageSize: ImageSize; numberOfImages: number; signal?: AbortSignal; }): Promise<ImageGenerationResult>
+- generateWithOpenAI · method · L1781-L1903 — private async generateWithOpenAI(args: { apiKey: string; model: string; prompt: string; filename?: string; imageSize: ImageSize; numberOfImages: number; signal?: AbortSignal; }): Promise<ImageGenerationResult>
+- generateWithOpenAICodex · method · L1905-L2047 — private async generateWithOpenAICodex(args: { apiKey: string; accessToken: string; model: string; prompt: string; filename?: string; imageSize: ImageSize; numberOfImages: number; signal?: AbortSignal; }): Promise<ImageGenerationResult>
+- cleanupWrittenImages · function · L1919-L1923 — cleanupWrittenImages = async ()
+- generateWithAzureOpenAI · method · L2049-L2185 — private async generateWithAzureOpenAI(args: { apiKey: string; endpoint: string; apiVersion: string; deployment: string; prompt: string; filename?: string; imageSize: ImageSize; numberOfImages: number; signal?: AbortSignal; }): Promise<ImageGenerationResult>
+- generateWithOpenRouter · method · L2187-L2463 — private async generateWithOpenRouter(args: { apiKey: string; baseUrl: string; model: string; prompt: string; filename?: string; imageSize: ImageSize; numberOfImages: number; aspectRatio?: string; quality?: "auto" | "low" | "medium" | "high"; background?: "auto" | "transparent" | "opaque"; outputFormat?: "png" | "jpeg" | "webp" | "svg"; outputCompression?: number; seed?: number; referenceImages?: string[]; signal?: AbortSignal; }): Promise<ImageGenerationResult>
+- validateOption · function · L2262-L2280 — validateOption = (name: string, value: unknown): string | null

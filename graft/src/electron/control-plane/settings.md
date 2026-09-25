@@ -1,0 +1,21 @@
+# src/electron/control-plane/settings.ts
+
+- ControlPlaneSettings · interface · L32-L70 — interface ControlPlaneSettings
+- inferTransport · function · L110-L122 — function inferTransport(config: RemoteGatewayConfig): ManagedDeviceTransport
+- toManagedDevice · function · L124-L157 — function toManagedDevice(device: SavedRemoteGatewayDevice): ManagedDevice
+- generateControlPlaneToken · function · L162-L164 — function generateControlPlaneToken(bytes = 32): string
+- decryptSecret · function · L169-L190 — function decryptSecret(value?: string): string | undefined
+- ControlPlaneSettingsManager · class · L195-L503 — class ControlPlaneSettingsManager
+- initialize · method · L204-L215 — static initialize(): void
+- migrateFromLegacyFile · method · L220-L288 — private static migrateFromLegacyFile(): void
+- ensureInitialized · method · L293-L297 — private static ensureInitialized(): void
+- loadSettings · method · L302-L372 — static loadSettings(): ControlPlaneSettings
+- saveSettings · method · L377-L393 — static saveSettings(settings: ControlPlaneSettings): void
+- updateSettings · method · L398-L431 — static updateSettings(updates: Partial<ControlPlaneSettings>): ControlPlaneSettings
+- enable · method · L436-L447 — static enable(): ControlPlaneSettings
+- disable · method · L452-L457 — static disable(): ControlPlaneSettings
+- regenerateToken · method · L462-L468 — static regenerateToken(): string
+- loadSettingsWithSecrets · method · L478-L480 — static loadSettingsWithSecrets(): ControlPlaneSettings
+- isConfigured · method · L485-L488 — static isConfigured(): boolean
+- clearCache · method · L493-L495 — static clearCache(): void
+- getDefaults · method · L500-L502 — static getDefaults(): ControlPlaneSettings

@@ -1,0 +1,33 @@
+# src/electron/memory/RelationshipMemoryService.ts
+
+- RelationshipLayer · type · L9-L9 — type RelationshipLayer = "identity" | "preferences" | "context" | "history" | "commitments";
+- RelationshipSource · type · L10-L10 — type RelationshipSource = "conversation" | "feedback" | "task";
+- TaskSource · type · L11-L11 — type TaskSource = NonNullable<Task["source"]>;
+- RelationshipMemoryItem · interface · L13-L26 — interface RelationshipMemoryItem
+- RelationshipMemoryProfile · interface · L28-L31 — interface RelationshipMemoryProfile
+- BuildPromptContextOptions · interface · L42-L48 — interface BuildPromptContextOptions
+- clamp · function · L50-L52 — function clamp(value: number, min: number, max: number): number
+- RelationshipMemoryService · class · L54-L732 — class RelationshipMemoryService
+- listItems · method · L57-L72 — static listItems( params: { layer?: RelationshipLayer; includeDone?: boolean; limit?: number; contactIdentityId?: string; companyId?: string; } = {}, ): RelationshipMemoryItem[]
+- updateItem · method · L74-L118 — static updateItem( id: string, patch: { text?: string; confidence?: number; status?: "open" | "done"; dueAt?: number | null; contactIdentityId?: string | null; companyId?: string | null; }, ): RelationshipMemoryItem | null
+- deleteItem · method · L120-L127 — static deleteItem(id: string): boolean
+- listOpenCommitments · method · L129-L140 — static listOpenCommitments( limit = 20, scope?: { contactIdentityId?: string; companyId?: string }, ): RelationshipMemoryItem[]
+- listDueSoonCommitments · method · L142-L151 — static listDueSoonCommitments( windowHours = 72, nowMs = Date.now(), scope?: { contactIdentityId?: string; companyId?: string }, ): RelationshipMemoryItem[]
+- ingestUserMessage · method · L153-L220 — static ingestUserMessage(message: string, taskId?: string): void
+- ingestUserFeedback · method · L222-L246 — static ingestUserFeedback(decision?: string, reason?: string, taskId?: string): void
+- recordTaskCompletion · method · L248-L285 — static recordTaskCompletion( title: string, resultSummary?: string, taskId?: string, taskSource: TaskSource = "manual", ): void
+- rememberMailboxInsights · method · L287-L326 — static rememberMailboxInsights(params: { facts?: string[]; commitments?: Array<{ text: string; dueAt?: number }>; taskId?: string; contactIdentityId?: string; companyId?: string; }): void
+- cleanupRecurringTaskHistory · method · L328-L374 — static cleanupRecurringTaskHistory(): { collapsed: number; groupsCollapsed: number; }
+- buildPromptContext · method · L376-L427 — static buildPromptContext(options: BuildPromptContextOptions = {}): string
+- appendLayer · function · L390-L401 — appendLayer = (label: string, layer: RelationshipLayer, openOnly = false)
+- upsert · method · L429-L477 — private static upsert( input: Omit<RelationshipMemoryItem, "id" | "createdAt" | "updatedAt">, ): void
+- markMatchingCommitmentsDone · method · L479-L498 — private static markMatchingCommitmentsDone(summary: string): void
+- sort · method · L500-L513 — private static sort(items: RelationshipMemoryItem[]): RelationshipMemoryItem[]
+- parseDueAt · method · L515-L537 — private static parseDueAt(text: string, nowMs: number): number | undefined
+- normalizeText · method · L539-L544 — private static normalizeText(value: string): string
+- normalizeForMatch · method · L546-L548 — private static normalizeForMatch(value: string): string
+- extractCompletedTaskTitle · method · L550-L556 — private static extractCompletedTaskTitle(text: string): string | null
+- upsertRecurringTaskHistory · method · L558-L612 — private static upsertRecurringTaskHistory(params: { title: string; text: string; taskId?: string; }): void
+- load · method · L614-L691 — private static load(): RelationshipMemoryProfile
+- save · method · L693-L707 — private static save(profile: RelationshipMemoryProfile): void
+- filterByScope · method · L709-L731 — private static filterByScope( items: RelationshipMemoryItem[], contactIdentityId?: string, companyId?: string, ): RelationshipMemoryItem[]

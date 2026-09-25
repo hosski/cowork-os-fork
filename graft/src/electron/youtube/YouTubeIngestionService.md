@@ -1,0 +1,21 @@
+# src/electron/youtube/YouTubeIngestionService.ts
+
+- Json3Event · type · L17-L21 — type Json3Event = { tStartMs?: number; dDurationMs?: number; segs?: Array<{ utf8?: string }>; };
+- formatError · function · L23-L26 — function formatError(error: unknown): string
+- normalizeText · function · L28-L30 — function normalizeText(text: string): string
+- parseDurationSeconds · function · L32-L35 — function parseDurationSeconds(value: unknown): number | undefined
+- parseChapters · function · L37-L54 — function parseChapters(raw: unknown): YouTubeChapter[] | undefined
+- coalesceSegments · function · L56-L88 — function coalesceSegments( segments: YouTubeTranscriptSegment[], targetWindowMs = 35_000, ): YouTubeTranscriptSegment[]
+- parseJson3Transcript · function · L90-L118 — function parseJson3Transcript( videoId: string, raw: string, source: YouTubeTranscriptSegment["source"], language?: string, ): YouTubeTranscriptSegment[]
+- parseTranscriptApiJson · function · L120-L147 — function parseTranscriptApiJson( videoId: string, raw: string, language?: string, ): YouTubeTranscriptSegment[]
+- YouTubeIngestionService · class · L149-L353 — class YouTubeIngestionService
+- constructor · method · L152-L156 — constructor( private readonly workspaceId: string, private readonly workspacePath: string, private readonly options: YouTubeIngestionOptions = {}, )
+- cacheDir · method · L158-L160 — private cacheDir(videoId: string): string
+- assertCacheAccess · method · L162-L164 — private assertCacheAccess(requestedPath: string, operation: "read" | "write"): string
+- runYtDlp · method · L166-L175 — private async runYtDlp(args: string[]): Promise<{ stdout: string; stderr: string }>
+- fetchMetadata · method · L177-L201 — async fetchMetadata(input: string): Promise<YouTubeVideoMetadata>
+- readFirstJson3Transcript · method · L203-L216 — private async readFirstJson3Transcript( videoId: string, source: YouTubeTranscriptSegment["source"], language: string, directory = this.cacheDir(videoId), ): Promise<YouTubeTranscriptSegment[]>
+- fetchTranscriptWithYtDlp · method · L218-L245 — private async fetchTranscriptWithYtDlp( videoId: string, language: string, auto: boolean, ): Promise<YouTubeTranscriptSegment[]>
+- fetchTranscriptWithPython · method · L247-L263 — private async fetchTranscriptWithPython( videoId: string, language: string, ): Promise<YouTubeTranscriptSegment[]>
+- ingest · method · L265-L293 — async ingest(input: { url: string; language?: string; force?: boolean; }): Promise<YouTubeIngestResult>
+- ingestUnlocked · method · L295-L352 — private async ingestUnlocked( input: { url: string; language?: string; force?: boolean; }, videoId: string, ): Promise<YouTubeIngestResult>

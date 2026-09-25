@@ -1,0 +1,28 @@
+# src/electron/database/WorkSessionActivityLeaseRepository.ts
+
+- DbRow · type · L9-L9 — type DbRow = Record<string, unknown>;
+- requiredId · function · L23-L27 — function requiredId(value: unknown, label: string): string
+- operationKey · function · L29-L33 — function operationKey(value: unknown): string
+- normalizeKind · function · L35-L39 — function normalizeKind(value: unknown): WorkSessionActivityLeaseKind
+- clampTtl · function · L41-L45 — function clampTtl(value: unknown): number
+- hashToken · function · L47-L49 — function hashToken(token: string): string
+- WorkSessionActivityLeaseAcquireInput · interface · L51-L57 — interface WorkSessionActivityLeaseAcquireInput
+- WorkSessionActivityLeaseError · class · L59-L67 — class WorkSessionActivityLeaseError extends Error
+- constructor · method · L60-L66 — constructor( message: string, readonly code = "WORK_SESSION_ACTIVITY_LEASE_ERROR", )
+- WorkSessionActivityLeaseRepository · class · L70-L399 — class WorkSessionActivityLeaseRepository
+- constructor · method · L75-L80 — constructor( private readonly db: Database.Database, options?: { now?: () => number }, )
+- acquire · method · L82-L128 — acquire(input: WorkSessionActivityLeaseAcquireInput): WorkSessionActivityLease
+- startSweeper · method · L135-L148 — startSweeper(intervalMs = 5_000): void
+- stopSweeper · method · L150-L154 — stopSweeper(): void
+- getSessionStatus · method · L157-L163 — getSessionStatus(sessionId: string): string | undefined
+- reclaim · method · L171-L198 — reclaim(input: WorkSessionActivityLeaseAcquireInput): WorkSessionActivityLease
+- renew · method · L200-L225 — renew(id: string, token: string, ttlMs?: number): WorkSessionActivityLease
+- release · method · L227-L252 — release( id: string, token: string, status: Extract<WorkSessionActivityLeaseStatus, "released" | "expired"> = "released", ): WorkSessionActivityLease
+- releaseByOperationKey · method · L255-L279 — releaseByOperationKey( sessionId: string, key: string, status: Extract<WorkSessionActivityLeaseStatus, "released" | "expired"> = "released", ): WorkSessionActivityLease | undefined
+- releaseSession · method · L282-L300 — releaseSession(sessionId: string): number
+- releaseKinds · method · L303-L324 — releaseKinds(sessionId: string, kinds: WorkSessionActivityLeaseKind[]): number
+- expireStale · method · L326-L344 — expireStale(now = this.now()): number
+- listActive · method · L346-L366 — listActive(sessionId?: string): WorkSessionActivityLease[]
+- findRow · method · L368-L375 — private findRow(sessionId: string, key: string): DbRow | undefined
+- findById · method · L377-L381 — private findById(id: string): DbRow | undefined
+- map · method · L383-L398 — private map(row: DbRow): WorkSessionActivityLease

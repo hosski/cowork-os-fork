@@ -1,0 +1,22 @@
+# src/electron/mcp/client/transports/StdioTransport.ts
+
+- PendingRequest · interface · L20-L24 — interface PendingRequest
+- redactStderr · function · L49-L55 — function redactStderr(text: string): string
+- NormalizedStdioSpawnCommand · interface · L57-L61 — interface NormalizedStdioSpawnCommand
+- splitStdioCommandLine · function · L67-L103 — function splitStdioCommandLine(input: string): string[]
+- shouldSplitInlineCommand · function · L105-L120 — function shouldSplitInlineCommand(command: string, args: string[]): boolean
+- shouldUseWindowsShell · function · L122-L135 — function shouldUseWindowsShell(command: string, platform: NodeJS.Platform): boolean
+- normalizeStdioSpawnCommand · function · L137-L159 — function normalizeStdioSpawnCommand( command: string, args: string[] = [], platform: NodeJS.Platform = process.platform, ): NormalizedStdioSpawnCommand
+- StdioTransport · class · L161-L536 — class StdioTransport extends EventEmitter implements MCPTransport
+- constructor · method · L174-L177 — constructor(config: MCPServerConfig)
+- connect · method · L182-L329 — async connect(): Promise<void>
+- disconnect · method · L334-L382 — async disconnect(): Promise<void>
+- sendRequest · method · L387-L419 — async sendRequest(method: string, params?: Record<string, Any>): Promise<Any>
+- send · method · L424-L437 — async send(message: JSONRPCRequest | JSONRPCNotification): Promise<void>
+- onMessage · method · L442-L444 — onMessage(handler: (message: JSONRPCResponse | JSONRPCNotification) => void): void
+- onClose · method · L449-L451 — onClose(handler: (error?: Error) => void): void
+- onError · method · L456-L458 — onError(handler: (error: Error) => void): void
+- isConnected · method · L463-L465 — isConnected(): boolean
+- handleData · method · L470-L488 — private handleData(data: Buffer): void
+- handleMessage · method · L493-L512 — private handleMessage(message: Any): void
+- cleanup · method · L517-L535 — private cleanup(): void

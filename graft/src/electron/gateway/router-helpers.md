@@ -1,0 +1,21 @@
+# src/electron/gateway/router-helpers.ts
+
+- getCoworkVersion · function · L13-L40 — function getCoworkVersion(): string
+- RouterConfig · interface · L44-L53 — interface RouterConfig
+- sanitizeTempKey · function · L73-L77 — function sanitizeTempKey(value: string): string
+- slugify · function · L79-L86 — function slugify(value: string): string
+- sanitizePathSegment · function · L88-L96 — function sanitizePathSegment(raw: string, maxLen = 80): string
+- sanitizeFilename · function · L98-L105 — function sanitizeFilename(raw: string, maxLen = 120): string
+- guessExtFromMime · function · L107-L123 — function guessExtFromMime(mimeType?: string): string
+- toPosixRelPath · function · L125-L128 — function toPosixRelPath(workspacePath: string, absPath: string): string
+- transcribeAudioAttachments · function · L136-L270 — async function transcribeAudioAttachments( message: IncomingMessage, _workspacePath?: string, ): Promise<void>
+- extractVoiceTranscriptFromMessageText · function · L272-L280 — function extractVoiceTranscriptFromMessageText(text: string): string | null
+- formatLocalTimestamp · function · L284-L291 — function formatLocalTimestamp(now: Date): string
+- parseTimeOfDay · function · L293-L322 — function parseTimeOfDay(input: string): { hour: number; minute: number } | null
+- parseWeekday · function · L324-L347 — function parseWeekday(input: string): number | null
+- buildBriefPrompt · function · L351-L408 — function buildBriefPrompt( mode: "morning" | "today" | "tomorrow" | "week", opts?: { templateForCron?: boolean }, ): string
+- formatLocalYmd · function · L358-L359 — formatLocalYmd = (d: Date): string
+- buildInboxPrompt · function · L410-L454 — function buildInboxPrompt(opts?: { mode?: "triage" | "autopilot" | "followups"; maxMessages?: number; }): string
+- updatePrioritiesMarkdown · function · L458-L571 — function updatePrioritiesMarkdown( markdown: string, extracted: { priorities?: string[]; decisions?: string[]; actionItems?: string[]; contextShifts?: string[]; }, timestamp: string, ): string
+- sanitize · function · L469-L473 — sanitize = (s: string)
+- clean · function · L474-L479 — clean = (s: string)

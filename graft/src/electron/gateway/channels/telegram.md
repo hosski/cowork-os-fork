@@ -1,0 +1,79 @@
+# src/electron/gateway/channels/telegram.ts
+
+- buildTelegramBotCommands · function · L52-L60 — function buildTelegramBotCommands(): Array<{ command: string; description: string; }>
+- BackoffConfig · interface · L65-L76 — interface BackoffConfig
+- WebhookServerConfig · interface · L81-L92 — interface WebhookServerConfig
+- TelegramAdapterConfig · interface · L97-L112 — interface TelegramAdapterConfig extends TelegramConfig
+- TextFragment · interface · L117-L127 — interface TextFragment
+- DraftState · interface · L132-L137 — interface DraftState
+- TelegramAdapter · class · L139-L2022 — class TelegramAdapter implements ChannelAdapter
+- constructor · method · L182-L191 — constructor(config: TelegramAdapterConfig)
+- status · method · L193-L195 — get status(): ChannelStatus
+- botUsername · method · L197-L199 — get botUsername(): string | undefined
+- connect · method · L204-L281 — async connect(): Promise<void>
+- registerBotCommands · method · L303-L307 — private async registerBotCommands(): Promise<void>
+- startPolling · method · L312-L324 — private async startPolling(): Promise<void>
+- handleBotError · method · L329-L356 — private async handleBotError(err: unknown): Promise<void>
+- isConnectionConflictError · method · L361-L375 — private isConnectionConflictError(err: unknown): boolean
+- isNetworkError · method · L380-L395 — private isNetworkError(err: unknown): boolean
+- attemptReconnection · method · L400-L449 — private async attemptReconnection(): Promise<void>
+- calculateBackoffDelay · method · L454-L468 — private calculateBackoffDelay(config: Required<BackoffConfig>): number
+- resetBackoff · method · L473-L480 — private resetBackoff(): void
+- handleTextMessage · method · L485-L539 — private async handleTextMessage(ctx: Context): Promise<void>
+- shouldProcessUpdate · method · L541-L549 — private shouldProcessUpdate(updateId: number): boolean
+- handleNonTextMessage · method · L551-L572 — private async handleNonTextMessage(ctx: Context): Promise<void>
+- shouldRouteContext · method · L574-L619 — private shouldRouteContext(ctx: Context): boolean
+- mightBeSplitMessage · method · L624-L639 — private mightBeSplitMessage(text: string): boolean
+- processFragments · method · L644-L670 — private async processFragments(fragmentKey: string): Promise<void>
+- processMessage · method · L675-L688 — private async processMessage(ctx: Context): Promise<void>
+- sendAckReaction · method · L693-L703 — private async sendAckReaction(ctx: Context): Promise<void>
+- removeAckReaction · method · L708-L720 — async removeAckReaction(chatId: string, messageId: string): Promise<void>
+- sendCompletionReaction · method · L726-L736 — async sendCompletionReaction(chatId: string, messageId: string): Promise<void>
+- isUpdateProcessed · method · L741-L743 — private isUpdateProcessed(updateId: number): boolean
+- markUpdateProcessed · method · L748-L755 — private markUpdateProcessed(updateId: number): void
+- startDedupCleanup · method · L760-L764 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L769-L776 — private cleanupDedupCache(): void
+- disconnect · method · L781-L814 — async disconnect(): Promise<void>
+- sendMessage · method · L819-L904 — async sendMessage(message: OutgoingMessage): Promise<string>
+- buildInlineKeyboard · method · L909-L922 — private buildInlineKeyboard(buttons: InlineKeyboardButton[][]): InlineKeyboard
+- handleCallbackQuery · method · L927-L956 — private async handleCallbackQuery(ctx: Context): Promise<void>
+- startDraftStream · method · L962-L970 — async startDraftStream(chatId: string): Promise<void>
+- updateDraftStream · method · L975-L1020 — async updateDraftStream(chatId: string, text: string): Promise<void>
+- finalizeDraftStream · method · L1025-L1047 — async finalizeDraftStream(chatId: string, finalText: string): Promise<string>
+- cancelDraftStream · method · L1052-L1063 — async cancelDraftStream(chatId: string): Promise<void>
+- convertMarkdownForTelegram · method · L1069-L1112 — private convertMarkdownForTelegram(text: string): string
+- editMessage · method · L1117-L1128 — async editMessage(chatId: string, messageId: string, text: string): Promise<void>
+- deleteMessage · method · L1133-L1144 — async deleteMessage(chatId: string, messageId: string): Promise<void>
+- sendDocument · method · L1149-L1167 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- sendPhoto · method · L1172-L1190 — async sendPhoto(chatId: string, filePath: string, caption?: string): Promise<string>
+- onMessage · method · L1195-L1197 — onMessage(handler: MessageHandler): void
+- onCallbackQuery · method · L1202-L1204 — onCallbackQuery(handler: CallbackQueryHandler): void
+- answerCallbackQuery · method · L1210-L1219 — async answerCallbackQuery(queryId: string, text?: string, showAlert?: boolean): Promise<void>
+- editMessageWithKeyboard · method · L1224-L1251 — async editMessageWithKeyboard( chatId: string, messageId: string, text?: string, inlineKeyboard?: InlineKeyboardButton[][], ): Promise<void>
+- sendTyping · method · L1260-L1271 — async sendTyping(chatId: string, threadId?: string): Promise<void>
+- addReaction · method · L1276-L1284 — async addReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- removeReaction · method · L1289-L1296 — async removeReaction(chatId: string, messageId: string): Promise<void>
+- sendPoll · method · L1301-L1337 — async sendPoll(chatId: string, poll: Poll, threadId?: string): Promise<string>
+- sendWithReplyKeyboard · method · L1342-L1375 — async sendWithReplyKeyboard( chatId: string, text: string, keyboard: ReplyKeyboard, threadId?: string, ): Promise<string>
+- removeReplyKeyboard · method · L1380-L1395 — async removeReplyKeyboard(chatId: string, text: string, threadId?: string): Promise<string>
+- sendSticker · method · L1400-L1412 — async sendSticker(chatId: string, stickerId: string, threadId?: string): Promise<string>
+- sendLocation · method · L1417-L1434 — async sendLocation( chatId: string, latitude: number, longitude: number, threadId?: string, ): Promise<string>
+- sendMediaGroup · method · L1439-L1465 — async sendMediaGroup( chatId: string, media: Array<{ type: "photo" | "video"; filePath: string; caption?: string }>, threadId?: string, ): Promise<string[]>
+- onError · method · L1474-L1476 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L1481-L1483 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L1488-L1510 — async getInfo(): Promise<ChannelInfo>
+- getWebhookCallback · method · L1516-L1524 — getWebhookCallback(): (req: Request, res: Response) => Promise<void>
+- setWebhook · method · L1529-L1538 — async setWebhook(url: string, secretToken?: string): Promise<void>
+- deleteWebhook · method · L1543-L1549 — async deleteWebhook(): Promise<void>
+- startWebhookServer · method · L1555-L1623 — async startWebhookServer(config: WebhookServerConfig): Promise<void>
+- stopWebhookServer · method · L1628-L1640 — async stopWebhookServer(): Promise<void>
+- handleHealthCheck · method · L1645-L1664 — private async handleHealthCheck( _req: http.IncomingMessage, res: http.ServerResponse, ): Promise<void>
+- handleWebhookRequest · method · L1669-L1696 — private async handleWebhookRequest( req: http.IncomingMessage, res: http.ServerResponse, ): Promise<void>
+- connectWithWebhook · method · L1702-L1767 — async connectWithWebhook(webhookUrl: string, serverConfig: WebhookServerConfig): Promise<void>
+- inferAttachmentType · method · L1771-L1780 — private inferAttachmentType(mimeType?: string, fileName?: string): MessageAttachment["type"]
+- downloadTelegramAttachment · method · L1782-L1841 — private async downloadTelegramAttachment(opts: { fileId: string; fileName?: string; mimeType?: string; type?: MessageAttachment["type"]; }): Promise<MessageAttachment | null>
+- mapContextToMessage · method · L1843-L1986 — private async mapContextToMessage(ctx: Context, overrideText?: string): Promise<IncomingMessage>
+- handleIncomingMessage · method · L1988-L2000 — private async handleIncomingMessage(message: IncomingMessage): Promise<void>
+- handleError · method · L2002-L2010 — private handleError(error: Error, context?: string): void
+- setStatus · method · L2012-L2021 — private setStatus(status: ChannelStatus, error?: Error): void
+- createTelegramAdapter · function · L2027-L2032 — function createTelegramAdapter(config: TelegramAdapterConfig): TelegramAdapter

@@ -1,0 +1,36 @@
+# src/electron/workspaces/SessionMembershipService.ts
+
+- Any · type · L22-L22 — type Any = any;
+- InviteRole · type · L23-L23 — type InviteRole = Exclude<SessionHumanRole, "owner">;
+- Metadata · type · L24-L24 — type Metadata = Record<string, string | number | boolean | null>;
+- normalizeRequired · function · L40-L45 — function normalizeRequired(value: unknown, label: string, maxLength = 200): string
+- normalizeDisplayName · function · L47-L53 — function normalizeDisplayName(value: unknown): string
+- hashInviteToken · function · L55-L57 — function hashInviteToken(token: string): string
+- parseMetadata · function · L59-L68 — function parseMetadata(value: unknown): Metadata | undefined
+- normalizeMetadata · function · L70-L79 — function normalizeMetadata(metadata?: Metadata): Metadata | undefined
+- SessionMembershipService · class · L81-L583 — class SessionMembershipService
+- constructor · method · L87-L91 — constructor(private readonly db: Database.Database)
+- getLocalPrincipal · method · L93-L111 — getLocalPrincipal(displayName?: string): SessionPrincipal
+- principalForClient · method · L113-L115 — principalForClient(clientId: number): string
+- principalDetailsForClient · method · L117-L131 — principalDetailsForClient(clientId: number): SessionPrincipal
+- registerClientPrincipal · method · L133-L135 — registerClientPrincipal(clientId: number, principalId: string): void
+- ensureOwner · method · L137-L180 — ensureOwner(contextId: string): SessionHumanMember
+- getSnapshot · method · L182-L208 — getSnapshot(contextId: string, principalId?: string): SessionShareSnapshot
+- getSnapshotForTask · method · L210-L216 — getSnapshotForTask(taskId: string, principalId?: string): SessionShareSnapshot
+- listAccessibleContexts · method · L218-L238 — listAccessibleContexts( options: { workspaceId?: string; includeArchived?: boolean; limit?: number; } = {}, principalId?: string, )
+- createInvite · method · L240-L283 — createInvite(input: SessionInviteCreateInput, principalId?: string): SessionInviteCreateResult
+- acceptInvite · method · L285-L345 — acceptInvite(input: SessionInviteAcceptInput): SessionInviteAcceptResult
+- updateMember · method · L347-L396 — updateMember(input: SessionMemberUpdateInput, principalId?: string): SessionHumanMember
+- touchPresence · method · L398-L409 — touchPresence(contextId: string, principalId?: string): SessionHumanMember
+- listAudit · method · L411-L427 — listAudit(contextId: string, principalId?: string, limit = 100): SessionAuditEntry[]
+- authorizeContextAction · method · L429-L442 — authorizeContextAction( contextId: string, capability: SessionHumanCapability, principalId?: string, ): SessionActionAttribution
+- authorizeTaskAction · method · L444-L460 — authorizeTaskAction( taskId: string, capability: SessionHumanCapability, principalId?: string, ): { contextId: string; actor: SessionActionAttribution }
+- recordTaskAction · method · L462-L478 — recordTaskAction( taskId: string, capability: SessionHumanCapability, action: string, targetId?: string, metadata?: Metadata, principalId?: string, ): SessionActionAttribution
+- requireContext · method · L480-L485 — private requireContext(contextId: string)
+- requireAuthorizedMember · method · L487-L497 — private requireAuthorizedMember( contextId: string, principalId: string, capability: SessionHumanCapability, ): SessionHumanMember
+- requireMemberByPrincipal · method · L499-L509 — private requireMemberByPrincipal(contextId: string, principalId: string): SessionHumanMember
+- requireMember · method · L511-L515 — private requireMember(id: string): SessionHumanMember
+- recordAudit · method · L517-L541 — private recordAudit( contextId: string, member: SessionHumanMember, action: string, targetId?: string, metadata?: Metadata, ): void
+- mapMember · method · L543-L556 — private mapMember(row: Any): SessionHumanMember
+- mapInvite · method · L558-L569 — private mapInvite(row: Any): SessionInvite
+- mapAudit · method · L571-L582 — private mapAudit(row: Any): SessionAuditEntry

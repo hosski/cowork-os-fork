@@ -1,0 +1,37 @@
+# src/electron/mcp/host/MCPHostServer.ts
+
+- ToolProvider · interface · L49-L54 — interface ToolProvider
+- MCPHostServer · class · L56-L614 — class MCPHostServer extends EventEmitter
+- constructor · method · L67-L69 — private constructor()
+- getInstance · method · L74-L79 — static getInstance(): MCPHostServer
+- setToolProvider · method · L84-L86 — setToolProvider(provider: ToolProvider): void
+- startStdio · method · L91-L127 — async startStdio(): Promise<void>
+- startHttp · method · L129-L221 — async startHttp(port: number): Promise<{ authToken: string }>
+- stop · method · L226-L252 — async stop(): Promise<void>
+- isRunning · method · L257-L259 — isRunning(): boolean
+- getTransportMode · method · L261-L263 — getTransportMode(): "stdio" | "http" | null
+- getHttpPort · method · L265-L267 — getHttpPort(): number | null
+- getHttpAuthToken · method · L269-L271 — getHttpAuthToken(): string | null
+- hasToolProvider · method · L276-L278 — hasToolProvider(): boolean
+- handleLine · method · L283-L298 — private handleLine(line: string): void
+- processMessage · method · L303-L311 — private async processMessage(message: Any): Promise<JSONRPCResponse | null>
+- handleRequest · method · L316-L363 — private async handleRequest(request: JSONRPCRequest): Promise<JSONRPCResponse>
+- handleNotification · method · L368-L379 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L384-L400 — private handleInitialize(params: Any): { protocolVersion: string; capabilities: MCPServerCapabilities; serverInfo: MCPServerInfo; }
+- handleInitialized · method · L405-L409 — private handleInitialized(): void
+- handleToolsList · method · L414-L423 — private handleToolsList(): { tools: MCPTool[] }
+- handleResourcesList · method · L425-L432 — private handleResourcesList(): { resources: MCPResource[] }
+- handleResourcesRead · method · L434-L443 — private async handleResourcesRead(params: Any): Promise<MCPResourceReadResult>
+- handleToolsCall · method · L448-L490 — private async handleToolsCall(params: Any): Promise<Any>
+- handleShutdown · method · L495-L500 — private handleShutdown(): Record<string, never>
+- buildResult · method · L505-L511 — private buildResult(id: string | number, result: Any): JSONRPCResponse
+- buildError · method · L516-L531 — private buildError( id: string | number | null, code: number, message: string, data?: Any, ): JSONRPCResponse
+- sendResult · method · L533-L535 — private sendResult(id: string | number, result: Any): void
+- sendError · method · L537-L539 — private sendError(id: string | number | null, code: number, message: string, data?: Any): void
+- sendMessage · method · L544-L547 — private sendMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- readHttpBody · method · L549-L556 — private async readHttpBody(req: http.IncomingMessage): Promise<string>
+- isAllowedHttpRequest · method · L558-L568 — private isAllowedHttpRequest(req: http.IncomingMessage): boolean
+- isLoopbackHostHeader · method · L570-L585 — private isLoopbackHostHeader(hostHeader: string | undefined): boolean
+- isLoopbackOrigin · method · L587-L593 — private isLoopbackOrigin(origin: string): boolean
+- requireInitialized · method · L598-L602 — private requireInitialized(): void
+- createError · method · L607-L613 — private createError( code: number, message: string, data?: Any, ): { code: number; message: string; data?: Any }

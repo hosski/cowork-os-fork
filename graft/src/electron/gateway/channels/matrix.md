@@ -1,0 +1,35 @@
+# src/electron/gateway/channels/matrix.ts
+
+- MatrixAdapter · class · L39-L670 — class MatrixAdapter implements ChannelAdapter
+- constructor · method · L67-L80 — constructor(config: MatrixConfig)
+- status · method · L82-L84 — get status(): ChannelStatus
+- botUsername · method · L86-L88 — get botUsername(): string | undefined
+- connect · method · L93-L156 — async connect(): Promise<void>
+- disconnect · method · L161-L180 — async disconnect(): Promise<void>
+- sendMessage · method · L185-L217 — async sendMessage(message: OutgoingMessage): Promise<string>
+- sendAttachment · method · L222-L262 — private async sendAttachment( roomId: string, attachment: MessageAttachment, ): Promise<string | null>
+- editMessage · method · L267-L272 — async editMessage(_chatId: string, _messageId: string, _text: string): Promise<void>
+- deleteMessage · method · L277-L283 — async deleteMessage(chatId: string, messageId: string): Promise<void>
+- sendDocument · method · L288-L304 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- sendPhoto · method · L309-L325 — async sendPhoto(chatId: string, filePath: string, caption?: string): Promise<string>
+- onMessage · method · L330-L332 — onMessage(handler: MessageHandler): void
+- onError · method · L337-L339 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L344-L346 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L351-L363 — async getInfo(): Promise<ChannelInfo>
+- sendTyping · method · L372-L382 — async sendTyping(chatId: string): Promise<void>
+- stopTyping · method · L387-L397 — async stopTyping(chatId: string): Promise<void>
+- addReaction · method · L402-L408 — async addReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- sendReadReceipt · method · L413-L423 — async sendReadReceipt(roomId: string, eventId: string): Promise<void>
+- joinRoom · method · L428-L434 — async joinRoom(roomIdOrAlias: string): Promise<string>
+- leaveRoom · method · L439-L445 — async leaveRoom(roomId: string): Promise<void>
+- handleIncomingEvent · method · L454-L522 — private async handleIncomingEvent(event: MatrixRoomEvent): Promise<void>
+- convertAttachments · method · L527-L562 — private convertAttachments(event: MatrixRoomEvent): MessageAttachment[] | undefined
+- getDirectRooms · method · L564-L584 — private async getDirectRooms(): Promise<Set<string> | null>
+- getCachedUser · method · L589-L602 — private async getCachedUser(userId: string): Promise<MatrixUser>
+- isMessageProcessed · method · L607-L609 — private isMessageProcessed(messageId: string): boolean
+- markMessageProcessed · method · L614-L621 — private markMessageProcessed(messageId: string): void
+- startDedupCleanup · method · L626-L630 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L635-L642 — private cleanupDedupCache(): void
+- handleError · method · L647-L655 — private handleError(error: Error, context?: string): void
+- setStatus · method · L660-L669 — private setStatus(status: ChannelStatus, error?: Error): void
+- createMatrixAdapter · function · L675-L686 — function createMatrixAdapter(config: MatrixConfig): MatrixAdapter

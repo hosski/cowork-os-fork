@@ -1,0 +1,29 @@
+# src/electron/agent/search/provider-factory.ts
+
+- SearchSettings · interface · L27-L50 — interface SearchSettings
+- SearchProviderFactory · class · L60-L780 — class SearchProviderFactory
+- sleep · method · L72-L74 — private static async sleep(ms: number): Promise<void>
+- isTransientSearchError · method · L76-L91 — private static isTransientSearchError(error: Any): boolean
+- classifyProviderFailure · method · L93-L110 — private static classifyProviderFailure( message: string, ): "provider_quota" | "provider_rate_limit" | "external_unknown"
+- buildSearchProviderError · method · L112-L135 — private static buildSearchProviderError( message: string, opts: { provider: SearchProviderType; failureClass: "provider_quota" | "provider_rate_limit" | "external_unknown"; failedProviders: Array<{ provider: SearchProviderType; error: string; failureClass: "provider_quota" | "provider_rate_limit" | "external_unknown"; }>; providerErrorScope?: "provider" | "global"; }, ): Error
+- setProviderCooldown · method · L137-L154 — private static setProviderCooldown( provider: SearchProviderType, failureClass: "provider_quota" | "provider_rate_limit" | "external_unknown", reason: string, ): void
+- clearProviderCooldown · method · L156-L158 — private static clearProviderCooldown(provider: SearchProviderType): void
+- getProviderCooldown · method · L160-L172 — private static getProviderCooldown(provider: SearchProviderType): { until: number; reason: string; failureClass: "provider_quota" | "provider_rate_limit"; } | null
+- resolveProviderErrorScope · method · L174-L188 — private static resolveProviderErrorScope( query: SearchQuery, providerErrors: Array<{ provider: SearchProviderType; error: string; failureClass: "provider_quota" | "provider_rate_limit" | "external_unknown"; }>, ): "provider" | "global"
+- searchWithRetry · method · L190-L213 — private static async searchWithRetry( provider: SearchProvider, query: SearchQuery, maxAttempts = 3, ): Promise<SearchResponse>
+- initialize · method · L221-L227 — static initialize(): void
+- migrateFromLegacyFile · method · L232-L297 — private static migrateFromLegacyFile(): void
+- getSettingsPath · method · L302-L304 — static getSettingsPath(): string
+- loadSettings · method · L309-L345 — static loadSettings(): SearchSettings
+- getConfiguredProvidersFromSettings · method · L351-L381 — private static getConfiguredProvidersFromSettings( settings: SearchSettings, ): SearchProviderType[]
+- saveSettings · method · L386-L447 — static saveSettings(settings: SearchSettings): void
+- clearCache · method · L452-L455 — static clearCache(): void
+- getProviderConfig · method · L461-L474 — private static getProviderConfig(providerType: SearchProviderType): SearchProviderConfig
+- createProvider · method · L479-L489 — static createProvider(overrideType?: SearchProviderType): SearchProvider
+- createProviderFromConfig · method · L494-L513 — static createProviderFromConfig(config: SearchProviderConfig): SearchProvider
+- searchWithFallback · method · L518-L626 — static async searchWithFallback(query: SearchQuery): Promise<SearchResponse>
+- getAvailableProviders · method · L632-L691 — static getAvailableProviders(): Array<{ type: SearchProviderType; name: string; description: string; configured: boolean; supportedTypes: SearchType[]; }>
+- isAnyProviderConfigured · method · L696-L698 — static isAnyProviderConfigured(): boolean
+- getProviderExecutionOrder · method · L706-L732 — private static getProviderExecutionOrder(settings: SearchSettings): SearchProviderType[]
+- getConfigStatus · method · L737-L761 — static getConfigStatus(): { primaryProvider: SearchProviderType | null; fallbackProvider: SearchProviderType | null; providers: Array<{ type: SearchProviderType; name: string; description: string; configured: boolean; supportedTypes: SearchType[]; }>; isConfigured: boolean; searxng: { baseUrl?: string; allowPrivate: boolean }; }
+- testProvider · method · L766-L779 — static async testProvider( providerType: SearchProviderType, ): Promise<{ success: boolean; error?: string }>

@@ -1,0 +1,21 @@
+# src/electron/agent/runtime/ToolBatchSummaryGenerator.ts
+
+- ToolBatchSummaryInput · interface · L5-L10 — interface ToolBatchSummaryInput
+- ToolBatchSummaryResult · interface · L12-L15 — interface ToolBatchSummaryResult
+- compactText · function · L17-L22 — function compactText(value: unknown, maxLength = 120): string
+- describeToolResult · function · L24-L28 — function describeToolResult(toolResult: LLMToolResult): string
+- looksStructured · function · L30-L37 — function looksStructured(value: string): boolean
+- titleCase · function · L39-L45 — function titleCase(value: string): string
+- normalizeLabel · function · L47-L57 — function normalizeLabel(text: string): string
+- normalizeToolKey · function · L59-L63 — function normalizeToolKey(value: string): string
+- buildIntentLabel · function · L65-L83 — function buildIntentLabel(intent: string): string
+- inferBatchFamilyLabel · function · L85-L134 — function inferBatchFamilyLabel(toolNames: string[]): string
+- everyIn · function · L89-L89 — everyIn = (set: ReadonlySet<string>)
+- anyIn · function · L90-L90 — anyIn = (set: ReadonlySet<string>)
+- shouldForceFamilyLabel · function · L136-L140 — function shouldForceFamilyLabel(toolName: string): boolean
+- describeToolInput · function · L142-L165 — function describeToolInput(toolInput: unknown): string
+- buildDeterministicLabel · function · L167-L209 — function buildDeterministicLabel(input: ToolBatchSummaryInput): string
+- getSummaryPrompt · function · L211-L237 — function getSummaryPrompt(input: ToolBatchSummaryInput): string
+- ToolBatchSummaryGenerator · class · L239-L286 — class ToolBatchSummaryGenerator
+- generateSummary · method · L240-L285 — async generateSummary(input: ToolBatchSummaryInput): Promise<ToolBatchSummaryResult>
+- createToolBatchSummaryGenerator · function · L288-L290 — function createToolBatchSummaryGenerator(): ToolBatchSummaryGenerator

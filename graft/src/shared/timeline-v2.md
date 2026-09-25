@@ -1,0 +1,22 @@
+# src/shared/timeline-v2.ts
+
+- isTimelineEventType · function · L75-L77 — function isTimelineEventType(value: unknown): value is TimelineEventType
+- stripInlineMarkdown · function · L83-L90 — function stripInlineMarkdown(value: string): string
+- formatTimelineActivityLabel · function · L92-L125 — function formatTimelineActivityLabel(raw: string, maxLength = 72): string
+- coerceEventStatus · function · L127-L141 — function coerceEventStatus(value: unknown): TimelineEventStatus | undefined
+- coerceEventActor · function · L143-L155 — function coerceEventActor(value: unknown): TimelineEventActor | undefined
+- asObject · function · L157-L160 — function asObject(value: unknown): Record<string, unknown>
+- coerceNonEmptyText · function · L162-L174 — function coerceNonEmptyText(value: unknown): string | undefined
+- resolveTimelineErrorMessage · function · L176-L184 — function resolveTimelineErrorMessage(payload: Record<string, unknown>): string | undefined
+- deriveStepId · function · L186-L209 — function deriveStepId( taskId: string, payload: Record<string, unknown>, fallback: string, defaultStepId?: string, ): string
+- inferLegacyTimelineType · function · L211-L300 — function inferLegacyTimelineType( legacyType: EventType, _payload: Record<string, unknown>, ): TimelineEventType
+- inferLegacyStatus · function · L302-L373 — function inferLegacyStatus( legacyType: EventType, payload: Record<string, unknown>, ): TimelineEventStatus
+- inferLegacyActor · function · L375-L405 — function inferLegacyActor(legacyType: EventType): TimelineEventActor
+- toEvidenceRefs · function · L407-L473 — function toEvidenceRefs(payload: Record<string, unknown>, timestamp: number): EvidenceRef[]
+- inferTimelineSubStageLabel · function · L479-L565 — function inferTimelineSubStageLabel(type: EventType): string | undefined
+- inferTimelineStageForLegacyType · function · L567-L641 — function inferTimelineStageForLegacyType(type: EventType): TimelineStage | undefined
+- stageToGroupId · function · L643-L645 — function stageToGroupId(stage: TimelineStage): string
+- normalizeTaskEventToTimelineV2 · function · L647-L755 — function normalizeTaskEventToTimelineV2(params: { taskId: string; type: string; payload: unknown; timestamp: number; eventId: string; seq: number; defaultStepId?: string; explicitGroupId?: string; }): TaskTimelineEventV2
+- defaultLegacyTypeForTimeline · function · L757-L786 — function defaultLegacyTypeForTimeline( type: TimelineEventType, status: TimelineEventStatus, ): EventType
+- projectTimelineEventToLegacy · function · L788-L832 — function projectTimelineEventToLegacy(event: TaskEvent): TaskEvent
+- extractTimelineEvidenceRefs · function · L834-L838 — function extractTimelineEvidenceRefs(event: TaskEvent): EvidenceRef[]

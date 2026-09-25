@@ -1,0 +1,8 @@
+# src/electron/automation/automation-outcome-classifier.ts
+
+- HeartbeatDispatchClassificationInput · interface · L8-L17 — interface HeartbeatDispatchClassificationInput
+- classifyHeartbeatDispatchOutcome · function · L19-L57 — function classifyHeartbeatDispatchOutcome( input: HeartbeatDispatchClassificationInput, ): CreateAutomationRunOutcomeInput
+- classifyHeartbeatErrorOutcome · function · L59-L79 — function classifyHeartbeatErrorOutcome(input: { agent: AgentRole; workspaceId?: string; sourceRunId: string; trigger: AutomationRunTrigger; error: string; }): CreateAutomationRunOutcomeInput
+- classifyStrategicPlannerOutcome · function · L81-L138 — function classifyStrategicPlannerOutcome(input: { company: Company; configWorkspaceId?: string; trigger: StrategicPlannerRun["trigger"]; run: StrategicPlannerRun; createdIssueIds: string[]; updatedIssueIds: string[]; dispatchedTaskIds: string[]; suppressedOutputCount: number; }): CreateAutomationRunOutcomeInput
+- classifyStrategicPlannerFailure · function · L140-L158 — function classifyStrategicPlannerFailure(input: { company: Company; configWorkspaceId?: string; trigger: StrategicPlannerRun["trigger"]; error: string; }): CreateAutomationRunOutcomeInput
+- classifyCheckEvidence · function · L160-L198 — function classifyCheckEvidence(input: { source: CreateAutomationRunOutcomeInput["source"]; title: string; summary: string; trigger: AutomationRunTrigger; workspaceId?: string; taskId?: string; sourceRunId?: string; declaredCheck: boolean; executedCommandCount: number; toolCallCount: number; failedCheckCount?: number; limitationOnly?: boolean; }): CreateAutomationRunOutcomeInput

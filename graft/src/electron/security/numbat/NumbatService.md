@@ -1,0 +1,53 @@
+# src/electron/security/numbat/NumbatService.ts
+
+- AgentSecurityToolEvaluationInput · interface · L28-L40 — interface AgentSecurityToolEvaluationInput
+- AgentSecurityPostToolInput · interface · L42-L49 — interface AgentSecurityPostToolInput extends AgentSecurityToolEvaluationInput
+- AgentSecurityLifecycleInput · interface · L51-L60 — interface AgentSecurityLifecycleInput
+- TaskEventEmitter · type · L62-L66 — type TaskEventEmitter = ( taskId: string, type: "security_finding" | "security_action_denied" | "security_runtime_degraded", payload: Record<string, unknown>, ) => void;
+- NumbatService · class · L68-L898 — class NumbatService
+- initialize · method · L87-L90 — static initialize(db: Database.Database): NumbatService
+- getInstance · method · L92-L94 — static getInstance(): NumbatService | null
+- resetForTesting · method · L96-L99 — static resetForTesting(): void
+- constructor · method · L101-L112 — private constructor(db: Database.Database)
+- attachTaskEventEmitter · method · L114-L116 — attachTaskEventEmitter(emitter: TaskEventEmitter): void
+- getRepository · method · L118-L120 — getRepository(): AgentSecurityRepository
+- configureScheduledScan · method · L122-L161 — configureScheduledScan(): void
+- shutdown · method · L163-L170 — shutdown(): void
+- isEnabled · method · L172-L175 — isEnabled(): boolean
+- getStatus · method · L177-L222 — async getStatus(refresh = false): Promise<AgentSecurityRuntimeStatus>
+- evaluatePreTool · method · L224-L308 — async evaluatePreTool( input: AgentSecurityToolEvaluationInput, ): Promise<AgentSecurityEvaluationResult>
+- observePostTool · method · L310-L358 — observePostTool(input: AgentSecurityPostToolInput): void
+- observeLifecycle · method · L360-L388 — observeLifecycle(input: AgentSecurityLifecycleInput): void
+- recordBlockedDecision · method · L390-L392 — recordBlockedDecision(decisionId?: string): void
+- listFindings · method · L394-L396 — listFindings(query: AgentSecurityFindingQuery = {})
+- listDecisions · method · L398-L400 — listDecisions(taskId?: string, limit?: number)
+- listDiagnostics · method · L402-L404 — listDiagnostics(limit?: number)
+- updateFindingStatus · method · L406-L408 — updateFindingStatus(findingId: string, status: AgentSecurityFindingStatus)
+- refreshInventory · method · L410-L464 — async refreshInventory(): Promise<ReturnType<AgentSecurityRepository["listInventory"]>>
+- listInventory · method · L466-L468 — listInventory()
+- runScan · method · L470-L488 — async runScan(): Promise<{ outputFile: string; findings: number }>
+- checkRules · method · L490-L507 — async checkRules(): Promise<{ ok: true; output: string }>
+- hookStatus · method · L509-L520 — async hookStatus(agent: string): Promise<{ output: string }>
+- installHook · method · L522-L559 — async installHook(agent: string): Promise<{ output: string }>
+- uninstallHook · method · L561-L572 — async uninstallHook(agent: string): Promise<{ output: string }>
+- buildCase · method · L574-L605 — async buildCase( caseId: string, taskId: string, ): Promise<{ caseId: string; taskId: string; bundleName: string; bundlePath: string; output: string; }>
+- verifyCase · method · L607-L636 — async verifyCase(bundleName: string): Promise<{ bundleName: string; bundlePath: string; verified: true; output: string; }>
+- prune · method · L638-L641 — prune(): ReturnType<AgentSecurityRepository["prune"]>
+- invoke · method · L643-L666 — private async invoke( binary: ResolvedNumbatBinary, payload: AgentSecurityHookPayload, policy: AgentSecurityPolicy, )
+- ingestAndEmit · method · L668-L679 — private ingestAndEmit(filePath: string, taskId: string): NumbatIngestResult
+- runOrdered · method · L681-L694 — private runOrdered<T>(taskId: string, operation: () => Promise<T>): Promise<T>
+- runRetentionPrune · method · L696-L709 — private runRetentionPrune(): void
+- pruneRuntimeArtifacts · method · L711-L734 — private pruneRuntimeArtifacts(retentionDays: number): void
+- refreshCachedPolicyIfChanged · method · L736-L741 — private refreshCachedPolicyIfChanged(): void
+- ensureRuntimeDirectories · method · L743-L756 — private ensureRuntimeDirectories(): void
+- taskKey · method · L758-L760 — private taskKey(taskId: string): string
+- recordFile · method · L762-L770 — private recordFile(taskId: string): string
+- stateDb · method · L772-L774 — private stateDb(taskId: string): string
+- casesDir · method · L776-L778 — private casesDir(): string
+- validateCaseIdentifier · method · L780-L784 — private validateCaseIdentifier(value: string, label: string): void
+- recommendedRulesDir · method · L786-L814 — private recommendedRulesDir(): string | undefined
+- validateRuleDirectories · method · L816-L843 — private validateRuleDirectories(ruleDirs: string[], workspacePath?: string): void
+- validateExternalAgentName · method · L845-L877 — private validateExternalAgentName(agent: string): void
+- inventoryAgentId · method · L879-L888 — private inventoryAgentId(displayName: string): string
+- ingestExternalRecords · method · L890-L897 — private ingestExternalRecords(): void
+- getNumbatService · function · L900-L902 — function getNumbatService(): NumbatService | null

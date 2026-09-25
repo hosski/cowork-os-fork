@@ -1,0 +1,52 @@
+# src/electron/gateway/channels/discord.ts
+
+- DiscordSlashCommandDefinition · type · L66-L66 — type DiscordSlashCommandDefinition = { toJSON(): unknown };
+- buildDiscordSlashCommands · function · L68-L195 — function buildDiscordSlashCommands(): DiscordSlashCommandDefinition[]
+- DiscordAdapter · class · L197-L1544 — class DiscordAdapter implements ChannelAdapter
+- constructor · method · L220-L222 — constructor(config: DiscordConfig)
+- status · method · L224-L226 — get status(): ChannelStatus
+- botUsername · method · L228-L230 — get botUsername(): string | undefined
+- connect · method · L235-L375 — async connect(): Promise<void>
+- handleButtonInteraction · method · L380-L407 — private async handleButtonInteraction(interaction: ButtonInteraction): Promise<void>
+- registerSlashCommands · method · L412-L441 — private async registerSlashCommands(): Promise<void>
+- disconnect · method · L446-L454 — async disconnect(): Promise<void>
+- sendMessage · method · L459-L543 — async sendMessage(message: OutgoingMessage): Promise<string>
+- sendDirectMessageToUser · method · L545-L553 — async sendDirectMessageToUser(userId: string, text: string): Promise<string>
+- sendEmbed · method · L558-L600 — async sendEmbed( chatId: string, options: { title?: string; description?: string; color?: keyof typeof EMBED_COLORS; fields?: Array<{ name: string; value: string; inline?: boolean }>; footer?: string; timestamp?: boolean; }, buttons?: InlineKeyboardButton[][], ): Promise<string>
+- buildButtonComponents · method · L605-L650 — private buildButtonComponents( buttons: InlineKeyboardButton[][], ): ActionRowBuilder<ButtonBuilder>[]
+- sendMessagePlain · method · L655-L680 — private async sendMessagePlain( chatId: string, text: string, replyTo?: string, components: ActionRowBuilder<ButtonBuilder>[] = [], ): Promise<string>
+- convertMarkdownForDiscord · method · L685-L695 — private convertMarkdownForDiscord(text: string): string
+- splitMessageSmart · method · L700-L752 — private splitMessageSmart(text: string, maxLength: number): string[]
+- findBreakPoint · method · L757-L776 — private findBreakPoint(text: string, maxLength: number, inCodeBlock: boolean): number
+- splitMessage · method · L781-L783 — private splitMessage(text: string, maxLength: number): string[]
+- editMessage · method · L788-L802 — async editMessage(chatId: string, messageId: string, text: string): Promise<void>
+- deleteMessage · method · L807-L821 — async deleteMessage(chatId: string, messageId: string): Promise<void>
+- sendDocument · method · L826-L850 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- onMessage · method · L855-L857 — onMessage(handler: MessageHandler): void
+- updateConfig · method · L859-L861 — updateConfig(config: DiscordConfig): void
+- onCallbackQuery · method · L866-L868 — onCallbackQuery(handler: CallbackQueryHandler): void
+- answerCallbackQuery · method · L874-L880 — async answerCallbackQuery(queryId: string, text?: string, showAlert?: boolean): Promise<void>
+- editMessageWithKeyboard · method · L885-L909 — async editMessageWithKeyboard( chatId: string, messageId: string, text?: string, inlineKeyboard?: InlineKeyboardButton[][], ): Promise<void>
+- sendTyping · method · L918-L929 — async sendTyping(chatId: string): Promise<void>
+- addReaction · method · L934-L948 — async addReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- removeReaction · method · L953-L970 — async removeReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- fetchMessages · method · L976-L1046 — async fetchMessages( chatId: string, limit = 100, ): Promise< Array<{ id: string; content: string; author: { id: string; name: string }; timestamp: string; attachments?: Array<{ url: string; fileName?: string; contentType?: string; size?: number; }>; }> >
+- downloadAttachment · method · L1052-L1133 — async downloadAttachment( chatId: string, messageId: string, inboxDir: string, ): Promise< Array<{ path: string; fileName: string; contentType?: string; size?: number; }> >
+- sendPoll · method · L1138-L1161 — async sendPoll(chatId: string, poll: Poll): Promise<string>
+- sendWithSelectMenu · method · L1166-L1203 — async sendWithSelectMenu(chatId: string, text: string, menu: SelectMenu): Promise<string>
+- onSelectMenu · method · L1208-L1210 — onSelectMenu(handler: SelectMenuHandler): void
+- handleSelectMenuInteraction · method · L1215-L1247 — private async handleSelectMenuInteraction( interaction: StringSelectMenuInteraction, ): Promise<void>
+- onError · method · L1256-L1258 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L1263-L1265 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L1270-L1282 — async getInfo(): Promise<ChannelInfo>
+- inferAttachmentType · method · L1286-L1300 — private inferAttachmentType(mimeType?: string, fileName?: string): MessageAttachment["type"]
+- extractAttachments · method · L1302-L1327 — private extractAttachments(message: Message): MessageAttachment[] | undefined
+- isTextBasedChannel · method · L1329-L1337 — private isTextBasedChannel(channel: unknown): channel is TextChannel | DMChannel | ThreadChannel
+- mapMessageToIncoming · method · L1339-L1377 — private mapMessageToIncoming(message: Message): IncomingMessage
+- mapInteractionToIncoming · method · L1379-L1483 — private mapInteractionToIncoming(interaction: ChatInputCommandInteraction): IncomingMessage
+- parseCommand · method · L1488-L1495 — private parseCommand(text: string): string | null
+- handleIncomingMessage · method · L1497-L1509 — private async handleIncomingMessage(message: IncomingMessage): Promise<void>
+- shouldForwardBotMessage · method · L1511-L1522 — private shouldForwardBotMessage(message: Message): boolean
+- handleError · method · L1524-L1532 — private handleError(error: Error, context?: string): void
+- setStatus · method · L1534-L1543 — private setStatus(status: ChannelStatus, error?: Error): void
+- createDiscordAdapter · function · L1549-L1557 — function createDiscordAdapter(config: DiscordConfig): DiscordAdapter

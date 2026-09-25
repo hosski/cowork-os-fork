@@ -1,0 +1,30 @@
+# src/electron/routines/workflow/engine.ts
+
+- RoutineWorkflowActionExecutorParams · interface · L21-L32 — interface RoutineWorkflowActionExecutorParams
+- RoutineWorkflowEngineOptions · interface · L34-L38 — interface RoutineWorkflowEngineOptions
+- StartWorkflowRunInput · interface · L40-L50 — interface StartWorkflowRunInput
+- StoredRunContext · type · L52-L60 — type StoredRunContext = { trigger: Record<string, unknown>; nodes: Record<string, Record<string, unknown>>; approvedStepIds: string[]; dryRun: boolean; executedOperationCount: number; /** Persisted so recovery/retry cannot lose the scheduler's access boundary. */ accessProfileId?: AccessProfileId; };
+- ExecutionBudget · type · L62-L66 — type ExecutionBudget = { deadline: number; remaining: number; context: StoredRunContext; };
+- RoutineWorkflowEngine · class · L70-L636 — class RoutineWorkflowEngine
+- constructor · method · L76-L83 — constructor( private readonly repository: RoutineWorkflowRepository, private readonly options: RoutineWorkflowEngineOptions = {}, )
+- start · method · L85-L145 — async start(input: StartWorkflowRunInput): Promise<RoutineWorkflowRunRecord>
+- continueRun · method · L147-L241 — async continueRun( routine: Routine, workflow: RoutineWorkflowDefinition, runId: string, ): Promise<RoutineWorkflowRunRecord>
+- respondToApproval · method · L243-L272 — async respondToApproval(input: { routine: Routine; workflow: RoutineWorkflowDefinition; runId: string; stepId: string; approved: boolean; }): Promise<RoutineWorkflowRunRecord>
+- cancel · method · L274-L287 — cancel(runId: string): RoutineWorkflowRunRecord | null
+- recoverInterruptedRun · method · L289-L320 — recoverInterruptedRun( workflow: RoutineWorkflowDefinition, runId: string, ): RoutineWorkflowRunRecord | null
+- findReadyNodes · method · L322-L356 — private findReadyNodes( workflow: RoutineWorkflowDefinition, stepByNode: Map<string, RoutineWorkflowStepRecord>, ): Array<{ node: RoutineWorkflowNode; step: RoutineWorkflowStepRecord; skip: boolean }>
+- executeNode · method · L358-L464 — private async executeNode( routine: Routine, workflow: RoutineWorkflowDefinition, runId: string, node: RoutineWorkflowNode, step: RoutineWorkflowStepRecord, budget: ExecutionBudget, ): Promise<"completed" | "failed" | "waiting_for_approval">
+- executeOperation · method · L466-L561 — private async executeOperation( routine: Routine, workflow: RoutineWorkflowDefinition, runId: string, stepId: string, node: RoutineWorkflowNode, input: Record<string, unknown>, variableContext: WorkflowVariableContext, dryRun: boolean, budget: ExecutionBudget, signal: AbortSignal, accessProfileId?: AccessProfileId, ): Promise<Record<string, unknown>>
+- nodeNeedsApproval · method · L563-L578 — private nodeNeedsApproval(routine: Routine, node: RoutineWorkflowNode): boolean
+- finishRun · method · L580-L598 — private finishRun( runId: string, stepByNode: Map<string, RoutineWorkflowStepRecord>, ): RoutineWorkflowRunRecord
+- requireRun · method · L600-L604 — private requireRun(runId: string): RoutineWorkflowRunRecord
+- getContext · method · L606-L622 — private getContext(run: RoutineWorkflowRunRecord): StoredRunContext
+- trackController · method · L624-L628 — private trackController(runId: string, controller: AbortController): void
+- untrackController · method · L630-L635 — private untrackController(runId: string, controller: AbortController): void
+- highestNodeRisk · function · L638-L646 — function highestNodeRisk(node: RoutineWorkflowNode): WorkflowRiskLevel
+- isRecord · function · L648-L650 — function isRecord(value: unknown): value is Record<string, unknown>
+- redactForStorage · function · L652-L666 — function redactForStorage(value: Record<string, unknown>): Record<string, unknown>
+- visit · function · L654-L664 — visit = (input: unknown, depth = 0): unknown
+- withTimeout · function · L668-L688 — async function withTimeout<T>( promise: Promise<T>, timeoutMs: number, message: string, onTimeout?: () => void, ): Promise<T>
+- throwIfAborted · function · L690-L695 — function throwIfAborted(signal: AbortSignal): void
+- findWorkflowNode · function · L697-L707 — function findWorkflowNode( nodes: RoutineWorkflowNode[], nodeId: string, ): RoutineWorkflowNode | undefined

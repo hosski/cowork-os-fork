@@ -1,0 +1,26 @@
+# src/electron/admin/policies.ts
+
+- AdminSandboxType · type · L30-L30 — type AdminSandboxType = "macos" | "docker" | "none";
+- AdminNetworkDefault · type · L31-L31 — type AdminNetworkDefault = "allow" | "deny";
+- AdminPolicies · interface · L36-L147 — interface AdminPolicies
+- getPoliciesPath · function · L209-L212 — function getPoliciesPath(): string
+- getPoliciesFileVersion · function · L214-L221 — function getPoliciesFileVersion(): string
+- clonePolicies · function · L223-L225 — function clonePolicies(policies: AdminPolicies): AdminPolicies
+- normalizePolicies · function · L227-L308 — function normalizePolicies(parsed: any): AdminPolicies
+- watchPolicies · function · L313-L357 — function watchPolicies(onChange: () => void, debounceMs = 250): () => void
+- schedule · function · L322-L331 — schedule = (): void
+- getOrgPluginDir · function · L362-L373 — function getOrgPluginDir(policies?: AdminPolicies): string | null
+- loadPoliciesStrict · function · L379-L406 — function loadPoliciesStrict(): AdminPolicies | null
+- loadPolicies · function · L411-L413 — function loadPolicies(): AdminPolicies
+- savePolicies · function · L418-L437 — function savePolicies(policies: AdminPolicies): void
+- isPackAllowed · function · L442-L457 — function isPackAllowed(packId: string, policies?: AdminPolicies): boolean
+- isPackRequired · function · L462-L465 — function isPackRequired(packId: string, policies?: AdminPolicies): boolean
+- isConnectorBlocked · function · L470-L473 — function isConnectorBlocked(connectorId: string, policies?: AdminPolicies): boolean
+- getEverydayAgentPolicy · function · L475-L477 — function getEverydayAgentPolicy(policies?: AdminPolicies): AdminPolicies["everydayAgent"]
+- normalizeStringList · function · L479-L481 — function normalizeStringList(value: unknown): string[]
+- normalizeEverydayBundles · function · L487-L491 — function normalizeEverydayBundles(value: unknown): EverydayCapabilityBundle[]
+- normalizeActiveHourWindows · function · L493-L514 — function normalizeActiveHourWindows( value: unknown, ): AdminPolicies["everydayAgent"]["activeHours"]["windows"]
+- normalizePermissionModes · function · L525-L529 — function normalizePermissionModes(value: unknown): PermissionMode[]
+- normalizeSandboxTypes · function · L533-L538 — function normalizeSandboxTypes(value: unknown): AdminSandboxType[]
+- normalizeAgentSecurityPolicy · function · L551-L605 — function normalizeAgentSecurityPolicy(value: unknown): AgentSecurityPolicy
+- validatePolicies · function · L610-L838 — function validatePolicies(policies: unknown): string | null

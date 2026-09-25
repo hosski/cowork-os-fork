@@ -1,0 +1,55 @@
+# src/electron/gateway/channels/types.ts
+
+- ChannelType · type · L31-L31 — type ChannelType = (typeof CHANNEL_TYPES)[number];
+- ChannelStatus · type · L36-L36 — type ChannelStatus = "disconnected" | "connecting" | "connected" | "error";
+- IncomingMessage · interface · L41-L80 — interface IncomingMessage
+- InlineKeyboardButton · interface · L85-L92 — interface InlineKeyboardButton
+- OutgoingMessage · interface · L97-L116 — interface OutgoingMessage
+- CallbackQuery · interface · L121-L138 — interface CallbackQuery
+- CallbackQueryHandler · type · L143-L143 — type CallbackQueryHandler = (query: CallbackQuery) => void | Promise<void>;
+- MessageAttachment · interface · L148-L162 — interface MessageAttachment
+- ChannelConfig · interface · L167-L180 — interface ChannelConfig
+- TelegramConfig · interface · L185-L204 — interface TelegramConfig extends ChannelConfig
+- DiscordConfig · interface · L209-L218 — interface DiscordConfig extends ChannelConfig
+- SlackConfig · interface · L223-L232 — interface SlackConfig extends ChannelConfig
+- WhatsAppConfig · interface · L237-L290 — interface WhatsAppConfig extends ChannelConfig
+- ImessageConfig · interface · L296-L323 — interface ImessageConfig extends ChannelConfig
+- SignalConfig · interface · L329-L360 — interface SignalConfig extends ChannelConfig
+- MattermostConfig · interface · L365-L376 — interface MattermostConfig extends ChannelConfig
+- MatrixConfig · interface · L381-L400 — interface MatrixConfig extends ChannelConfig
+- TwitchConfig · interface · L405-L418 — interface TwitchConfig extends ChannelConfig
+- LineConfig · interface · L424-L439 — interface LineConfig extends ChannelConfig
+- BlueBubblesConfig · interface · L445-L472 — interface BlueBubblesConfig extends ChannelConfig
+- EmailConfig · interface · L480-L551 — interface EmailConfig extends ChannelConfig
+- EmailTransportClient · interface · L553-L572 — interface EmailTransportClient
+- TeamsConfig · interface · L577-L596 — interface TeamsConfig extends ChannelConfig
+- GoogleChatConfig · interface · L602-L631 — interface GoogleChatConfig extends ChannelConfig
+- FeishuConfig · interface · L636-L655 — interface FeishuConfig extends ChannelConfig
+- WeComConfig · interface · L660-L681 — interface WeComConfig extends ChannelConfig
+- XConfig · interface · L686-L697 — interface XConfig extends ChannelConfig
+- ChannelAdapter · interface · L703-L827 — interface ChannelAdapter
+- MessageHandler · type · L832-L832 — type MessageHandler = (message: IncomingMessage) => void | Promise<void>;
+- ErrorHandler · type · L837-L837 — type ErrorHandler = (error: Error, context?: string) => void;
+- StatusHandler · type · L842-L842 — type StatusHandler = (status: ChannelStatus, error?: Error) => void;
+- ChannelInfo · interface · L847-L855 — interface ChannelInfo
+- ChannelUser · interface · L860-L879 — interface ChannelUser
+- ChannelSession · interface · L884-L903 — interface ChannelSession
+- SecurityConfig · interface · L908-L919 — interface SecurityConfig
+- GatewayEventType · type · L924-L933 — type GatewayEventType = | "channel:connected" | "channel:disconnected" | "channel:error" | "message:received" | "message:sent" | "user:paired" | "user:blocked" | "session:created" | "session:ended";
+- GatewayEvent · interface · L938-L943 — interface GatewayEvent
+- GatewayEventHandler · type · L948-L948 — type GatewayEventHandler = (event: GatewayEvent) => void;
+- ReplyKeyboardButton · interface · L957-L964 — interface ReplyKeyboardButton
+- ReplyKeyboard · interface · L969-L978 — interface ReplyKeyboard
+- SelectMenuOption · interface · L983-L994 — interface SelectMenuOption
+- SelectMenu · interface · L999-L1012 — interface SelectMenu
+- PollOption · interface · L1017-L1022 — interface PollOption
+- Poll · interface · L1027-L1046 — interface Poll
+- MessageReaction · interface · L1051-L1060 — interface MessageReaction
+- ScheduledMessage · interface · L1065-L1082 — interface ScheduledMessage
+- MessageDelivery · interface · L1087-L1104 — interface MessageDelivery
+- AuditLogEntry · interface · L1109-L1124 — interface AuditLogEntry
+- UserRateLimit · interface · L1129-L1142 — interface UserRateLimit
+- BroadcastConfig · interface · L1147-L1156 — interface BroadcastConfig
+- BroadcastResult · interface · L1161-L1175 — interface BroadcastResult
+- ExtendedChannelAdapter · interface · L1180-L1240 — interface ExtendedChannelAdapter extends ChannelAdapter
+- SelectMenuHandler · type · L1245-L1252 — type SelectMenuHandler = ( customId: string, values: string[], userId: string, chatId: string, messageId: string, raw: unknown, ) => void | Promise<void>;

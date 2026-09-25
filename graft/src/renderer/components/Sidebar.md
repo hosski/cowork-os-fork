@@ -1,0 +1,82 @@
+# src/renderer/components/Sidebar.tsx
+
+- AgentRoleInfo · type · L75-L75 — type AgentRoleInfo = BotRole;
+- formatRelativeShort · function · L77-L92 — function formatRelativeShort(timestamp?: number): string
+- SidebarProps · interface · L94-L132 — interface SidebarProps
+- SessionMode · type · L135-L144 — type SessionMode = | "standard" | "autonomous" | "collab" | "multitask" | "multi-llm" | "scheduled" | "think" | "comparison" | "video";
+- getSessionMode · function · L160-L171 — function getSessionMode(task: Task): SessionMode
+- isAutomatedSession · function · L176-L178 — function isAutomatedSession(task: Task): boolean
+- MacMiniIcon · function · L188-L210 — function MacMiniIcon({ className, size = 18 }: { className?: string; size?: number })
+- isActiveSessionStatus · function · L212-L214 — function isActiveSessionStatus(status: Task["status"]): boolean
+- isAwaitingSessionStatus · function · L216-L218 — function isAwaitingSessionStatus(status: Task["status"]): boolean
+- shouldShowTaskInSidebarSessions · function · L220-L224 — function shouldShowTaskInSidebarSessions(task: Task): boolean
+- isUserCreatedBotRole · function · L226-L236 — function isUserCreatedBotRole( role: Pick<BotRole, "isActive" | "isSystem" | "roleKind" | "sourceTemplateId">, ): boolean
+- compareTasksByPinAndRecency · function · L238-L244 — function compareTasksByPinAndRecency(a: Task, b: Task): number
+- getSidebarDateGroup · function · L246-L258 — function getSidebarDateGroup( task: Pick<Task, "createdAt" | "pinned">, now = new Date(), ): string
+- areStringSetsEqual · function · L260-L266 — function areStringSetsEqual(left: ReadonlySet<string>, right: ReadonlySet<string>): boolean
+- shouldShowRootTaskInSidebar · function · L268-L279 — function shouldShowRootTaskInSidebar( task: Task, uiDensity: UiDensity, showFailedSessions: boolean, hasPinnedDescendant = false, ): boolean
+- countHiddenFailedSessions · function · L281-L322 — function countHiddenFailedSessions(tasks: Task[], uiDensity: UiDensity): number
+- hasPinnedDescendant · function · L291-L311 — hasPinnedDescendant = (taskId: string): boolean
+- TaskTreeNode · interface · L325-L330 — interface TaskTreeNode
+- stripSidebarTitleEllipsis · function · L343-L345 — function stripSidebarTitleEllipsis(value: string): string
+- normalizeSidebarTitleCandidate · function · L347-L356 — function normalizeSidebarTitleCandidate(value?: string | null): string
+- isGenericSidebarTitle · function · L358-L360 — function isGenericSidebarTitle(value: string): boolean
+- getSidebarSessionTitle · function · L362-L387 — function getSidebarSessionTitle(node: Pick<TaskTreeNode, "displayTitle" | "task">): string
+- TextMeasurer · type · L389-L389 — type TextMeasurer = (value: string) => number;
+- truncateSidebarTitleToFit · function · L391-L417 — function truncateSidebarTitleToFit( value: string, maxWidth: number, measureText: TextMeasurer, ): string
+- getSidebarTitleMeasureContext · function · L421-L425 — function getSidebarTitleMeasureContext(): CanvasRenderingContext2D | null
+- getElementFont · function · L427-L437 — function getElementFont(element: HTMLElement): string
+- SidebarWordBoundaryTitle · function · L439-L503 — function SidebarWordBoundaryTitle({ text, className, title, }: { text: string; className: string; title: string; })
+- update · function · L461-L480 — update = ()
+- normalizeSidebarSessionSearch · function · L505-L507 — function normalizeSidebarSessionSearch(value: string): string
+- getTaskTreeNodeSearchText · function · L509-L527 — function getTaskTreeNodeSearchText(node: TaskTreeNode): string
+- filterTaskTreeBySearchInternal · function · L529-L547 — function filterTaskTreeBySearchInternal( nodes: TaskTreeNode[], normalizedQuery: string, ): TaskTreeNode[]
+- filterTaskTreeBySearch · function · L549-L553 — function filterTaskTreeBySearch(nodes: TaskTreeNode[], query: string): TaskTreeNode[]
+- SidebarVisibleRow · interface · L555-L560 — interface SidebarVisibleRow
+- SidebarVirtualRow · type · L562-L613 — type SidebarVirtualRow = | { kind: "date-header"; id: string; label: string; } | { kind: "section-header"; id: string; label: string; action?: "add-workspace"; } | { kind: "workspace-empty"; id: string; } | { kind: "workspace-session-action"; id: string; workspaceId: string; expanded: boolean; remainingCount: number; } | { kind: "workspace-header"; id: string; workspaceId: string; label: string; path?: string; pinned: boolean; recent: boolean; current: boolean; expanded: boolean; } | { kind: "automated-header"; id: string; count: number; expanded: boolean; hasActive: boolean; } | { kind: "task"; row: SidebarVisibleRow; section?: "user" | "automated"; grouped?: boolean; } | { kind: "load-more"; id: string; loading: boolean; };
+- getSidebarProjectSessionPreview · function · L615-L628 — function getSidebarProjectSessionPreview<T>( items: readonly T[], showAll: boolean, ): { visibleItems: T[]; hasMore: boolean; remainingCount: number }
+- flattenVisibleTaskRows · function · L630-L654 — function flattenVisibleTaskRows( nodes: TaskTreeNode[], collapsedTaskIds: ReadonlySet<string>, ): SidebarVisibleRow[]
+- visit · function · L636-L650 — visit = (siblings: TaskTreeNode[], depth: number, rootIndex: number)
+- buildSidebarVirtualRows · function · L656-L684 — function buildSidebarVirtualRows( taskRows: SidebarVisibleRow[], options: { showDateHeaders: boolean; now?: Date }, ): SidebarVirtualRow[]
+- compareTaskTreeNodes · function · L686-L688 — function compareTaskTreeNodes(a: TaskTreeNode, b: TaskTreeNode): number
+- getSidebarTaskListSignature · function · L690-L700 — function getSidebarTaskListSignature(tasks: Task[]): string
+- SidebarWorkspaceSettings · interface · L702-L708 — interface SidebarWorkspaceSettings
+- readSidebarWorkspaceSettings · function · L720-L759 — function readSidebarWorkspaceSettings(): SidebarWorkspaceSettings
+- getSidebarWorkspaceSelection · function · L761-L765 — function getSidebarWorkspaceSelection( settings: Pick<SidebarWorkspaceSettings, "visibleWorkspaceIds" | "pinnedWorkspaceIds">, ): Set<string>
+- writeSidebarWorkspaceSettings · function · L767-L775 — function writeSidebarWorkspaceSettings(settings: SidebarWorkspaceSettings): void
+- SidebarWorkspaceGroup · interface · L777-L786 — interface SidebarWorkspaceGroup
+- isSidebarRecentWorkspace · function · L793-L800 — function isSidebarRecentWorkspace(workspace: Workspace): boolean
+- compareSidebarWorkspaceGroups · function · L807-L820 — function compareSidebarWorkspaceGroups( left: SidebarWorkspaceGroup, right: SidebarWorkspaceGroup, ): number
+- areSidebarPropsEqual · function · L822-L853 — function areSidebarPropsEqual(prev: SidebarProps, next: SidebarProps): boolean
+- SidebarComponent · function · L855-L3579 — function SidebarComponent({ workspace, tasks, botTasks: botTasksOverride, selectedTaskId, isBotViewActive = false, isAutomationsActive = false, isIdeasActive = false, isInboxAgentActive = false, isAgentsActive = false, isEverydayAgentActive = false, isMissionControlActive = false, isHealthActive = false, isLoadingSessions = false, completionAttentionTaskIds = [], onSelectTask, onOpenAutomations, onOpenIdeas, onOpenInboxAgent, onOpenAgents, onOpenBot, onOpenEverydayAgent, onOpenHealth, onNewSession, onOpenSettings, onOpenMissionControl, onOpenDevices, isDevicesActive = false, isLoadingMoreTasks = false, onTasksChanged, onLoadMoreTasks, hasMoreTasks = false, uiDensity = "focused", updateInfo, onViewUpdate, onBotUpdated, onBotDeleted, }: SidebarProps)
+- refreshRoles · function · L1247-L1247 — refreshRoles = ()
+- hasPinnedDescendant · function · L1342-L1362 — hasPinnedDescendant = (taskId: string): boolean
+- buildNode · function · L1365-L1373 — buildNode = (task: Task): TaskTreeNode
+- appendTaskRows · function · L1649-L1666 — appendTaskRows = ( nodes: TaskTreeNode[], section: "user" | "automated", grouped = false, maxRows?: number, ): number
+- appendWorkspaceGroup · function · L1668-L1699 — appendWorkspaceGroup = (group: SidebarWorkspaceGroup)
+- expandAncestorsForPinned · function · L1780-L1794 — expandAncestorsForPinned = (collapsed: Set<string>): void
+- handleScroll · function · L1824-L1829 — handleScroll = ()
+- handleClickOutside · function · L1860-L1871 — handleClickOutside = (e: MouseEvent)
+- handleMenuToggle · function · L1884-L1888 — handleMenuToggle = (e: React.MouseEvent, taskId: string)
+- focusMenuButton · function · L1890-L1895 — focusMenuButton = (taskId: string)
+- focusFirstMenuItem · function · L1897-L1901 — focusFirstMenuItem = ()
+- focusMenuItem · function · L1903-L1916 — focusMenuItem = (offset: 1 | -1)
+- closeMenu · function · L1918-L1921 — closeMenu = (taskId: string)
+- handleMenuButtonKeyDown · function · L1923-L1937 — handleMenuButtonKeyDown = (e: React.KeyboardEvent, taskId: string)
+- handleMenuItemKeyDown · function · L1939-L1955 — handleMenuItemKeyDown = (e: React.KeyboardEvent, taskId: string)
+- handleRenameClick · function · L1957-L1963 — handleRenameClick = (e: React.MouseEvent, task: Task)
+- handleRenameSubmit · function · L1965-L1972 — handleRenameSubmit = async (taskId: string)
+- handlePinClick · function · L1974-L1994 — handlePinClick = async (e: React.MouseEvent, task: Task)
+- handleRenameKeyDown · function · L1996-L2003 — handleRenameKeyDown = (e: React.KeyboardEvent, taskId: string)
+- handleArchiveClick · function · L2005-L2028 — handleArchiveClick = async (e: React.MouseEvent, taskId: string)
+- toggleCollapse · function · L2030-L2041 — toggleCollapse = (e: React.MouseEvent, taskId: string)
+- getStatusIndicator · function · L2043-L2141 — getStatusIndicator = (status: Task["status"], showCompletionAttention = false)
+- getStatusClass · function · L2143-L2155 — getStatusClass = (status: Task["status"], showCompletionAttention = false)
+- getSubagentIcon · function · L2157-L2180 — getSubagentIcon = (task: Task)
+- handleNewTask · function · L2182-L2189 — handleNewTask = ()
+- renderTaskRow · function · L2226-L2516 — renderTaskRow = ( node: TaskTreeNode, rootIndex: number, depth: number = 0, isLast: boolean = true, grouped = false, ): React.ReactNode
+- renderTaskNode · function · L2518-L2545 — renderTaskNode = ( node: TaskTreeNode, index: number, depth: number = 0, isLast: boolean = true, ): React.ReactNode
+- renderWorkspaceMenu · function · L2547-L2639 — renderWorkspaceMenu = (workspaceId: string): React.ReactNode
+- renderSidebarVirtualRow · function · L2641-L2845 — renderSidebarVirtualRow = (row: SidebarVirtualRow): React.ReactNode
+- InfraWalletBadge · function · L3581-L3640 — function InfraWalletBadge({ onOpenSettings }: { onOpenSettings: () => void })
+- load · function · L3589-L3604 — load = async ()

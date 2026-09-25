@@ -1,0 +1,30 @@
+# src/electron/agent/orchestration/OrchestrationGraphRepository.ts
+
+- safeJsonParse · function · L12-L19 — function safeJsonParse<T>(value: string | null | undefined, fallback: T): T
+- RunRow · interface · L21-L32 — interface RunRow
+- NodeRow · interface · L34-L67 — interface NodeRow
+- EdgeRow · interface · L69-L74 — interface EdgeRow
+- rowToRun · function · L76-L89 — function rowToRun(row: RunRow): OrchestrationGraphRun
+- rowToNode · function · L91-L126 — function rowToNode(row: NodeRow): OrchestrationGraphNode
+- rowToEdge · function · L128-L135 — function rowToEdge(row: EdgeRow): OrchestrationGraphEdge
+- OrchestrationGraphSnapshot · interface · L137-L141 — interface OrchestrationGraphSnapshot
+- OrchestrationGraphEdgeInsert · type · L143-L145 — type OrchestrationGraphEdgeInsert = Omit<OrchestrationGraphEdge, "id" | "runId"> & { id?: string; };
+- OrchestrationGraphRepository · class · L147-L673 — class OrchestrationGraphRepository
+- constructor · method · L148-L148 — constructor(private readonly db: Database.Database)
+- createRun · method · L150-L269 — createRun(input: { run: Omit<OrchestrationGraphRun, "createdAt" | "updatedAt"> & { id?: string; createdAt?: number; updatedAt?: number; }; nodes: Array< Omit<OrchestrationGraphNode, "runId" | "createdAt" | "updatedAt"> & { id?: string; createdAt?: number; updatedAt?: number; } >; edges?: OrchestrationGraphEdgeInsert[]; }): OrchestrationGraphSnapshot
+- appendNodes · method · L271-L361 — appendNodes(input: { runId: string; nodes: Array< Omit<OrchestrationGraphNode, "runId" | "createdAt" | "updatedAt"> & { id?: string; createdAt?: number; updatedAt?: number; } >; edges?: OrchestrationGraphEdgeInsert[]; }): OrchestrationGraphSnapshot | undefined
+- findSnapshotByRunId · method · L363-L371 — findSnapshotByRunId(runId: string): OrchestrationGraphSnapshot | undefined
+- findSnapshotByRootTaskId · method · L373-L381 — findSnapshotByRootTaskId(rootTaskId: string): OrchestrationGraphSnapshot | undefined
+- listSnapshotsByRootTaskId · method · L383-L392 — listSnapshotsByRootTaskId(rootTaskId: string): OrchestrationGraphSnapshot[]
+- listRunningSnapshots · method · L394-L403 — listRunningSnapshots(): OrchestrationGraphSnapshot[]
+- listNodesByRun · method · L405-L412 — listNodesByRun(runId: string): OrchestrationGraphNode[]
+- listEdgesByRun · method · L414-L419 — listEdgesByRun(runId: string): OrchestrationGraphEdge[]
+- findNodeByHandle · method · L421-L435 — findNodeByHandle(rootTaskId: string, handle: string): OrchestrationGraphNode | undefined
+- findNodeById · method · L437-L442 — findNodeById(nodeId: string): OrchestrationGraphNode | undefined
+- findNodeByTeamItemId · method · L444-L449 — findNodeByTeamItemId(teamItemId: string): OrchestrationGraphNode | undefined
+- findSnapshotByTeamRunId · method · L451-L462 — findSnapshotByTeamRunId(teamRunId: string): OrchestrationGraphSnapshot | undefined
+- findNodeByAcpTaskId · method · L464-L469 — findNodeByAcpTaskId(acpTaskId: string): OrchestrationGraphNode | undefined
+- updateRun · method · L471-L504 — updateRun( runId: string, updates: Partial< Pick<OrchestrationGraphRun, "status" | "maxParallel" | "metadata" | "completedAt"> >, ): OrchestrationGraphRun | undefined
+- updateNode · method · L506-L605 — updateNode( nodeId: string, updates: Partial< Pick< OrchestrationGraphNode, | "status" | "taskId" | "remoteTaskId" | "publicHandle" | "summary" | "output" | "error" | "startedAt" | "completedAt" | "workerRole" | "verificationVerdict" | "verificationReport" | "semanticSummary" | "agentConfig" | "metadata" > >, ): OrchestrationGraphNode | undefined
+- createNodeEvent · method · L607-L619 — createNodeEvent( runId: string, nodeId: string, eventType: string, payload: Record<string, unknown>, ): void
+- listNodeNotifications · method · L621-L672 — listNodeNotifications(runId: string): OrchestrationNodeNotification[]

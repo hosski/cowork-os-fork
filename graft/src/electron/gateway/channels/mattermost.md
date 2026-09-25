@@ -1,0 +1,30 @@
+# src/electron/gateway/channels/mattermost.ts
+
+- MattermostAdapter · class · L37-L537 — class MattermostAdapter implements ChannelAdapter
+- constructor · method · L60-L71 — constructor(config: MattermostConfig)
+- status · method · L73-L75 — get status(): ChannelStatus
+- botUsername · method · L77-L79 — get botUsername(): string | undefined
+- connect · method · L84-L145 — async connect(): Promise<void>
+- disconnect · method · L150-L169 — async disconnect(): Promise<void>
+- sendMessage · method · L174-L203 — async sendMessage(message: OutgoingMessage): Promise<string>
+- uploadAttachment · method · L208-L238 — private async uploadAttachment( channelId: string, attachment: MessageAttachment, ): Promise<string | null>
+- editMessage · method · L243-L249 — async editMessage(chatId: string, messageId: string, text: string): Promise<void>
+- deleteMessage · method · L254-L260 — async deleteMessage(chatId: string, messageId: string): Promise<void>
+- sendDocument · method · L265-L282 — async sendDocument(chatId: string, filePath: string, caption?: string): Promise<string>
+- sendPhoto · method · L287-L289 — async sendPhoto(chatId: string, filePath: string, caption?: string): Promise<string>
+- onMessage · method · L294-L296 — onMessage(handler: MessageHandler): void
+- onError · method · L301-L303 — onError(handler: ErrorHandler): void
+- onStatusChange · method · L308-L310 — onStatusChange(handler: StatusHandler): void
+- getInfo · method · L315-L326 — async getInfo(): Promise<ChannelInfo>
+- addReaction · method · L335-L343 — async addReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- removeReaction · method · L348-L355 — async removeReaction(chatId: string, messageId: string, emoji: string): Promise<void>
+- handleIncomingPost · method · L364-L422 — private async handleIncomingPost(post: MattermostPost, channelType: string): Promise<void>
+- convertAttachments · method · L427-L451 — private convertAttachments(post: MattermostPost): MessageAttachment[] | undefined
+- getCachedUser · method · L456-L469 — private async getCachedUser(userId: string): Promise<MattermostUser>
+- isMessageProcessed · method · L474-L476 — private isMessageProcessed(messageId: string): boolean
+- markMessageProcessed · method · L481-L488 — private markMessageProcessed(messageId: string): void
+- startDedupCleanup · method · L493-L497 — private startDedupCleanup(): void
+- cleanupDedupCache · method · L502-L509 — private cleanupDedupCache(): void
+- handleError · method · L514-L522 — private handleError(error: Error, context?: string): void
+- setStatus · method · L527-L536 — private setStatus(status: ChannelStatus, error?: Error): void
+- createMattermostAdapter · function · L542-L550 — function createMattermostAdapter(config: MattermostConfig): MattermostAdapter

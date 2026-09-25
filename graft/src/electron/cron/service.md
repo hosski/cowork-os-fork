@@ -1,0 +1,44 @@
+# src/electron/cron/service.ts
+
+- CronServiceState · interface · L57-L102 — interface CronServiceState
+- CronService · class · L104-L1629 — class CronService
+- constructor · method · L107-L135 — constructor(deps: CronServiceDeps)
+- start · method · L141-L168 — async start(): Promise<void>
+- startWebhookServer · method · L173-L201 — private async startWebhookServer(): Promise<void>
+- stop · method · L206-L218 — async stop(): Promise<void>
+- status · method · L223-L251 — async status(): Promise<CronStatusSummary>
+- getRunHistory · method · L256-L271 — async getRunHistory(jobId: string): Promise<CronRunHistoryResult | null>
+- list · method · L276-L291 — async list(opts?: { includeDisabled?: boolean }): Promise<CronListResult>
+- get · method · L296-L301 — async get(id: string): Promise<CronJob | null>
+- add · method · L306-L377 — async add(input: CronJobCreate): Promise<CronAddResult>
+- update · method · L382-L453 — async update(id: string, patch: CronJobPatch): Promise<CronUpdateResult>
+- remove · method · L458-L479 — async remove(id: string): Promise<CronRemoveResult>
+- run · method · L484-L522 — async run(id: string, mode: "due" | "force" = "due"): Promise<CronRunResult>
+- getContext · method · L528-L533 — private getContext()
+- ensureStore · method · L535-L543 — private ensureStore(): CronStoreFile
+- persist · method · L545-L549 — private async persist(): Promise<void>
+- emit · method · L551-L553 — private emit(evt: CronEvent): void
+- getJobTimeoutMs · method · L555-L557 — private getJobTimeoutMs(job: CronJob): number
+- isActiveTaskStatus · method · L559-L561 — private isActiveTaskStatus(status: unknown): boolean
+- isUniqueEnabledTaskTitle · method · L563-L574 — private isUniqueEnabledTaskTitle(job: CronJob): boolean
+- findActivePersistedRun · method · L576-L599 — private async findActivePersistedRun( job: CronJob, ): Promise<{ id: string; status: string } | null>
+- reconcileLoadedJobs · method · L601-L653 — private async reconcileLoadedJobs(nowMs: number): Promise<void>
+- resolveWorkspaceContext · method · L655-L685 — private async resolveWorkspaceContext( job: CronJob, nowMs: number, phase: "add" | "run", ): Promise<CronWorkspaceContext | null>
+- withLock · method · L687-L700 — private async withLock<T>(fn: () => Promise<T>): Promise<T>
+- executeJob · method · L705-L1073 — private async executeJob(job: CronJob, nowMs: number): Promise<CronRunResult>
+- deliverToChannel · method · L1078-L1200 — private async deliverToChannel( job: CronJob, status: "ok" | "partial_success" | "needs_user_action" | "error" | "timeout", taskId?: string, error?: string, resultText?: string, runAtMs?: number, ): Promise<{ attempted: boolean; success?: boolean; error?: string; mode?: "direct" | "outbox"; attempts: number; deliverableStatus: "none" | "queued" | "sent" | "dead_letter"; }>
+- doDeliver · function · L1134-L1146 — doDeliver = ()
+- renderTaskPrompt · method · L1202-L1320 — private async renderTaskPrompt( job: CronJob, runAtMs: number, prevRunAtMs?: number, workspaceContext?: CronWorkspaceContext | null, ): Promise<string>
+- formatLocalYmd · function · L1212-L1213 — formatLocalYmd = (d: Date): string
+- armTimer · method · L1325-L1364 — private armTimer(): void
+- stopTimer · method · L1366-L1371 — private stopTimer(): void
+- computeOutboxBackoffMs · method · L1373-L1379 — private computeOutboxBackoffMs(attempt: number): number
+- enqueueOutboxEntry · method · L1381-L1432 — private enqueueOutboxEntry(params: { job: CronJob; runAtMs: number; status: "ok" | "partial_success" | "needs_user_action" | "error" | "timeout"; channelType: NonNullable<CronJob["delivery"]>["channelType"]; channelDbId?: string; channelId: string; summaryOnly?: boolean; resultText?: string; error?: string; taskId?: string; idempotencyKey: string; }): boolean
+- updateRunHistoryDeliveryFromOutbox · method · L1434-L1458 — private updateRunHistoryDeliveryFromOutbox(entry: CronOutboxEntry): void
+- processOutboxQueue · method · L1460-L1537 — private async processOutboxQueue(): Promise<void>
+- armOutboxTimer · method · L1539-L1553 — private armOutboxTimer(): void
+- stopOutboxTimer · method · L1555-L1560 — private stopOutboxTimer(): void
+- onTimer · method · L1565-L1609 — private async onTimer(): Promise<void>
+- clearRunHistory · method · L1614-L1628 — async clearRunHistory(jobId: string): Promise<boolean>
+- getCronService · function · L1634-L1636 — function getCronService(): CronService | null
+- setCronService · function · L1638-L1640 — function setCronService(service: CronService | null): void

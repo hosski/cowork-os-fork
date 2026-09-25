@@ -1,0 +1,21 @@
+# src/electron/acp/agent-registry.ts
+
+- AgentRoleLike · interface · L25-L33 — interface AgentRoleLike
+- ACPAgentRegistry · class · L38-L300 — class ACPAgentRegistry
+- constructor · method · L48-L50 — constructor(private db?: Database.Database)
+- loadRemoteAgents · method · L52-L67 — private loadRemoteAgents(): void
+- persistRemoteAgent · method · L69-L94 — private persistRemoteAgent(card: ACPAgentCard): void
+- deleteRemoteAgentFromDb · method · L96-L99 — private deleteRemoteAgentFromDb(agentId: string): void
+- roleToCard · method · L104-L124 — private roleToCard(role: AgentRoleLike): ACPAgentCard
+- getLocalAgents · method · L129-L131 — getLocalAgents(roles: AgentRoleLike[]): ACPAgentCard[]
+- getRemoteAgents · method · L136-L138 — getRemoteAgents(): ACPAgentCard[]
+- getAllAgents · method · L143-L145 — getAllAgents(roles: AgentRoleLike[]): ACPAgentCard[]
+- getAgent · method · L150-L163 — getAgent(agentId: string, roles: AgentRoleLike[]): ACPAgentCard | undefined
+- discover · method · L168-L196 — discover(params: ACPDiscoverParams, roles: AgentRoleLike[]): ACPAgentCard[]
+- registerRemoteAgent · method · L201-L234 — registerRemoteAgent(params: ACPAgentRegisterParams): ACPAgentCard
+- unregisterRemoteAgent · method · L239-L245 — unregisterRemoteAgent(agentId: string): boolean
+- updateAgentStatus · method · L250-L257 — updateAgentStatus(agentId: string, status: ACPAgentCard["status"]): boolean
+- pushMessage · method · L262-L273 — pushMessage(agentId: string, message: import("./types").ACPMessage): void
+- getMessages · method · L278-L284 — getMessages(agentId: string, drain = false): import("./types").ACPMessage[]
+- remoteAgentCount · method · L289-L291 — get remoteAgentCount(): number
+- clear · method · L296-L299 — clear(): void

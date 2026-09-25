@@ -1,0 +1,38 @@
+# src/renderer/utils/task-event-visibility.ts
+
+- asObject · function · L103-L106 — function asObject(value: unknown): Record<string, unknown>
+- getCompactionPayloadText · function · L108-L115 — function getCompactionPayloadText(event: TaskEvent, keys: string[]): string
+- isDuplicateContextSummaryEvent · function · L122-L158 — function isDuplicateContextSummaryEvent( event: TaskEvent, events: readonly TaskEvent[], ): boolean
+- isResolvedContextCompactionStartEvent · function · L171-L193 — function isResolvedContextCompactionStartEvent( event: TaskEvent, events: readonly TaskEvent[], ): boolean
+- isRedundantStageTransitionGroupEvent · function · L204-L224 — function isRedundantStageTransitionGroupEvent( event: TaskEvent, events: readonly TaskEvent[], ): boolean
+- getPayloadText · function · L226-L229 — function getPayloadText(payload: Record<string, unknown>, key: string): string
+- filterResolvedApprovalNarration · function · L236-L245 — function filterResolvedApprovalNarration( events: TaskEvent[], resolutionEvents: TaskEvent[] = events, ): TaskEvent[]
+- isLlmRequestCancelledEvent · function · L247-L273 — function isLlmRequestCancelledEvent(event: TaskEvent): boolean
+- getTimelineGroupPayload · function · L275-L277 — function getTimelineGroupPayload(event: TaskEvent): Record<string, unknown>
+- getTimelineGroupId · function · L279-L284 — function getTimelineGroupId(event: TaskEvent): string
+- getTimelineGroupLabel · function · L286-L289 — function getTimelineGroupLabel(event: TaskEvent): string
+- isSubStageTimelineGroupEvent · function · L291-L296 — function isSubStageTimelineGroupEvent(event: TaskEvent): boolean
+- isStageBoundaryTimelineGroupEvent · function · L298-L313 — function isStageBoundaryTimelineGroupEvent(event: TaskEvent): boolean
+- isToolBatchTimelineGroupEvent · function · L315-L329 — function isToolBatchTimelineGroupEvent(event: TaskEvent): boolean
+- isToolBatchLaneEvent · function · L331-L349 — function isToolBatchLaneEvent(event: TaskEvent): boolean
+- isImplementationOnlyBrowserActionEvent · function · L351-L353 — function isImplementationOnlyBrowserActionEvent(event: TaskEvent): boolean
+- isImportantTaskEvent · function · L356-L365 — function isImportantTaskEvent(event: TaskEvent): boolean
+- getEventMessage · function · L367-L373 — function getEventMessage(event: TaskEvent): string
+- normalizeFailureTextForDedupe · function · L377-L383 — function normalizeFailureTextForDedupe(value: string): string
+- getComparableFailureText · function · L385-L402 — function getComparableFailureText(event: TaskEvent): string
+- isTimelineErrorStepFailureDuplicate · function · L404-L425 — function isTimelineErrorStepFailureDuplicate(current: TaskEvent, previous: TaskEvent): boolean
+- ArtifactPathIdentity · interface · L427-L431 — interface ArtifactPathIdentity
+- normalizeArtifactPath · function · L433-L445 — function normalizeArtifactPath(value: unknown): ArtifactPathIdentity | undefined
+- getArtifactPathIdentity · function · L447-L474 — function getArtifactPathIdentity(event: TaskEvent): ArtifactPathIdentity | undefined
+- artifactPathsRepresentSameOutput · function · L476-L494 — function artifactPathsRepresentSameOutput( current: ArtifactPathIdentity, previous: ArtifactPathIdentity, ): boolean
+- filterDuplicateTimelineArtifacts · function · L498-L533 — function filterDuplicateTimelineArtifacts(events: TaskEvent[]): TaskEvent[]
+- filterAdjacentDuplicateTimelineFailures · function · L535-L549 — function filterAdjacentDuplicateTimelineFailures(events: TaskEvent[]): TaskEvent[]
+- getToolCorrelationId · function · L551-L565 — function getToolCorrelationId(payload: Record<string, unknown>): string
+- getStepId · function · L567-L576 — function getStepId(event: TaskEvent, payload: Record<string, unknown>): string
+- getStepDescription · function · L578-L583 — function getStepDescription(payload: Record<string, unknown>): string
+- buildVerboseDuplicateKey · function · L585-L652 — function buildVerboseDuplicateKey(event: TaskEvent): string | null
+- isLowValueVerboseLifecycleEvent · function · L654-L707 — function isLowValueVerboseLifecycleEvent(event: TaskEvent): boolean
+- isVerbosePostFailureCutoffEvent · function · L709-L718 — function isVerbosePostFailureCutoffEvent(event: TaskEvent): boolean
+- filterVerboseTimelineNoise · function · L725-L785 — function filterVerboseTimelineNoise(events: TaskEvent[]): TaskEvent[]
+- shouldShowTaskEventInSummaryMode · function · L787-L803 — function shouldShowTaskEventInSummaryMode( event: TaskEvent, taskStatus?: TaskStatus, ): boolean
+- shouldShowTaskEventInStepFeed · function · L805-L819 — function shouldShowTaskEventInStepFeed( event: TaskEvent, options?: { verboseSteps?: boolean }, ): boolean

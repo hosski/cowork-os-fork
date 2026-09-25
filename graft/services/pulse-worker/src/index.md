@@ -1,0 +1,25 @@
+# services/pulse-worker/src/index.ts
+
+- D1Result · interface · L1-L4 — interface D1Result<T = unknown>
+- D1Statement · interface · L5-L10 — interface D1Statement
+- D1Database · interface · L11-L14 — interface D1Database
+- ExecutionContext · interface · L15-L17 — interface ExecutionContext
+- ScheduledController · interface · L18-L20 — interface ScheduledController
+- Env · interface · L22-L26 — interface Env
+- json · function · L40-L42 — function json(body: unknown, status = 200): Response
+- exactKeys · function · L44-L49 — function exactKeys(value: Record<string, unknown>, keys: string[]): boolean
+- record · function · L51-L53 — function record(value: unknown): value is Record<string, unknown>
+- boundedCount · function · L55-L57 — function boundedCount(value: unknown): value is number
+- digest · function · L59-L62 — async function digest(value: string): Promise<string>
+- installationKey · function · L64-L74 — async function installationKey(id: string, secret: string): Promise<string>
+- readJson · function · L76-L84 — async function readJson(request: Request): Promise<Record<string, unknown>>
+- validateEnrollment · function · L86-L100 — function validateEnrollment(body: Record<string, unknown>): string | null
+- validateDaily · function · L102-L195 — function validateDaily(body: Record<string, unknown>): string | null
+- enroll · function · L197-L213 — async function enroll(request: Request, env: Env): Promise<Response>
+- daily · function · L215-L286 — async function daily(request: Request, env: Env): Promise<Response>
+- removeInstallation · function · L288-L315 — async function removeInstallation(request: Request, env: Env): Promise<Response>
+- summary · function · L317-L375 — async function summary(request: Request, env: Env): Promise<Response>
+- latestVersion · function · L377-L438 — async function latestVersion(request: Request, env: Env): Promise<Response>
+- route · function · L469-L484 — async function route(request: Request, env: Env): Promise<Response>
+- fetch · method · L487-L497 — async fetch(request: Request, env: Env): Promise<Response>
+- scheduled · method · L498-L516 — async scheduled( _controller: ScheduledController, env: Env, ctx: ExecutionContext, ): Promise<void>

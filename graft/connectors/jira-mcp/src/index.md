@@ -1,0 +1,52 @@
+# connectors/jira-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L35 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L37-L46 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L48-L55 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- JiraConfig · type · L78-L87 — type JiraConfig = { baseUrl?: string; apiVersion: string; accessToken?: string; email?: string; apiToken?: string; clientId?: string; clientSecret?: string; refreshToken?: string; };
+- RateLimitInfo · type · L89-L93 — type RateLimitInfo = { limit: number; remaining: number; resetAt?: string; };
+- RequestMeta · type · L95-L101 — type RequestMeta = { durationMs: number; rateLimit?: RateLimitInfo; vendorRequestId?: string; apiVersion: string; baseUrl?: string; };
+- RequestResult · type · L103-L107 — type RequestResult = { data: any; meta: RequestMeta; nextCursor?: string; };
+- JiraClient · class · L109-L304 — class JiraClient
+- constructor · method · L112-L114 — constructor(config: JiraConfig)
+- health · method · L116-L118 — async health(): Promise<RequestResult>
+- listProjects · method · L120-L126 — async listProjects(startAt?: number, maxResults?: number): Promise<RequestResult>
+- getIssue · method · L128-L136 — async getIssue(issueIdOrKey: string, fields?: string[]): Promise<RequestResult>
+- searchIssues · method · L138-L149 — async searchIssues( jql: string, startAt?: number, maxResults?: number, fields?: string[], ): Promise<RequestResult>
+- createIssue · method · L151-L153 — async createIssue(payload: Record<string, any>): Promise<RequestResult>
+- updateIssue · method · L155-L157 — async updateIssue(issueIdOrKey: string, payload: Record<string, any>): Promise<RequestResult>
+- getBaseUrl · method · L159-L164 — private getBaseUrl(): string
+- canRefresh · method · L166-L168 — private canRefresh(): boolean
+- ensureAccessToken · method · L170-L184 — private async ensureAccessToken(): Promise<string>
+- getAuthHeader · method · L186-L198 — private async getAuthHeader(): Promise<string>
+- requestJson · method · L200-L246 — private async requestJson(method: string, path: string, body?: any): Promise<RequestResult>
+- refreshAccessToken · method · L248-L275 — private async refreshAccessToken(): Promise<void>
+- extractErrorMessage · method · L277-L303 — private async extractErrorMessage(res: Response): Promise<string>
+- parseRateLimit · function · L306-L318 — function parseRateLimit(headers: Headers): RateLimitInfo | undefined
+- numberHeader · function · L320-L324 — function numberHeader(value: string | null): number | undefined
+- deriveNextCursor · function · L326-L339 — function deriveNextCursor(data: any): string | undefined
+- ToolProvider · type · L343-L346 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L348-L530 — class StdioMCPServer
+- constructor · method · L352-L355 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L357-L369 — start(): void
+- stop · method · L371-L377 — stop(): void
+- handleLine · method · L379-L389 — private handleLine(line: string): void
+- handleMessage · method · L391-L400 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L402-L435 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L437-L443 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L445-L459 — private handleInitialize(_params: any): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsList · method · L461-L463 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L465-L492 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L494-L497 — private handleShutdown(): Record<string, never>
+- sendResult · method · L499-L502 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L504-L511 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L513-L515 — private sendMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- requireInitialized · method · L517-L521 — private requireInitialized(): void
+- createError · method · L523-L529 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }
+- buildEnvelope · function · L705-L720 — function buildEnvelope(result: RequestResult, requestId?: string, warnings: string[] = []): any
+- parseCursor · function · L722-L726 — function parseCursor(cursor?: string): number | undefined
+- buildCreatePayload · function · L728-L740 — function buildCreatePayload( projectKey: string, issueType: string, fields: Record<string, any>, ): Record<string, any>

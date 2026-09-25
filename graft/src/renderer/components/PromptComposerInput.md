@@ -1,0 +1,35 @@
+# src/renderer/components/PromptComposerInput.tsx
+
+- IntegrationMentionSpan · type · L19-L24 — type IntegrationMentionSpan = { spanId: string; start: number; end: number; mention: IntegrationMentionSelection; };
+- PromptComposerInputHandle · type · L26-L31 — type PromptComposerInputHandle = { focus: () => void; setSelectionRange: (start: number, end: number) => void; getSelectionStart: () => number; resize: (shrink?: boolean) => void; };
+- PromptComposerInputProps · type · L33-L51 — type PromptComposerInputProps = { value: string; mentions: IntegrationMentionSpan[]; className: string; placeholder?: string; ariaLabel: string; onChange: ( value: string, cursor: number, mentions: IntegrationMentionSpan[], shrink: boolean, ) => void; onKeyDown: (event: ReactKeyboardEvent<HTMLDivElement>) => void; onPaste: (event: ReactClipboardEvent<HTMLDivElement>) => void | Promise<void>; onCursorChange: (cursor: number) => void; onContentPresenceChange?: (hasContent: boolean) => void; onFocus?: () => void; onBlur?: () => void; };
+- RenderPart · type · L53-L56 — type RenderPart = | { type: "text"; key: string; text: string } | { type: "mention"; key: string; span: IntegrationMentionSpan } | { type: "link"; key: string; span: ComposerLinkSpan };
+- ComposerLinkSpan · type · L58-L65 — type ComposerLinkSpan = { start: number; end: number; markdown: string; url: string; label: string; domain: string; };
+- canonicalMentionText · function · L67-L67 — canonicalMentionText = (mention: IntegrationMentionSelection): string
+- parseWebUrl · function · L70-L77 — function parseWebUrl(text: string): URL | null
+- formatComposerLinkLabel · function · L79-L92 — function formatComposerLinkLabel(url: URL): string
+- formatPastedWebLinkAsMarkdown · function · L94-L100 — function formatPastedWebLinkAsMarkdown(text: string): string | null
+- getPastedText · function · L102-L112 — function getPastedText(clipboardData: Pick<DataTransfer, "getData">): string
+- getFaviconUrl · function · L114-L116 — function getFaviconUrl(domain: string): string
+- sortedValidMentions · function · L118-L128 — function sortedValidMentions( value: string, mentions: IntegrationMentionSpan[], ): IntegrationMentionSpan[]
+- parseMarkdownLinks · function · L130-L155 — function parseMarkdownLinks(value: string, mentions: IntegrationMentionSpan[]): ComposerLinkSpan[]
+- buildRenderParts · function · L157-L195 — function buildRenderParts(value: string, mentions: IntegrationMentionSpan[]): RenderPart[]
+- getTokenElement · function · L197-L205 — function getTokenElement(node: Node | null): HTMLElement | null
+- textLengthForNode · function · L207-L223 — function textLengthForNode(node: Node, mentionsById: Map<string, IntegrationMentionSpan>): number
+- getIndexForDomPosition · function · L225-L277 — function getIndexForDomPosition( root: HTMLElement, targetNode: Node | null, targetOffset: number, mentionsById: Map<string, IntegrationMentionSpan>, ): number
+- visit · function · L247-L274 — visit = (node: Node): void
+- getSelectionIndex · function · L279-L286 — function getSelectionIndex( root: HTMLElement, mentionsById: Map<string, IntegrationMentionSpan>, ): number
+- findDomPosition · function · L288-L335 — function findDomPosition( root: HTMLElement, target: number, mentionsById: Map<string, IntegrationMentionSpan>, ): { node: Node; offset: number }
+- visit · function · L296-L332 — visit = (node: Node): { node: Node; offset: number } | null
+- childOffset · function · L337-L340 — function childOffset(node: Node): number
+- setDomSelection · function · L342-L357 — function setDomSelection( root: HTMLElement, start: number, end: number, mentionsById: Map<string, IntegrationMentionSpan>, ): void
+- readEditable · function · L359-L388 — function readEditable( root: HTMLElement, mentionsById: Map<string, IntegrationMentionSpan>, ): { value: string; mentions: IntegrationMentionSpan[]; cursor: number }
+- visit · function · L366-L384 — visit = (node: Node): void
+- replaceRange · function · L390-L405 — function replaceRange( value: string, mentions: IntegrationMentionSpan[], start: number, end: number, replacement: string, ): { value: string; mentions: IntegrationMentionSpan[]; cursor: number }
+- renderComposerDom · function · L407-L456 — function renderComposerDom(root: HTMLElement, parts: RenderPart[]): void
+- listener · function · L686-L686 — listener = (event: Event)
+- handleKeyDown · function · L691-L725 — handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>)
+- handlePaste · function · L727-L744 — handlePaste = (event: ReactClipboardEvent<HTMLDivElement>)
+- handleCopy · function · L746-L751 — handleCopy = (event: ReactClipboardEvent<HTMLDivElement>)
+- handleCut · function · L753-L759 — handleCut = (event: ReactClipboardEvent<HTMLDivElement>)
+- handleCursorChange · function · L761-L765 — handleCursorChange = ()

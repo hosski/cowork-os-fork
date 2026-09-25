@@ -1,0 +1,21 @@
+# src/electron/agents/LoreService.ts
+
+- Any · type · L8-L8 — type Any = any;
+- LoreEntry · type · L10-L14 — type LoreEntry = { display: string; date: string; taskId: string; };
+- WorkspaceState · type · L16-L19 — type WorkspaceState = { entries: LoreEntry[]; flushTimer: ReturnType<typeof setTimeout> | null; };
+- sanitizeInline · function · L32-L38 — function sanitizeInline(text: string): string
+- getLocalDateStamp · function · L40-L46 — function getLocalDateStamp(timestampMs: number): string
+- upsertMarkedSection · function · L48-L71 — function upsertMarkedSection(markdown: string, bodyLines: string[]): string
+- defaultLoreTemplate · function · L73-L92 — function defaultLoreTemplate(): string
+- LoreService · class · L94-L312 — class LoreService
+- constructor · method · L110-L113 — constructor(private db: Database.Database)
+- start · method · L115-L128 — async start(agentDaemon: AgentDaemon): Promise<void>
+- stop · method · L130-L147 — async stop(): Promise<void>
+- getWorkspaceState · method · L149-L155 — private getWorkspaceState(workspaceId: string): WorkspaceState
+- ensureKitDirExists · method · L157-L164 — private ensureKitDirExists(workspacePath: string): boolean
+- ingestTaskCompleted · method · L166-L205 — private ingestTaskCompleted(taskId: string, payload: Any, timestampMs: number): void
+- scheduleFlush · method · L207-L215 — private scheduleFlush(workspaceId: string): void
+- flushAll · method · L217-L222 — async flushAll(): Promise<void>
+- flushWorkspace · method · L224-L270 — private async flushWorkspace(workspaceId: string): Promise<void>
+- extractExistingAutoEntries · method · L272-L282 — private extractExistingAutoEntries(markdown: string): string[]
+- rebuildFromRecentCompletedTasks · method · L284-L311 — private async rebuildFromRecentCompletedTasks(): Promise<void>

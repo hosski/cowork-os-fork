@@ -1,0 +1,35 @@
+# src/electron/agent/llm/bedrock-provider.ts
+
+- BedrockProvider · class · L33-L906 — class BedrockProvider implements LLMProvider
+- constructor · method · L45-L72 — constructor(config: LLMProviderConfig)
+- createMessage · method · L74-L163 — async createMessage(request: LLMRequest): Promise<LLMResponse>
+- testConnection · method · L165-L226 — async testConnection(): Promise<{ success: boolean; error?: string }>
+- resolveModelId · method · L228-L253 — private async resolveModelId(requested: string): Promise<string>
+- resolveInferenceProfileFallback · method · L255-L312 — private async resolveInferenceProfileFallback(requestedModel: string): Promise<string | null>
+- getClaudeInferenceProfiles · method · L314-L374 — private async getClaudeInferenceProfiles(): Promise<InferenceProfileCandidate[]>
+- extractModelToken · method · L376-L400 — private extractModelToken(input: string): string
+- isClaudeModelId · method · L402-L405 — private isClaudeModelId(modelId: string): boolean
+- clampToKnownOutputLimit · method · L423-L437 — private clampToKnownOutputLimit(resolvedModel: string, requestedMaxTokens: number): number
+- convertSystem · method · L439-L463 — private convertSystem( system: string, systemBlocks?: LLMSystemBlock[], promptCache?: LLMRequest["promptCache"], ): SystemContentBlock[]
+- ensureConversationEndsWithUserMessage · method · L465-L488 — private ensureConversationEndsWithUserMessage(messages: LLMMessage[]): LLMMessage[]
+- isSyntheticAssistantPlaceholder · method · L490-L503 — private isSyntheticAssistantPlaceholder(message: LLMMessage): boolean
+- prepareMessagesForConverse · method · L505-L520 — private prepareMessagesForConverse(messages: LLMMessage[]): LLMMessage[]
+- mergeConsecutiveUserMessages · method · L522-L552 — private mergeConsecutiveUserMessages(messages: LLMMessage[]): { messages: LLMMessage[]; mergedTurns: number; }
+- Normalized · type · L526-L526 — type Normalized = { role: "user" | "assistant"; blocks: Any[] };
+- rewriteUnpairedAssistantToolUse · method · L554-L599 — private rewriteUnpairedAssistantToolUse(messages: LLMMessage[]): { messages: LLMMessage[]; rewrittenBlocks: number; }
+- rewriteInvalidUserToolResults · method · L601-L666 — private rewriteInvalidUserToolResults(messages: LLMMessage[]): { messages: LLMMessage[]; rewrittenBlocks: number; }
+- messageContentToBlocks · method · L668-L675 — private messageContentToBlocks(content: LLMMessage["content"]): Any[]
+- blocksToMessageContent · method · L677-L682 — private blocksToMessageContent(blocks: Any[]): LLMMessage["content"]
+- collectToolUseIds · method · L684-L695 — private collectToolUseIds(message: LLMMessage | null): Set<string>
+- collectUserToolResultIds · method · L697-L708 — private collectUserToolResultIds(message: LLMMessage | null): Set<string>
+- convertMessages · method · L710-L768 — private convertMessages( messages: LLMMessage[], toolNameMap?: ToolNameMap, promptCache?: LLMRequest["promptCache"], ): Message[]
+- convertTools · method · L770-L789 — private convertTools( tools: LLMTool[], toolNameMap?: ToolNameMap, promptCache?: LLMRequest["promptCache"], ): ToolConfiguration | undefined
+- isPromptCacheEnabled · method · L791-L793 — private isPromptCacheEnabled(promptCache?: LLMRequest["promptCache"]): boolean
+- buildCachePoint · method · L795-L802 — private buildCachePoint(ttl?: NonNullable<LLMRequest["promptCache"]>["ttl"]): Any
+- convertResponse · method · L804-L847 — private convertResponse(response: Any, toolNameMap?: ToolNameMap): LLMResponse
+- buildToolNameMap · method · L849-L876 — private buildToolNameMap(tools: LLMTool[]): ToolNameMap
+- normalizeToolName · method · L878-L881 — private normalizeToolName(name: string): string
+- shortHash · method · L883-L890 — private shortHash(input: string): string
+- mapStopReason · method · L892-L905 — private mapStopReason(reason: StopReason | undefined): LLMResponse["stopReason"]
+- ToolNameMap · interface · L908-L911 — interface ToolNameMap
+- InferenceProfileCandidate · interface · L913-L917 — interface InferenceProfileCandidate

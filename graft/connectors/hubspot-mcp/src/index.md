@@ -1,0 +1,44 @@
+# connectors/hubspot-mcp/src/index.ts
+
+- JSONRPCId · type · L5-L5 — type JSONRPCId = string | number;
+- JSONRPCRequest · type · L7-L12 — type JSONRPCRequest = { jsonrpc: "2.0"; id: JSONRPCId; method: string; params?: Record<string, any>; };
+- JSONRPCNotification · type · L14-L18 — type JSONRPCNotification = { jsonrpc: "2.0"; method: string; params?: Record<string, any>; };
+- JSONRPCResponse · type · L20-L25 — type JSONRPCResponse = { jsonrpc: "2.0"; id: JSONRPCId; result?: any; error?: { code: number; message: string; data?: any }; };
+- MCPToolProperty · type · L27-L35 — type MCPToolProperty = { type: string; description?: string; enum?: string[]; default?: any; items?: MCPToolProperty; properties?: Record<string, MCPToolProperty>; required?: string[]; };
+- MCPTool · type · L37-L46 — type MCPTool = { name: string; description?: string; inputSchema: { type: "object"; properties?: Record<string, MCPToolProperty>; required?: string[]; additionalProperties?: boolean; }; };
+- MCPServerInfo · type · L48-L55 — type MCPServerInfo = { name: string; version: string; protocolVersion?: string; capabilities?: { tools?: { listChanged?: boolean }; }; };
+- HubSpotConfig · type · L78-L84 — type HubSpotConfig = { baseUrl: string; accessToken?: string; clientId?: string; clientSecret?: string; refreshToken?: string; };
+- RequestMeta · type · L86-L90 — type RequestMeta = { durationMs: number; vendorRequestId?: string; baseUrl: string; };
+- RequestResult · type · L92-L96 — type RequestResult = { data: any; meta: RequestMeta; nextCursor?: string; };
+- HubSpotClient · class · L98-L254 — class HubSpotClient
+- constructor · method · L99-L99 — constructor(private config: HubSpotConfig)
+- health · method · L101-L103 — async health(): Promise<RequestResult>
+- searchObjects · method · L105-L111 — async searchObjects(objectType: string, payload: Record<string, any>): Promise<RequestResult>
+- getObject · method · L113-L127 — async getObject( objectType: string, objectId: string, properties?: string[], ): Promise<RequestResult>
+- createObject · method · L129-L133 — async createObject(objectType: string, properties: Record<string, any>): Promise<RequestResult>
+- updateObject · method · L135-L145 — async updateObject( objectType: string, objectId: string, properties: Record<string, any>, ): Promise<RequestResult>
+- getBaseUrl · method · L147-L149 — private getBaseUrl(): string
+- getAuthHeader · method · L151-L156 — private getAuthHeader(): string
+- requestJson · method · L158-L201 — private async requestJson(method: string, path: string, body?: any): Promise<RequestResult>
+- canRefresh · method · L203-L205 — private canRefresh(): boolean
+- ensureAuthHeader · method · L207-L219 — private async ensureAuthHeader(): Promise<string>
+- refreshAccessToken · method · L221-L253 — private async refreshAccessToken(): Promise<void>
+- ToolProvider · type · L258-L261 — type ToolProvider = { getTools(): MCPTool[]; executeTool(name: string, args: Record<string, any>): Promise<any>; };
+- StdioMCPServer · class · L263-L445 — class StdioMCPServer
+- constructor · method · L267-L270 — constructor( private toolProvider: ToolProvider, private serverInfo: MCPServerInfo, )
+- start · method · L272-L284 — start(): void
+- stop · method · L286-L292 — stop(): void
+- handleLine · method · L294-L304 — private handleLine(line: string): void
+- handleMessage · method · L306-L315 — private async handleMessage(message: any): Promise<void>
+- handleRequest · method · L317-L350 — private async handleRequest(request: JSONRPCRequest): Promise<void>
+- handleNotification · method · L352-L358 — private async handleNotification(notification: JSONRPCNotification): Promise<void>
+- handleInitialize · method · L360-L374 — private handleInitialize(_params: any): { protocolVersion: string; capabilities: MCPServerInfo["capabilities"]; serverInfo: MCPServerInfo; }
+- handleToolsList · method · L376-L378 — private handleToolsList(): { tools: MCPTool[] }
+- handleToolsCall · method · L380-L407 — private async handleToolsCall(params: any): Promise<any>
+- handleShutdown · method · L409-L412 — private handleShutdown(): Record<string, never>
+- sendResult · method · L414-L417 — private sendResult(id: JSONRPCId, result: any): void
+- sendError · method · L419-L426 — private sendError(id: JSONRPCId, code: number, message: string, data?: any): void
+- sendMessage · method · L428-L430 — private sendMessage(message: JSONRPCResponse | JSONRPCNotification): void
+- requireInitialized · method · L432-L436 — private requireInitialized(): void
+- createError · method · L438-L444 — private createError( code: number, message: string, data?: any, ): { code: number; message: string; data?: any }
+- buildEnvelope · function · L599-L611 — function buildEnvelope(result: RequestResult): any
