@@ -1,0 +1,112 @@
+╔══════════════════════════════════════════════════════════════════╗
+║   Mac Mini Remote OpenViking Sync Setup                         ║
+║   Keep your primary Mac asleep; sync runs on always-on Mini     ║
+╚══════════════════════════════════════════════════════════════════╝
+
+QUICK START (3 steps, ~10 minutes)
+
+Step 1: Register Device (on primary Mac)
+────────────────────────────────────────
+$ cd /Users/hosski/.cowork-os-fork
+$ node scripts/register-mac-mini-device.js --name "Mac Mini Studio" --host 192.168.1.50
+
+Expected output:
+  ✓ Device Name: Mac Mini Studio
+  ✓ Device ID: device-mac-mini-studio-...
+  ✓ Setup script created: ~/Library/Application Support/cowork-os/setup-mac-mini.sh
+
+
+Step 2: Run Setup on Mac Mini
+──────────────────────────────
+# Copy setup script to Mini
+$ scp ~/Library/Application\ Support/cowork-os/setup-mac-mini.sh hosski@192.168.1.50:~/
+
+# SSH to Mini
+$ ssh hosski@192.168.1.50
+
+# Run setup
+$ bash ~/setup-mac-mini.sh
+
+Expected output:
+  ✓ Launchd daemon loaded (runs at 2:00 AM daily)
+  ✓ Setup Complete
+
+
+Step 3: Connect in Devices Panel (primary Mac, in CoWork OS app)
+────────────────────────────────────────────────────────────────
+1. Open CoWork OS app (should already be running)
+2. Click "Devices" in left sidebar
+3. Find "Mac Mini Studio" in the device list
+4. Click "Connect"
+5. Wait for status to show "Online & Ready"
+6. Nightly sync now automatically dispatches to Mac Mini at 2 AM
+
+
+WHAT HAPPENS NEXT
+─────────────────
+Every night at 2:00 AM:
+  1. Mac Mini wakes (or continues if already on)
+  2. launchd daemon triggers sync-viking.js
+  3. Task events from CoWork DB are exported to OpenViking
+  4. Sync completes, logs saved locally
+  5. Status reported back to primary Mac (Devices panel)
+  6. Primary Mac gets live update: "Last sync: [timestamp]"
+
+Your primary Mac can be:
+  ✓ Asleep
+  ✓ Off
+  ✓ Being used for other work
+  ✓ Anywhere else
+
+
+MONITORING
+──────────
+View status in Devices panel:
+  • Device Status: Online / Offline
+  • Last Sync: [timestamp of last export]
+  • Next Sync: [countdown to next 2 AM]
+  • Sync History: Last 10 runs (status, duration, errors)
+
+View logs on Mac Mini:
+  $ tail -f ~/.cowork-os-fork/logs/viking-sync-remote.{out,err}
+
+Verify launchd:
+  $ launchctl list | grep viking-sync-remote
+
+
+SECURITY
+────────
+✓ SSH tunnel encrypts all communication
+✓ Public key authentication (no passwords)
+✓ API credentials never transmitted (stored locally on each machine)
+✓ Logs saved locally (not sent to primary Mac)
+
+
+TROUBLESHOOTING
+───────────────
+Device shows "Offline":
+  → Check Mac Mini is powered on
+  → Verify SSH access: ssh hosski@192.168.1.50 (should connect)
+  → Check SSH key: ls ~/.ssh/id_rsa (should exist)
+
+Sync never runs:
+  → On Mini, check launchd: launchctl list | grep viking-sync-remote
+  → View sync logs: tail ~/.cowork-os-fork/logs/viking-sync-remote.err
+  → Manually test: node ~/.cowork-os-fork/scripts/sync-viking.js
+
+SSH tunnel fails:
+  → Ensure Mini's ~/.ssh/authorized_keys has your public key
+  → To add: ssh-copy-id -i ~/.ssh/id_rsa.pub hosski@192.168.1.50
+
+
+═══════════════════════════════════════════════════════════════════
+
+For detailed setup instructions, see:
+  MAC_MINI_REMOTE_SYNC.md
+
+Current status:
+  Device registry: ~/Library/Application Support/cowork-os/devices.json
+  SSH tunnel config: ~/Library/Application Support/cowork-os/ssh-tunnels.json
+  Setup script: ~/Library/Application Support/cowork-os/setup-mac-mini.sh
+
+Ready to begin? Run: node scripts/register-mac-mini-device.js
