@@ -52,8 +52,14 @@ export function registerDAGExecutionHandler(
       }
 
       console.error('[DAG IPC] Parsing DAG...');
-      // Parse DAG from JSON
-      const dag = TaskDAGClass.parse(dagJson);
+      // Parse DAG from JSON - handle both object and string
+      let dagString: string;
+      if (typeof dagJson === 'string') {
+        dagString = dagJson;
+      } else {
+        dagString = JSON.stringify(dagJson);
+      }
+      const dag = TaskDAGClass.parse(dagString);
 
       // Get dependencies
       const daemon = getDaemon();

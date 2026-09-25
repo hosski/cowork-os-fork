@@ -44,11 +44,11 @@ export const dagAutoExecutionMiddleware: Middleware<{}, RootState> =
           // Trigger execution via IPC to main process
           try {
             console.log('[DAG Auto-Execute] Triggering execution for:', workflowData.name || workflowData.id);
+            console.log('[DAG Auto-Execute] Workflow data:', workflowData);
             
-            const dagJson = typeof workflowData === 'string' 
-              ? workflowData 
-              : JSON.stringify(workflowData);
-
+            // Don't double-stringify - send the object directly
+            // electronAPI.executeDAG will handle serialization
+            
             // Use preload-exposed electronAPI instead of dynamic import
             const api = (window as any).electronAPI;
             if (!api || !api.executeDAG) {
@@ -57,7 +57,7 @@ export const dagAutoExecutionMiddleware: Middleware<{}, RootState> =
             }
             
             // Fire-and-forget: don't block UI
-            api.executeDAG({ dagJson })
+            api.executeDAG(workflowData)
               .then((execResult: any) => {
                 console.log('[DAG Auto-Execute] Execution completed:', execResult);
               })
