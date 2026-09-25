@@ -104,6 +104,7 @@ interface SidebarProps {
   isEverydayAgentActive?: boolean;
   isMissionControlActive?: boolean;
   isHealthActive?: boolean;
+  isWorkflowsActive?: boolean;
   isLoadingSessions?: boolean;
   isLoadingMoreTasks?: boolean;
   completionAttentionTaskIds?: string[];
@@ -117,6 +118,7 @@ interface SidebarProps {
   onBotDeleted?: (botId: string) => void | Promise<void>;
   onOpenEverydayAgent?: () => void;
   onOpenHealth?: () => void;
+  onOpenWorkflows?: () => void;
   onNewSession?: () => void;
   onOpenSettings: () => void;
   onOpenMissionControl: () => void;
@@ -831,6 +833,7 @@ function areSidebarPropsEqual(prev: SidebarProps, next: SidebarProps): boolean {
     prev.isEverydayAgentActive === next.isEverydayAgentActive &&
     prev.isMissionControlActive === next.isMissionControlActive &&
     prev.isHealthActive === next.isHealthActive &&
+    prev.isWorkflowsActive === next.isWorkflowsActive &&
     prev.isDevicesActive === next.isDevicesActive &&
     prev.isLoadingSessions === next.isLoadingSessions &&
     prev.isLoadingMoreTasks === next.isLoadingMoreTasks &&
@@ -865,6 +868,7 @@ function SidebarComponent({
   isEverydayAgentActive = false,
   isMissionControlActive = false,
   isHealthActive = false,
+  isWorkflowsActive = false,
   isLoadingSessions = false,
   completionAttentionTaskIds = [],
   onSelectTask,
@@ -875,6 +879,7 @@ function SidebarComponent({
   onOpenBot,
   onOpenEverydayAgent,
   onOpenHealth,
+  onOpenWorkflows,
   onNewSession,
   onOpenSettings,
   onOpenMissionControl,
@@ -2979,6 +2984,28 @@ function SidebarComponent({
                   <Sparkles size={16} strokeWidth={2} style={{ display: "block" }} />
                 </span>
                 <span>Everyday</span>
+              </span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            className={`new-task-btn cli-new-task-btn cli-action-btn sidebar-home-btn sidebar-nav-item ${isWorkflowsActive ? "active" : ""}`}
+            onClick={onOpenWorkflows}
+            aria-pressed={isWorkflowsActive}
+            title="Workflows"
+          >
+            <span className="cli-btn-text">
+              <span className="terminal-only">workflows</span>
+              <span className="modern-only cli-new-task-modern-label">
+                <span
+                  className="sidebar-home-btn-icon"
+                  aria-hidden="true"
+                  style={{ display: "flex" }}
+                >
+                  <Repeat2 size={16} strokeWidth={2} style={{ display: "block" }} />
+                </span>
+                <span>Workflows</span>
               </span>
             </span>
           </button>

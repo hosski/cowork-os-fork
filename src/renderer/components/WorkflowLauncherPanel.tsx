@@ -7,7 +7,6 @@
 
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { ipcRenderer } from 'electron';
 
 interface WorkflowLauncherProps {
   onWorkflowCreated?: (dagId: string) => void;
@@ -32,7 +31,7 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
     setError(null);
 
     try {
-      const result = await ipcRenderer.invoke('video:create-workflow', {
+      const result = await (window as any).ipcRenderer.invoke('video:create-workflow', {
         episodeNumber: videoEpisode,
         seriesName,
       });
@@ -68,7 +67,7 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
     setError(null);
 
     try {
-      const result = await ipcRenderer.invoke('trading:create-workflow', {
+      const result = await (window as any).ipcRenderer.invoke('trading:create-workflow', {
         botName,
         exchange,
       });

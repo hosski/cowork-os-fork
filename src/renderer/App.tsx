@@ -237,6 +237,7 @@ const HomeDashboard = lazy(() =>
   import("./components/HomeDashboard").then((module) => ({ default: module.HomeDashboard })),
 );
 const AutomationStudioPanel = lazy(() => import("./components/AutomationStudioPanel"));
+const WorkflowsPanel = lazy(() => import("./components/WorkflowsPanel"));
 const HealthPanel = lazy(() =>
   import("./components/HealthPanel").then((module) => ({ default: module.HealthPanel })),
 );
@@ -661,6 +662,7 @@ function updateTaskPreservingIdentity(
 type AppView =
   | "home"
   | "automations"
+  | "workflows"
   | "main"
   | "settings"
   | "browser"
@@ -7271,6 +7273,7 @@ export function App() {
       {(currentView === "main" ||
         currentView === "home" ||
         currentView === "automations" ||
+        currentView === "workflows" ||
         currentView === "devices" ||
         currentView === "health" ||
         currentView === "ideas" ||
@@ -7294,6 +7297,7 @@ export function App() {
                   selectedTask?.agentConfig?.botConversation === true
                 }
                 isAutomationsActive={currentView === "automations"}
+                isWorkflowsActive={currentView === "workflows"}
                 isIdeasActive={currentView === "ideas"}
                 isInboxAgentActive={currentView === "inboxAgent"}
                 isAgentsActive={currentView === "agents"}
@@ -7306,6 +7310,7 @@ export function App() {
                 completionAttentionTaskIds={unseenCompletedTaskIds}
                 onSelectTask={handleSelectTaskFromShell}
                 onOpenAutomations={() => setCurrentView("automations")}
+                onOpenWorkflows={() => setCurrentView("workflows")}
                 onOpenIdeas={() => setCurrentView("ideas")}
                 onOpenInboxAgent={() => setCurrentView("inboxAgent")}
                 onOpenAgents={() => setCurrentView("agents")}
@@ -7344,6 +7349,10 @@ export function App() {
                       setCurrentView("main");
                     }}
                   />
+                </main>
+              ) : currentView === "workflows" ? (
+                <main className="main-content workflows-main">
+                  <WorkflowsPanel />
                 </main>
               ) : currentView === "home" ? (
                 <HomeDashboard
