@@ -99,23 +99,21 @@ export const useDAGExecutor = () => {
     const startTime = Date.now();
 
     try {
-      // Import DAGExecutor dynamically to avoid circular deps
-      const { DAGExecutor } = await import('../electron/agent/orchestration/dag-executor');
+      // Get DAG from Redux
       const { TaskDAG } = await import('../electron/agent/orchestration/task-dag');
-
-      // Reconstruct DAG from Redux state
       const workflowData = workflows[activeWorkflow];
       const dag = TaskDAG.fromJSON(workflowData);
 
-      // Create executor (stub: will integrate with actual tool registry in next phase)
-      const executor = new DAGExecutor(null as any, null as any, {
-        maxParallel: 4,
-        pollIntervalMs: 1000,
-        verbose: true,
+      // Call IPC handler in main process
+      const { ipcRenderer } = await import('electron');
+      const { success, result, error } = await ipcRenderer.invoke('dag:execute', {
+        dagJson: dag.stringify(),
       });
 
-      // Execute tiers
-      const result = await executor.executeTierByTier(dag);
+      if (!success) {
+        setError(error);
+        return;
+      }
 
       // Update execution state
       const elapsedMs = Date.now() - startTime;

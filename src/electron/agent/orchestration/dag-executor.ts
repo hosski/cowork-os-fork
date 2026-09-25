@@ -39,6 +39,22 @@ export interface DAGExecutionResult {
   error?: string;
 }
 
+/**
+ * Factory to create DAGExecutor with real dependencies from Electron context.
+ * Call this from the main process or IPC handler.
+ */
+export async function createDAGExecutorFromContext(
+  workspace: any, // Workspace context
+  agentDaemon: any, // AgentDaemon instance
+  toolRegistry: any, // ToolRegistry instance
+): Promise<DAGExecutor> {
+  return new DAGExecutor(toolRegistry, agentDaemon, {
+    maxParallel: 4,
+    pollIntervalMs: 1000,
+    verbose: true,
+  });
+}
+
 export class DAGExecutor {
   private toolRegistry: ToolRegistry;
   private daemon: AgentDaemon;

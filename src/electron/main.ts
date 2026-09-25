@@ -217,6 +217,7 @@ import { HooksSettingsManager } from "./hooks/settings";
 import { WebAccessServer } from "./web-server/WebAccessServer";
 import { DEFAULT_WEB_ACCESS_CONFIG, type WebAccessConfig } from "./web-server/types";
 import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
+import { registerDAGExecutionHandler } from "./ipc/dag-execution-handler";
 import {
   ManagedAccountManager,
   type ManagedAccountStatus,
@@ -1916,6 +1917,15 @@ if (isCliDirectRunMode()) {
         agentDaemon?.logEvent(taskId, type, payload);
       });
       await agentDaemon.initialize();
+      
+      // Register DAG execution IPC handler
+      const workspace = { id: 'default' } as any; // Minimal workspace context
+      registerDAGExecutionHandler(
+        () => agentDaemon,
+        (ws) => new (require('./agent/tools/registry').ToolRegistry)(workspace, agentDaemon),
+        () => workspace,
+      );
+      
       detachTaskLifecycleSync = attachControlPlaneTaskLifecycleSync({
         agentDaemon,
         db: dbManager.getDatabase(),
