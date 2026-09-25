@@ -1,4 +1,5 @@
 import "./mission-control.css";
+import { useState } from "react";
 import { isTempWorkspaceId } from "../../../shared/types";
 import { useMissionControlData } from "./useMissionControlData";
 import { MCTopBar } from "./MCTopBar";
@@ -9,6 +10,7 @@ import { MCFeedTab } from "./MCFeedTab";
 import { MCIntelligenceTab } from "./MCIntelligenceTab";
 import { MCOpsTab } from "./MCOpsTab";
 import { MCDetailPanel } from "./MCDetailPanel";
+import { MissionControlRightPanel } from "../MissionControlRightPanel";
 import { AgentRoleEditor } from "../AgentRoleEditor";
 import { StandupReportViewer } from "../StandupReportViewer";
 import { AgentTeamsPanel } from "../AgentTeamsPanel";
@@ -18,9 +20,7 @@ interface MissionControlPanelProps {
   onClose?: () => void;
   onOpenAgents?: () => void;
   initialCompanyId?: string | null;
-  /** When opening from Inbox Agent (or elsewhere), focus this issue in Ops. */
   initialIssueId?: string | null;
-  /** When opening from Everyday Agent, land on the supervision feed. */
   initialEverydayAgentFocus?: boolean;
 }
 
@@ -32,6 +32,7 @@ export function MissionControlPanel({
   initialEverydayAgentFocus = false,
 }: MissionControlPanelProps) {
   const data = useMissionControlData(initialCompanyId, initialIssueId, initialEverydayAgentFocus);
+  const [rightTab, setRightTab] = useState<"grill" | "dag">("grill");
 
   const {
     loading,
@@ -150,6 +151,15 @@ export function MissionControlPanel({
             />
           </div>
         </div>
+      )}
+
+      {/* Right panel with Grill-Tab and DAG tabs */}
+      {rightTab && (
+        <MissionControlRightPanel
+          rightTab={rightTab}
+          setRightTab={setRightTab}
+          onClose={() => setRightTab(null as any)}
+        />
       )}
     </div>
   );
