@@ -1,5 +1,4 @@
 import "./mission-control.css";
-import { useState } from "react";
 import { isTempWorkspaceId } from "../../../shared/types";
 import { useMissionControlData } from "./useMissionControlData";
 import { MCTopBar } from "./MCTopBar";
@@ -10,7 +9,6 @@ import { MCFeedTab } from "./MCFeedTab";
 import { MCIntelligenceTab } from "./MCIntelligenceTab";
 import { MCOpsTab } from "./MCOpsTab";
 import { MCDetailPanel } from "./MCDetailPanel";
-import { MissionControlRightPanel } from "../MissionControlRightPanel";
 import { AgentRoleEditor } from "../AgentRoleEditor";
 import { StandupReportViewer } from "../StandupReportViewer";
 import { AgentTeamsPanel } from "../AgentTeamsPanel";
@@ -32,7 +30,6 @@ export function MissionControlPanel({
   initialEverydayAgentFocus = false,
 }: MissionControlPanelProps) {
   const data = useMissionControlData(initialCompanyId, initialIssueId, initialEverydayAgentFocus);
-  const [rightTab, setRightTab] = useState<"grill" | "dag">("grill");
 
   const {
     loading,
@@ -151,15 +148,6 @@ export function MissionControlPanel({
             />
           </div>
         </div>
-      )}
-
-      {/* Right panel with Grill-Tab and DAG tabs */}
-      {rightTab && (
-        <MissionControlRightPanel
-          rightTab={rightTab}
-          setRightTab={setRightTab}
-          onClose={() => setRightTab(null as any)}
-        />
       )}
     </div>
   );
