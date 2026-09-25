@@ -6,21 +6,18 @@
  */
 
 import { ipcMain } from 'electron';
-import type { TaskDAG } from './agent/orchestration/task-dag';
-import { TaskDAG } from './agent/orchestration/task-dag';
-import { createDAGExecutorFromContext } from './agent/orchestration/dag-executor';
-import type { AgentDaemon } from './agent/daemon';
-import type { ToolRegistry } from './agent/tools/registry';
-import type { Workspace } from '../shared/types';
+import type { TaskDAG as TaskDAGType } from '../agent/orchestration/task-dag';
+import { TaskDAG } from '../agent/orchestration/task-dag';
+import { DAGExecutor } from '../agent/orchestration/dag-executor';
 
 /**
  * Register DAG execution IPC handler.
  * Call from main process initialization.
  */
 export function registerDAGExecutionHandler(
-  getDaemon: () => AgentDaemon,
-  getToolRegistry: (workspace: Workspace) => ToolRegistry,
-  getWorkspace: () => Workspace,
+  getDaemon: () => any, // AgentDaemon
+  getToolRegistry: (workspace: any) => any, // ToolRegistry
+  getWorkspace: () => any, // Workspace
 ): void {
   ipcMain.handle('dag:execute', async (_event, { dagJson }: { dagJson: string }) => {
     try {
@@ -32,8 +29,16 @@ export function registerDAGExecutionHandler(
       const workspace = getWorkspace();
       const toolRegistry = getToolRegistry(workspace);
 
+      if (!daemon || !toolRegistry) {
+        throw new Error('DAG executor dependencies not available (daemon or toolRegistry missing)');
+      }
+
       // Create executor with real dependencies
-      const executor = await createDAGExecutorFromContext(workspace, daemon, toolRegistry);
+      const executor = new DAGExecutor(toolRegistry, daemon, {
+        maxParallel: 4,
+        pollIntervalMs: 1000,
+        verbose: true,
+      });
 
       // Execute
       const result = await executor.executeTierByTier(dag);
@@ -43,6 +48,7 @@ export function registerDAGExecutionHandler(
         result,
       };
     } catch (error: any) {
+      console.error('[DAG IPC] Execution failed:', error);
       return {
         success: false,
         error: error?.message || String(error),

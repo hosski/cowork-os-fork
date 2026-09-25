@@ -76,8 +76,8 @@ export class DAGExecutor {
     };
   }
 
-  private this.log(msg: string): void {
-    if (this.config.verbose) console.this.log(`[DAG] ${msg}`);
+  private log(msg: string): void {
+    if (this.config.verbose) console.log(`[DAG] ${msg}`);
   }
 
   /**
