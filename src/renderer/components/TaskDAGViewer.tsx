@@ -22,11 +22,7 @@ export const TaskDAGViewer: React.FC<Props> = ({ workflowId }) => {
 
   const workflow = workflowId ? workflows[workflowId] : activeWorkflow ? workflows[activeWorkflow] : null;
 
-  if (!workflow) {
-    return <div style={styles.container}>No workflow selected</div>;
-  }
-
-  // Mock data for demonstration
+  // Mock data for demonstration (show even if no workflow selected)
   const tiers = [
     {
       tier: 0,
