@@ -1,19 +1,35 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { X } from "lucide-react";
 import { MCTaskDetail } from "./MCTaskDetail";
 import { MCAgentDetail } from "./MCAgentDetail";
 import { MCIssueDetail } from "./MCIssueDetail";
 import { GrillTabPanel } from "../GrillTabPanel";
 import { TaskDAGViewer } from "../TaskDAGViewer";
+import { useTaskDAG } from "./useTaskDAG";
 import type { MissionControlData } from "./useMissionControlData";
+import { taskDAGActions } from "../../store";
 
 interface MCDetailPanelProps {
   data: MissionControlData;
 }
 
 export function MCDetailPanel({ data }: MCDetailPanelProps) {
-  const { detailPanel, setDetailPanel } = data;
+  const { detailPanel, setDetailPanel, tasks } = data;
   const [contentTab, setContentTab] = useState<"details" | "grill" | "dag">("details");
+  const dispatch = useDispatch();
+
+  // Build DAG when task is selected
+  const selectedTask = detailPanel?.kind === "task" ? tasks.find((t) => t.id === detailPanel.taskId) : null;
+  const taskDAG = useTaskDAG(selectedTask || null, tasks);
+
+  // Dispatch DAG to Redux when it changes
+  useEffect(() => {
+    if (taskDAG) {
+      dispatch(taskDAGActions.addWorkflow({ id: taskDAG.workflowId, dag: taskDAG }));
+      dispatch(taskDAGActions.setActiveWorkflow(taskDAG.workflowId));
+    }
+  }, [taskDAG, dispatch]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
