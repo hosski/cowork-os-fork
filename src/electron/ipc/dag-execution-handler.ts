@@ -6,9 +6,6 @@
  */
 
 import { ipcMain } from 'electron';
-import type { TaskDAG as TaskDAGType } from '../agent/orchestration/task-dag';
-import { TaskDAG } from '../agent/orchestration/task-dag';
-import { DAGExecutor } from '../agent/orchestration/dag-executor';
 
 /**
  * Register DAG execution IPC handler.
@@ -21,6 +18,10 @@ export function registerDAGExecutionHandler(
 ): void {
   ipcMain.handle('dag:execute', async (_event, { dagJson }: { dagJson: string }) => {
     try {
+      // Dynamic imports to avoid circular deps at load time
+      const { TaskDAG } = await import('../agent/orchestration/task-dag');
+      const { DAGExecutor } = await import('../agent/orchestration/dag-executor');
+
       // Parse DAG from JSON
       const dag = TaskDAG.parse(dagJson);
 
