@@ -3,6 +3,8 @@ import { X } from "lucide-react";
 import { MCTaskDetail } from "./MCTaskDetail";
 import { MCAgentDetail } from "./MCAgentDetail";
 import { MCIssueDetail } from "./MCIssueDetail";
+import { GrillTabPanel } from "../GrillTabPanel";
+import { TaskDAGViewer } from "../TaskDAGViewer";
 import type { MissionControlData } from "./useMissionControlData";
 
 interface MCDetailPanelProps {
@@ -68,14 +70,10 @@ export function MCDetailPanel({ data }: MCDetailPanelProps) {
           <MCTaskDetail data={data} taskId={detailPanel.taskId} />
         )}
         {detailPanel.kind === "task" && contentTab === "grill" && (
-          <div style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
-            Grill-Tab content
-          </div>
+          <GrillTabPanel />
         )}
         {detailPanel.kind === "task" && contentTab === "dag" && (
-          <div style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
-            DAG content
-          </div>
+          <TaskDAGViewer />
         )}
         {detailPanel.kind === "agent" && (
           <MCAgentDetail data={data} agentId={detailPanel.agentId} />
