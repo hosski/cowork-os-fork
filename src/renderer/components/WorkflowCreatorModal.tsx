@@ -45,6 +45,364 @@ export const WorkflowCreatorModal: React.FC<WorkflowCreatorModalProps> = ({
   });
   const [selectedTierIdx, setSelectedTierIdx] = useState(0);
 
+  const templates = {
+    dataPipeline: {
+      name: 'Data Processing Pipeline',
+      description: 'Extract, transform, validate, and export data with automated quality checks',
+      tiers: [
+        {
+          id: `tier-${Date.now()}-1`,
+          name: 'Data Extraction',
+          description: 'Pull data from source systems and APIs',
+          tasks: [
+            {
+              id: `task-${Date.now()}-1`,
+              name: 'Fetch from Database',
+              description: 'Query production database for raw records',
+              duration: 120,
+              dependencies: [],
+              type: 'action',
+            },
+          ],
+          parallel: false,
+        },
+        {
+          id: `tier-${Date.now()}-2`,
+          name: 'Data Transformation',
+          description: 'Clean, normalize, and enrich data',
+          tasks: [
+            {
+              id: `task-${Date.now()}-2`,
+              name: 'Normalize Fields',
+              description: 'Standardize formatting and data types',
+              duration: 90,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-3`,
+              name: 'Enrichment',
+              description: 'Add calculated fields and context',
+              duration: 60,
+              dependencies: [],
+              type: 'bot',
+            },
+          ],
+          parallel: true,
+        },
+        {
+          id: `tier-${Date.now()}-3`,
+          name: 'Quality Assurance',
+          description: 'Validate data integrity and completeness',
+          tasks: [
+            {
+              id: `task-${Date.now()}-4`,
+              name: 'Schema Validation',
+              description: 'Check for required fields and correct types',
+              duration: 45,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-5`,
+              name: 'Anomaly Detection',
+              description: 'Flag outliers and suspicious patterns',
+              duration: 75,
+              dependencies: [],
+              type: 'agent',
+              agentPath: './agents/quality-checker',
+            },
+          ],
+          parallel: true,
+        },
+        {
+          id: `tier-${Date.now()}-4`,
+          name: 'Export & Archive',
+          description: 'Save results and maintain audit trail',
+          tasks: [
+            {
+              id: `task-${Date.now()}-6`,
+              name: 'Export to Warehouse',
+              description: 'Write processed data to data warehouse',
+              duration: 120,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-7`,
+              name: 'Backup Archive',
+              description: 'Create versioned backup for recovery',
+              duration: 60,
+              dependencies: [],
+              type: 'script',
+            },
+          ],
+          parallel: true,
+        },
+      ],
+    },
+    contentCreation: {
+      name: 'Content Creation Workflow',
+      description: 'End-to-end pipeline for creating, reviewing, and publishing content',
+      tiers: [
+        {
+          id: `tier-${Date.now()}-1`,
+          name: 'Research & Planning',
+          description: 'Gather information and outline content structure',
+          tasks: [
+            {
+              id: `task-${Date.now()}-1`,
+              name: 'Research Topic',
+              description: 'Compile sources and key information',
+              duration: 300,
+              dependencies: [],
+              type: 'agent',
+              agentPath: './agents/research-bot',
+            },
+            {
+              id: `task-${Date.now()}-2`,
+              name: 'Create Outline',
+              description: 'Structure main sections and key points',
+              duration: 120,
+              dependencies: [],
+              type: 'action',
+            },
+          ],
+          parallel: false,
+        },
+        {
+          id: `tier-${Date.now()}-2`,
+          name: 'Content Development',
+          description: 'Write and format main content',
+          tasks: [
+            {
+              id: `task-${Date.now()}-3`,
+              name: 'Write First Draft',
+              description: 'Generate initial content from outline',
+              duration: 600,
+              dependencies: [],
+              type: 'bot',
+            },
+            {
+              id: `task-${Date.now()}-4`,
+              name: 'Add Media Assets',
+              description: 'Insert images, diagrams, and embeds',
+              duration: 180,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-5`,
+              name: 'Format & Style',
+              description: 'Apply brand standards and formatting',
+              duration: 120,
+              dependencies: [],
+              type: 'action',
+            },
+          ],
+          parallel: true,
+        },
+        {
+          id: `tier-${Date.now()}-3`,
+          name: 'Review & Approval',
+          description: 'Quality checks and stakeholder review',
+          tasks: [
+            {
+              id: `task-${Date.now()}-6`,
+              name: 'Grammar & Style Check',
+              description: 'Automated and manual editing pass',
+              duration: 180,
+              dependencies: [],
+              type: 'bot',
+            },
+            {
+              id: `task-${Date.now()}-7`,
+              name: 'Fact Checking',
+              description: 'Verify claims and data accuracy',
+              duration: 240,
+              dependencies: [],
+              type: 'agent',
+              agentPath: './agents/fact-checker',
+            },
+          ],
+          parallel: true,
+        },
+        {
+          id: `tier-${Date.now()}-4`,
+          name: 'Publishing',
+          description: 'Deploy content and monitor performance',
+          tasks: [
+            {
+              id: `task-${Date.now()}-8`,
+              name: 'SEO Optimization',
+              description: 'Optimize for search engines',
+              duration: 90,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-9`,
+              name: 'Publish',
+              description: 'Release to production',
+              duration: 60,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-10`,
+              name: 'Social Distribution',
+              description: 'Schedule and post across channels',
+              duration: 120,
+              dependencies: [],
+              type: 'bot',
+            },
+          ],
+          parallel: true,
+        },
+      ],
+    },
+    tradingBot: {
+      name: 'Automated Trading Workflow',
+      description: 'Market analysis, signal generation, execution, and risk management',
+      tiers: [
+        {
+          id: `tier-${Date.now()}-1`,
+          name: 'Market Analysis',
+          description: 'Analyze current market conditions and trends',
+          tasks: [
+            {
+              id: `task-${Date.now()}-1`,
+              name: 'Fetch Market Data',
+              description: 'Get real-time price, volume, and indicator data',
+              duration: 30,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-2`,
+              name: 'Technical Analysis',
+              description: 'Calculate indicators and identify patterns',
+              duration: 45,
+              dependencies: [],
+              type: 'bot',
+            },
+            {
+              id: `task-${Date.now()}-3`,
+              name: 'Sentiment Analysis',
+              description: 'Parse news and social sentiment',
+              duration: 60,
+              dependencies: [],
+              type: 'agent',
+              agentPath: './bots/sentiment-analyzer',
+            },
+          ],
+          parallel: true,
+        },
+        {
+          id: `tier-${Date.now()}-2`,
+          name: 'Signal Generation',
+          description: 'Generate buy/sell signals with confidence scores',
+          tasks: [
+            {
+              id: `task-${Date.now()}-4`,
+              name: 'Generate Signals',
+              description: 'Combine analysis into actionable signals',
+              duration: 30,
+              dependencies: [],
+              type: 'bot',
+              agentPath: './bots/signal-generator',
+            },
+            {
+              id: `task-${Date.now()}-5`,
+              name: 'Backtest',
+              description: 'Validate signal quality against historical data',
+              duration: 120,
+              dependencies: [],
+              type: 'action',
+            },
+          ],
+          parallel: false,
+        },
+        {
+          id: `tier-${Date.now()}-3`,
+          name: 'Risk Management',
+          description: 'Apply position sizing and stop losses',
+          tasks: [
+            {
+              id: `task-${Date.now()}-6`,
+              name: 'Position Sizing',
+              description: 'Calculate optimal position size based on risk',
+              duration: 15,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-7`,
+              name: 'Set Stop Loss',
+              description: 'Determine and set protective stops',
+              duration: 15,
+              dependencies: [],
+              type: 'action',
+            },
+            {
+              id: `task-${Date.now()}-8`,
+              name: 'Risk Validation',
+              description: 'Verify risk parameters before execution',
+              duration: 20,
+              dependencies: [],
+              type: 'agent',
+              agentPath: './agents/risk-manager',
+            },
+          ],
+          parallel: true,
+        },
+        {
+          id: `tier-${Date.now()}-4`,
+          name: 'Execution & Monitoring',
+          description: 'Execute trades and monitor performance',
+          tasks: [
+            {
+              id: `task-${Date.now()}-9`,
+              name: 'Place Orders',
+              description: 'Execute buy/sell orders on exchange',
+              duration: 30,
+              dependencies: [],
+              type: 'bot',
+              agentPath: './bots/order-executor',
+            },
+            {
+              id: `task-${Date.now()}-10`,
+              name: 'Monitor Position',
+              description: 'Track open positions and performance',
+              duration: 300,
+              dependencies: [],
+              type: 'bot',
+            },
+            {
+              id: `task-${Date.now()}-11`,
+              name: 'Log & Report',
+              description: 'Record trades and generate performance report',
+              duration: 45,
+              dependencies: [],
+              type: 'action',
+            },
+          ],
+          parallel: true,
+        },
+      ],
+    },
+  };
+
+  const applyTemplate = (templateKey: keyof typeof templates) => {
+    const template = templates[templateKey];
+    setWorkflow({
+      name: template.name,
+      description: template.description,
+      tiers: template.tiers,
+    });
+    setStep('tiers');
+  };
+
   const addTier = () => {
     const newTier: Tier = {
       id: `tier-${Date.now()}`,
@@ -170,13 +528,33 @@ export const WorkflowCreatorModal: React.FC<WorkflowCreatorModalProps> = ({
               </div>
 
               <div className="workflow-tips">
-                <p>💡 <strong>Tips:</strong></p>
-                <ul>
-                  <li>Organize work into sequential tiers (stages)</li>
-                  <li>Each tier can run tasks in parallel or sequentially</li>
-                  <li>Each task can have duration, description, and dependencies</li>
-                  <li>Supports agents, bots, scripts, and custom actions</li>
-                </ul>
+                <p>💡 <strong>Quick Start Templates:</strong></p>
+                <div className="template-buttons">
+                  <button
+                    className="template-btn"
+                    onClick={() => applyTemplate('dataPipeline')}
+                    title="Data extraction, transformation, validation, and export"
+                  >
+                    📊 Data Pipeline
+                  </button>
+                  <button
+                    className="template-btn"
+                    onClick={() => applyTemplate('contentCreation')}
+                    title="Research, write, review, and publish content"
+                  >
+                    ✍️ Content Creation
+                  </button>
+                  <button
+                    className="template-btn"
+                    onClick={() => applyTemplate('tradingBot')}
+                    title="Market analysis, signals, risk management, and execution"
+                  >
+                    📈 Trading Bot
+                  </button>
+                </div>
+                <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '8px' }}>
+                  Click any template to load a pre-configured example. Customize from there.
+                </p>
               </div>
             </div>
           )}
@@ -612,6 +990,34 @@ export const WorkflowCreatorModal: React.FC<WorkflowCreatorModalProps> = ({
           font-size: 12px;
           font-weight: 600;
           color: var(--color-accent);
+        }
+
+        .template-buttons {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          gap: 8px;
+          margin-bottom: 8px;
+        }
+
+        .template-btn {
+          background: var(--color-bg-input);
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-sm);
+          padding: 8px 12px;
+          font-size: 12px;
+          font-weight: 500;
+          color: var(--color-text);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-align: center;
+        }
+
+        .template-btn:hover {
+          background: var(--color-accent);
+          color: white;
+          border-color: var(--color-accent);
+          transform: translateY(-2px);
+          box-shadow: 0 2px 8px rgba(34, 211, 238, 0.2);
         }
 
         .workflow-tips ul {
