@@ -1919,8 +1919,11 @@ if (isCliDirectRunMode()) {
       await agentDaemon.initialize();
       
       // Register DAG execution IPC handler
-      // Note: ToolRegistry and workspace will be passed from executor context
-      // For now, defer registration until we have real workspace context
+      registerDAGExecutionHandler(
+        () => agentDaemon,
+        () => undefined, // ToolRegistry will be looked up dynamically in handler
+        () => ({ id: 'default' }),
+      );
       
       detachTaskLifecycleSync = attachControlPlaneTaskLifecycleSync({
         agentDaemon,
