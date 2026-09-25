@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { MCTaskDetail } from "./MCTaskDetail";
 import { MCAgentDetail } from "./MCAgentDetail";
@@ -11,6 +11,7 @@ interface MCDetailPanelProps {
 
 export function MCDetailPanel({ data }: MCDetailPanelProps) {
   const { detailPanel, setDetailPanel } = data;
+  const [contentTab, setContentTab] = useState<"details" | "grill" | "dag">("details");
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -31,6 +32,29 @@ export function MCDetailPanel({ data }: MCDetailPanelProps) {
         <div className="mc-v2-detail-header-left">
           <span className="mc-v2-detail-type">{typeLabel}</span>
         </div>
+        {/* Tabs for task detail */}
+        {detailPanel.kind === "task" && (
+          <div className="mc-detail-tabs">
+            <button
+              className={`mc-detail-tab ${contentTab === "details" ? "active" : ""}`}
+              onClick={() => setContentTab("details")}
+            >
+              Details
+            </button>
+            <button
+              className={`mc-detail-tab ${contentTab === "grill" ? "active" : ""}`}
+              onClick={() => setContentTab("grill")}
+            >
+              🎯 Grill
+            </button>
+            <button
+              className={`mc-detail-tab ${contentTab === "dag" ? "active" : ""}`}
+              onClick={() => setContentTab("dag")}
+            >
+              📊 DAG
+            </button>
+          </div>
+        )}
         <button
           className="mc-v2-detail-close"
           onClick={() => setDetailPanel(null)}
@@ -40,7 +64,19 @@ export function MCDetailPanel({ data }: MCDetailPanelProps) {
         </button>
       </div>
       <div className="mc-v2-detail-body">
-        {detailPanel.kind === "task" && <MCTaskDetail data={data} taskId={detailPanel.taskId} />}
+        {detailPanel.kind === "task" && contentTab === "details" && (
+          <MCTaskDetail data={data} taskId={detailPanel.taskId} />
+        )}
+        {detailPanel.kind === "task" && contentTab === "grill" && (
+          <div style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
+            Grill-Tab content
+          </div>
+        )}
+        {detailPanel.kind === "task" && contentTab === "dag" && (
+          <div style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
+            DAG content
+          </div>
+        )}
         {detailPanel.kind === "agent" && (
           <MCAgentDetail data={data} agentId={detailPanel.agentId} />
         )}
