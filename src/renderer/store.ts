@@ -33,8 +33,22 @@ const taskDAGSlice = createSlice({
   name: 'taskDAG',
   initialState: initialTaskDAGState,
   reducers: {
-    addWorkflow: (state, action: PayloadAction<{ id: string; dag: any }>) => {
-      state.workflows[action.payload.id] = action.payload.dag;
+    addWorkflow: (state, action: PayloadAction<any>) => {
+      const payload = action.payload;
+      const id = payload.id;
+      
+      // Store the complete workflow data (tiers, nodes, metadata)
+      state.workflows[id] = {
+        id: payload.id,
+        name: payload.name,
+        type: payload.type,
+        tiers: payload.tiers,
+        nodes: payload.nodes,
+        createdAt: new Date().toISOString(),
+      };
+      
+      // Auto-set as active workflow to trigger execution middleware
+      state.activeWorkflow = id;
     },
     setActiveWorkflow: (state, action: PayloadAction<string>) => {
       state.activeWorkflow = action.payload;
