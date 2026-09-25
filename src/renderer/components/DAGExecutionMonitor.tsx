@@ -28,22 +28,61 @@ export const DAGExecutionMonitor: React.FC = () => {
   const activeWorkflowId = useSelector((state: any) => state.taskDAG?.activeWorkflow as string | null);
   
   // Get execution result from active workflow
-  const lastExecution = activeWorkflowId && workflows[activeWorkflowId] 
+  let lastExecution = activeWorkflowId && workflows[activeWorkflowId] 
     ? workflows[activeWorkflowId].executionResult 
     : null;
+  
+  // If not in Redux, try to load from localStorage
+  if (!lastExecution && activeWorkflowId) {
+    try {
+      const persisted = localStorage.getItem(`workflow-execution-${activeWorkflowId}`);
+      if (persisted) {
+        lastExecution = JSON.parse(persisted);
+        console.log('[DAGExecutionMonitor] Loaded persisted execution from localStorage:', lastExecution);
+      }
+    } catch (e) {
+      console.error('[DAGExecutionMonitor] Failed to parse localStorage:', e);
+    }
+  }
+
+  // Debug: log the workflow object structure
+  if (activeWorkflowId && workflows[activeWorkflowId]) {
+    console.log('[DAGExecutionMonitor] Workflow object:', {
+      id: workflows[activeWorkflowId].id,
+      name: workflows[activeWorkflowId].name,
+      hasExecutionResult: !!workflows[activeWorkflowId].executionResult,
+      executionResult: workflows[activeWorkflowId].executionResult,
+    });
+  }
 
   // Auto-show stats when execution completes
   useEffect(() => {
+    console.log('[DAGExecutionMonitor useEffect firing]', { hasLastExecution: !!lastExecution, showLastStats });
     if (lastExecution && !showLastStats) {
-      console.log('[DAGExecutionMonitor] Execution result detected, showing stats');
+      console.log('[DAGExecutionMonitor] ✅ Setting showLastStats to true, result:', lastExecution);
       setShowLastStats(true);
     }
-  }, [lastExecution, showLastStats]);
+    
+    // Also check localStorage for persisted results
+    if (activeWorkflowId && !lastExecution && !showLastStats) {
+      try {
+        const persisted = localStorage.getItem(`workflow-execution-${activeWorkflowId}`);
+        if (persisted) {
+          console.log('[DAGExecutionMonitor] Found persisted execution result in localStorage');
+          setShowLastStats(true);
+        }
+      } catch (e) {
+        console.error('[DAGExecutionMonitor] Failed to read localStorage:', e);
+      }
+    }
+  }, [lastExecution, activeWorkflowId]);
 
   console.log('[DAGExecutionMonitor] Rendered:', {
     activeWorkflowId,
     hasWorkflow: !!workflows[activeWorkflowId],
-    lastExecution,
+    lastExecution: lastExecution ? `{dagId: ${lastExecution.dagId}, tiers: ${lastExecution.totalTiers}}` : 'NULL',
+    showLastStats,
+    willRenderStats: showLastStats && lastExecution,
     workflowKeys: Object.keys(workflows),
   });
 
@@ -65,10 +104,12 @@ export const DAGExecutionMonitor: React.FC = () => {
   }, [execution]);
 
   // Show completion message with stats from last execution
+  console.log('[DAGExecutionMonitor] About to render - checking:', { shouldShowStats: showLastStats && lastExecution });
   if (showLastStats && lastExecution) {
+    console.log('[DAGExecutionMonitor] ✅✅✅ RENDERING GREEN STATS BOX ✅✅✅');
     return (
       <div className="dag-monitor">
-        <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
+        <div className="empty-state" style={{ padding: '2rem', textAlign: 'center', border: '2px solid green' }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>✅</div>
           <p style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>Workflow Execution Complete</p>
           <div style={{ 
@@ -115,16 +156,12 @@ export const DAGExecutionMonitor: React.FC = () => {
     );
   }
 
-  if (!execution) {
-    return (
-      <div className="dag-monitor">
-        <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>⏳ Waiting for workflow execution...</p>
-          <p style={{ fontSize: '0.875rem', color: '#666' }}>Create a workflow to begin</p>
-        </div>
-      </div>
-    );
-  }
+  // Fallback: always show something while waiting
+  return (
+    <div className="dag-monitor" style={{ padding: '2rem', textAlign: 'center', border: '2px solid orange' }}>
+      <p>⏳ Waiting for workflow... (showLastStats={showLastStats}, lastExecution={!!lastExecution})</p>
+    </div>
+  );
 
   const statusColor: Record<string, string> = {
     pending: '#f59e0b',

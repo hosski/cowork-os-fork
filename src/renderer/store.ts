@@ -57,6 +57,17 @@ const taskDAGSlice = createSlice({
       if (state.workflows[workflowId]) {
         state.workflows[workflowId].executionResult = result;
         console.log('[Redux] Updated workflow executionResult:', state.workflows[workflowId]);
+        
+        // Persist to localStorage so it survives refresh
+        try {
+          localStorage.setItem(
+            `workflow-execution-${workflowId}`,
+            JSON.stringify(result)
+          );
+          console.log('[Redux] Persisted result to localStorage');
+        } catch (e) {
+          console.error('[Redux] Failed to persist to localStorage:', e);
+        }
       } else {
         console.warn('[Redux] Workflow not found:', workflowId);
       }
