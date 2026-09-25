@@ -9,11 +9,16 @@ import { DAGExecutionMonitor } from './DAGExecutionMonitor';
 export const WorkflowsPanel: React.FC = () => {
   const [showLauncher, setShowLauncher] = useState(true);
   const [executionCount, setExecutionCount] = useState(0);
+  const [launcherKey, setLauncherKey] = useState(0);
 
   const handleWorkflowCreated = (workflow: any) => {
     setExecutionCount(count => count + 1);
     console.log('Workflow created and auto-executing:', workflow);
-    // DAGExecutionMonitor will pick up the Redux state update via middleware
+  };
+
+  const handleReset = () => {
+    // Force launcher to reset by changing its key
+    setLauncherKey(k => k + 1);
   };
 
   return (
@@ -28,14 +33,14 @@ export const WorkflowsPanel: React.FC = () => {
 
       {/* Create Workflow Section */}
       {showLauncher && (
-        <div style={{ flexShrink: 0, borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+        <div style={{ flexShrink: 0, borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }} key={launcherKey}>
           <WorkflowLauncherPanel onWorkflowCreated={handleWorkflowCreated} />
         </div>
       )}
 
       {/* Execution Monitor */}
       <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-        <DAGExecutionMonitor />
+        <DAGExecutionMonitor onReset={handleReset} />
       </div>
     </div>
   );

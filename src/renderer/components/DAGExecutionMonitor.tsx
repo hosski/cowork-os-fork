@@ -21,7 +21,7 @@ interface ExecutionState {
   results?: Record<string, any>;
 }
 
-export const DAGExecutionMonitor: React.FC = () => {
+export const DAGExecutionMonitor: React.FC<{ onReset?: () => void }> = ({ onReset }) => {
   const [showLastStats, setShowLastStats] = useState(false);
   const execution = useSelector((state: any) => state.executionPlan as ExecutionState | null);
   const workflows = useSelector((state: any) => state.taskDAG?.workflows as Record<string, any> || {});
@@ -126,7 +126,10 @@ export const DAGExecutionMonitor: React.FC = () => {
             </p>
           </div>
           <button 
-            onClick={() => setShowLastStats(false)}
+            onClick={() => {
+              setShowLastStats(false);
+              onReset?.();
+            }}
             style={{
               padding: '1rem 2rem',
               backgroundColor: '#3b82f6',

@@ -11,9 +11,10 @@ import { taskDAGActions } from '../store';
 
 interface WorkflowLauncherProps {
   onWorkflowCreated?: (dagId: string) => void;
+  onReset?: () => void;
 }
 
-export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkflowCreated }) => {
+export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkflowCreated, onReset }) => {
   const dispatch = useDispatch();
   const [mode, setMode] = useState<'video' | 'trading' | null>(null);
   const [loading, setLoading] = useState(false);
