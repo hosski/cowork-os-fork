@@ -99,15 +99,16 @@ export const useDAGExecutor = () => {
     const startTime = Date.now();
 
     try {
-      // Get DAG from Redux
-      const { TaskDAG } = await import('../electron/agent/orchestration/task-dag');
+      // Get DAG data from Redux (already in JSON format)
       const workflowData = workflows[activeWorkflow];
-      const dag = TaskDAG.fromJSON(workflowData);
+      
+      // Convert to DAG JSON string if needed
+      const dagJson = typeof workflowData === 'string' ? workflowData : JSON.stringify(workflowData);
 
       // Call IPC handler in main process
       const { ipcRenderer } = await import('electron');
       const { success, result, error } = await ipcRenderer.invoke('dag:execute', {
-        dagJson: dag.stringify(),
+        dagJson,
       });
 
       if (!success) {
