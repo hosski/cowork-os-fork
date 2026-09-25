@@ -219,6 +219,7 @@ import { DEFAULT_WEB_ACCESS_CONFIG, type WebAccessConfig } from "./web-server/ty
 import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
 import { registerDAGExecutionHandler } from "./ipc/dag-execution-handler";
 import { registerGrillTabConversionHandler } from "./ipc/grill-tab-conversion-handler";
+import { registerTestDAGHandler } from "./ipc/test-dag-handler";
 import {
   ManagedAccountManager,
   type ManagedAccountStatus,
@@ -1934,6 +1935,9 @@ if (isCliDirectRunMode()) {
       
       // Register Grill-Tab conversion handler
       registerGrillTabConversionHandler();
+      
+      // Register test DAG handler
+      registerTestDAGHandler();
       
       detachTaskLifecycleSync = attachControlPlaneTaskLifecycleSync({
         agentDaemon,
