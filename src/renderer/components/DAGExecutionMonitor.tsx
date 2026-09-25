@@ -91,64 +91,434 @@ export const DAGExecutionMonitor: React.FC<{ onReset?: () => void }> = ({ onRese
 
   // Show completion message with stats from last execution
   if (showLastStats && lastExecution) {
+    const durationMins = Math.floor((lastExecution.duration || 0) / 60);
+    const durationSecs = (lastExecution.duration || 0) % 60;
+    const successRate = lastExecution.totalTasks > 0 
+      ? Math.round(((lastExecution.tasksCompleted || 0) / lastExecution.totalTasks) * 100)
+      : 0;
+    const hasFailures = (lastExecution.tasksFailed || 0) > 0;
+
     return (
-      <div className="dag-monitor" style={{ position: 'relative', zIndex: 1000 }}>
-        <div className="empty-state" style={{ 
-          padding: '2rem', 
-          textAlign: 'center', 
-          border: '3px solid green',
-          backgroundColor: '#f0fdf4',
-          borderRadius: '12px'
-        }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
-          <p style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#15803d' }}>Workflow Execution Complete</p>
-          <div style={{ 
-            backgroundColor: 'white', 
-            border: '2px solid #86efac',
-            borderRadius: '8px',
-            padding: '1.5rem',
-            marginBottom: '1.5rem',
-            textAlign: 'left',
-            display: 'inline-block',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)'
-          }}>
-            <p style={{ margin: '0.75rem 0', fontSize: '1rem', fontWeight: 600 }}>
-              📊 <strong>Tiers:</strong> {lastExecution.tiersCompleted || 0}/{lastExecution.totalTiers || 0} ✓
-            </p>
-            <p style={{ margin: '0.75rem 0', fontSize: '1rem', fontWeight: 600 }}>
-              ✅ <strong>Tasks:</strong> {lastExecution.tasksCompleted || 0}/{lastExecution.totalTasks || 0} ✓
-            </p>
-            <p style={{ margin: '0.75rem 0', fontSize: '1rem', fontWeight: 600 }}>
-              ❌ <strong>Failed:</strong> {lastExecution.tasksFailed || 0}
-            </p>
-            <p style={{ margin: '0.75rem 0', fontSize: '1rem', fontWeight: 600 }}>
-              ⏱️ <strong>Duration:</strong> {lastExecution.duration || 0}s
-            </p>
+      <div className="execution-complete-container">
+        <div className="execution-complete-backdrop" onClick={() => {}} />
+        
+        <div className="execution-complete-card">
+          {/* Header */}
+          <div className="execution-header">
+            <div className="execution-icon-wrap">
+              <div className={`execution-icon ${hasFailures ? 'warning' : 'success'}`}>
+                {hasFailures ? '⚠️' : '✅'}
+              </div>
+            </div>
+            <div className="execution-title-section">
+              <h2 className="execution-title">
+                {hasFailures ? 'Workflow Completed with Issues' : 'Workflow Execution Complete'}
+              </h2>
+              <p className="execution-subtitle">
+                {lastExecution.dagId ? `ID: ${lastExecution.dagId.substring(0, 20)}...` : 'Workflow'}
+              </p>
+            </div>
           </div>
-          <button 
-            onClick={() => {
-              setShowLastStats(false);
-              onReset?.();
-            }}
-            style={{
-              padding: '1rem 2rem',
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              fontWeight: 600,
-              marginBottom: '1rem',
-              boxShadow: '0 4px 6px rgba(59, 130, 246, 0.3)'
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2563eb')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3b82f6')}
-          >
-            ➕ Create Another Workflow
-          </button>
-          <p style={{ fontSize: '0.95rem', color: '#666', marginTop: '1rem' }}>Ready to launch another workflow</p>
+
+          {/* Stats Grid */}
+          <div className="execution-stats-grid">
+            <div className="execution-stat-card">
+              <div className="stat-icon">📊</div>
+              <div className="stat-content">
+                <div className="stat-label">Tiers Completed</div>
+                <div className="stat-value">{lastExecution.tiersCompleted}/{lastExecution.totalTiers}</div>
+              </div>
+            </div>
+
+            <div className="execution-stat-card">
+              <div className="stat-icon">✓</div>
+              <div className="stat-content">
+                <div className="stat-label">Tasks Completed</div>
+                <div className="stat-value">{lastExecution.tasksCompleted}/{lastExecution.totalTasks}</div>
+              </div>
+            </div>
+
+            <div className="execution-stat-card">
+              <div className="stat-icon">⏱️</div>
+              <div className="stat-content">
+                <div className="stat-label">Total Duration</div>
+                <div className="stat-value">
+                  {durationMins > 0 ? `${durationMins}m ${durationSecs}s` : `${lastExecution.duration}s`}
+                </div>
+              </div>
+            </div>
+
+            <div className={`execution-stat-card ${successRate === 100 ? 'perfect' : 'partial'}`}>
+              <div className="stat-icon">📈</div>
+              <div className="stat-content">
+                <div className="stat-label">Success Rate</div>
+                <div className="stat-value">{successRate}%</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance Bar */}
+          <div className="execution-performance-section">
+            <div className="performance-bar-container">
+              <div className="performance-bar-label">
+                <span>Execution Progress</span>
+                <span className="performance-bar-value">{successRate}%</span>
+              </div>
+              <div className="performance-bar-bg">
+                <div 
+                  className={`performance-bar-fill ${successRate === 100 ? 'complete' : 'partial'}`}
+                  style={{ width: `${successRate}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Breakdown */}
+          <div className="execution-details-grid">
+            <div className="detail-card success">
+              <div className="detail-icon">✅</div>
+              <div className="detail-text">
+                <div className="detail-label">Succeeded</div>
+                <div className="detail-value">{lastExecution.tasksCompleted} tasks</div>
+              </div>
+            </div>
+
+            {hasFailures && (
+              <div className="detail-card error">
+                <div className="detail-icon">❌</div>
+                <div className="detail-text">
+                  <div className="detail-label">Failed</div>
+                  <div className="detail-value">{lastExecution.tasksFailed} tasks</div>
+                </div>
+              </div>
+            )}
+
+            <div className="detail-card info">
+              <div className="detail-icon">🎯</div>
+              <div className="detail-text">
+                <div className="detail-label">Status</div>
+                <div className="detail-value">{lastExecution.status}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="execution-actions">
+            <button 
+              className="btn-reset"
+              onClick={() => {
+                setShowLastStats(false);
+                onReset?.();
+              }}
+            >
+              <span className="btn-icon">➕</span>
+              <span className="btn-text">Create Another Workflow</span>
+            </button>
+          </div>
+
+          {/* Footer */}
+          <div className="execution-footer">
+            <p>Ready to launch another workflow or customize this one</p>
+          </div>
         </div>
+
+        <style>{`
+          .execution-complete-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+          }
+
+          .execution-complete-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.05) 0%, rgba(167, 139, 250, 0.05) 100%);
+            pointer-events: none;
+            border-radius: 12px;
+          }
+
+          .execution-complete-card {
+            position: relative;
+            background: var(--color-bg-primary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 700px;
+            padding: 32px;
+            overflow: hidden;
+          }
+
+          .execution-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--color-border-subtle);
+          }
+
+          .execution-icon-wrap {
+            flex-shrink: 0;
+          }
+
+          .execution-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            background: var(--color-success-subtle);
+            border: 2px solid var(--color-success);
+          }
+
+          .execution-icon.warning {
+            background: var(--color-warning);
+            opacity: 0.15;
+            border-color: var(--color-warning);
+          }
+
+          .execution-title-section {
+            flex: 1;
+          }
+
+          .execution-title {
+            margin: 0 0 8px 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-text);
+            line-height: 1.3;
+          }
+
+          .execution-subtitle {
+            margin: 0;
+            font-size: 12px;
+            color: var(--color-text-muted);
+            font-family: var(--font-mono);
+          }
+
+          .execution-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+          }
+
+          .execution-stat-card {
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: all 0.2s ease;
+          }
+
+          .execution-stat-card:hover {
+            background: var(--color-bg-tertiary);
+            border-color: var(--color-accent);
+          }
+
+          .execution-stat-card.perfect {
+            background: var(--color-success-subtle);
+            border-color: var(--color-success);
+          }
+
+          .execution-stat-card.partial {
+            background: var(--color-accent-subtle);
+            border-color: var(--color-accent);
+          }
+
+          .stat-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+          }
+
+          .stat-content {
+            flex: 1;
+          }
+
+          .stat-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+          }
+
+          .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-text);
+          }
+
+          .execution-performance-section {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-md);
+          }
+
+          .performance-bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+
+          .performance-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+          }
+
+          .performance-bar-value {
+            color: var(--color-accent);
+            font-weight: 700;
+          }
+
+          .performance-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: var(--color-bg-input);
+            border-radius: 4px;
+            overflow: hidden;
+          }
+
+          .performance-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 4px;
+          }
+
+          .performance-bar-fill.complete {
+            background: linear-gradient(90deg, var(--color-success) 0%, #34d399 100%);
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
+          }
+
+          .execution-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+          }
+
+          .detail-card {
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
+
+          .detail-card.success {
+            background: var(--color-success-subtle);
+            border-color: var(--color-success);
+          }
+
+          .detail-card.error {
+            background: var(--color-error-subtle);
+            border-color: var(--color-error);
+          }
+
+          .detail-card.info {
+            background: var(--color-accent-subtle);
+            border-color: var(--color-accent);
+          }
+
+          .detail-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+          }
+
+          .detail-text {
+            min-width: 0;
+          }
+
+          .detail-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+          }
+
+          .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text);
+          }
+
+          .execution-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+          }
+
+          .btn-reset {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--color-accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(34, 211, 238, 0.2);
+          }
+
+          .btn-reset:hover {
+            background: var(--color-accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 211, 238, 0.3);
+          }
+
+          .btn-reset:active {
+            transform: translateY(0);
+          }
+
+          .btn-icon {
+            font-size: 16px;
+          }
+
+          .btn-text {
+            font-weight: 600;
+          }
+
+          .execution-footer {
+            text-align: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-border-subtle);
+          }
+
+          .execution-footer p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--color-text-muted);
+          }
+        `}</style>
       </div>
     );
   }
