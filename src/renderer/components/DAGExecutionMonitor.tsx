@@ -4,7 +4,7 @@
  * React component for monitoring tier-by-tier execution progress.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 interface ExecutionState {
@@ -22,6 +22,7 @@ interface ExecutionState {
 }
 
 export const DAGExecutionMonitor: React.FC = () => {
+  const [showLastStats, setShowLastStats] = useState(false);
   const execution = useSelector((state: any) => state.executionPlan as ExecutionState | null);
   const workflows = useSelector((state: any) => state.taskDAG?.workflows as Record<string, any> || {});
   const activeWorkflowId = useSelector((state: any) => state.taskDAG?.activeWorkflow as string | null);
@@ -30,6 +31,14 @@ export const DAGExecutionMonitor: React.FC = () => {
   const lastExecution = activeWorkflowId && workflows[activeWorkflowId] 
     ? workflows[activeWorkflowId].executionResult 
     : null;
+
+  // Auto-show stats when execution completes
+  useEffect(() => {
+    if (lastExecution && !showLastStats) {
+      console.log('[DAGExecutionMonitor] Execution result detected, showing stats');
+      setShowLastStats(true);
+    }
+  }, [lastExecution, showLastStats]);
 
   console.log('[DAGExecutionMonitor] Rendered:', {
     activeWorkflowId,
@@ -56,7 +65,7 @@ export const DAGExecutionMonitor: React.FC = () => {
   }, [execution]);
 
   // Show completion message with stats from last execution
-  if (lastExecution) {
+  if (showLastStats && lastExecution) {
     return (
       <div className="dag-monitor">
         <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
@@ -84,7 +93,23 @@ export const DAGExecutionMonitor: React.FC = () => {
               <strong>Duration:</strong> {lastExecution.duration || 0}s
             </p>
           </div>
-          <p style={{ fontSize: '0.875rem', color: '#666' }}>Create another workflow to run again</p>
+          <button 
+            onClick={() => setShowLastStats(false)}
+            style={{
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: 500,
+              marginBottom: '0.5rem'
+            }}
+          >
+            Create Another Workflow
+          </button>
+          <p style={{ fontSize: '0.875rem', color: '#666' }}>Click button to create a new workflow</p>
         </div>
       </div>
     );
