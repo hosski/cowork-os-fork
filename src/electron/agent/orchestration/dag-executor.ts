@@ -14,6 +14,7 @@
 import type { TaskDAG, TaskNode, TaskStatus } from "./task-dag";
 import type { ToolRegistry } from "../tools/registry";
 import type { AgentDaemon } from "../daemon";
+import { validateTaskOutput, shouldRetry } from "../qa/fruvisi-validator";
 
 export interface DAGExecutionConfig {
   /** Max parallel tasks per tier (0 = unlimited) */
@@ -75,15 +76,16 @@ export class DAGExecutor {
     };
   }
 
+  private this.log(msg: string): void {
+    if (this.config.verbose) console.this.log(`[DAG] ${msg}`);
+  }
+
   /**
    * Execute DAG tier-by-tier.
    * Blocks until all tiers complete or first failure.
    */
   async executeTierByTier(dag: TaskDAG): Promise<DAGExecutionResult> {
     const startTime = Date.now();
-    const log = (msg: string) => {
-      if (this.config.verbose) console.log(`[DAG] ${msg}`);
-    };
 
     try {
       // Ensure tiers are computed
@@ -101,7 +103,7 @@ export class DAGExecutor {
       // Execute each tier
       for (let tierIdx = 0; tierIdx < dag.tiers.length; tierIdx++) {
         const tier = dag.tiers[tierIdx];
-        log(`Starting tier ${tierIdx} with ${tier.length} task(s)`);
+        this.log(`Starting tier ${tierIdx} with ${tier.length} task(s)`);
 
         // Spawn all tasks in tier in parallel
         const spawnPromises = tier.map((nodeId) =>
@@ -120,11 +122,11 @@ export class DAGExecutor {
             failedNodes.push(result.nodeId);
             const node = dag.nodes.get(result.nodeId);
             if (node) node.status = "failed" as TaskStatus;
-            log(`Tier ${tierIdx}: Task ${result.nodeId} spawn failed: ${result.error}`);
+            this.log(`Tier ${tierIdx}: Task ${result.nodeId} spawn failed: ${result.error}`);
           } else {
             const { nodeId, taskId } = result;
             taskIdMap.set(nodeId, taskId);
-            log(`Tier ${tierIdx}: Task ${nodeId} spawned (internal: ${taskId})`);
+            this.log(`Tier ${tierIdx}: Task ${nodeId} spawned (internal: ${taskId})`);
           }
         }
 
@@ -265,8 +267,41 @@ export class DAGExecutor {
             node.completedAt = new Date().toISOString();
             node.outputs = await this.getTaskOutput(taskId);
 
-            completedNodes.push(nodeId);
-            pendingNodes.delete(nodeId);
+            // Run QA validation (Fruvisi)
+            const qa = await validateTaskOutput({
+              taskId: nodeId,
+              taskTitle: node.title,
+              successCriteria: node.successCriteria,
+              output: node.outputs,
+              context: node.inputs,
+            });
+
+            if (!qa.pass) {
+              // QA failed; decide whether to retry
+              if (shouldRetry(qa, node.retryCount, node.maxRetries)) {
+                node.retryCount++;
+                this.log(`Tier ${tierIdx}: Task ${nodeId} QA failed; retrying (${node.retryCount}/${node.maxRetries})`);
+                try {
+                  const retryResult = await this.spawnTaskNode(dag, nodeId, tierIdx);
+                  taskIdMap.set(nodeId, retryResult.taskId);
+                } catch (err) {
+                  node.status = "failed" as TaskStatus;
+                  node.completedAt = new Date().toISOString();
+                  failedNodes.push(nodeId);
+                  pendingNodes.delete(nodeId);
+                }
+              } else {
+                node.status = "failed" as TaskStatus;
+                node.completedAt = new Date().toISOString();
+                failedNodes.push(nodeId);
+                pendingNodes.delete(nodeId);
+                this.log(`Tier ${tierIdx}: Task ${nodeId} QA failed permanently: ${qa.rationale}`);
+              }
+            } else {
+              completedNodes.push(nodeId);
+              pendingNodes.delete(nodeId);
+              this.log(`Tier ${tierIdx}: Task ${nodeId} passed QA (confidence: ${qa.confidence.toFixed(2)})`);
+            }
           } else if (status === "failed") {
             // Check retry count
             if (node.retryCount < node.maxRetries) {
