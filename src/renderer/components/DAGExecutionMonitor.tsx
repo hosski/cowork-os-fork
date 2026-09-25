@@ -56,7 +56,7 @@ export const DAGExecutionMonitor: React.FC = () => {
   }, [execution]);
 
   // Show completion message with stats from last execution
-  if (!execution && lastExecution) {
+  if (lastExecution) {
     return (
       <div className="dag-monitor">
         <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
