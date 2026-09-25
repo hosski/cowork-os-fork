@@ -23,7 +23,13 @@ interface ExecutionState {
 
 export const DAGExecutionMonitor: React.FC = () => {
   const execution = useSelector((state: any) => state.executionPlan as ExecutionState | null);
-  const lastExecution = useSelector((state: any) => state.executionPlan?.result as any | null);
+  const workflows = useSelector((state: any) => state.taskDAG?.workflows as Record<string, any> || {});
+  const activeWorkflowId = useSelector((state: any) => state.taskDAG?.activeWorkflow as string | null);
+  
+  // Get execution result from active workflow
+  const lastExecution = activeWorkflowId && workflows[activeWorkflowId] 
+    ? workflows[activeWorkflowId].executionResult 
+    : null;
 
   const progress = useMemo(() => {
     if (!execution) return null;
@@ -59,10 +65,10 @@ export const DAGExecutionMonitor: React.FC = () => {
             display: 'inline-block'
           }}>
             <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
-              <strong>Tiers:</strong> {lastExecution.tiersCompleted}/{lastExecution.totalTiers} ✓
+              <strong>Tiers:</strong> {lastExecution.tiersCompleted || 0}/{lastExecution.totalTiers || 0} ✓
             </p>
             <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
-              <strong>Tasks:</strong> {lastExecution.tasksCompleted}/{lastExecution.totalTasks} ✓
+              <strong>Tasks:</strong> {lastExecution.tasksCompleted || 0}/{lastExecution.totalTasks || 0} ✓
             </p>
             <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
               <strong>Failed:</strong> {lastExecution.tasksFailed || 0}

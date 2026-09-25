@@ -45,10 +45,17 @@ const taskDAGSlice = createSlice({
         tiers: payload.tiers,
         nodes: payload.nodes,
         createdAt: new Date().toISOString(),
+        executionResult: null,
       };
       
       // Auto-set as active workflow to trigger execution middleware
       state.activeWorkflow = id;
+    },
+    setWorkflowExecutionResult: (state, action: PayloadAction<{ workflowId: string; result: any }>) => {
+      const { workflowId, result } = action.payload;
+      if (state.workflows[workflowId]) {
+        state.workflows[workflowId].executionResult = result;
+      }
     },
     setActiveWorkflow: (state, action: PayloadAction<string>) => {
       state.activeWorkflow = action.payload;

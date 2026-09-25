@@ -61,7 +61,27 @@ export const dagAutoExecutionMiddleware: Middleware<{}, RootState> =
               .then((execResult: any) => {
                 console.log('[DAG Auto-Execute] Execution completed:', execResult);
                 
-                // Just log for now - DAGExecutionMonitor will pick up results from IPC
+                // Dispatch action to update workflow with execution result
+                if (execResult.success && execResult.dagId) {
+                  next({
+                    type: 'taskDAG/setWorkflowExecutionResult',
+                    payload: {
+                      workflowId: execResult.dagId,
+                      result: {
+                        dagId: execResult.dagId,
+                        status: execResult.status || 'completed',
+                        tiersCompleted: execResult.tiersCompleted || 0,
+                        totalTiers: execResult.totalTiers || 0,
+                        tasksCompleted: execResult.tasksCompleted || 0,
+                        tasksFailed: execResult.tasksFailed || 0,
+                        totalTasks: execResult.totalTasks || 0,
+                        duration: execResult.duration || 0,
+                      },
+                    },
+                  });
+                }
+                
+                // Console logging for debugging
                 if (execResult.success) {
                   console.log('[DAG Auto-Execute] Execution SUCCESS:', {
                     tiers: execResult.totalTiers,
