@@ -218,6 +218,7 @@ import { WebAccessServer } from "./web-server/WebAccessServer";
 import { DEFAULT_WEB_ACCESS_CONFIG, type WebAccessConfig } from "./web-server/types";
 import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
 import { registerDAGExecutionHandler } from "./ipc/dag-execution-handler";
+import { registerGrillTabConversionHandler } from "./ipc/grill-tab-conversion-handler";
 import {
   ManagedAccountManager,
   type ManagedAccountStatus,
@@ -1930,6 +1931,9 @@ if (isCliDirectRunMode()) {
       const { TaskDAG } = await import('./agent/orchestration/task-dag');
       const { initializeDAGExecutionHandler } = await import('./ipc/dag-execution-handler');
       initializeDAGExecutionHandler(DAGExecutor, TaskDAG);
+      
+      // Register Grill-Tab conversion handler
+      registerGrillTabConversionHandler();
       
       detachTaskLifecycleSync = attachControlPlaneTaskLifecycleSync({
         agentDaemon,
