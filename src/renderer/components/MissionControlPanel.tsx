@@ -1561,7 +1561,7 @@ const styles = `
 
 
   .mc-right-panel-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     right: 0;
     width: 100%;
