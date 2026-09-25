@@ -220,6 +220,7 @@ import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
 import { registerDAGExecutionHandler } from "./ipc/dag-execution-handler";
 import { registerGrillTabConversionHandler } from "./ipc/grill-tab-conversion-handler";
 import { registerTestDAGHandler } from "./ipc/test-dag-handler";
+import { registerVideoWorkflowHandler } from "./ipc/video-workflow-handler";
 import {
   ManagedAccountManager,
   type ManagedAccountStatus,
@@ -1938,6 +1939,9 @@ if (isCliDirectRunMode()) {
       
       // Register test DAG handler
       registerTestDAGHandler();
+      
+      // Register video workflow handler
+      registerVideoWorkflowHandler();
       
       detachTaskLifecycleSync = attachControlPlaneTaskLifecycleSync({
         agentDaemon,
