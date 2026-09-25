@@ -20,7 +20,7 @@ import type {
   TimelineEvidence,
   TimelinePhase,
   UiTimelineEvent,
-} from "../../../shared/timeline-events";
+} from "../../../shared/timeline-v1";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -933,7 +933,7 @@ export function buildCompletionSummaryFromUiEvents(
     if (event.kind === "approval") continue;
     if (event.kind === "agent") continue;
 
-    const summary = event as import("../../../shared/timeline-events").SummaryUiEvent;
+    const summary = event as import("../../../shared/timeline-v1").SummaryUiEvent;
 
     switch (summary.actionKind) {
       case "file.read":

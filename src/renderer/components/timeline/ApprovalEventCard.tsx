@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ApprovalUiEvent } from "../../../shared/timeline-events";
+import type { UiTimelineEvent } from "../../../shared/timeline-v1";
 import type { TaskEvent } from "../../../shared/types";
 import { EvidenceList } from "./EvidenceList";
 import { RawEventDrawer } from "./RawEventDrawer";

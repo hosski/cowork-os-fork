@@ -189,6 +189,11 @@ const MainContent = lazy(() =>
 const RightPanel = lazy(() =>
   import("./components/RightPanel").then((module) => ({ default: module.RightPanel })),
 );
+const MissionControlRightPanel = lazy(() =>
+  import("./components/MissionControlRightPanel").then((module) => ({
+    default: module.MissionControlRightPanel,
+  })),
+);
 const SideChatPanel = lazy(() =>
   import("./components/SideChatPanel").then((module) => ({ default: module.SideChatPanel })),
 );

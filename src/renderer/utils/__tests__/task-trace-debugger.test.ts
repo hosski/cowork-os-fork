@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { TaskEvent } from "../../../shared/types";
-import type { SummaryUiEvent } from "../../../shared/timeline-events";
+import { UiTimelineEvent } from "../../../shared/timeline-v1";
 import {
   buildTaskTraceDebugRows,
   buildTaskTraceTranscriptRows,

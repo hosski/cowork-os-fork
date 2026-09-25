@@ -1,4 +1,4 @@
-import type { TimelineEvidence } from "../../../shared/timeline-events";
+import type { UiTimelineEvent } from "../../../shared/timeline-v1";
 
 interface EvidenceListProps {
   evidence: TimelineEvidence[];

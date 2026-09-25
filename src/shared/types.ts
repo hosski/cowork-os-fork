@@ -1,4 +1,4 @@
-import type { UiTimelineEvent } from "./timeline-events";
+import type { UiTimelineEvent } from "./timeline-v1";
 import type { ChatInlineFrame } from "./mailbox";
 import type { AccessProfileDefinition, AccessProfileId } from "./access-profiles";
 

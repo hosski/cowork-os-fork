@@ -13,7 +13,7 @@
 
 import { describe, expect, it } from "vitest";
 import { normalizeTaskEvents } from "../../../../electron/agent/timeline/timeline-normalizer";
-import type { NormalizerInputEvent } from "../../../../shared/timeline-events";
+import type { UiTimelineEvent } from "../../../../shared/timeline-v1";
 
 // ---------------------------------------------------------------------------
 // Helpers

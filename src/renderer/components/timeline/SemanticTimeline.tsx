@@ -12,7 +12,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { UiTimelineEvent } from "../../../shared/timeline-events";
+import type { UiTimelineEvent } from "../../../shared/timeline-v1";
 import type { TaskEvent, TimelineVerbosity } from "../../../shared/types";
 import { VirtualList } from "../VirtualList";
 import { getGlobalMeasurer, isPretextEnabled } from "../../utils/pretext-adapter";

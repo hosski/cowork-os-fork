@@ -300,7 +300,7 @@ import type {
   RelationshipTimelineEvent,
   RelationshipTimelineQuery,
 } from "../shared/mailbox";
-import type { UiTimelineEvent } from "../shared/timeline-events";
+import type { UiTimelineEvent } from "../shared/timeline-v1";
 
 const ALLOWED_MESSAGE_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const;
 const ALLOWED_MESSAGE_VIDEO_TYPES = ["video/mp4", "video/quicktime", "video/webm"] as const;
