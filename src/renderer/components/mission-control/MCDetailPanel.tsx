@@ -73,7 +73,7 @@ export function MCDetailPanel({ data }: MCDetailPanelProps) {
           <GrillTabPanel />
         )}
         {detailPanel.kind === "task" && contentTab === "dag" && (
-          <TaskDAGViewer />
+          <TaskDAGViewer workflowId={detailPanel.taskId} />
         )}
         {detailPanel.kind === "agent" && (
           <MCAgentDetail data={data} agentId={detailPanel.agentId} />
