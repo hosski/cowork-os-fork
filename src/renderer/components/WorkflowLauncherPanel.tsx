@@ -31,7 +31,7 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
     setError(null);
 
     try {
-      const result = await (window as any).ipcRenderer.invoke('video:create-workflow', {
+      const result = await (window as any).electronAPI.createVideoWorkflow({
         episodeNumber: videoEpisode,
         seriesName,
       });
@@ -67,7 +67,7 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
     setError(null);
 
     try {
-      const result = await (window as any).ipcRenderer.invoke('trading:create-workflow', {
+      const result = await (window as any).electronAPI.createTradingWorkflow({
         botName,
         exchange,
       });

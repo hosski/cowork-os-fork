@@ -5384,6 +5384,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
       wslDistroName: process.env.WSL_DISTRO_NAME,
       osRelease: os.release(),
     }),
+
+  // Workflow IPC APIs
+  createVideoWorkflow: (config: any) =>
+    ipcRenderer.invoke('video:create-workflow', config),
+  createTradingWorkflow: (config: any) =>
+    ipcRenderer.invoke('trading:create-workflow', config),
+  executeDAG: (dagJson: any) =>
+    ipcRenderer.invoke('dag:execute', { dagJson }),
 });
 
 // Type declarations for TypeScript
