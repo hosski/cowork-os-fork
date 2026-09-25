@@ -108,49 +108,59 @@ export const DAGExecutionMonitor: React.FC = () => {
   if (showLastStats && lastExecution) {
     console.log('[DAGExecutionMonitor] ✅✅✅ RENDERING GREEN STATS BOX ✅✅✅');
     return (
-      <div className="dag-monitor">
-        <div className="empty-state" style={{ padding: '2rem', textAlign: 'center', border: '2px solid green' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>✅</div>
-          <p style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>Workflow Execution Complete</p>
+      <div className="dag-monitor" style={{ position: 'relative', zIndex: 1000 }}>
+        <div className="empty-state" style={{ 
+          padding: '2rem', 
+          textAlign: 'center', 
+          border: '3px solid green',
+          backgroundColor: '#f0fdf4',
+          borderRadius: '12px'
+        }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: '#15803d' }}>Workflow Execution Complete</p>
           <div style={{ 
-            backgroundColor: '#f0fdf4', 
-            border: '1px solid #86efac',
-            borderRadius: '6px',
-            padding: '1rem',
-            marginBottom: '1rem',
+            backgroundColor: 'white', 
+            border: '2px solid #86efac',
+            borderRadius: '8px',
+            padding: '1.5rem',
+            marginBottom: '1.5rem',
             textAlign: 'left',
-            display: 'inline-block'
+            display: 'inline-block',
+            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)'
           }}>
-            <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
-              <strong>Tiers:</strong> {lastExecution.tiersCompleted || 0}/{lastExecution.totalTiers || 0} ✓
+            <p style={{ margin: '0.75rem 0', fontSize: '1rem', fontWeight: 600 }}>
+              📊 <strong>Tiers:</strong> {lastExecution.tiersCompleted || 0}/{lastExecution.totalTiers || 0} ✓
             </p>
-            <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
-              <strong>Tasks:</strong> {lastExecution.tasksCompleted || 0}/{lastExecution.totalTasks || 0} ✓
+            <p style={{ margin: '0.75rem 0', fontSize: '1rem', fontWeight: 600 }}>
+              ✅ <strong>Tasks:</strong> {lastExecution.tasksCompleted || 0}/{lastExecution.totalTasks || 0} ✓
             </p>
-            <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
-              <strong>Failed:</strong> {lastExecution.tasksFailed || 0}
+            <p style={{ margin: '0.75rem 0', fontSize: '1rem', fontWeight: 600 }}>
+              ❌ <strong>Failed:</strong> {lastExecution.tasksFailed || 0}
             </p>
-            <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
-              <strong>Duration:</strong> {lastExecution.duration || 0}s
+            <p style={{ margin: '0.75rem 0', fontSize: '1rem', fontWeight: 600 }}>
+              ⏱️ <strong>Duration:</strong> {lastExecution.duration || 0}s
             </p>
           </div>
           <button 
             onClick={() => setShowLastStats(false)}
             style={{
-              padding: '0.75rem 1.5rem',
+              padding: '1rem 2rem',
               backgroundColor: '#3b82f6',
               color: 'white',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: '8px',
               cursor: 'pointer',
-              fontSize: '0.9rem',
-              fontWeight: 500,
-              marginBottom: '0.5rem'
+              fontSize: '1rem',
+              fontWeight: 600,
+              marginBottom: '1rem',
+              boxShadow: '0 4px 6px rgba(59, 130, 246, 0.3)'
             }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2563eb')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#3b82f6')}
           >
-            Create Another Workflow
+            ➕ Create Another Workflow
           </button>
-          <p style={{ fontSize: '0.875rem', color: '#666' }}>Click button to create a new workflow</p>
+          <p style={{ fontSize: '0.95rem', color: '#666', marginTop: '1rem' }}>Ready to launch another workflow</p>
         </div>
       </div>
     );
