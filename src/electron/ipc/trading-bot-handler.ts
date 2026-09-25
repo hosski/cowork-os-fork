@@ -25,8 +25,8 @@ export function registerTradingBotWorkflowHandler() {
         dagJSON,
         message: `Trading bot workflow created: ${botName}`,
         tiers: dagJSON.tiers,
-        nodeCount: dagJSON.nodes.length,
-        estimatedDurationSeconds: dagJSON.nodes.reduce(
+        nodeCount: Object.keys(dagJSON.nodes).length,
+        estimatedDurationSeconds: Object.values(dagJSON.nodes).reduce(
           (sum: number, n: any) => sum + (n.estimatedDurationSeconds || 0),
           0
         ),

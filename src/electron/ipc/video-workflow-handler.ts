@@ -21,9 +21,9 @@ export function registerVideoWorkflowHandler() {
         dagJSON,
         message: `Video workflow created for ${seriesName} Episode ${episodeNumber}`,
         tiers: dagJSON.tiers,
-        nodeCount: dagJSON.nodes.length,
-        taskCount: dagJSON.nodes.length,
-        estimatedDurationSeconds: dagJSON.nodes.reduce(
+        nodeCount: Object.keys(dagJSON.nodes).length,
+        taskCount: Object.keys(dagJSON.nodes).length,
+        estimatedDurationSeconds: Object.values(dagJSON.nodes).reduce(
           (sum: number, n: any) => sum + (n.estimatedDurationSeconds || 0),
           0
         ),
@@ -43,11 +43,11 @@ export function registerVideoWorkflowHandler() {
       const workflows = createFullSeasonWorkflow(seriesName);
       const allDAGs = workflows.map((w) => w.toJSON());
 
-      const totalNodes = allDAGs.reduce((sum, d) => sum + d.nodes.length, 0);
+      const totalNodes = allDAGs.reduce((sum, d) => sum + Object.keys(d.nodes).length, 0);
       const totalDuration = allDAGs.reduce(
         (sum, d) =>
           sum +
-          d.nodes.reduce((s: number, n: any) => s + (n.estimatedDurationSeconds || 0), 0),
+          Object.values(d.nodes).reduce((s: number, n: any) => s + (n.estimatedDurationSeconds || 0), 0),
         0
       );
 
