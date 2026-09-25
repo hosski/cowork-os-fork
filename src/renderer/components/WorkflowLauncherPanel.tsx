@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { taskDAGActions } from '../store';
 
 interface WorkflowLauncherProps {
   onWorkflowCreated?: (dagId: string) => void;
@@ -42,16 +43,13 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
 
       // Dispatch Redux action to add workflow
       // This will trigger the auto-execution middleware
-      dispatch({
-        type: 'taskDAG/addWorkflow',
-        payload: {
-          id: result.dagId,
-          name: `${seriesName} Ep${videoEpisode}`,
-          tiers: result.dagJSON.tiers,
-          nodes: result.dagJSON.nodes,
-          type: 'video',
-        },
-      });
+      dispatch(taskDAGActions.addWorkflow({
+        id: result.dagId,
+        name: `${seriesName} Ep${videoEpisode}`,
+        type: 'video',
+        tiers: result.dagJSON.tiers,
+        nodes: result.dagJSON.nodes,
+      }));
 
       onWorkflowCreated?.(result.dagId);
       setMode(null);
@@ -77,16 +75,13 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
       }
 
       // Dispatch Redux action
-      dispatch({
-        type: 'taskDAG/addWorkflow',
-        payload: {
-          id: result.dagId,
-          name: botName,
-          tiers: result.dagJSON.tiers,
-          nodes: result.dagJSON.nodes,
-          type: 'trading',
-        },
-      });
+      dispatch(taskDAGActions.addWorkflow({
+        id: result.dagId,
+        name: botName,
+        type: 'trading',
+        tiers: result.dagJSON.tiers,
+        nodes: result.dagJSON.nodes,
+      }));
 
       onWorkflowCreated?.(result.dagId);
       setMode(null);

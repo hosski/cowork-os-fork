@@ -53,8 +53,12 @@ const taskDAGSlice = createSlice({
     },
     setWorkflowExecutionResult: (state, action: PayloadAction<{ workflowId: string; result: any }>) => {
       const { workflowId, result } = action.payload;
+      console.log('[Redux] setWorkflowExecutionResult:', { workflowId, result });
       if (state.workflows[workflowId]) {
         state.workflows[workflowId].executionResult = result;
+        console.log('[Redux] Updated workflow executionResult:', state.workflows[workflowId]);
+      } else {
+        console.warn('[Redux] Workflow not found:', workflowId);
       }
     },
     setActiveWorkflow: (state, action: PayloadAction<string>) => {

@@ -31,6 +31,13 @@ export const DAGExecutionMonitor: React.FC = () => {
     ? workflows[activeWorkflowId].executionResult 
     : null;
 
+  console.log('[DAGExecutionMonitor] Rendered:', {
+    activeWorkflowId,
+    hasWorkflow: !!workflows[activeWorkflowId],
+    lastExecution,
+    workflowKeys: Object.keys(workflows),
+  });
+
   const progress = useMemo(() => {
     if (!execution) return null;
 
