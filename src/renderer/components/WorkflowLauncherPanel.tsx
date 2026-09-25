@@ -43,7 +43,7 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
       // Dispatch Redux action to add workflow
       // This will trigger the auto-execution middleware
       dispatch({
-        type: 'addWorkflow',
+        type: 'taskDAG/addWorkflow',
         payload: {
           id: result.dagId,
           name: `${seriesName} Ep${videoEpisode}`,
@@ -78,7 +78,7 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
 
       // Dispatch Redux action
       dispatch({
-        type: 'addWorkflow',
+        type: 'taskDAG/addWorkflow',
         payload: {
           id: result.dagId,
           name: botName,
