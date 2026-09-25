@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { taskDAGActions } from '../store';
+import { WorkflowCreatorModal } from './WorkflowCreatorModal';
 
 interface WorkflowLauncherProps {
   onWorkflowCreated?: (dagId: string) => void;
@@ -17,6 +18,7 @@ interface WorkflowLauncherProps {
 export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkflowCreated, onReset }) => {
   const dispatch = useDispatch();
   const [mode, setMode] = useState<'video' | 'trading' | null>(null);
+  const [showCustomModal, setShowCustomModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -93,6 +95,28 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
     }
   };
 
+  const handleCustomWorkflowCreate = (workflow: any) => {
+    // Create a custom workflow directly without IPC
+    const dagId = `custom-${Date.now()}`;
+    
+    dispatch(taskDAGActions.addWorkflow({
+      id: dagId,
+      name: workflow.name,
+      type: 'custom',
+      tiers: workflow.tiers,
+      nodes: workflow.tiers.flatMap((tier: any) =>
+        tier.tasks.map((task: any) => ({
+          id: task.id,
+          name: task.name,
+          tier: tier.id,
+        }))
+      ),
+    }));
+
+    onWorkflowCreated?.(dagId);
+    setShowCustomModal(false);
+  };
+
   return (
     <div className="workflow-launcher-panel">
       <h2>Launch Workflow</h2>
@@ -104,6 +128,9 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
           </button>
           <button onClick={() => setMode('trading')} className="btn btn-primary">
             💰 Trading Bot
+          </button>
+          <button onClick={() => setShowCustomModal(true)} className="btn btn-primary">
+            ➕ Create Custom Workflow
           </button>
         </div>
       )}
@@ -193,6 +220,12 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
         </div>
       )}
 
+      <WorkflowCreatorModal
+        isOpen={showCustomModal}
+        onClose={() => setShowCustomModal(false)}
+        onCreate={handleCustomWorkflowCreate}
+      />
+
       <style>{`
         .workflow-launcher-panel {
           padding: 20px;
@@ -211,6 +244,7 @@ export const WorkflowLauncherPanel: React.FC<WorkflowLauncherProps> = ({ onWorkf
           display: flex;
           gap: 12px;
           margin: 16px 0;
+          flex-wrap: wrap;
         }
 
         .video-form, .trading-form {
