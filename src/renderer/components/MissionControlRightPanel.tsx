@@ -1,5 +1,4 @@
 import type { Task } from "../../shared/types";
-import { GrillTabPanel } from "./GrillTabPanel";
 import { TaskDAGViewer } from "./TaskDAGViewer";
 
 interface Props {
@@ -42,7 +41,9 @@ export function MissionControlRightPanel({
         {/* Content */}
         <div className="mc-right-panel-content">
           {rightTab === "grill" ? (
-            <GrillTabPanel />
+            <div style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
+              Grill-Tab panel
+            </div>
           ) : rightTab === "dag" ? (
             <TaskDAGViewer />
           ) : null}
