@@ -102,7 +102,8 @@ export class MCPClientManager extends EventEmitter {
     const settings = MCPSettingsManager.loadSettings();
 
     // Auto-connect if enabled - connect in PARALLEL for faster startup
-    if (settings.autoConnect) {
+    // Temporarily disabled due to @llmindset/app vite.config.ts resolution error
+    if (false && settings.autoConnect) {
       const enabledServers = settings.servers.filter((s) => s.enabled);
       const autoConnectServers: MCPServerConfig[] = [];
       for (const server of enabledServers) {
