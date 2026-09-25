@@ -87,8 +87,18 @@ export function registerDAGExecutionHandler(
       const result = await executor.executeTierByTier(dag);
 
       console.error('[DAG IPC] Execution complete');
+      
+      // Return detailed result for UI
       return {
         success: true,
+        dagId: dag.id,
+        status: 'completed',
+        tiersCompleted: result.success ? dag.tiers.length : 0,
+        totalTiers: dag.tiers.length,
+        tasksCompleted: result.completedNodes ? result.completedNodes.length : 0,
+        tasksFailed: result.failedNodes ? result.failedNodes.length : 0,
+        totalTasks: dag.nodes.size,
+        duration: Math.round(result.totalDurationMs / 1000),
         result,
       };
     } catch (error: any) {

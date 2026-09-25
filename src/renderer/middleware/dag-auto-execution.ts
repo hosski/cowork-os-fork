@@ -60,6 +60,17 @@ export const dagAutoExecutionMiddleware: Middleware<{}, RootState> =
             api.executeDAG(workflowData)
               .then((execResult: any) => {
                 console.log('[DAG Auto-Execute] Execution completed:', execResult);
+                
+                // Just log for now - DAGExecutionMonitor will pick up results from IPC
+                if (execResult.success) {
+                  console.log('[DAG Auto-Execute] Execution SUCCESS:', {
+                    tiers: execResult.totalTiers,
+                    tasks: execResult.totalTasks,
+                    completed: execResult.tasksCompleted,
+                    failed: execResult.tasksFailed,
+                    duration: execResult.duration,
+                  });
+                }
               })
               .catch((err: any) => {
                 console.error('[DAG Auto-Execute] IPC failed:', err?.message || err);

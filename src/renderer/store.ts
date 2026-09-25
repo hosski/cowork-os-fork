@@ -196,6 +196,8 @@ const executionPlanSlice = createSlice({
     setResult: (state, action: PayloadAction<any>) => {
       state.result = action.payload;
       state.status = 'completed';
+      state.tiersCompleted = action.payload.tiersCompleted || 0;
+      state.tasksCompleted = action.payload.tasksCompleted || 0;
     },
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;

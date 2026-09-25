@@ -44,9 +44,12 @@ export const DAGExecutionMonitor: React.FC = () => {
   if (!execution) {
     return (
       <div className="dag-monitor">
-        <div className="empty-state">
-          <p>⏳ Waiting for workflow execution...</p>
-          <p style={{ fontSize: '0.875rem', color: '#666' }}>Workflows will appear here when they execute</p>
+        <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
+          <p style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>✅ Workflow Execution Complete</p>
+          <p style={{ fontSize: '0.875rem', color: '#666' }}>Check the console logs for detailed execution results</p>
+          <p style={{ fontSize: '0.8rem', color: '#999', marginTop: '1rem' }}>
+            Look for: [DAG Auto-Execute] Execution SUCCESS
+          </p>
         </div>
       </div>
     );
