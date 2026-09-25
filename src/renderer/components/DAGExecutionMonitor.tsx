@@ -23,6 +23,7 @@ interface ExecutionState {
 
 export const DAGExecutionMonitor: React.FC = () => {
   const execution = useSelector((state: any) => state.executionPlan as ExecutionState | null);
+  const lastExecution = useSelector((state: any) => state.executionPlan?.result as any | null);
 
   const progress = useMemo(() => {
     if (!execution) return null;
@@ -41,15 +42,47 @@ export const DAGExecutionMonitor: React.FC = () => {
     };
   }, [execution]);
 
+  // Show completion message with stats from last execution
+  if (!execution && lastExecution) {
+    return (
+      <div className="dag-monitor">
+        <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>✅</div>
+          <p style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>Workflow Execution Complete</p>
+          <div style={{ 
+            backgroundColor: '#f0fdf4', 
+            border: '1px solid #86efac',
+            borderRadius: '6px',
+            padding: '1rem',
+            marginBottom: '1rem',
+            textAlign: 'left',
+            display: 'inline-block'
+          }}>
+            <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
+              <strong>Tiers:</strong> {lastExecution.tiersCompleted}/{lastExecution.totalTiers} ✓
+            </p>
+            <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
+              <strong>Tasks:</strong> {lastExecution.tasksCompleted}/{lastExecution.totalTasks} ✓
+            </p>
+            <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
+              <strong>Failed:</strong> {lastExecution.tasksFailed || 0}
+            </p>
+            <p style={{ margin: '0.5rem 0', fontSize: '0.9rem' }}>
+              <strong>Duration:</strong> {lastExecution.duration || 0}s
+            </p>
+          </div>
+          <p style={{ fontSize: '0.875rem', color: '#666' }}>Create another workflow to run again</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!execution) {
     return (
       <div className="dag-monitor">
         <div className="empty-state" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>✅ Workflow Execution Complete</p>
-          <p style={{ fontSize: '0.875rem', color: '#666' }}>Check the console logs for detailed execution results</p>
-          <p style={{ fontSize: '0.8rem', color: '#999', marginTop: '1rem' }}>
-            Look for: [DAG Auto-Execute] Execution SUCCESS
-          </p>
+          <p style={{ fontSize: '1rem', marginBottom: '0.5rem' }}>⏳ Waiting for workflow execution...</p>
+          <p style={{ fontSize: '0.875rem', color: '#666' }}>Create a workflow to begin</p>
         </div>
       </div>
     );
