@@ -12,6 +12,7 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import type { TaskDAGStructure } from './mission-control/useTaskDAG';
+import { useDAGExecutor, useTaskDAG } from '../hooks';
 
 interface Props {
   workflowId?: string;
@@ -135,6 +136,55 @@ export const TaskDAGViewer: React.FC<Props> = ({ workflowId }) => {
           </div>
         </div>
       )}
+
+      <DAGExecuteButton />
+    </div>
+  );
+};
+
+/**
+ * Execute DAG Button Component
+ * Spawns all tasks tier-by-tier
+ */
+const DAGExecuteButton: React.FC = () => {
+  const { executeDAG, isExecuting, isCompleted, isFailed, result, error, progress } = useDAGExecutor();
+  const { activeWorkflow } = useTaskDAG();
+
+  if (!activeWorkflow) {
+    return null;
+  }
+
+  return (
+    <div style={styles.executeSection}>
+      <button
+        onClick={executeDAG}
+        disabled={isExecuting}
+        style={{
+          ...styles.executeButton,
+          opacity: isExecuting ? 0.6 : 1,
+          cursor: isExecuting ? 'not-allowed' : 'pointer',
+          backgroundColor: isFailed ? '#f44336' : isCompleted ? '#4caf50' : '#2196f3',
+        }}
+      >
+        {isExecuting ? '⏳ Executing...' : isCompleted ? '✓ Complete' : isFailed ? '✗ Failed' : '▶ Execute DAG'}
+      </button>
+
+      {isExecuting && (
+        <div style={styles.progressText}>
+          Tier {progress.tiers} | {progress.tasks} tasks | {(progress.elapsedHours * 60).toFixed(0)}m
+        </div>
+      )}
+
+      {result && (
+        <div style={{ ...styles.result, borderColor: result.success ? '#4caf50' : '#f44336' }}>
+          <strong>{result.success ? '✓ Success' : '✗ Failed'}</strong>
+          <div style={styles.resultText}>
+            {result.completedNodes.length} completed | {result.failedNodes.length} failed
+          </div>
+        </div>
+      )}
+
+      {error && <div style={styles.errorText}>{error}</div>}
     </div>
   );
 };
@@ -354,5 +404,47 @@ const styles = {
     borderRadius: '3px',
     fontWeight: '600',
     fontSize: '11px',
+  } as React.CSSProperties,
+  executeSection: {
+    marginTop: '24px',
+    paddingTop: '16px',
+    borderTop: '1px solid var(--color-border)',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '12px',
+  } as React.CSSProperties,
+  executeButton: {
+    padding: '12px 20px',
+    fontSize: '14px',
+    fontWeight: '600',
+    border: 'none',
+    borderRadius: '6px',
+    color: 'white',
+    cursor: 'pointer',
+    transition: 'all 200ms ease',
+  } as React.CSSProperties,
+  progressText: {
+    fontSize: '12px',
+    color: 'var(--color-text-secondary)',
+    fontFamily: 'monospace',
+  } as React.CSSProperties,
+  result: {
+    padding: '12px',
+    borderLeft: '4px solid',
+    backgroundColor: 'var(--color-bg-elevated)',
+    borderRadius: '4px',
+    fontSize: '13px',
+  } as React.CSSProperties,
+  resultText: {
+    marginTop: '6px',
+    fontSize: '12px',
+    color: 'var(--color-text-secondary)',
+  } as React.CSSProperties,
+  errorText: {
+    padding: '8px 12px',
+    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+    color: '#f44336',
+    borderRadius: '4px',
+    fontSize: '12px',
   } as React.CSSProperties,
 };

@@ -81,6 +81,67 @@ export const useExecutionPlanActions = () => {
 };
 
 // ============================================================================
+// DAG Executor Hook
+// ============================================================================
+
+export const useDAGExecutor = () => {
+  const { activeWorkflow, workflows } = useTaskDAG();
+  const executionPlan = useExecutionPlan();
+  const { startExecution, updateProgress, setResult, setError } = useExecutionPlanActions();
+
+  const executeDAG = async () => {
+    if (!activeWorkflow || !workflows[activeWorkflow]) {
+      setError('No active workflow selected');
+      return;
+    }
+
+    startExecution();
+    const startTime = Date.now();
+
+    try {
+      // Import DAGExecutor dynamically to avoid circular deps
+      const { DAGExecutor } = await import('../electron/agent/orchestration/dag-executor');
+      const { TaskDAG } = await import('../electron/agent/orchestration/task-dag');
+
+      // Reconstruct DAG from Redux state
+      const workflowData = workflows[activeWorkflow];
+      const dag = TaskDAG.fromJSON(workflowData);
+
+      // Create executor (stub: will integrate with actual tool registry in next phase)
+      const executor = new DAGExecutor(null as any, null as any, {
+        maxParallel: 4,
+        pollIntervalMs: 1000,
+        verbose: true,
+      });
+
+      // Execute tiers
+      const result = await executor.executeTierByTier(dag);
+
+      // Update execution state
+      const elapsedMs = Date.now() - startTime;
+      updateProgress(result.tier, result.completedNodes.length, elapsedMs / 3600000);
+      setResult(result);
+    } catch (err: any) {
+      setError(err?.message || 'Execution failed');
+    }
+  };
+
+  return {
+    executeDAG,
+    isExecuting: executionPlan.status === 'executing',
+    isCompleted: executionPlan.status === 'completed',
+    isFailed: executionPlan.status === 'failed',
+    result: executionPlan.result,
+    error: executionPlan.error,
+    progress: {
+      tiers: executionPlan.tiersCompleted,
+      tasks: executionPlan.tasksCompleted,
+      elapsedHours: executionPlan.elapsedHours,
+    },
+  };
+};
+
+// ============================================================================
 // Combined Hook (for components that need multiple slices)
 // ============================================================================
 
