@@ -43,17 +43,23 @@ export const dagAutoExecutionMiddleware: Middleware<{}, RootState> =
         if (hasDAGStructure) {
           // Trigger execution via IPC to main process
           try {
-            const { ipcRenderer } = await import('electron');
+            console.log('[DAG Auto-Execute] Triggering execution for:', workflowData.name || workflowData.id);
+            
             const dagJson = typeof workflowData === 'string' 
               ? workflowData 
               : JSON.stringify(workflowData);
 
-            console.log('[DAG Auto-Execute] Triggering execution for:', workflowData.name || workflowData.id);
+            // Use preload-exposed electronAPI instead of dynamic import
+            const api = (window as any).electronAPI;
+            if (!api || !api.executeDAG) {
+              console.error('[DAG Auto-Execute] electronAPI.executeDAG not available');
+              return result;
+            }
             
             // Fire-and-forget: don't block UI
-            ipcRenderer.invoke('dag:execute', { dagJson })
-              .then((result: any) => {
-                console.log('[DAG Auto-Execute] Execution completed:', result);
+            api.executeDAG({ dagJson })
+              .then((execResult: any) => {
+                console.log('[DAG Auto-Execute] Execution completed:', execResult);
               })
               .catch((err: any) => {
                 console.error('[DAG Auto-Execute] IPC failed:', err?.message || err);
