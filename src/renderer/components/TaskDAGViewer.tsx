@@ -37,10 +37,7 @@ export const TaskDAGViewer: React.FC<Props> = ({ workflowId }) => {
     );
   }
 
-  const { tiers, totalDuration, criticalPath, parallelizationSpeedup } = workflow;
-
-  // Estimate sequential duration (if all tasks ran one-by-one)
-  const sequentialDuration = tiers.reduce((sum, tier) => sum + tier.estimatedDuration * tier.taskIds.length, 0);
+  const { tiers, totalDuration, sequentialDuration, criticalPath, parallelizationSpeedup } = workflow;
 
   return (
     <div style={styles.container}>

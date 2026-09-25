@@ -13,7 +13,7 @@ import type { Task } from '../../../shared/types';
 export interface TaskTier {
   tier: number;
   taskIds: string[];
-  estimatedDuration: number; // minutes
+  estimatedDuration: number; // minutes (max of tasks in this tier)
   startTime: number;
 }
 
@@ -21,9 +21,10 @@ export interface TaskDAGStructure {
   workflowId: string;
   rootTaskId: string;
   tiers: TaskTier[];
-  totalDuration: number;
+  totalDuration: number; // parallelized duration (sum of tier durations)
+  sequentialDuration: number; // sum of all task durations in workflow
   criticalPath: string[]; // Task IDs in critical path
-  parallelizationSpeedup: number; // 1.0 = sequential, 2.0 = 2x speedup
+  parallelizationSpeedup: number; // sequential / parallelized
 }
 
 /**
@@ -49,6 +50,18 @@ export function useTaskDAG(
       }
     }
 
+    // Collect all descendants of root task
+    const descendantIds = new Set<string>();
+    const collectDescendants = (taskId: string) => {
+      if (descendantIds.has(taskId)) return;
+      descendantIds.add(taskId);
+      const children = childrenByParent.get(taskId) || [];
+      for (const child of children) {
+        collectDescendants(child.id);
+      }
+    };
+    collectDescendants(rootTask.id);
+
     // Build tiers using BFS (breadth-first = layers)
     const tiers: TaskTier[] = [];
     const visited = new Set<string>();
@@ -65,12 +78,11 @@ export function useTaskDAG(
         });
 
       if (taskIds.length > 0) {
-        // Estimate duration: max of all tasks in this tier, or 4 min default
+        // Tier duration = max of all tasks in this tier (they run in parallel)
         const tierDuration = Math.max(
-          4,
-          ...currentLevel
-            .filter((t) => !visited.has(t.id) || visited.has(t.id))
-            .map((t) => Math.ceil((t.estimatedMinutes || 4) / (t.agentType === 'parallel' ? 1 : 1)))
+          ...(currentLevel
+            .filter((t) => taskIds.includes(t.id))
+            .map((t) => t.estimatedMinutes || 4) || [4])
         );
 
         tiers.push({
@@ -96,19 +108,25 @@ export function useTaskDAG(
     // Critical path: longest chain from root to leaf
     const criticalPath = findCriticalPath(rootTask, childrenByParent, taskMap);
 
-    // Estimate speedup: sequential duration vs. tiered duration
-    const sequentialDuration = Array.from(taskMap.values()).reduce(
-      (sum, t) => sum + (t.estimatedMinutes || 4),
+    // Calculate sequential duration: sum of only descendant tasks
+    const sequentialDuration = Array.from(descendantIds).reduce(
+      (sum, taskId) => sum + (taskMap.get(taskId)?.estimatedMinutes || 4),
       0
     );
+
+    // Parallelized duration: sum of tier durations
     const tieredDuration = tiers.reduce((sum, t) => sum + t.estimatedDuration, 0);
-    const parallelizationSpeedup = sequentialDuration / Math.max(1, tieredDuration);
+
+    // Speedup: how much faster with parallelization
+    const parallelizationSpeedup =
+      tieredDuration > 0 ? sequentialDuration / tieredDuration : 1;
 
     return {
       workflowId: rootTask.id,
       rootTaskId: rootTask.id,
       tiers,
       totalDuration: tieredDuration,
+      sequentialDuration,
       criticalPath,
       parallelizationSpeedup,
     };
@@ -137,7 +155,7 @@ function findCriticalPath(
     const childPath = findCriticalPath(child, childrenByParent, taskMap);
     const childDuration =
       (task.estimatedMinutes || 4) +
-      childPath.reduce((sum, id) => sum + ((taskMap.get(id)?.estimatedMinutes || 4) - 4), 0);
+      childPath.slice(1).reduce((sum, id) => sum + (taskMap.get(id)?.estimatedMinutes || 4), 0);
 
     if (childDuration > maxDuration) {
       maxDuration = childDuration;
