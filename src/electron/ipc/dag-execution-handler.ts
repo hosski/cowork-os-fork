@@ -6,6 +6,22 @@
  */
 
 import { ipcMain } from 'electron';
+import type { DAGExecutor } from '../agent/orchestration/dag-executor';
+import type { TaskDAG } from '../agent/orchestration/task-dag';
+
+let DAGExecutorClass: typeof DAGExecutor | null = null;
+let TaskDAGClass: typeof TaskDAG | null = null;
+
+/**
+ * Initialize the handler with loaded classes (call this after modules are loaded in main process)
+ */
+export function initializeDAGExecutionHandler(
+  ExecutorClass: typeof DAGExecutor,
+  DAGClass: typeof TaskDAG,
+): void {
+  DAGExecutorClass = ExecutorClass;
+  TaskDAGClass = DAGClass;
+}
 
 /**
  * Register DAG execution IPC handler.
@@ -17,7 +33,7 @@ export function registerDAGExecutionHandler(
   getWorkspace: () => any,
 ): void {
   ipcMain.handle('dag:execute', async (_event, data: any) => {
-    console.error('[DAG IPC] Handler called with data:', data);
+    console.error('[DAG IPC] Handler called');
     try {
       const { dagJson } = data || {};
       
@@ -28,21 +44,23 @@ export function registerDAGExecutionHandler(
         };
       }
 
-      // Dynamic imports to avoid circular deps at load time
-      console.error('[DAG IPC] Importing modules...');
-      const { TaskDAG } = await import('../agent/orchestration/task-dag');
-      const { DAGExecutor } = await import('../agent/orchestration/dag-executor');
+      if (!DAGExecutorClass || !TaskDAGClass) {
+        return {
+          success: false,
+          error: 'DAG executor not initialized',
+        };
+      }
 
       console.error('[DAG IPC] Parsing DAG...');
       // Parse DAG from JSON
-      const dag = TaskDAG.parse(dagJson);
+      const dag = TaskDAGClass.parse(dagJson);
 
       // Get dependencies
       const daemon = getDaemon();
       const workspace = getWorkspace();
       const toolRegistry = getToolRegistry(workspace);
 
-      console.error('[DAG IPC] Dependencies:', { daemon: !!daemon, toolRegistry: !!toolRegistry, workspace: !!workspace });
+      console.error('[DAG IPC] Dependencies ready');
 
       if (!daemon) {
         return {
@@ -52,7 +70,7 @@ export function registerDAGExecutionHandler(
       }
 
       // Create executor with real dependencies
-      const executor = new DAGExecutor(toolRegistry, daemon, {
+      const executor = new DAGExecutorClass(toolRegistry, daemon, {
         maxParallel: 4,
         pollIntervalMs: 1000,
         verbose: true,
@@ -62,13 +80,13 @@ export function registerDAGExecutionHandler(
       // Execute
       const result = await executor.executeTierByTier(dag);
 
-      console.error('[DAG IPC] Execution complete:', result);
+      console.error('[DAG IPC] Execution complete');
       return {
         success: true,
         result,
       };
     } catch (error: any) {
-      console.error('[DAG IPC] Execution failed:', error);
+      console.error('[DAG IPC] Execution failed:', error?.message);
       console.error('[DAG IPC] Stack:', error?.stack);
       return {
         success: false,

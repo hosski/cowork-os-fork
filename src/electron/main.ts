@@ -1921,9 +1921,15 @@ if (isCliDirectRunMode()) {
       // Register DAG execution IPC handler
       registerDAGExecutionHandler(
         () => agentDaemon,
-        () => undefined, // ToolRegistry will be looked up dynamically in handler
+        () => undefined,
         () => ({ id: 'default' }),
       );
+      
+      // Initialize DAG executor with loaded classes (avoid dynamic imports in renderer)
+      const { DAGExecutor } = await import('./agent/orchestration/dag-executor');
+      const { TaskDAG } = await import('./agent/orchestration/task-dag');
+      const { initializeDAGExecutionHandler } = await import('./ipc/dag-execution-handler');
+      initializeDAGExecutionHandler(DAGExecutor, TaskDAG);
       
       detachTaskLifecycleSync = attachControlPlaneTaskLifecycleSync({
         agentDaemon,
