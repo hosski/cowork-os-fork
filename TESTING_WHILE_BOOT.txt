@@ -1,0 +1,112 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║              ✅ COMPREHENSIVE TEST MENU — READY                     ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+While CoWork OS boots, you can test 4 different levels:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🧪 LEVEL 1: Full System Infrastructure (40 tests)
+
+$ node scripts/full-system-test.js
+
+Tests:
+  ✓ Database exists & is readable
+  ✓ Render queue responding on port 5556
+  ✓ All 15 core infrastructure files present
+  ✓ DAG executor code intact
+  ✓ IPC handlers registered
+  ✓ TypeScript configs present
+  ✓ All 9 documentation files
+  ✓ Build scripts configured
+
+Result: ✅ 40 passed, 0 failed (took 2 seconds)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ LEVEL 2: Quick Workflow Templates (7 tests)
+
+$ node scripts/quick-workflow-test.js
+
+Tests:
+  ✓ Minimal DAG execution
+  ✓ Video workflow template ready
+  ✓ Trading bot workflow template ready
+  ✓ Database has 16 existing task events
+  ✓ Render queue online (0 active jobs)
+  ✓ OpenViking sync scheduled
+  ✓ Mac Mini device registration ready
+
+Result: ✅ All tests pass, "READY FOR EXECUTION"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 LEVEL 3: Manual Execution Tests (In CoWork OS App)
+
+1. CREATE VIDEO WORKFLOW
+   - Click "+"
+   - Select "Video Workflow"
+   - Episodes: 1
+   - Click Create
+   - Expected: Auto-executes, 3 tiers, 6 tasks, 100% QA pass
+
+2. CREATE TRADING BOT WORKFLOW
+   - Click "+"
+   - Select "Trading Bot Workflow"
+   - Market Pair: BTCUSDT
+   - Click Create
+   - Expected: Auto-executes, 4 tiers, 7 tasks, completes in ~3 sec
+
+3. QUERY DATABASE
+   $ sqlite3 cowork-os.db "SELECT COUNT(*) FROM task_events;"
+   Expected: 22+ (16 existing + 6 from video)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 LEVEL 4: Diagnostic Tests (If Anything Breaks)
+
+RENDER QUEUE HEALTH
+$ curl -s http://localhost:5556/health | jq .
+Expected: {"status":"ok","activeJobs":0,"totalJobs":0}
+
+COWORK OS RUNNING
+$ pgrep -f "Electron.app.*cowork"
+Expected: Returns a process ID
+
+VIEW LOGS
+$ tail -f ~/Library/Application\ Support/cowork-os/logs/main.log
+
+VERIFY IPC HANDLERS
+$ grep "registerDAGExecutionHandler" src/electron/main.ts
+Expected: 3 matching lines
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 QUICK CHECKLIST
+
+Run in this order while app boots:
+
+  [1/3] $ node scripts/full-system-test.js
+        → Expect: 40 passed, 0 failed
+
+  [2/3] $ node scripts/quick-workflow-test.js
+        → Expect: All green, "READY FOR EXECUTION"
+
+  [3/3] Open CoWork OS → Create 1 video + 1 trading bot workflow
+        → Expect: Both auto-execute, 100% QA pass
+
+Then declare ready: ✅ FULL STACK OPERATIONAL
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 Full documentation:
+   TEST_MENU.md — Complete test guide with troubleshooting
+
+Current status:
+  ✓ Full system test: PASS (40/40)
+  ✓ Quick workflow test: PASS (7/7)
+  ✓ CoWork OS: Running (Electron process active)
+  ✓ Render queue: Online (port 5556, 0 active jobs)
+  ✓ Database: Ready (16 existing task events)
