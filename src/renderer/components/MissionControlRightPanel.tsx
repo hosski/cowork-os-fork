@@ -37,14 +37,13 @@ export function MissionControlRightPanel({
 
         {/* Content */}
         <div className="mc-right-panel-content">
-          {rightTab === "grill" && (
+          {rightTab === "grill" ? (
             <div style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
-              Grill-Tab content
+              Grill-Tab content here
             </div>
-          )}
-          {rightTab === "dag" && (
+          ) : (
             <div style={{ padding: "16px", color: "var(--color-text-secondary)" }}>
-              DAG content
+              DAG content here
             </div>
           )}
         </div>
