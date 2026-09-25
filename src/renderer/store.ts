@@ -9,6 +9,7 @@
  */
 
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { dagAutoExecutionMiddleware } from './middleware/dag-auto-execution';
 
 // ============================================================================
 // TaskDAG Slice
@@ -208,6 +209,10 @@ export const store = configureStore({
     grillTab: grillTabSlice.reducer,
     executionPlan: executionPlanSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) => [
+    ...getDefaultMiddleware(),
+    dagAutoExecutionMiddleware,
+  ],
 });
 
 export type RootState = ReturnType<typeof store.getState>;
