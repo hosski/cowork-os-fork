@@ -137,7 +137,8 @@ export const TaskDAGViewer: React.FC<Props> = ({ workflowId }) => {
         </div>
       )}
 
-      <DAGExecuteButton />
+      {/* TODO: Execute DAG button disabled pending renderer/IPC module resolution */}
+      {/* <DAGExecuteButton /> */}
     </div>
   );
 };
