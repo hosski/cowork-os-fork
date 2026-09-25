@@ -8,6 +8,7 @@ import type { TaskDAG, TaskNode } from "./task-dag";
 import { TaskStatus } from "./task-dag";
 import type { ToolRegistry } from "../tools/registry";
 import type { AgentDaemon } from "../daemon";
+import { validateTaskOutput, shouldRetry } from "../../qa/fruvisi-validator";
 
 export interface DAGExecutionConfig {
   maxParallel?: number;
@@ -179,8 +180,40 @@ export class DAGExecutor {
           node.status = TaskStatus.COMPLETED;
           node.completedAt = new Date().toISOString();
           node.outputs = { result: "ok" };
+
+          // Run QA validation
+          const qaResult = await validateTaskOutput({
+            taskId: node.id,
+            taskTitle: node.title,
+            successCriteria: node.successCriteria || "Task completed",
+            output: node.outputs,
+            context: { tier: tierIdx, dag: dag.id },
+          });
+
+          if (!qaResult.pass) {
+            // Check if should retry
+            if (shouldRetry(qaResult, node.retryCount, node.maxRetries)) {
+              node.retryCount++;
+              node.status = TaskStatus.PENDING;
+              this.log(
+                `[QA] ${node.id} failed (confidence ${qaResult.confidence.toFixed(2)}); retrying (${node.retryCount}/${node.maxRetries})`,
+              );
+              // Re-add to pending for retry
+              continue;
+            } else {
+              node.status = TaskStatus.FAILED;
+              failedNodes.push(nodeId);
+              pending.delete(nodeId);
+              this.log(
+                `[QA] ${node.id} failed: ${qaResult.rationale} (confidence ${qaResult.confidence.toFixed(2)})`,
+              );
+              continue;
+            }
+          }
+
           completedNodes.push(nodeId);
           pending.delete(nodeId);
+          this.log(`[QA] ${node.id} passed`);
         }
       }
 
