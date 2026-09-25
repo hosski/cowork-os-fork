@@ -48,10 +48,16 @@ export const dagAutoExecutionMiddleware: Middleware<{}, RootState> =
               ? workflowData 
               : JSON.stringify(workflowData);
 
+            console.log('[DAG Auto-Execute] Triggering execution for:', workflowData.name || workflowData.id);
+            
             // Fire-and-forget: don't block UI
-            ipcRenderer.invoke('dag:execute', { dagJson }).catch((err: any) => {
-              console.error('[DAG Auto-Execute] IPC failed:', err?.message);
-            });
+            ipcRenderer.invoke('dag:execute', { dagJson })
+              .then((result: any) => {
+                console.log('[DAG Auto-Execute] Execution completed:', result);
+              })
+              .catch((err: any) => {
+                console.error('[DAG Auto-Execute] IPC failed:', err?.message || err);
+              });
           } catch (err) {
             console.error('[DAG Auto-Execute] Failed to trigger execution:', err);
           }

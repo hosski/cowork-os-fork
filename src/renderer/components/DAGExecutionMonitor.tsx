@@ -45,7 +45,8 @@ export const DAGExecutionMonitor: React.FC = () => {
     return (
       <div className="dag-monitor">
         <div className="empty-state">
-          <p>No active workflow execution</p>
+          <p>⏳ Waiting for workflow execution...</p>
+          <p style={{ fontSize: '0.875rem', color: '#666' }}>Workflows will appear here when they execute</p>
         </div>
       </div>
     );
