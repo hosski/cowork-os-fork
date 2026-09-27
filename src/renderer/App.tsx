@@ -4612,6 +4612,8 @@ export function App() {
     let cancelled = false;
     const latestAttentionEvent = latestAttentionEventByTaskIdRef.current.get(requestedTaskId);
     const cachedTimeline = taskTimelineCacheRef.current.get(taskTimelineCacheKey);
+    // Always set initial events from cache or empty, but for pending bot conversations,
+    // we'll fetch fresh events below to ensure they display properly
     if (cachedTimeline) {
       setEvents(
         latestAttentionEvent

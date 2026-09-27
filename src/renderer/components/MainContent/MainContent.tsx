@@ -3184,6 +3184,38 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
               />
             );
           })()}
+        {/* Pending bot conversation state: ready to continue */}
+        {isBotConversation && events.length === 0 && !isTaskWorking && task?.status === "pending" && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 16,
+              padding: 32,
+              minHeight: 300,
+              color: "var(--text-secondary, rgba(255,255,255,0.72))",
+            }}
+          >
+            <MessageCircle size={32} opacity={0.6} />
+            <div style={{ textAlign: "center" }}>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 500,
+                  marginBottom: 8,
+                  color: "var(--text-primary, rgba(255,255,255,0.9))",
+                }}
+              >
+                Ready to continue conversation
+              </div>
+              <div style={{ fontSize: 13 }}>
+                Send a message to start the next turn with {botName || "this bot"}
+              </div>
+            </div>
+          </div>
+        )}
       </>
     ),
     [
