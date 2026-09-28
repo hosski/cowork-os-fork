@@ -15,6 +15,8 @@ import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerE
 import { useReplayMode, type ReplayControls } from "./hooks/useReplayMode";
 import { useTaskDuration } from "./hooks/useTaskDuration";
 import { useComposerDraft } from "./hooks/useComposerDraft";
+import { useDAGExecutionListener } from "./middleware/dag-execution-listener";
+import { DAGExecutionStatusPanel } from "./components/DAGExecutionStatusPanel";
 import { Sidebar } from "./components/Sidebar";
 import { BotDetailsRail } from "./components/BotDetailsRail";
 import type { BotRole } from "./components/BotsPane";
@@ -2043,6 +2045,9 @@ function extractInputRequestId(event: TaskEvent): string | null {
 }
 
 export function App() {
+  // Subscribe to real-time DAG execution events
+  const dagExecution = useDAGExecutionListener();
+  
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   // Bot transcripts use a dedicated feed so the paged Sessions list cannot
@@ -7668,6 +7673,13 @@ export function App() {
           {/* Quick Task FAB */}
           {currentWorkspace && currentView === "main" && (
             <QuickTaskFAB onCreateTask={handleQuickTask} />
+          )}
+
+          {/* DAG Execution Status Panel */}
+          {currentView === "main" && (
+            <div style={{ position: "fixed", bottom: 100, right: 24, maxWidth: 480, zIndex: 100 }}>
+              <DAGExecutionStatusPanel />
+            </div>
           )}
 
           {approveAllSessionWarningOpen ? (

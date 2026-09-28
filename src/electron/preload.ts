@@ -5392,6 +5392,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke('trading:create-workflow', config),
   executeDAG: (dagJson: any) =>
     ipcRenderer.invoke('dag:execute', { dagJson }),
+  onDAGExecutionEvent: (callback: (event: any) => void) => {
+    const listener = (_event: any, data: any) => callback(data);
+    ipcRenderer.on('dag:execution-event', listener);
+    // Return unsubscribe function
+    return () => {
+      ipcRenderer.removeListener('dag:execution-event', listener);
+    };
+  },
 });
 
 // Type declarations for TypeScript

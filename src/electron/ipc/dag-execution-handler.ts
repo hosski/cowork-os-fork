@@ -31,6 +31,7 @@ export function registerDAGExecutionHandler(
   getDaemon: () => any,
   getToolRegistry: (workspace: any) => any,
   getWorkspace: () => any,
+  mainWindow?: any,
 ): void {
   ipcMain.handle('dag:execute', async (_event, data: any) => {
     console.error('[DAG IPC] Handler called');
@@ -81,6 +82,17 @@ export function registerDAGExecutionHandler(
         pollIntervalMs: 1000,
         verbose: true,
       });
+
+      // Register event listener to forward to renderer
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        executor.onExecutionEvent((event: any) => {
+          try {
+            mainWindow.webContents.send('dag:execution-event', event);
+          } catch (err) {
+            console.error('[DAG IPC] Failed to send event to renderer:', err);
+          }
+        });
+      }
 
       console.error('[DAG IPC] Starting execution...');
       // Execute

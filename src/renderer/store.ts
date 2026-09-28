@@ -167,6 +167,82 @@ const grillTabSlice = createSlice({
 });
 
 // ============================================================================
+// Execution State Slice (Real-time DAG execution tracking)
+// ============================================================================
+
+interface NodeExecutionState {
+  id: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  startedAt?: string;
+  completedAt?: string;
+  error?: string;
+  retryCount?: number;
+}
+
+interface DAGExecutionState {
+  dagId: string | null;
+  currentTierIdx: number;
+  totalTiers: number;
+  nodeStates: Record<string, NodeExecutionState>;
+  status: 'idle' | 'running' | 'completed' | 'failed';
+  startTime?: number;
+  error?: string;
+}
+
+const initialDAGExecutionState: DAGExecutionState = {
+  dagId: null,
+  currentTierIdx: 0,
+  totalTiers: 0,
+  nodeStates: {},
+  status: 'idle',
+};
+
+const dagExecutionSlice = createSlice({
+  name: 'dagExecution',
+  initialState: initialDAGExecutionState,
+  reducers: {
+    executionStarted: (state, action: PayloadAction<{ dagId: string; totalTiers: number }>) => {
+      state.dagId = action.payload.dagId;
+      state.totalTiers = action.payload.totalTiers;
+      state.currentTierIdx = 0;
+      state.nodeStates = {};
+      state.status = 'running';
+      state.startTime = Date.now();
+      state.error = undefined;
+    },
+    tierStarted: (state, action: PayloadAction<{ tierIdx: number }>) => {
+      state.currentTierIdx = action.payload.tierIdx;
+    },
+    nodeUpdated: (state, action: PayloadAction<{ nodeId: string; status: string; error?: string; retryCount?: number }>) => {
+      const { nodeId, status, error, retryCount } = action.payload;
+      state.nodeStates[nodeId] = {
+        id: nodeId,
+        status: status as any,
+        error,
+        retryCount,
+        completedAt: ['completed', 'failed'].includes(status) ? new Date().toISOString() : undefined,
+      };
+    },
+    executionCompleted: (state) => {
+      state.status = 'completed';
+    },
+    executionFailed: (state, action: PayloadAction<{ error: string }>) => {
+      state.status = 'failed';
+      state.error = action.payload.error;
+    },
+    reset: (state) => {
+      state.dagId = null;
+      state.currentTierIdx = 0;
+      state.totalTiers = 0;
+      state.nodeStates = {};
+      state.status = 'idle';
+      state.startTime = undefined;
+      state.error = undefined;
+    },
+  },
+});
+
+// ============================================================================
 // Execution Plan Slice
 // ============================================================================
 
@@ -245,6 +321,7 @@ export const store = configureStore({
   reducer: {
     taskDAG: taskDAGSlice.reducer,
     grillTab: grillTabSlice.reducer,
+    dagExecution: dagExecutionSlice.reducer,
     executionPlan: executionPlanSlice.reducer,
   },
   middleware: (getDefaultMiddleware) => [
@@ -262,4 +339,5 @@ export type AppDispatch = typeof store.dispatch;
 
 export const taskDAGActions = taskDAGSlice.actions;
 export const grillTabActions = grillTabSlice.actions;
+export const dagExecutionActions = dagExecutionSlice.actions;
 export const executionPlanActions = executionPlanSlice.actions;

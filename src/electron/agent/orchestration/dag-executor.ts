@@ -17,6 +17,18 @@ export interface DAGExecutionConfig {
   verbose?: boolean;
 }
 
+export interface DAGExecutionEvent {
+  type: 'tier-start' | 'tier-complete' | 'node-update' | 'dag-complete' | 'dag-error';
+  dagId: string;
+  tierIdx?: number;
+  nodeId?: string;
+  nodeStatus?: string;
+  timestamp: number;
+  data?: any;
+}
+
+export type ExecutionEventListener = (event: DAGExecutionEvent) => void;
+
 export interface DAGExecutionResult {
   success: boolean;
   completedNodes: string[];
@@ -29,6 +41,7 @@ export class DAGExecutor {
   private toolRegistry: ToolRegistry;
   private daemon: AgentDaemon;
   private config: Required<DAGExecutionConfig>;
+  private eventListeners: ExecutionEventListener[] = [];
 
   constructor(
     toolRegistry: ToolRegistry,
@@ -43,6 +56,26 @@ export class DAGExecutor {
       timeoutMs: config.timeoutMs ?? 0,
       verbose: config.verbose ?? false,
     };
+  }
+
+  /**
+   * Register a listener for execution events
+   */
+  onExecutionEvent(listener: ExecutionEventListener): void {
+    this.eventListeners.push(listener);
+  }
+
+  /**
+   * Emit an execution event to all listeners
+   */
+  private emitEvent(event: DAGExecutionEvent): void {
+    this.eventListeners.forEach((listener) => {
+      try {
+        listener(event);
+      } catch (err) {
+        this.log(`Event listener error: ${err}`);
+      }
+    });
   }
 
   private log(msg: string): void {
@@ -72,6 +105,14 @@ export class DAGExecutor {
       for (let tierIdx = 0; tierIdx < dag.tiers.length; tierIdx++) {
         const tierNodeIds = dag.tiers[tierIdx];
         this.log(`Tier ${tierIdx}: Executing ${tierNodeIds.length} tasks`);
+        
+        // Emit tier-start event
+        this.emitEvent({
+          type: 'tier-start',
+          dagId: dag.id,
+          tierIdx,
+          timestamp: Date.now(),
+        });
 
         // Spawn all tasks in parallel
         const taskIdMap = new Map<string, string>();
@@ -89,6 +130,15 @@ export class DAGExecutor {
                 node.startedAt = new Date().toISOString();
                 taskIdMap.set(nodeId, taskId);
                 this.log(`Tier ${tierIdx}: Task ${nodeId} spawned`);
+                
+                // Emit node-update event
+                this.emitEvent({
+                  type: 'node-update',
+                  dagId: dag.id,
+                  nodeId,
+                  nodeStatus: TaskStatus.RUNNING,
+                  timestamp: Date.now(),
+                });
               } catch (err) {
                 this.log(`Tier ${tierIdx}: Failed to spawn ${nodeId}`);
                 failedNodes.push(nodeId);
@@ -110,9 +160,26 @@ export class DAGExecutor {
         completedNodes.push(...tierResult.completedNodes);
         failedNodes.push(...tierResult.failedNodes);
 
+        // Emit tier-complete event
+        this.emitEvent({
+          type: 'tier-complete',
+          dagId: dag.id,
+          tierIdx,
+          timestamp: Date.now(),
+          data: { completed: tierResult.completedNodes.length, failed: tierResult.failedNodes.length },
+        });
+
         if (tierResult.failedNodes.length > 0) {
           dag.status = TaskStatus.FAILED;
           dag.completedAt = new Date().toISOString();
+          
+          this.emitEvent({
+            type: 'dag-error',
+            dagId: dag.id,
+            timestamp: Date.now(),
+            data: { error: `Tier ${tierIdx} had ${tierResult.failedNodes.length} failures` },
+          });
+          
           return {
             success: false,
             completedNodes,
@@ -126,6 +193,13 @@ export class DAGExecutor {
       // All tiers completed
       dag.status = TaskStatus.COMPLETED;
       dag.completedAt = new Date().toISOString();
+
+      this.emitEvent({
+        type: 'dag-complete',
+        dagId: dag.id,
+        timestamp: Date.now(),
+        data: { completed: completedNodes.length, failed: failedNodes.length },
+      });
 
       return {
         success: true,
@@ -198,6 +272,16 @@ export class DAGExecutor {
               this.log(
                 `[QA] ${node.id} failed (confidence ${qaResult.confidence.toFixed(2)}); retrying (${node.retryCount}/${node.maxRetries})`,
               );
+              
+              this.emitEvent({
+                type: 'node-update',
+                dagId: dag.id,
+                nodeId,
+                nodeStatus: TaskStatus.PENDING,
+                timestamp: Date.now(),
+                data: { retryCount: node.retryCount },
+              });
+
               // Re-add to pending for retry
               continue;
             } else {
@@ -207,6 +291,16 @@ export class DAGExecutor {
               this.log(
                 `[QA] ${node.id} failed: ${qaResult.rationale} (confidence ${qaResult.confidence.toFixed(2)})`,
               );
+              
+              this.emitEvent({
+                type: 'node-update',
+                dagId: dag.id,
+                nodeId,
+                nodeStatus: TaskStatus.FAILED,
+                timestamp: Date.now(),
+                data: { error: qaResult.rationale },
+              });
+              
               continue;
             }
           }
@@ -214,6 +308,14 @@ export class DAGExecutor {
           completedNodes.push(nodeId);
           pending.delete(nodeId);
           this.log(`[QA] ${node.id} passed`);
+          
+          this.emitEvent({
+            type: 'node-update',
+            dagId: dag.id,
+            nodeId,
+            nodeStatus: TaskStatus.COMPLETED,
+            timestamp: Date.now(),
+          });
         }
       }
 

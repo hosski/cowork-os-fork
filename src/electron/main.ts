@@ -1927,6 +1927,7 @@ if (isCliDirectRunMode()) {
         () => agentDaemon,
         () => undefined,
         () => ({ id: 'default' }),
+        mainWindow,
       );
       
       // Initialize DAG executor with loaded classes (avoid dynamic imports in renderer)
