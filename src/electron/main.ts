@@ -218,6 +218,7 @@ import { WebAccessServer } from "./web-server/WebAccessServer";
 import { DEFAULT_WEB_ACCESS_CONFIG, type WebAccessConfig } from "./web-server/types";
 import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
 import { registerDAGExecutionHandler } from "./ipc/dag-execution-handler";
+import { initializeDagExecutorIpc } from "./ipc/dag-ipc";
 import { registerReworkHandler, initializeReworkHandler } from "./ipc/rework-handler";
 import { getAuditService } from "./services/audit-log-service";
 import { registerCostDataHandler } from "./ipc/cost-data-handler";
@@ -2766,6 +2767,11 @@ if (isCliDirectRunMode()) {
         setupSubconsciousHandlers(subconsciousLoopService);
         setupImprovementHandlers(subconsciousLoopService);
       }
+
+      // Initialize DAG Executor IPC
+      initializeDagExecutorIpc((channel: string, data: unknown) => {
+        mainWindow?.webContents.send(channel, data);
+      });
       const startXMentionBridge = () => {
         if (!xMentionBridgeService) {
           xMentionBridgeService = initializeXMentionBridgeService(agentDaemon, {
