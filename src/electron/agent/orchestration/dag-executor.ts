@@ -9,6 +9,7 @@ import { TaskStatus } from "./task-dag";
 import type { ToolRegistry } from "../tools/registry";
 import type { AgentDaemon } from "../daemon";
 import { validateTaskOutput, shouldRetry } from "../../qa/fruvisi-validator";
+import { getRateLimiter } from "../../services/rate-limiter";
 
 export interface DAGExecutionConfig {
   maxParallel?: number;
@@ -124,12 +125,17 @@ export class DAGExecutor {
               try {
                 const node = dag.nodes.get(nodeId);
                 if (!node) return;
+
+                // Acquire rate limiter token before spawning agent
+                const model = (node as any).model || 'claude-3-5-sonnet';
+                const limiter = await getRateLimiter();
+                const release = await limiter.acquire(model, 30000); // 30 sec timeout
                 
                 const taskId = `task_${nodeId}_${Date.now()}`;
                 node.status = TaskStatus.RUNNING;
                 node.startedAt = new Date().toISOString();
                 taskIdMap.set(nodeId, taskId);
-                this.log(`Tier ${tierIdx}: Task ${nodeId} spawned`);
+                this.log(`Tier ${tierIdx}: Task ${nodeId} spawned (model: ${model})`);
                 
                 // Emit node-update event
                 this.emitEvent({
