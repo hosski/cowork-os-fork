@@ -18,12 +18,18 @@ import type {
   CronListResult,
   CronEvent,
   CronRunHistoryEntry,
+  CronJobStatus,
   CronRunHistoryResult,
   CronWebhookConfig,
   CronWorkspaceContext,
   CronOutboxEntry,
 } from "./types";
 import { loadCronStore, saveCronStore, resolveCronStorePath } from "./store";
+import {
+  reconcileCronOutcomeCounts,
+  recordCronRunCompletion,
+  resetCronOutcomeCounts,
+} from "./outcome-counts";
 import { computeNextRunAtMs } from "./schedule";
 import { CronWebhookServer } from "./webhook";
 import { createLogger } from "../utils/logger";
@@ -53,6 +59,23 @@ const defaultLog = {
   warn: (msg: string, data?: unknown) => cronLogger.warn(msg, data ?? ""),
   error: (msg: string, data?: unknown) => cronLogger.error(msg, data ?? ""),
 };
+
+/** Run status for a task whose lifecycle status is `completed`, from its terminal status. */
+function cronStatusForCompletedTask(terminalStatus: unknown): CronJobStatus {
+  switch (terminalStatus) {
+    case "failed":
+      return "error";
+    case "awaiting_approval":
+    case "awaiting_verification":
+    case "needs_user_action":
+      return "needs_user_action";
+    case "resume_available":
+    case "partial_success":
+      return "partial_success";
+    default:
+      return "ok";
+  }
+}
 
 interface CronServiceState {
   deps: Required<
@@ -149,6 +172,8 @@ export class CronService {
 
       const storePath = resolveCronStorePath(deps.storePath);
       this.state.store = await loadCronStore(storePath);
+      // Idempotent: classifies retained history once and detects older writers.
+      for (const job of this.state.store.jobs) reconcileCronOutcomeCounts(job.state);
 
       const enabledCount = this.state.store.jobs.filter((j) => j.enabled).length;
       log.info(`Cron service started with ${enabledCount} enabled jobs`);
@@ -266,6 +291,7 @@ export class CronService {
         totalRuns: job.state.totalRuns ?? 0,
         successfulRuns: job.state.successfulRuns ?? 0,
         failedRuns: job.state.failedRuns ?? 0,
+        outcomeCounts: { ...reconcileCronOutcomeCounts(job.state).counts },
       };
     });
   }
@@ -629,11 +655,27 @@ export class CronService {
       if (job.state.runningAtMs !== undefined) {
         const timedOutAtMs = job.state.runningAtMs + this.getJobTimeoutMs(job);
         if (timedOutAtMs <= nowMs) {
+          const interruptedRunAtMs = job.state.runningAtMs;
           job.state.lastStatus = "timeout";
           job.state.lastError =
             `Scheduled run interrupted before completion after app restart; ` +
-            `started at ${new Date(job.state.runningAtMs).toISOString()}`;
+            `started at ${new Date(interruptedRunAtMs).toISOString()}`;
           job.state.runningAtMs = undefined;
+          recordCronRunCompletion(
+            job.state,
+            {
+              runAtMs: interruptedRunAtMs,
+              durationMs: Math.max(0, nowMs - interruptedRunAtMs),
+              status: "timeout",
+              error: job.state.lastError,
+              taskId: job.state.lastTaskId,
+              runMode: job.runMode ?? "new_task",
+              workspaceId: job.workspaceId,
+              deliveryAttempts: 0,
+              deliverableStatus: "none",
+            },
+            job.maxHistoryEntries ?? this.state.deps.maxHistoryEntries,
+          );
         }
       }
 
@@ -727,7 +769,7 @@ export class CronService {
 
       const startTime = Date.now();
       let taskId: string | undefined;
-      let status: "ok" | "partial_success" | "needs_user_action" | "error" | "timeout" = "ok";
+      let status: CronJobStatus = "ok";
       let errorMsg: string | undefined;
       let resultText: string | undefined;
       let workspaceContext: CronWorkspaceContext | null = null;
@@ -783,6 +825,7 @@ export class CronService {
             });
             resultText = workflowResult.resultText;
             errorMsg = workflowResult.error;
+            // queued/running means the scheduler did not observe an outcome.
             status =
               workflowResult.status === "completed"
                 ? "ok"
@@ -792,7 +835,10 @@ export class CronService {
                     ? "needs_user_action"
                     : workflowResult.status === "failed"
                       ? "error"
-                      : "partial_success";
+                      : "unknown";
+            if (status === "unknown" && !errorMsg) {
+              errorMsg = `Routine run ${workflowResult.status}; its outcome was not observed by the scheduler`;
+            }
             log.info(`Job ${job.name} executed Routine v2 run ${workflowResult.runId}`);
           }
         } else if (job.runMode === "thread_follow_up") {
@@ -814,7 +860,7 @@ export class CronService {
             }
 
             if (status === "ok") {
-              await deps.sendTaskMessage({
+              const sent = await deps.sendTaskMessage({
                 taskId,
                 message: renderedPrompt,
                 allowUserInput: job.allowUserInput ?? false,
@@ -822,7 +868,18 @@ export class CronService {
               });
               job.state.lastTaskId = taskId;
               await this.persist();
-              log.info(`Job ${job.name} sent scheduled follow-up to task ${taskId}`);
+              if (sent?.queued) {
+                // Queued behind an active run of the thread: this schedule did not run
+                // now, and the eventual result belongs to that thread, not this run.
+                status = "skipped";
+                errorMsg = "Follow-up queued behind an active run of the target thread";
+                log.info(`Job ${job.name} queued scheduled follow-up for busy task ${taskId}`);
+              } else {
+                // Sending returns after the follow-up ran; classify the thread's durable
+                // result rather than the fact that a message was sent.
+                shouldPollTaskStatus = true;
+                log.info(`Job ${job.name} sent scheduled follow-up to task ${taskId}`);
+              }
             }
           }
         } else {
@@ -864,26 +921,21 @@ export class CronService {
 
             const taskStatus = typeof task.status === "string" ? task.status : "";
             if (taskStatus === "completed") {
-              status =
-                task.terminalStatus === "awaiting_approval"
-                  ? "needs_user_action"
-                  : task.terminalStatus === "awaiting_verification"
-                    ? "needs_user_action"
-                    : task.terminalStatus === "resume_available"
-                      ? "partial_success"
-                      : task.terminalStatus === "needs_user_action"
-                        ? "needs_user_action"
-                        : task.terminalStatus === "partial_success"
-                          ? "partial_success"
-                          : "ok";
+              // Classify the durable task result, not whether polling returned.
+              status = cronStatusForCompletedTask(task.terminalStatus);
               if (typeof task.resultSummary === "string" && task.resultSummary.trim()) {
                 pollResultSummary = task.resultSummary.trim();
               }
               break;
             }
-            if (taskStatus === "failed" || taskStatus === "cancelled") {
+            if (taskStatus === "failed") {
               status = "error";
-              errorMsg = task.error || `Task ${taskStatus}`;
+              errorMsg = task.error || "Task failed";
+              break;
+            }
+            if (taskStatus === "cancelled") {
+              status = "cancelled";
+              errorMsg = task.error || "Task cancelled";
               break;
             }
             if (taskStatus === "paused" || taskStatus === "blocked") {
@@ -909,18 +961,7 @@ export class CronService {
             const finalTask = await deps.getTaskStatus(taskId);
             const finalStatus = typeof finalTask?.status === "string" ? finalTask.status : "";
             if (finalStatus === "completed") {
-              status =
-                finalTask?.terminalStatus === "awaiting_approval"
-                  ? "needs_user_action"
-                  : finalTask?.terminalStatus === "awaiting_verification"
-                    ? "needs_user_action"
-                    : finalTask?.terminalStatus === "resume_available"
-                      ? "partial_success"
-                      : finalTask?.terminalStatus === "needs_user_action"
-                        ? "needs_user_action"
-                        : finalTask?.terminalStatus === "partial_success"
-                          ? "partial_success"
-                          : "ok";
+              status = cronStatusForCompletedTask(finalTask?.terminalStatus);
               if (
                 !pollResultSummary &&
                 typeof finalTask?.resultSummary === "string" &&
@@ -928,9 +969,12 @@ export class CronService {
               ) {
                 pollResultSummary = finalTask.resultSummary.trim();
               }
-            } else if (finalStatus === "failed" || finalStatus === "cancelled") {
+            } else if (finalStatus === "failed") {
               status = "error";
-              errorMsg = finalTask?.error || `Task ${finalStatus || "failed"}`;
+              errorMsg = finalTask?.error || "Task failed";
+            } else if (finalStatus === "cancelled") {
+              status = "cancelled";
+              errorMsg = finalTask?.error || "Task cancelled";
             } else if (finalStatus === "paused" || finalStatus === "blocked") {
               status = "needs_user_action";
               errorMsg = finalTask?.error || `Task ${finalStatus}`;
@@ -977,15 +1021,7 @@ export class CronService {
       job.state.lastStatus = status;
       job.state.lastError = errorMsg;
 
-      // Update run statistics
-      job.state.totalRuns = (job.state.totalRuns ?? 0) + 1;
-      if (status === "ok" || status === "partial_success" || status === "needs_user_action") {
-        job.state.successfulRuns = (job.state.successfulRuns ?? 0) + 1;
-      } else {
-        job.state.failedRuns = (job.state.failedRuns ?? 0) + 1;
-      }
-
-      // Add to run history
+      // History, legacy counters and versioned outcome counts are recorded together.
       const historyEntry: CronRunHistoryEntry = {
         runAtMs: nowMs,
         durationMs,
@@ -999,14 +1035,11 @@ export class CronService {
         deliveryAttempts: 0,
         deliverableStatus: "none",
       };
-      job.state.runHistory = job.state.runHistory ?? [];
-      job.state.runHistory.unshift(historyEntry);
-
-      // Trim history to max entries
-      const maxEntries = job.maxHistoryEntries ?? deps.maxHistoryEntries;
-      if (job.state.runHistory.length > maxEntries) {
-        job.state.runHistory = job.state.runHistory.slice(0, maxEntries);
-      }
+      recordCronRunCompletion(
+        job.state,
+        historyEntry,
+        job.maxHistoryEntries ?? deps.maxHistoryEntries,
+      );
 
       // Handle one-shot jobs
       if (job.deleteAfterRun) {
@@ -1034,19 +1067,21 @@ export class CronService {
         nowMs,
       );
 
-      // Update history entry with delivery status
-      if (deliveryResult.attempted && job.state.runHistory?.[0]) {
-        job.state.runHistory[0].deliveryStatus = deliveryResult.success
+      // Update this run's history entry (the object recorded above, which another run
+      // of the same job may have moved from the front). Delivery facts are stored
+      // beside, never instead of, the execution outcome.
+      if (deliveryResult.attempted) {
+        historyEntry.deliveryStatus = deliveryResult.success
           ? deliveryResult.deliverableStatus === "queued"
             ? "skipped"
             : "success"
           : "failed";
         if (deliveryResult.error) {
-          job.state.runHistory[0].deliveryError = deliveryResult.error;
+          historyEntry.deliveryError = deliveryResult.error;
         }
-        job.state.runHistory[0].deliveryMode = deliveryResult.mode;
-        job.state.runHistory[0].deliveryAttempts = deliveryResult.attempts;
-        job.state.runHistory[0].deliverableStatus = deliveryResult.deliverableStatus;
+        historyEntry.deliveryMode = deliveryResult.mode;
+        historyEntry.deliveryAttempts = deliveryResult.attempts;
+        historyEntry.deliverableStatus = deliveryResult.deliverableStatus;
         await this.persist();
       }
 
@@ -1077,7 +1112,7 @@ export class CronService {
    */
   private async deliverToChannel(
     job: CronJob,
-    status: "ok" | "partial_success" | "needs_user_action" | "error" | "timeout",
+    status: CronJobStatus,
     taskId?: string,
     error?: string,
     resultText?: string,
@@ -1381,7 +1416,7 @@ export class CronService {
   private enqueueOutboxEntry(params: {
     job: CronJob;
     runAtMs: number;
-    status: "ok" | "partial_success" | "needs_user_action" | "error" | "timeout";
+    status: CronJobStatus;
     channelType: NonNullable<CronJob["delivery"]>["channelType"];
     channelDbId?: string;
     channelId: string;
@@ -1617,10 +1652,7 @@ export class CronService {
       const job = store.jobs.find((j) => j.id === jobId);
       if (!job) return false;
 
-      job.state.runHistory = [];
-      job.state.totalRuns = 0;
-      job.state.successfulRuns = 0;
-      job.state.failedRuns = 0;
+      resetCronOutcomeCounts(job.state);
 
       await this.persist();
       return true;

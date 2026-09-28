@@ -10,10 +10,8 @@ const memoryFeatureMocks = vi.hoisted(() => ({
 }));
 
 const memoryServiceMocks = vi.hoisted(() => ({
-  searchAsync: vi.fn(() => {
-    throw new Error("DB not initialized");
-  }),
-  searchWorkspaceMarkdown: vi.fn(() => []),
+  searchAsync: vi.fn().mockResolvedValue([]),
+  searchWorkspaceMarkdown: vi.fn().mockReturnValue([]),
 }));
 
 vi.mock("electron", () => ({
@@ -38,7 +36,7 @@ vi.mock("../../../location/DesktopLocationService", () => ({
   }),
 }));
 
-vi.mock("../../memory/MemoryService", () => ({
+vi.mock("../../../memory/MemoryService", () => ({
   MemoryService: memoryServiceMocks,
 }));
 
@@ -55,6 +53,10 @@ beforeEach(() => {
     topicMemoryEnabled: true,
     verbatimRecallEnabled: true,
   });
+  memoryServiceMocks.searchAsync.mockReset().mockResolvedValue([]);
+  memoryServiceMocks.searchWorkspaceMarkdown.mockReset().mockReturnValue([]);
+  memoryServiceMocks.searchAsync.mockReset().mockResolvedValue([]);
+  memoryServiceMocks.searchWorkspaceMarkdown.mockReset().mockReturnValue([]);
 });
 
 describe("SystemTools.normalizeAppleScript", () => {
@@ -308,6 +310,8 @@ describe("SystemTools.getCurrentLocation", () => {
 
 describe("SystemTools.searchMemories", () => {
   it("returns empty results on error", async () => {
+    memoryServiceMocks.searchAsync.mockRejectedValue(new Error("DB not initialized"));
+
     const instance = new SystemTools(
       {
         id: "ws-1",

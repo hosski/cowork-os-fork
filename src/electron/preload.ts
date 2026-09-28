@@ -5,6 +5,14 @@ import * as os from "os";
 import { randomBytes } from "crypto";
 import { IPC_CHANNELS as SHARED_IPC_CHANNELS, isTempWorkspaceId } from "../shared/types";
 import type {
+  ChannelHealthResponse,
+  MeetingArtifactProvider,
+  MeetingArtifactSummary,
+  TeamsMeetingSettingsUpdate,
+  TeamsMeetingSettingsView,
+  TeamsMeetingStatus,
+} from "../shared/types";
+import type {
   ApplyOnboardingProfileRequest,
   ApplyOnboardingProfileResult,
 } from "../shared/onboarding";
@@ -117,6 +125,7 @@ import type {
   ManagedSession,
   ManagedSessionCreateInput,
   ManagedSessionEvent,
+  ManagedSessionRequirementCorrectionRequest,
   ManagedSessionUserMessageRequest,
   ManagedSessionWorkpaper,
   WorkContext,
@@ -161,6 +170,7 @@ import type {
   GuardrailSettings,
   PersistedPermissionRule,
   PermissionSettingsData,
+  PermissionRuntimeInfo,
   CouncilConfig,
   CouncilMemo,
   CouncilRun,
@@ -193,9 +203,6 @@ import type {
   BoxBrainSettings,
   BoxBrainStatus,
   BoxBrainSyncResult,
-  SymphonyConfig,
-  SymphonyConfigUpdate,
-  SymphonyStatus,
   IntegrationMentionOption,
   IntegrationMentionSelection,
   EverydayActionPreview,
@@ -212,7 +219,9 @@ import type {
   TaskEventDetailResult,
   TaskTimelinePageRequest,
   TaskTimelinePageResult,
+  Task,
   BotConversationListQuery,
+  BotConversationReopenRequest,
   BotNotificationPolicy,
   UpdateBotNotificationPolicyRequest,
 } from "../shared/types";
@@ -235,17 +244,6 @@ import type {
   SubconsciousTargetDetail,
   SubconsciousTargetSummary,
 } from "../shared/subconscious";
-import type {
-  HealthDashboard,
-  HealthSource,
-  HealthSourceInput,
-  HealthSyncResult,
-  HealthWorkflow,
-  HealthWorkflowRequest,
-  HealthWritebackPreview,
-  HealthWritebackRequest,
-  HealthSourceConnectionMode,
-} from "../shared/health";
 import type {
   ChannelPreferenceSummary,
   ContactIdentity,
@@ -540,32 +538,6 @@ const IPC_CHANNELS = SHARED_IPC_CHANNELS;
 const LEGACY_IPC_CHANNELS_MIRROR = IPC_CHANNELS;
 void LEGACY_IPC_CHANNELS_MIRROR;
 
-// Mobile Companion Node types (inlined for sandboxed preload)
-type NodePlatform = "ios" | "android" | "macos";
-type NodeCapabilityType = "camera" | "location" | "screen" | "sms" | "voice" | "canvas" | "system";
-
-interface NodeInfo {
-  id: string;
-  displayName: string;
-  platform: NodePlatform;
-  version: string;
-  deviceId?: string;
-  modelIdentifier?: string;
-  capabilities: NodeCapabilityType[];
-  commands: string[];
-  permissions: Record<string, boolean>;
-  connectedAt: number;
-  lastActivityAt: number;
-  isForeground?: boolean;
-}
-
-interface NodeEvent {
-  type: "connected" | "disconnected" | "capabilities_changed" | "foreground_changed";
-  nodeId: string;
-  node?: NodeInfo;
-  timestamp: number;
-}
-
 // Custom Skill types (inlined for sandboxed preload)
 interface SkillParameter {
   name: string;
@@ -736,6 +708,12 @@ interface MCPServerStatus {
 
 interface MCPSettings {
   servers: MCPServerConfig[];
+  storageStatus?:
+    | "success"
+    | "not_found"
+    | "decryption_failed"
+    | "checksum_mismatch"
+    | "os_encryption_unavailable";
   autoConnect: boolean;
   toolNamePrefix: string;
   maxReconnectAttempts: number;
@@ -874,7 +852,9 @@ type CronJobStatus =
   | "needs_user_action"
   | "error"
   | "skipped"
-  | "timeout";
+  | "timeout"
+  | "cancelled"
+  | "unknown";
 type CronDeliveryMode = "direct" | "outbox";
 type CronDeliverableStatus = "none" | "queued" | "sent" | "dead_letter";
 
@@ -901,6 +881,7 @@ interface CronJobState {
   totalRuns?: number;
   successfulRuns?: number;
   failedRuns?: number;
+  outcomeCounts?: import("../shared/cron-outcomes").CronOutcomeCounts;
 }
 
 interface CronDeliveryConfig {
@@ -920,7 +901,9 @@ interface CronDeliveryConfig {
     | "email"
     | "teams"
     | "googlechat"
-    | "x";
+    | "x"
+    | "whatsapp_cloud"
+    | "twilio_sms";
   channelId?: string;
   deliverOnSuccess?: boolean;
   deliverOnError?: boolean;
@@ -992,6 +975,7 @@ interface CronRunHistoryResult {
   totalRuns: number;
   successfulRuns: number;
   failedRuns: number;
+  outcomeCounts: import("../shared/cron-outcomes").CronOutcomeCountMap;
 }
 
 interface CronWebhookStatus {
@@ -1310,7 +1294,6 @@ interface ControlPlaneSettingsData {
   port: number;
   host: string;
   token: string;
-  nodeToken: string;
   handshakeTimeoutMs: number;
   heartbeatIntervalMs: number;
   maxPayloadBytes: number;
@@ -2747,6 +2730,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   }) => invokeTaskIpcWithRendererTiming(IPC_CHANNELS.TASK_LIST_SIDEBAR, opts),
   listBotConversations: (query: BotConversationListQuery) =>
     invokeTaskIpcWithRendererTiming(IPC_CHANNELS.BOT_CONVERSATIONS_LIST, query),
+  reopenBotConversation: (request: BotConversationReopenRequest) =>
+    ipcRenderer.invoke(IPC_CHANNELS.BOT_CONVERSATION_REOPEN, request) as Promise<Task>,
   getComposerDraft: (request: ComposerDraftGetRequest) =>
     ipcRenderer.invoke(IPC_CHANNELS.COMPOSER_DRAFT_GET, request) as Promise<ComposerDraft | null>,
   upsertComposerDraft: (draft: ComposerDraft) =>
@@ -2891,6 +2876,28 @@ contextBridge.exposeInMainWorld("electronAPI", {
   selectWorkspace: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_SELECT, id),
   getTempWorkspace: (options?: { createNew?: boolean }) =>
     ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_GET_TEMP, options),
+  preflightFirstTask: () => ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_PREFLIGHT),
+  getFirstTaskSetup: () => ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_SETUP_GET),
+  setFirstTaskSetup: (choice: "ready" | "skipped" | "browsing_without_ai" | "connecting") =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_SETUP_SET, choice),
+  startFirstTask: (attemptId: string, preflightToken: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_START, attemptId, preflightToken),
+  getFirstTask: (attemptId?: string, taskId?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_GET, attemptId, taskId),
+  verifyFirstTask: (attemptId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_VERIFY, attemptId),
+  inspectFirstTask: (attemptId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_INSPECT, attemptId),
+  requestFirstTaskRevision: (attemptId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_REQUEST_REVISION, attemptId),
+  cancelFirstTaskRevision: (attemptId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_CANCEL_REVISION, attemptId),
+  getFirstTaskRealWork: (taskId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_REAL_WORK_GET, taskId),
+  inspectFirstTaskRealWork: (taskId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_REAL_WORK_INSPECT, taskId),
+  markFirstTaskRealWorkUseful: (taskId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.FIRST_TASK_REAL_WORK_USEFUL, taskId),
   pruneTempWorkspaces: (options?: { dryRun?: boolean }) =>
     ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_PRUNE_TEMP, options),
   touchWorkspace: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_TOUCH, id),
@@ -3136,6 +3143,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke(IPC_CHANNELS.MANAGED_SESSION_SEND_USER_MESSAGE_IPC, request) as Promise<
       ManagedSession | undefined
     >,
+  correctManagedSessionRequirement: (request: ManagedSessionRequirementCorrectionRequest) =>
+    ipcRenderer.invoke(IPC_CHANNELS.MANAGED_SESSION_CORRECT_REQUIREMENT_IPC, request) as Promise<
+      ManagedSession | undefined
+    >,
   resumeManagedSession: (sessionId: string) =>
     ipcRenderer.invoke(IPC_CHANNELS.MANAGED_SESSION_RESUME_IPC, sessionId) as Promise<{
       resumed: boolean;
@@ -3256,6 +3267,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke(IPC_CHANNELS.JEV_TEST_PROVIDER, config),
   getLLMModels: () => ipcRenderer.invoke(IPC_CHANNELS.LLM_GET_MODELS),
   getLLMConfigStatus: () => ipcRenderer.invoke(IPC_CHANNELS.LLM_GET_CONFIG_STATUS),
+  getTaskCostEstimate: (modelId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.LLM_TASK_COST_ESTIMATE, modelId) as Promise<{
+      modelId: string;
+      sampleSize: number;
+      medianCost: number;
+      p90Cost: number;
+    } | null>,
   setLLMModel: (
     selection:
       | string
@@ -3336,6 +3354,29 @@ contextBridge.exposeInMainWorld("electronAPI", {
   disableGatewayChannel: (id: string) =>
     ipcRenderer.invoke(IPC_CHANNELS.GATEWAY_DISABLE_CHANNEL, id),
   testGatewayChannel: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.GATEWAY_TEST_CHANNEL, id),
+  getGatewayChannelHealth: (id: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.GATEWAY_GET_CHANNEL_HEALTH, id),
+  getTeamsMeetingSettings: () => ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_TEAMS_GET_SETTINGS),
+  getTeamsMeetingStatus: () => ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_TEAMS_GET_STATUS),
+  updateTeamsMeetingSettings: (update: TeamsMeetingSettingsUpdate) =>
+    ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_TEAMS_UPDATE_SETTINGS, update),
+  connectTeamsMeetings: (data: { clientId: string; tenant?: string }) =>
+    ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_TEAMS_CONNECT, data),
+  disconnectTeamsMeetings: () => ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_TEAMS_DISCONNECT),
+  syncTeamsMeetingsNow: () => ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_TEAMS_SYNC_NOW),
+  retryFailedTeamsMeetings: () => ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_TEAMS_RETRY_FAILED),
+  listMeetingArtifacts: (options?: { provider?: MeetingArtifactProvider; limit?: number }) =>
+    ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_LIST_ARTIFACTS, options),
+  getMeetingArtifact: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_GET_ARTIFACT, id),
+  downloadMeetingRecording: (artifactId: string, recordingId: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_DOWNLOAD_RECORDING, { artifactId, recordingId }),
+  revealMeetingArtifact: (id: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.MEETINGS_REVEAL_ARTIFACT, id),
+  onMeetingArtifactsChanged: (callback: () => void) => {
+    const listener = () => callback();
+    ipcRenderer.on(IPC_CHANNELS.MEETINGS_CHANGED, listener);
+    return () => ipcRenderer.removeListener(IPC_CHANNELS.MEETINGS_CHANGED, listener);
+  },
   getGatewayUsers: (channelId: string) =>
     ipcRenderer.invoke(IPC_CHANNELS.GATEWAY_GET_USERS, channelId),
   getGatewayChats: (channelId: string) =>
@@ -3546,37 +3587,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   testSharePointConnection: () => ipcRenderer.invoke(IPC_CHANNELS.SHAREPOINT_TEST_CONNECTION),
   getSharePointStatus: () => ipcRenderer.invoke(IPC_CHANNELS.SHAREPOINT_GET_STATUS),
 
-  // Health Platform APIs
-  getHealthDashboard: () => ipcRenderer.invoke(IPC_CHANNELS.HEALTH_GET_DASHBOARD),
-  listHealthSources: () => ipcRenderer.invoke(IPC_CHANNELS.HEALTH_LIST_SOURCES),
-  upsertHealthSource: (source: HealthSourceInput) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_UPSERT_SOURCE, source),
-  removeHealthSource: (sourceId: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_REMOVE_SOURCE, sourceId),
-  syncHealthSource: (sourceId: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_SYNC_SOURCE, sourceId),
-  importHealthFiles: (sourceId: string, filePaths: string[]) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_IMPORT_FILES, { sourceId, filePaths }),
-  generateHealthWorkflow: (request: HealthWorkflowRequest) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_GENERATE_WORKFLOW, request),
-  getAppleHealthStatus: (sourceId?: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_APPLE_STATUS, sourceId),
-  connectAppleHealth: (payload: {
-    sourceId?: string;
-    connectionMode?: HealthSourceConnectionMode;
-  }) => ipcRenderer.invoke(IPC_CHANNELS.HEALTH_APPLE_CONNECT, payload),
-  disconnectAppleHealth: (sourceId: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_APPLE_DISCONNECT, sourceId),
-  resetAppleHealth: (sourceId?: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_APPLE_RESET, sourceId),
-  previewAppleHealthWriteback: (request: HealthWritebackRequest) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_APPLE_PREVIEW_WRITEBACK, request),
-  applyAppleHealthWriteback: (request: HealthWritebackRequest) =>
-    ipcRenderer.invoke(IPC_CHANNELS.HEALTH_APPLE_APPLY_WRITEBACK, request),
-
   // App Update APIs
   getAppVersion: () => ipcRenderer.invoke(IPC_CHANNELS.APP_GET_VERSION),
-  checkForUpdates: () => ipcRenderer.invoke(IPC_CHANNELS.APP_CHECK_UPDATES),
+  checkForUpdates: (intent?: "manual" | "background") =>
+    ipcRenderer.invoke(IPC_CHANNELS.APP_CHECK_UPDATES, intent),
   downloadUpdate: (updateInfo: Any) =>
     ipcRenderer.invoke(IPC_CHANNELS.APP_DOWNLOAD_UPDATE, updateInfo),
   installUpdate: () => ipcRenderer.invoke(IPC_CHANNELS.APP_INSTALL_UPDATE),
@@ -3614,6 +3628,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // Permission Settings APIs
   getPermissionSettings: () => ipcRenderer.invoke(IPC_CHANNELS.PERMISSIONS_GET_SETTINGS),
+  getPermissionRuntimeInfo: () => ipcRenderer.invoke(IPC_CHANNELS.PERMISSIONS_GET_RUNTIME_INFO),
   savePermissionSettings: (settings: Any) =>
     ipcRenderer.invoke(IPC_CHANNELS.PERMISSIONS_SAVE_SETTINGS, settings),
   getWorkspacePermissionRules: (workspaceId: string) =>
@@ -4105,23 +4120,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     return () => ipcRenderer.removeListener(IPC_CHANNELS.CANVAS_EVENT, subscription);
   },
 
-  // Mobile Companion Nodes
-  nodeList: () => ipcRenderer.invoke(IPC_CHANNELS.NODE_LIST),
-  nodeGet: (nodeId: string) => ipcRenderer.invoke(IPC_CHANNELS.NODE_GET, nodeId),
-  nodeInvoke: (params: {
-    nodeId: string;
-    command: string;
-    params?: Record<string, unknown>;
-    timeoutMs?: number;
-  }) => ipcRenderer.invoke(IPC_CHANNELS.NODE_INVOKE, params),
-  onNodeEvent: (
-    callback: (event: { type: string; nodeId: string; node?: Any; timestamp: number }) => void,
-  ) => {
-    const subscription = (_: Electron.IpcRendererEvent, data: Any) => callback(data);
-    ipcRenderer.on(IPC_CHANNELS.NODE_EVENT, subscription);
-    return () => ipcRenderer.removeListener(IPC_CHANNELS.NODE_EVENT, subscription);
-  },
-
   // Device Management APIs
   deviceListTasks: (nodeId: string) => ipcRenderer.invoke(IPC_CHANNELS.DEVICE_LIST_TASKS, nodeId),
   deviceListFiles: (params: { nodeId: string; workspaceId: string; path?: string }) =>
@@ -4516,59 +4514,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
       request,
     ) as Promise<BotNotificationPolicy>,
 
-  // Persona Templates (Digital Twins) APIs
-  listPersonaTemplates: (filter?: { category?: string; tag?: string }) =>
-    ipcRenderer.invoke(IPC_CHANNELS.PERSONA_TEMPLATE_LIST, filter),
-  getPersonaTemplate: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.PERSONA_TEMPLATE_GET, id),
-  activatePersonaTemplate: (request: {
-    templateId: string;
-    customization?: {
-      companyId?: string;
-      displayName?: string;
-      icon?: string;
-      color?: string;
-      modelKey?: string;
-      providerType?: string;
-    };
-  }) => ipcRenderer.invoke(IPC_CHANNELS.PERSONA_TEMPLATE_ACTIVATE, request),
-  previewPersonaTemplate: (templateId: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.PERSONA_TEMPLATE_PREVIEW, templateId),
-  getPersonaTemplateCategories: () =>
-    ipcRenderer.invoke(IPC_CHANNELS.PERSONA_TEMPLATE_GET_CATEGORIES),
-
   // Mission Control - Company Ops / Planner
   listCompanies: () => ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_LIST),
   getCompany: (companyId: string) => ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_GET, companyId),
-  createCompany: (input: import("../shared/types").CompanyCreateInput) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_CREATE, input),
-  updateCompany: (request: { companyId: string } & import("../shared/types").CompanyUpdate) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_UPDATE, request),
-  listCompanyPackageSources: (companyId?: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_PACKAGE_SOURCE_LIST, companyId),
-  previewCompanyPackageImport: (request: import("../shared/types").CompanyPackageImportRequest) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_PACKAGE_PREVIEW_IMPORT, request) as Promise<
-      import("../shared/types").CompanyImportPreview
-    >,
-  importCompanyPackage: (request: import("../shared/types").CompanyPackageImportRequest) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_PACKAGE_IMPORT, request) as Promise<
-      import("../shared/types").CompanyPackageImportResult
-    >,
-  getCompanyGraph: (companyId: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_GRAPH_GET, companyId) as Promise<
-      import("../shared/types").ResolvedCompanyGraph
-    >,
-  listCompanySyncStates: (companyId: string) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_SYNC_LIST, companyId) as Promise<
-      import("../shared/types").CompanySyncState[]
-    >,
-  linkCompanyOrgNodeToRole: (request: {
-    companyId: string;
-    orgNodeId: string;
-    agentRoleId: string | null;
-  }) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_COMPANY_ORG_LINK_ROLE, request) as Promise<
-      import("../shared/types").CompanySyncState | null
-    >,
   getCommandCenterSummary: (companyId: string) =>
     ipcRenderer.invoke(IPC_CHANNELS.MC_COMMAND_CENTER_SUMMARY, companyId) as Promise<
       import("../shared/types").CompanyCommandCenterSummary
@@ -4635,15 +4583,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   runPlanner: (companyId: string) => ipcRenderer.invoke(IPC_CHANNELS.MC_PLANNER_RUN, companyId),
   listPlannerRuns: (companyId: string, limit?: number) =>
     ipcRenderer.invoke(IPC_CHANNELS.MC_PLANNER_LIST_RUNS, { companyId, limit }),
-  getSymphonyConfig: () =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_SYMPHONY_GET_CONFIG) as Promise<SymphonyConfig>,
-  updateSymphonyConfig: (updates: SymphonyConfigUpdate) =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_SYMPHONY_UPDATE_CONFIG, updates) as Promise<SymphonyConfig>,
-  getSymphonyStatus: () =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_SYMPHONY_STATUS) as Promise<SymphonyStatus>,
-  runSymphony: () => ipcRenderer.invoke(IPC_CHANNELS.MC_SYMPHONY_RUN) as Promise<SymphonyStatus>,
-  pauseSymphony: () =>
-    ipcRenderer.invoke(IPC_CHANNELS.MC_SYMPHONY_PAUSE) as Promise<SymphonyConfig>,
 
   // Plugin Packs (Customize panel) APIs
   listPluginPacks: () => ipcRenderer.invoke(IPC_CHANNELS.PLUGIN_PACK_LIST),
@@ -5992,6 +5931,7 @@ export interface ElectronAPI {
     };
   }) => Promise<Any[]>;
   listBotConversations: (query: BotConversationListQuery) => Promise<Any[]>;
+  reopenBotConversation: (request: BotConversationReopenRequest) => Promise<Task>;
   getComposerDraft?: (request: ComposerDraftGetRequest) => Promise<ComposerDraft | null>;
   upsertComposerDraft?: (draft: ComposerDraft) => Promise<{
     accepted: boolean;
@@ -6147,6 +6087,55 @@ export interface ElectronAPI {
   listWorkspaces: () => Promise<Workspace[]>;
   selectWorkspace: (id: string) => Promise<Workspace>;
   getTempWorkspace: (options?: { createNew?: boolean }) => Promise<Workspace | null>;
+  preflightFirstTask: () => Promise<
+    import("../electron/first-task/model-preflight").FirstTaskModelPreflight & {
+      workspace: "pass" | "fail";
+      workspaceDetail?: string;
+      token: string | null;
+      providerType: LLMProviderType;
+      modelId: string;
+    }
+  >;
+  getFirstTaskSetup: () => Promise<{
+    schemaVersion: number;
+    choice: "ready" | "skipped" | "browsing_without_ai" | "connecting";
+    updatedAt: number;
+    modelReadyAt: number | null;
+  } | null>;
+  setFirstTaskSetup: (
+    choice: "ready" | "skipped" | "browsing_without_ai" | "connecting",
+  ) => Promise<void>;
+  startFirstTask: (
+    attemptId: string,
+    preflightToken: string,
+  ) => Promise<{ attemptId: string; task: Task; workspace: Workspace } | null>;
+  getFirstTask: (
+    attemptId?: string,
+    taskId?: string,
+  ) => Promise<{
+    attemptId: string;
+    task: Task;
+    workspace: Workspace;
+    check: import("../electron/first-task/verify-release-brief").ReleaseBriefCheck | null;
+    inspectedAt: number | null;
+    revisionRequestedAt: number | null;
+    revisionInspectedAt: number | null;
+  } | null>;
+  verifyFirstTask: (
+    attemptId: string,
+  ) => Promise<import("../electron/first-task/verify-release-brief").ReleaseBriefCheck>;
+  inspectFirstTask: (attemptId: string) => Promise<boolean>;
+  requestFirstTaskRevision: (attemptId: string) => Promise<boolean>;
+  cancelFirstTaskRevision: (attemptId: string) => Promise<boolean>;
+  getFirstTaskRealWork: (
+    taskId: string,
+  ) => Promise<{ inspectedAt: number | null; usefulAt: number | null; returnUse: boolean }>;
+  inspectFirstTaskRealWork: (
+    taskId: string,
+  ) => Promise<{ inspectedAt: number | null; usefulAt: number | null; returnUse: boolean }>;
+  markFirstTaskRealWorkUseful: (
+    taskId: string,
+  ) => Promise<{ inspectedAt: number | null; usefulAt: number | null; returnUse: boolean }>;
   pruneTempWorkspaces: (options?: { dryRun?: boolean }) => Promise<{
     removedDirs: number;
     removedRows: number;
@@ -6296,6 +6285,9 @@ export interface ElectronAPI {
   sendManagedSessionUserMessage: (
     request: ManagedSessionUserMessageRequest,
   ) => Promise<ManagedSession | undefined>;
+  correctManagedSessionRequirement: (
+    request: ManagedSessionRequirementCorrectionRequest,
+  ) => Promise<ManagedSession | undefined>;
   resumeManagedSession: (
     sessionId: string,
   ) => Promise<{ resumed: boolean; session?: ManagedSession }>;
@@ -6356,6 +6348,12 @@ export interface ElectronAPI {
     config: JevTestProviderRequest,
   ) => Promise<{ success: boolean; error?: string }>;
   getLLMModels: () => Promise<Array<{ key: string; displayName: string; description: string }>>;
+  getTaskCostEstimate: (modelId: string) => Promise<{
+    modelId: string;
+    sampleSize: number;
+    medianCost: number;
+    p90Cost: number;
+  } | null>;
   getLLMConfigStatus: () => Promise<{
     currentProvider: LLMProviderType;
     currentModel: string;
@@ -6493,12 +6491,14 @@ export interface ElectronAPI {
     success: boolean;
     error?: string;
     email?: string;
+    recommendedModel?: string;
     tokens?: {
       accessToken: string;
       refreshToken: string;
       tokenExpiresAt: number;
       accountId?: string;
       email?: string;
+      planType?: string;
     };
   }>;
   openaiOAuthLogout: () => Promise<{ success: boolean }>;
@@ -6533,6 +6533,29 @@ export interface ElectronAPI {
   testGatewayChannel: (
     id: string,
   ) => Promise<{ success: boolean; error?: string; botUsername?: string }>;
+  getGatewayChannelHealth: (id: string) => Promise<ChannelHealthResponse | null>;
+  getTeamsMeetingSettings: () => Promise<TeamsMeetingSettingsView>;
+  getTeamsMeetingStatus: () => Promise<TeamsMeetingStatus>;
+  updateTeamsMeetingSettings: (
+    update: TeamsMeetingSettingsUpdate,
+  ) => Promise<TeamsMeetingSettingsView>;
+  connectTeamsMeetings: (data: {
+    clientId: string;
+    tenant?: string;
+  }) => Promise<TeamsMeetingStatus>;
+  disconnectTeamsMeetings: () => Promise<void>;
+  syncTeamsMeetingsNow: () => Promise<TeamsMeetingStatus>;
+  retryFailedTeamsMeetings: () => Promise<TeamsMeetingStatus>;
+  listMeetingArtifacts: (options?: {
+    provider?: MeetingArtifactProvider;
+    limit?: number;
+  }) => Promise<MeetingArtifactSummary[]>;
+  getMeetingArtifact: (
+    id: string,
+  ) => Promise<{ summary: MeetingArtifactSummary; markdown: string } | null>;
+  downloadMeetingRecording: (artifactId: string, recordingId: string) => Promise<string>;
+  revealMeetingArtifact: (id: string) => Promise<void>;
+  onMeetingArtifactsChanged: (callback: () => void) => () => void;
   getGatewayUsers: (channelId: string) => Promise<Any[]>;
   getGatewayChats: (channelId: string) => Promise<Array<{ chatId: string; lastTimestamp: number }>>;
   sendGatewayTestMessage: (data: {
@@ -6929,37 +6952,6 @@ export interface ElectronAPI {
     name?: string;
     error?: string;
   }>;
-  // Health Platform
-  getHealthDashboard: () => Promise<HealthDashboard>;
-  listHealthSources: () => Promise<HealthSource[]>;
-  upsertHealthSource: (source: HealthSourceInput) => Promise<HealthSource>;
-  removeHealthSource: (sourceId: string) => Promise<{ success: boolean }>;
-  syncHealthSource: (sourceId: string) => Promise<HealthSyncResult>;
-  importHealthFiles: (sourceId: string, filePaths: string[]) => Promise<HealthSyncResult>;
-  generateHealthWorkflow: (
-    request: HealthWorkflowRequest,
-  ) => Promise<{ success: boolean; workflow?: HealthWorkflow; error?: string }>;
-  getAppleHealthStatus: (sourceId?: string) => Promise<{
-    available: boolean;
-    authorizationStatus: string;
-    readableTypes: string[];
-    writableTypes: string[];
-    sourceMode: HealthSourceConnectionMode;
-    lastSyncedAt?: number;
-    lastError?: string;
-  }>;
-  connectAppleHealth: (payload: {
-    sourceId?: string;
-    connectionMode?: HealthSourceConnectionMode;
-  }) => Promise<{ success: boolean; source?: HealthSource; error?: string }>;
-  disconnectAppleHealth: (sourceId: string) => Promise<{ success: boolean }>;
-  resetAppleHealth: (sourceId?: string) => Promise<{ success: boolean; removedCount: number }>;
-  previewAppleHealthWriteback: (
-    request: HealthWritebackRequest,
-  ) => Promise<{ success: boolean; preview?: HealthWritebackPreview; error?: string }>;
-  applyAppleHealthWriteback: (
-    request: HealthWritebackRequest,
-  ) => Promise<{ success: boolean; writtenCount?: number; warnings?: string[]; error?: string }>;
   // App Updates
   getAppVersion: () => Promise<{
     version: string;
@@ -6969,21 +6961,9 @@ export interface ElectronAPI {
     gitBranch?: string;
     gitCommit?: string;
   }>;
-  checkForUpdates: () => Promise<{
-    available: boolean;
-    currentVersion: string;
-    latestVersion: string;
-    releaseNotes?: string;
-    releaseUrl?: string;
-    publishedAt?: string;
-    updateMode: "git" | "npm" | "electron-updater";
-    supported: boolean;
-    minimumSystemVersion?: string;
-    minimumSystemLabel?: string;
-    lastCompatibleVersion?: string;
-    unsupportedReason?: string;
-    recoveryCommand?: string;
-  }>;
+  checkForUpdates: (
+    intent?: import("../shared/types").UpdateCheckIntent,
+  ) => Promise<import("../shared/types").UpdateInfo>;
   downloadUpdate: (updateInfo: Any) => Promise<{ success: boolean }>;
   installUpdate: () => Promise<{ success: boolean }>;
   onUpdateProgress: (
@@ -7005,6 +6985,7 @@ export interface ElectronAPI {
   getGuardrailDefaults: () => Promise<GuardrailSettings>;
   // Permission Settings
   getPermissionSettings: () => Promise<PermissionSettingsData>;
+  getPermissionRuntimeInfo: () => Promise<PermissionRuntimeInfo>;
   savePermissionSettings: (settings: PermissionSettingsData) => Promise<{ success: boolean }>;
   getWorkspacePermissionRules: (workspaceId: string) => Promise<PersistedPermissionRule[]>;
   deleteWorkspacePermissionRule: (payload: { workspaceId: string; ruleId: string }) => Promise<{
@@ -7018,7 +6999,7 @@ export interface ElectronAPI {
   // Appearance Settings
   getAppearanceSettings: () => Promise<{
     themeMode: "light" | "dark" | "system";
-    visualTheme: "terminal" | "warm" | "oblivion";
+    visualTheme: "terminal" | "warm" | "oblivion" | "calm";
     transparencyEffectsEnabled?: boolean;
     accentColor:
       | "cyan"
@@ -7049,7 +7030,7 @@ export interface ElectronAPI {
   logRendererPerf: (payload: unknown) => Promise<{ success: boolean }>;
   saveAppearanceSettings: (settings: {
     themeMode?: "light" | "dark" | "system";
-    visualTheme?: "terminal" | "warm" | "oblivion";
+    visualTheme?: "terminal" | "warm" | "oblivion" | "calm";
     transparencyEffectsEnabled?: boolean;
     accentColor?:
       | "cyan"
@@ -7636,7 +7617,6 @@ export interface ElectronAPI {
   enableControlPlane: () => Promise<{
     ok: boolean;
     token?: string;
-    nodeToken?: string;
     error?: string;
   }>;
   disableControlPlane: () => Promise<{ ok: boolean; error?: string }>;
@@ -7651,14 +7631,12 @@ export interface ElectronAPI {
   getControlPlaneToken: () => Promise<{
     ok: boolean;
     token?: string;
-    nodeToken?: string;
     remoteToken?: string;
     error?: string;
   }>;
   regenerateControlPlaneToken: () => Promise<{
     ok: boolean;
     token?: string;
-    nodeToken?: string;
     error?: string;
   }>;
   onControlPlaneEvent: (callback: (event: ControlPlaneEvent) => void) => () => void;
@@ -7754,17 +7732,6 @@ export interface ElectronAPI {
   }) => Promise<{ success: boolean }>;
   canvasGetContent: (sessionId: string) => Promise<Record<string, string>>;
   onCanvasEvent: (callback: (event: CanvasEvent) => void) => () => void;
-
-  // Mobile Companion Nodes
-  nodeList: () => Promise<{ ok: boolean; nodes?: NodeInfo[]; error?: string }>;
-  nodeGet: (nodeId: string) => Promise<{ ok: boolean; node?: NodeInfo; error?: string }>;
-  nodeInvoke: (params: {
-    nodeId: string;
-    command: string;
-    params?: Record<string, unknown>;
-    timeoutMs?: number;
-  }) => Promise<{ ok: boolean; payload?: unknown; error?: { code: string; message: string } }>;
-  onNodeEvent: (callback: (event: NodeEvent) => void) => () => void;
 
   // Device Management
   deviceListTasks: (nodeId: string) => Promise<{ ok: boolean; tasks?: Any[]; error?: string }>;
@@ -8035,75 +8002,9 @@ export interface ElectronAPI {
     request: UpdateBotNotificationPolicyRequest,
   ) => Promise<BotNotificationPolicy>;
 
-  // Persona Templates (Digital Twins)
-  listPersonaTemplates: (filter?: { category?: string; tag?: string }) => Promise<unknown[]>;
-  getPersonaTemplate: (id: string) => Promise<unknown | undefined>;
-  activatePersonaTemplate: (request: {
-    templateId: string;
-    customization?: {
-      companyId?: string;
-      displayName?: string;
-      icon?: string;
-      color?: string;
-      modelKey?: string;
-      providerType?: string;
-    };
-  }) => Promise<{
-    agentRole: AgentRoleData;
-    installedSkillIds: string[];
-    proactiveTaskCount: number;
-    warnings: string[];
-  }>;
-  previewPersonaTemplate: (templateId: string) => Promise<{
-    roleName: string;
-    displayName: string;
-    skills: Array<{ skillId: string; reason: string; required: boolean }>;
-    proactiveTasks: Array<{
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      promptTemplate: string;
-      frequencyMinutes: number;
-      priority: number;
-      enabled: boolean;
-    }>;
-  } | null>;
-  getPersonaTemplateCategories: () => Promise<
-    Array<{
-      id: string;
-      label: string;
-      count: number;
-    }>
-  >;
-
   // Mission Control - Company Ops / Planner
   listCompanies: () => Promise<import("../shared/types").Company[]>;
   getCompany: (companyId: string) => Promise<import("../shared/types").Company | undefined>;
-  createCompany: (
-    input: import("../shared/types").CompanyCreateInput,
-  ) => Promise<import("../shared/types").Company>;
-  updateCompany: (
-    request: { companyId: string } & import("../shared/types").CompanyUpdate,
-  ) => Promise<import("../shared/types").Company | undefined>;
-  listCompanyPackageSources: (
-    companyId?: string,
-  ) => Promise<import("../shared/types").CompanyPackageSource[]>;
-  previewCompanyPackageImport: (
-    request: import("../shared/types").CompanyPackageImportRequest,
-  ) => Promise<import("../shared/types").CompanyImportPreview>;
-  importCompanyPackage: (
-    request: import("../shared/types").CompanyPackageImportRequest,
-  ) => Promise<import("../shared/types").CompanyPackageImportResult>;
-  getCompanyGraph: (companyId: string) => Promise<import("../shared/types").ResolvedCompanyGraph>;
-  listCompanySyncStates: (
-    companyId: string,
-  ) => Promise<import("../shared/types").CompanySyncState[]>;
-  linkCompanyOrgNodeToRole: (request: {
-    companyId: string;
-    orgNodeId: string;
-    agentRoleId: string | null;
-  }) => Promise<import("../shared/types").CompanySyncState | null>;
   getCommandCenterSummary: (
     companyId: string,
   ) => Promise<import("../shared/types").CompanyCommandCenterSummary>;
@@ -8173,11 +8074,6 @@ export interface ElectronAPI {
     companyId: string,
     limit?: number,
   ) => Promise<import("../shared/types").StrategicPlannerRun[]>;
-  getSymphonyConfig: () => Promise<SymphonyConfig>;
-  updateSymphonyConfig: (updates: SymphonyConfigUpdate) => Promise<SymphonyConfig>;
-  getSymphonyStatus: () => Promise<SymphonyStatus>;
-  runSymphony: () => Promise<SymphonyStatus>;
-  pauseSymphony: () => Promise<SymphonyConfig>;
 
   // Plugin Packs (Customize panel)
   listPluginPacks: () => Promise<
@@ -8801,10 +8697,11 @@ export interface ElectronAPI {
   setPulseEnabled: (enabled: boolean) => Promise<import("../shared/pulse").PulseMutationResult>;
   resetPulseIdentity: () => Promise<import("../shared/pulse").PulseMutationResult>;
   deletePulseRemoteData: () => Promise<import("../shared/pulse").PulseMutationResult>;
-  flushPulse: () => Promise<import("../shared/pulse").PulsePublicSettings>;
+  flushPulse: () => Promise<import("../shared/pulse").PulseSendResult>;
 
   // Daily Briefing
   generateDailyBriefing: (workspaceId: string) => Promise<Any>;
+  getLatestBriefing: (workspaceId: string) => Promise<unknown>;
   generateBriefing: (workspaceId: string) => Promise<Any>;
 
   // Proactive Suggestions

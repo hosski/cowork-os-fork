@@ -24,6 +24,7 @@ import type {
 } from "../../shared/types";
 import { taskAgentConfigForCreation } from "../../shared/security/task-entrypoint";
 import type { AdminPolicies } from "../admin/policies";
+import { isReadOnlyWorkerRole } from "../agent/runtime/worker-role-registry";
 
 export interface EffectiveAccessProfile {
   id: AccessProfileId;
@@ -60,7 +61,7 @@ export function applyDefaultAccessProfile(
 }
 
 interface ResolveAccessProfileInput {
-  task?: Pick<Task, "agentConfig"> & Partial<Pick<Task, "workerRole">>;
+  task?: Pick<Task, "agentConfig"> & Partial<Pick<Task, "workerRole" | "source">>;
   workspace?: Pick<Workspace, "permissions" | "path">;
   settings?: PermissionSettingsData;
   adminPolicies?: AdminPolicies;
@@ -74,6 +75,20 @@ const LEGACY_PERMISSION_MODES = new Set<PermissionMode>([
   "dont_ask",
   "bypass_permissions",
 ]);
+
+/** Internal first-task boundary; never selected as a user-wide default. */
+export const RELEASE_BRIEF_ACCESS_PROFILE_ID = "release_brief_sample";
+const RELEASE_BRIEF_ACCESS_PROFILE: AccessProfileDefinition = {
+  id: RELEASE_BRIEF_ACCESS_PROFILE_ID,
+  label: "Release brief sample",
+  description: "Read and write only the sample workspace, without shell or network tools.",
+  sandbox: "workspace-write",
+  approval: "on-request",
+  reviewer: "user",
+  network: "disabled",
+  shellAccess: false,
+  workspaceRoots: ["."],
+};
 
 function getRequestedProfileId(
   task: ResolveAccessProfileInput["task"],
@@ -182,12 +197,20 @@ export function resolveEffectiveAccessProfile(
     requestedId,
     settings.accessProfiles || [],
   );
+  // Only the app-created sample task may use this internal profile; any other task
+  // requesting it resolves as an unavailable profile and fails closed.
+  const isReleaseBriefSample =
+    explicitProfile &&
+    requestedId === RELEASE_BRIEF_ACCESS_PROFILE_ID &&
+    input.task?.source === "sample";
   const profileUnavailable =
     !legacyTaskWithoutProfile &&
     (explicitProfile || Boolean(hasConfiguredDefaultProfile)) &&
-    profileResolution.status !== "resolved";
-  let definition =
-    profileUnavailable && profileResolution.status !== "resolved"
+    profileResolution.status !== "resolved" &&
+    !isReleaseBriefSample;
+  let definition = isReleaseBriefSample
+    ? RELEASE_BRIEF_ACCESS_PROFILE
+    : profileUnavailable && profileResolution.status !== "resolved"
       ? unavailableProfileForId(profileResolution.profileId, profileResolution.status)
       : profileResolution.definition || resolveAccessProfileDefinition(requestedId);
   const legacyMode = getLegacyMode(input.task);
@@ -238,18 +261,38 @@ export function resolveEffectiveAccessProfile(
     constraintReason = "Requested permission mode is blocked by administrator policy.";
   }
 
-  // A verifier or internal read-only helper is a separate trust boundary from
-  // the task that requested it.
+  // Administrator fallback modes can restrict a sample further, but must not
+  // turn this internal profile into an ordinary network or shell profile.
+  if (isReleaseBriefSample) {
+    definition = {
+      ...RELEASE_BRIEF_ACCESS_PROFILE,
+      ...(adminMode === "plan" ? { sandbox: "read-only" as const } : {}),
+    };
+  }
+
+  // Researcher/verifier roles and internal read-only helpers are a separate
+  // trust boundary from the task that requested them. Check the persisted role
+  // directly because older saved researcher tasks do not have readOnlyExecution.
   // Apply the read-only profile after ordinary profile/admin resolution so an
   // inherited full-access or custom approval profile cannot re-enable writes,
   // shell, network, or dynamically-discovered MCP tools. Preserve only the
   // caller's explicit filesystem/domain scope; widening that scope would make
   // the role boundary unsafe for custom profiles.
   if (
-    input.task?.workerRole === "verifier" ||
+    // Team work item lanes reuse the researcher label but are not delegated
+    // helpers; isReadOnlyWorkerRole exempts them so they keep their pre-existing
+    // profile (network/shell/approvals) with the researcher tool denylist.
+    isReadOnlyWorkerRole(input.task?.workerRole, input.task?.agentConfig) ||
     input.task?.agentConfig?.readOnlyExecution === true
   ) {
-    const readOnlyProfile = profileForMode("plan");
+    const readOnlyProfile: AccessProfileDefinition = {
+      ...profileForMode("plan"),
+      // Worker roles cannot approve their way into browser, computer-use, or
+      // other non-workspace effects. This remains true for saved tasks whose
+      // older toolRestrictions omit the role-level system denylist.
+      approval: "never",
+      reviewer: "none",
+    };
     definition = {
       ...readOnlyProfile,
       ...(definition.workspaceRoots ? { workspaceRoots: definition.workspaceRoots } : {}),

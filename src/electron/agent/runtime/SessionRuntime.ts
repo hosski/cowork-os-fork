@@ -1,3 +1,5 @@
+import { GuardrailManager } from "../../guardrails/guardrail-manager";
+import { LLMProviderFactory } from "../llm/provider-factory";
 import { randomUUID } from "crypto";
 import { getInteractionModeSelection } from "../../../shared/interaction-mode";
 import {
@@ -49,7 +51,7 @@ import type {
   StreamProgressCallback,
 } from "../llm";
 import { estimateTokens, estimateTotalTokens, type ContextManager } from "../context-manager";
-import { calculateCost, getCacheTokenAccounting } from "../llm/pricing";
+import { calculateCost, getCacheTokenAccounting, isModelPriced } from "../llm/pricing";
 import { sanitizeToolCallHistory } from "../llm/openai-compatible";
 import {
   FileOperationTracker,
@@ -212,6 +214,8 @@ export interface SessionRuntimeSnapshotV2 {
     webEvidenceMemory: WebEvidenceEntry[];
     toolUsageCounts: Array<[string, number]>;
     successfulToolUsageCounts: Array<[string, number]>;
+    /** Tool successes since the most recent user-request turn. Optional for older V2 snapshots. */
+    turnSuccessfulToolUsageCounts?: Array<[string, number]>;
     toolUsageEventsSinceDecay: number;
     toolSelectionEpoch: number;
     discoveredDeferredToolNames: string[];
@@ -332,6 +336,7 @@ export interface SessionRuntimeState {
     webEvidenceMemory: WebEvidenceEntry[];
     toolUsageCounts: Map<string, number>;
     successfulToolUsageCounts: Map<string, number>;
+    turnSuccessfulToolUsageCounts: Map<string, number>;
     toolUsageEventsSinceDecay: number;
     toolSelectionEpoch: number;
     discoveredDeferredToolNames: Set<string>;
@@ -631,6 +636,8 @@ export class SessionRuntime {
   private deferredToolCatalog: DeferredToolCatalog | null = null;
   private toolSearchService: ToolSearchService | null = null;
   private taskListVerificationReminderPending = false;
+  /** Models used in this session that have no known price, so totalCost is a lower bound. */
+  private readonly unpricedModelIds = new Set<string>();
   private readonly queuedAttachmentStore: QueuedAttachmentStore;
   /** Monotonic identity for the live model-visible history projection. */
   private historyGeneration = 0;
@@ -1051,10 +1058,12 @@ export class SessionRuntime {
     this.clearTaskListVerificationNudge();
   }
 
-  private consumeTaskListVerificationReminder(): string | null {
+  private consumeTaskListVerificationReminder(updatedAfter?: number): string | null {
     if (
       !this.state.checklist.verificationNudgeNeeded ||
-      !this.taskListVerificationReminderPending
+      !this.taskListVerificationReminderPending ||
+      (updatedAfter !== undefined &&
+        !this.state.checklist.items.some((item) => item.updatedAt >= updatedAfter))
     ) {
       return null;
     }
@@ -1093,6 +1102,10 @@ export class SessionRuntime {
       },
     );
 
+    const { modelId, providerType } = this.deps.getModelMetadata();
+    const costKnown = isModelPriced(modelId, providerType);
+    if (!costKnown && (safeInput > 0 || safeOutput > 0)) this.unpricedModelIds.add(modelId);
+
     this.state.usage.totalInputTokens += safeInput;
     this.state.usage.totalOutputTokens += safeOutput;
     this.state.usage.totalCost += deltaCost;
@@ -1112,11 +1125,23 @@ export class SessionRuntime {
           ...(safeCacheWrite > 0 ? { cacheWriteTokens: safeCacheWrite } : {}),
           ...(cacheWriteTtl ? { cacheWriteTtl } : {}),
           cost: deltaCost,
+          costKnown,
         },
         totals: {
           inputTokens: cumulativeInput,
           outputTokens: cumulativeOutput,
           cost: cumulativeCost,
+          costKnown: this.unpricedModelIds.size === 0,
+          ...(() => {
+            const cap = GuardrailManager.isCostBudgetExceeded(cumulativeCost, {
+              taskBudget: this.deps.getTask().budgetCost,
+              subscriptionBilled: LLMProviderFactory.isSubscriptionBilledRoute(providerType),
+            });
+            return {
+              costLimit: cap.source === "none" ? null : cap.limit,
+              costLimitSource: cap.source,
+            };
+          })(),
         },
       });
     }
@@ -1494,6 +1519,8 @@ export class SessionRuntime {
     senderTaskId?: TaskFollowUpInput["senderTaskId"],
     senderLabel?: TaskFollowUpInput["senderLabel"],
     deliveryMode?: TaskFollowUpInput["deliveryMode"],
+    inReplyToMessageId?: TaskFollowUpInput["inReplyToMessageId"],
+    inReplyToTaskId?: TaskFollowUpInput["inReplyToTaskId"],
   ): void {
     this.state.queues.pendingFollowUps.push({
       message,
@@ -1507,6 +1534,8 @@ export class SessionRuntime {
       ...(messageId !== undefined ? { messageId } : {}),
       ...(senderTaskId !== undefined ? { senderTaskId } : {}),
       ...(senderLabel !== undefined ? { senderLabel } : {}),
+      ...(inReplyToMessageId !== undefined ? { inReplyToMessageId } : {}),
+      ...(inReplyToTaskId !== undefined ? { inReplyToTaskId } : {}),
     });
     this.saveSnapshot();
   }
@@ -1768,6 +1797,7 @@ export class SessionRuntime {
     const blockedByAllowlist = (name: string) =>
       hasAllowlist && !allowedTools.has("*") && !allowedTools.has(name);
     const disabledTools = this.state.tooling.toolFailureTracker.getDisabledTools();
+    const botPolicyContext = this.deps.getToolPolicyContext();
     const cacheKey = JSON.stringify({
       toolCatalogVersion: this.deps.getToolRegistry().getToolCatalogVersion?.() || null,
       disabledTools,
@@ -1776,6 +1806,14 @@ export class SessionRuntime {
       hasAllowlist,
       webSearchMode: this.deps.getWebSearchMode(),
       shellEnabled: this.deps.getWorkspace().permissions.shell,
+      botConversation: botPolicyContext?.botConversation === true,
+      botTeamId: botPolicyContext?.botTeamId || "",
+      botMessagingAuthorized: botPolicyContext?.botMessagingAuthorized === true,
+      turnSuccessfulToolUsageCounts: Array.from(
+        this.state.tooling.turnSuccessfulToolUsageCounts.entries(),
+      )
+        .filter(([, count]) => count > 0)
+        .sort(([left], [right]) => left.localeCompare(right)),
     });
     const task = this.deps.getTask();
     const renderContext = this.buildToolPromptRenderContext();
@@ -1989,6 +2027,7 @@ export class SessionRuntime {
   async prepareMessagesForTurnIteration(opts: {
     messages: LLMMessage[];
     phase: "step" | "follow_up";
+    checklistUpdatedAfter?: number;
     systemPromptTokens: number;
     allowSharedContextInjection: boolean;
     allowMemoryInjection: boolean;
@@ -2082,7 +2121,7 @@ export class SessionRuntime {
       }
     }
 
-    const taskListReminder = this.consumeTaskListVerificationReminder();
+    const taskListReminder = this.consumeTaskListVerificationReminder(opts.checklistUpdatedAfter);
     if (taskListReminder) {
       this.deps.upsertPinnedUserBlock(messages, {
         tag: "PINNED_TASK_LIST_REMINDER",
@@ -3399,6 +3438,9 @@ export class SessionRuntime {
           successfulToolUsageCounts: Array.from(
             this.state.tooling.successfulToolUsageCounts.entries(),
           ),
+          turnSuccessfulToolUsageCounts: Array.from(
+            this.state.tooling.turnSuccessfulToolUsageCounts.entries(),
+          ),
           toolUsageEventsSinceDecay: this.state.tooling.toolUsageEventsSinceDecay,
           toolSelectionEpoch: this.state.tooling.toolSelectionEpoch,
           discoveredDeferredToolNames: Array.from(
@@ -4218,6 +4260,12 @@ export class SessionRuntime {
         messageId,
         ...(typeof payload.senderTaskId === "string" ? { senderTaskId: payload.senderTaskId } : {}),
         ...(typeof payload.senderLabel === "string" ? { senderLabel: payload.senderLabel } : {}),
+        ...(typeof payload.inReplyToMessageId === "string"
+          ? { inReplyToMessageId: payload.inReplyToMessageId }
+          : {}),
+        ...(typeof payload.inReplyToTaskId === "string"
+          ? { inReplyToTaskId: payload.inReplyToTaskId }
+          : {}),
         ...(interactionMode && typeof interactionMode === "object"
           ? { interactionMode: interactionMode as TaskFollowUpInput["interactionMode"] }
           : {}),
@@ -4489,6 +4537,11 @@ export class SessionRuntime {
     this.state.tooling.toolUsageCounts = new Map(payload.tooling.toolUsageCounts || []);
     this.state.tooling.successfulToolUsageCounts = new Map(
       payload.tooling.successfulToolUsageCounts || [],
+    );
+    this.state.tooling.turnSuccessfulToolUsageCounts = new Map(
+      payload.tooling.turnSuccessfulToolUsageCounts ??
+        payload.tooling.successfulToolUsageCounts ??
+        [],
     );
     this.state.tooling.toolUsageEventsSinceDecay = payload.tooling.toolUsageEventsSinceDecay || 0;
     this.state.tooling.toolSelectionEpoch = payload.tooling.toolSelectionEpoch || 0;

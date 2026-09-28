@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   fetch: vi.fn(),
-  pulseConsent: vi.fn(),
 }));
 
 vi.mock("electron", () => ({
@@ -15,10 +14,6 @@ vi.mock("electron", () => ({
   },
   net: { fetch: mocks.fetch },
   BrowserWindow: class {},
-}));
-
-vi.mock("../../telemetry/pulse-service", () => ({
-  isPulseConsentGranted: mocks.pulseConsent,
 }));
 
 import { UpdateManager } from "../update-manager";
@@ -52,27 +47,64 @@ function newManager() {
   return manager;
 }
 
+async function asProduction<T>(fn: () => Promise<T>): Promise<T> {
+  const env = { NODE_ENV: process.env.NODE_ENV, CI: process.env.CI };
+  process.env.NODE_ENV = "production";
+  delete process.env.CI;
+  try {
+    return await fn();
+  } finally {
+    process.env.NODE_ENV = env.NODE_ENV;
+    if (env.CI !== undefined) process.env.CI = env.CI;
+  }
+}
+
 describe("update check release resolution", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // NODE_ENV is "test" under vitest, which already short-circuits the Pulse
-    // branch, so assert on the consent gate rather than on the request itself
-    // where the environment guard would hide a regression.
-    mocks.pulseConsent.mockReturnValue(false);
     mocks.fetch.mockResolvedValue(githubResponse());
   });
 
-  it("never contacts the Pulse collector when consent was not granted", async () => {
-    await newManager().checkForUpdates();
+  it("a background check asks CoWork's identifier-free endpoint first (mocked)", async () => {
+    const env = { NODE_ENV: process.env.NODE_ENV, CI: process.env.CI };
+    process.env.NODE_ENV = "production";
+    delete process.env.CI;
+    try {
+      await newManager().checkForUpdates("background");
+    } finally {
+      process.env.NODE_ENV = env.NODE_ENV;
+      if (env.CI !== undefined) process.env.CI = env.CI;
+    }
+
+    const urls = mocks.fetch.mock.calls.map((call) => String(call[0]));
+    const pulse = urls.find((url) => url.includes("pulse.coworkosapp.com/v1/latest-version"));
+    expect(pulse).toBeDefined();
+    // Only version, platform, arch and surface: nothing that identifies the install.
+    expect([...new URL(pulse as string).searchParams.keys()].sort()).toEqual([
+      "arch",
+      "platform",
+      "surface",
+      "version",
+    ]);
+  });
+
+  it("a manual check goes directly to GitHub", async () => {
+    await asProduction(() => newManager().checkForUpdates("manual"));
+    const urls = mocks.fetch.mock.calls.map((call) => String(call[0]));
+    expect(urls).toEqual([GITHUB_RELEASES_URL]);
+  });
+
+  it("skips the version endpoint in tests and CI and uses GitHub directly", async () => {
+    await newManager().checkForUpdates("background");
 
     const urls = mocks.fetch.mock.calls.map((call) => String(call[0]));
     expect(urls.some((url) => url.includes("pulse.coworkosapp.com"))).toBe(false);
     expect(urls).toContain(GITHUB_RELEASES_URL);
   });
 
-  it("treats a 404 from the releases endpoint as 'up to date', not an error", async () => {
+  it("treats a 404 from the releases endpoint as 'no published release', not an error", async () => {
     // A repository with no published release (or one renamed/made private) is
-    // a valid answer. Surfacing it as a failed check breaks the update panel.
+    // a valid answer, but it is neutral: it does not assert currentness.
     mocks.fetch.mockResolvedValue({ ok: false, status: 404, json: async () => ({}) });
 
     await expect(newManager().checkForUpdates()).resolves.toMatchObject({
@@ -80,7 +112,13 @@ describe("update check release resolution", () => {
       currentVersion: "0.5.51",
       latestVersion: "0.5.51",
       supported: true,
+      provenance: { source: "no_release" },
     });
+  });
+
+  it("labels a successful check as live with its check time", async () => {
+    const info = await newManager().checkForUpdates();
+    expect(info.provenance).toEqual({ source: "live", checkedAt: expect.any(Number) });
   });
 
   it("still surfaces a genuine API failure", async () => {
@@ -104,7 +142,6 @@ describe("update check release resolution", () => {
 describe("downloaded artifact signature lookup", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.pulseConsent.mockReturnValue(false);
   });
 
   it("derives the .sig asset from the file that was actually downloaded", async () => {

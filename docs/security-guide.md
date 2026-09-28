@@ -113,8 +113,8 @@ CoWork OS includes configurable guardrails in **Settings > Guardrails** to limit
 
 | Guardrail              | Description                                                        | Default            |
 | ---------------------- | ------------------------------------------------------------------ | ------------------ |
-| **Token Budget**       | Max tokens (input + output) per task                               | 100,000 (enabled)  |
-| **Cost Budget**        | Max estimated cost (USD) per task                                  | $1.00 (disabled)   |
+| **Token Budget**       | Max tokens (input + output) per task; a task's own budget always applies but can only lower this limit | 100,000 (enabled)  |
+| **Cost Budget**        | Max estimated cost (USD) per task; a task's own budget always applies but can only lower this limit | $10.00 (enabled)   |
 | **Iteration Limit**    | Max LLM calls per task                                             | 50 (enabled)       |
 | **Dangerous Commands** | Block dangerous command-tool commands matching patterns            | Enabled            |
 | **File Size Limit**    | Max file size the agent can write                                  | 50 MB (enabled)    |
@@ -224,7 +224,10 @@ When command tools are exposed by the active access profile:
 
 `run_command` first requires the active access profile to expose command tools, then applies
 guardrails, approval, and the selected access profile. Restricted profiles use the native macOS or Docker sandbox when
-available; if no OS sandbox is available, execution fails closed. Scoped filesystem rules are
+available; if no OS sandbox is available (Windows, or Linux without Docker), execution fails closed. The one
+exception is an administrator opt-in: when admin policy sets `allowUnsandboxedShell: true` and does not set
+`requireSandboxForShell`, CoWork asks you to approve each such command explicitly before it runs with your full
+user permissions. That prompt cannot be auto-approved or answered by a "never ask" profile. Scoped filesystem rules are
 canonicalized before execution so symlinks and path traversal cannot escape the approved roots.
 Domain-scoped network rules are enforced for built-in network tools; arbitrary shell networking is
 denied when the active sandbox cannot enforce those domains.
@@ -381,7 +384,7 @@ Settings stored through `SecureSettingsRepository` are encrypted inside the loca
 | Machine ID                        | `app.getPath('userData')/.cowork-machine-id`            | Stable identifier for encryption                                                             |
 | Pulse identity/token and settings | Secure settings category `pulse`                        | Encrypted settings; UUID is not derived from machine ID                                      |
 | Pulse consent windows/outbox      | Profile SQLite `pulse_consent_windows` / `pulse_outbox` | Ordinary SQLite rows; outbox contains aggregate payload and UUID, not deletion token         |
-| Update release cache              | Profile `pulse-update-check.json`                       | Plain release metadata and cache timestamp                                                   |
+| Pulse receipts                    | Profile SQLite `pulse_sent_days`                        | Ordinary SQLite rows: acknowledged package IDs and days                                      |
 
 Typical `userData` locations:
 
@@ -410,6 +413,26 @@ Typical `userData` locations:
 - Legacy `app:` records written by earlier versions remain readable and are
   re-encrypted to the current format on their next successful load, so upgrades
   migrate in place with no user action
+
+**Unreadable settings**
+
+If a saved category can no longer be decrypted (for example after an OS keychain reset
+or a profile restore to another machine), CoWork treats it as missing so you can
+re-enter those settings. On the next save it copies the old encrypted row, never
+plaintext, into the `secure_settings_unreadable_backup` table and then writes the new
+settings, so the original data stays recoverable if the old keychain identity returns.
+The MCP server list stays read-only while its saved settings are unreadable.
+
+**Keychain identity check**
+
+CoWork stores a small known value encrypted with the OS keychain key. If a later launch
+cannot decrypt it (the app is using a different keychain identity), secure settings are
+not saved and an in-app notification explains why, so new data is never encrypted under
+a key the original identity cannot read. Restore Keychain access to `CoWork OS Safe
+Storage` and relaunch, or relaunch with `COWORK_ACCEPT_NEW_KEYCHAIN_KEY=1` to move
+unreadable settings (ciphertext only) into `secure_settings_unreadable_backup` and continue
+with the current key. On macOS, settings still readable under a former CoWork identity are
+migrated automatically at startup.
 
 See the [Security Hardening Record](security-hardening.md#app-level-settings-encryption)
 for what changed and why.

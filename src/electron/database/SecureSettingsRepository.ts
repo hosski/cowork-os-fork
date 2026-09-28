@@ -34,6 +34,14 @@ export interface LoadResult<T> {
   error?: string;
 }
 
+export interface SaveOptions {
+  /**
+   * Replace an unreadable row without backing it up first; only for recovery paths that
+   * already hold its plaintext.
+   */
+  allowUnreadableOverwrite?: boolean;
+}
+
 /** Settings categories supported */
 export type SettingsCategory =
   | "skills"
@@ -65,7 +73,6 @@ export type SettingsCategory =
   | "google-drive"
   | "dropbox"
   | "sharepoint"
-  | "health"
   | "user-profile"
   | "relationship-memory"
   | "conway"
@@ -88,6 +95,7 @@ export type SettingsCategory =
   | "supermemory"
   | "pulse"
   | "plugin-packs"
+  | "meeting-artifacts"
   | `plugin:${string}`;
 
 interface SecureSettingsRow {
@@ -101,6 +109,17 @@ interface SecureSettingsRow {
 
 /** Machine ID file name - persisted for stable key derivation */
 const MACHINE_ID_FILE = ".cowork-machine-id";
+/** Known plaintext encrypted once with the OS keychain key to detect a key change. */
+const KEYCHAIN_CANARY_VALUE = "cowork-os-keychain-canary-v1";
+
+/**
+ * - `verified`: the stored canary decrypts with the current OS keychain key.
+ * - `created`: first check on this profile; the current key was adopted.
+ * - `mismatch`: the current key cannot read the stored canary (or any existing
+ *   settings), so writes are refused to avoid encrypting under a new key.
+ * - `not_applicable`: OS keychain encryption is not in use.
+ */
+export type KeychainIdentityStatus = "verified" | "created" | "mismatch" | "not_applicable";
 const logger = createLogger("SecureSettingsRepository");
 
 /**
@@ -112,6 +131,8 @@ export class SecureSettingsRepository {
   private safeStorage: SafeStorageLike | null;
   private machineId: string | null = null;
   private unreadableCategories = new Map<string, LoadResult<never>>();
+  private keychainIdentityMismatch = false;
+  private refusedWriteCategories = new Set<string>();
 
   constructor(private db: Database.Database) {
     this.safeStorage = getSafeStorage();
@@ -187,7 +208,29 @@ export class SecureSettingsRepository {
   /**
    * Save settings for a category (creates or updates)
    */
-  save<T extends object>(category: SettingsCategory, settings: T): void {
+  save<T extends object>(category: SettingsCategory, settings: T, options: SaveOptions = {}): void {
+    if (String(category) === "health") {
+      throw new Error("The personal Health settings category has been retired");
+    }
+    if (this.keychainIdentityMismatch && this.encryptionAvailable) {
+      if (!this.refusedWriteCategories.has(category)) {
+        this.refusedWriteCategories.add(category);
+        logger.warn(
+          `Not saving ${category}: the OS keychain key differs from the one that encrypted existing settings.`,
+        );
+      }
+      return;
+    }
+    const existing = this.findByCategory(category);
+    if (existing && !options.allowUnreadableOverwrite) {
+      const health = this.loadWithStatus(category, { logErrors: false, skipMigration: true });
+      if (health.status !== "success" && health.status !== "not_found") {
+        // Keep the unreadable ciphertext recoverable (e.g. if the original keychain
+        // identity returns) instead of blocking every future save of this category.
+        this.backupUnreadableRow(existing, health.status);
+      }
+    }
+
     const now = Date.now();
     const jsonData = JSON.stringify(settings);
     const encryptedData = this.encrypt(jsonData);
@@ -197,8 +240,6 @@ export class SecureSettingsRepository {
     // AES-GCM's auth tag (and by safeStorage for `os:` records); this column
     // only needs to detect a corrupted or swapped stored blob.
     const checksum = this.computeChecksum(encryptedData);
-
-    const existing = this.findByCategory(category);
 
     if (existing) {
       // Update existing
@@ -222,6 +263,140 @@ export class SecureSettingsRepository {
   }
 
   /**
+   * Check that safeStorage is using the same OS keychain key that encrypted the
+   * stored settings. A different key (for example after the app's keychain
+   * identity changed) would otherwise make every later save unreadable to the
+   * original identity. Call after legacy-identity migrations have run.
+   */
+  verifyKeychainIdentity(): KeychainIdentityStatus {
+    if (!this.encryptionAvailable || !this.safeStorage) return "not_applicable";
+
+    this.db
+      .prepare(
+        `CREATE TABLE IF NOT EXISTS secure_settings_keychain_canary (
+          id INTEGER PRIMARY KEY CHECK (id = 1),
+          encrypted_data TEXT NOT NULL,
+          created_at INTEGER NOT NULL
+        )`,
+      )
+      .run();
+    const canary = this.db
+      .prepare("SELECT encrypted_data FROM secure_settings_keychain_canary WHERE id = 1")
+      .get() as { encrypted_data: string } | undefined;
+
+    if (canary) {
+      this.keychainIdentityMismatch =
+        this.tryDecryptOs(canary.encrypted_data) !== KEYCHAIN_CANARY_VALUE;
+      return this.keychainIdentityMismatch ? "mismatch" : "verified";
+    }
+
+    // No canary yet: adopt the current key only if it can read existing
+    // keychain-encrypted settings, or if there are none.
+    const osRows = this.db
+      .prepare("SELECT encrypted_data FROM secure_settings WHERE encrypted_data LIKE 'os:%'")
+      .all() as Array<{ encrypted_data: string }>;
+    if (
+      osRows.length > 0 &&
+      !osRows.some((row) => this.tryDecryptOs(row.encrypted_data) !== null)
+    ) {
+      this.keychainIdentityMismatch = true;
+      return "mismatch";
+    }
+    this.writeKeychainCanary();
+    return "created";
+  }
+
+  isKeychainIdentityMismatch(): boolean {
+    return this.keychainIdentityMismatch;
+  }
+
+  /** Whether save() currently refuses writes (keychain key changed while encryption is on). */
+  refusesWrites(): boolean {
+    return this.keychainIdentityMismatch && this.encryptionAvailable;
+  }
+
+  /**
+   * Explicitly accept the current OS keychain key after a mismatch. Settings the
+   * current key cannot read are moved to the unreadable backup table (ciphertext
+   * only) and a new canary is written. Returns the archived categories.
+   */
+  adoptCurrentKeychainIdentity(): string[] {
+    if (!this.encryptionAvailable || !this.safeStorage) return [];
+    const rows = this.db
+      .prepare("SELECT * FROM secure_settings WHERE encrypted_data LIKE 'os:%'")
+      .all() as SecureSettingsRow[];
+    const archived: string[] = [];
+    this.db.transaction(() => {
+      for (const row of rows) {
+        if (this.tryDecryptOs(row.encrypted_data) !== null) continue;
+        this.backupUnreadableRow(row, "decryption_failed");
+        this.db.prepare("DELETE FROM secure_settings WHERE id = ?").run(row.id);
+        this.unreadableCategories.delete(row.category);
+        archived.push(row.category);
+      }
+      this.db.prepare("DELETE FROM secure_settings_keychain_canary WHERE id = 1").run();
+      this.writeKeychainCanary();
+    })();
+    this.keychainIdentityMismatch = false;
+    this.refusedWriteCategories.clear();
+    return archived;
+  }
+
+  private writeKeychainCanary(): void {
+    this.db
+      .prepare(
+        "INSERT INTO secure_settings_keychain_canary (id, encrypted_data, created_at) VALUES (1, ?, ?)",
+      )
+      .run(this.encrypt(KEYCHAIN_CANARY_VALUE), Date.now());
+  }
+
+  private tryDecryptOs(encryptedData: string): string | null {
+    if (!encryptedData.startsWith("os:") || !this.safeStorage) return null;
+    try {
+      return this.safeStorage.decryptString(Buffer.from(encryptedData.slice(3), "base64"));
+    } catch {
+      return null;
+    }
+  }
+
+  /** Copy an unreadable row's ciphertext (never plaintext) aside before it is replaced. */
+  private backupUnreadableRow(row: SecureSettingsRow, status: LoadStatus): void {
+    this.db
+      .prepare(
+        `CREATE TABLE IF NOT EXISTS secure_settings_unreadable_backup (
+          id TEXT PRIMARY KEY,
+          category TEXT NOT NULL,
+          encrypted_data TEXT NOT NULL,
+          checksum TEXT NOT NULL,
+          status TEXT NOT NULL,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER NOT NULL,
+          backed_up_at INTEGER NOT NULL
+        )`,
+      )
+      .run();
+    this.db
+      .prepare(
+        `INSERT INTO secure_settings_unreadable_backup
+          (id, category, encrypted_data, checksum, status, created_at, updated_at, backed_up_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .run(
+        uuidv4(),
+        row.category,
+        row.encrypted_data,
+        row.checksum,
+        status,
+        row.created_at,
+        row.updated_at,
+        Date.now(),
+      );
+    logger.warn(
+      `Replacing unreadable settings for category ${row.category} (${status}); the previous encrypted data was backed up.`,
+    );
+  }
+
+  /**
    * Load settings for a category
    * Returns undefined if no settings exist or if decryption fails
    */
@@ -236,7 +411,7 @@ export class SecureSettingsRepository {
    */
   loadWithStatus<T extends object>(
     category: SettingsCategory,
-    options: { logErrors?: boolean } = {},
+    options: { logErrors?: boolean; skipMigration?: boolean } = {},
   ): LoadResult<T> {
     const row = this.findByCategory(category);
     if (!row) {
@@ -287,7 +462,7 @@ export class SecureSettingsRepository {
       const usesLegacyKeyDerivation = row.encrypted_data.startsWith("app:");
       const usesLegacyPlaintextChecksum =
         ciphertextChecksum !== row.checksum && legacyPlaintextChecksum === row.checksum;
-      if (usesLegacyKeyDerivation || usesLegacyPlaintextChecksum) {
+      if ((usesLegacyKeyDerivation || usesLegacyPlaintextChecksum) && !options.skipMigration) {
         try {
           this.save(category, parsed as object);
           console.info(
@@ -399,7 +574,8 @@ export class SecureSettingsRepository {
     error?: string;
   } {
     try {
-      const categories = this.listCategories();
+      // Older profiles can still have this retired category before startup migration runs.
+      const categories = this.listCategories().filter((category) => String(category) !== "health");
       const backupData: Record<string, unknown> = {};
 
       for (const category of categories) {
@@ -454,15 +630,18 @@ export class SecureSettingsRepository {
       const categoriesRestored: string[] = [];
 
       for (const [category, data] of Object.entries(backup.categories)) {
+        if (category === "health") continue;
         const existingStatus = this.checkHealth(category as SettingsCategory);
 
         // Skip if exists and not overwriting
-        if (existingStatus === "success" && !overwrite) {
+        if (existingStatus !== "not_found" && !overwrite) {
           logger.debug(`Skipping ${category} (exists, overwrite=false)`);
           continue;
         }
 
-        this.save(category as SettingsCategory, data as object);
+        this.save(category as SettingsCategory, data as object, {
+          allowUnreadableOverwrite: overwrite,
+        });
         categoriesRestored.push(category);
       }
 
@@ -476,15 +655,15 @@ export class SecureSettingsRepository {
   }
 
   /**
-   * Delete corrupted settings for a category
-   * Use this when checkHealth returns 'checksum_mismatch' or 'decryption_failed'
-   * to allow the user to start fresh
+   * Delete settings only when a checksum mismatch confirms stored data corruption.
+   * A decryption failure can mean the original OS keychain identity is unavailable,
+   * so those records must remain available for recovery.
    */
   deleteCorrupted(category: SettingsCategory): boolean {
     const status = this.checkHealth(category);
-    if (status === "success" || status === "not_found") {
+    if (status !== "checksum_mismatch") {
       console.warn(
-        `[SecureSettingsRepository] Category ${category} is not corrupted, not deleting`,
+        `[SecureSettingsRepository] Category ${category} is not confirmed corrupt (status: ${status}), not deleting`,
       );
       return false;
     }
@@ -498,7 +677,7 @@ export class SecureSettingsRepository {
    * Useful after OS keychain becomes available or for migration
    */
   reEncryptAll(): { success: boolean; categoriesProcessed: string[]; errors: string[] } {
-    const categories = this.listCategories();
+    const categories = this.listCategories().filter((category) => String(category) !== "health");
     const processed: string[] = [];
     const errors: string[] = [];
 

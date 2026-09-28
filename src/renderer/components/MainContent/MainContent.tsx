@@ -4,6 +4,7 @@ import {
   type InteractionModeSelection,
 } from "../../../shared/interaction-mode";
 import { InteractionModePicker } from "./InteractionModePicker";
+import { getAccessProfilePresentation } from "./access-profile-presentation";
 import {
   BotProfileDialog,
   BOT_PROFILE_DELETED_EVENT,
@@ -13,6 +14,7 @@ import { BotGlyph } from "../BotGlyph";
 import {
   BOT_CONVERSATION_HISTORY_OPEN_EVENT,
   getConversationActionLabels,
+  shouldShowCancelledTaskBanner,
 } from "../../utils/bot-conversations";
 import {
   memo,
@@ -100,6 +102,8 @@ import {
   type ModeSuggestion,
 } from "../../../shared/mode-suggestion-detection";
 import { CollaborativeAgentLines } from "../CollaborativeAgentLines";
+import { FirstTaskCard } from "../FirstTaskCard";
+import { RealWorkFeedback } from "../RealWorkFeedback";
 import { CollaborativeSummaryPanel } from "../CollaborativeSummaryPanel";
 import { DispatchedAgentsPanel } from "../DispatchedAgentsPanel";
 import { CliAgentFrame } from "../CliAgentFrame";
@@ -115,6 +119,12 @@ import type {
 import { useVoiceInput } from "../../hooks/useVoiceInput";
 import { useVoiceTalkMode } from "../../hooks/useVoiceTalkMode";
 import { useAgentContext, type AgentContext } from "../../hooks/useAgentContext";
+import { useIsCalmTheme } from "../../hooks/useIsCalmTheme";
+import { CalmAccessMenu, type CalmAccessMenuProps } from "../calm/CalmTopBar";
+import { CalmModeToggle } from "../calm/CalmModeToggle";
+import { CalmBriefingCard } from "../calm/CalmBriefingCard";
+import { CalmAgentAvatar } from "../calm/CalmAgentAvatar";
+import { openCalmAgentSetup } from "../calm/CalmAgentSetup";
 import {
   hasTaskOutputs,
   resolveTaskOutputSummaryFromCompletionEvent,
@@ -122,12 +132,19 @@ import {
 } from "../../utils/task-outputs";
 import { isTaskActivelyWorking } from "../../utils/task-working-state";
 import {
+  getAgentMessageReceipt,
+  formatAgentMessageProtocolForDisplay,
+  parseAgentMessageProtocolResult,
+} from "../../utils/agent-message-receipt";
+import {
+  isSameAcceptedComposerDraftFence,
   isSameComposerDraftSubmission,
   isTaskCreationAccepted,
 } from "../../utils/composer-draft-fencing";
 import { shouldShowPersistentNeedsUserActionBanner } from "../../utils/task-completion-ux";
 import {
   filterAdjacentDuplicateTimelineFailures,
+  filterBotConversationTranscriptEvents,
   filterResolvedApprovalNarration,
   filterVerboseTimelineNoise,
   isDuplicateContextSummaryEvent,
@@ -151,6 +168,7 @@ import { areIntegrationMentionOptionsEqual } from "../../utils/integration-menti
 import { extractAttachmentNames } from "../utils/attachment-content";
 import {
   deriveSharedTaskEventUiState,
+  reconcileBotConversationSharedTaskEventUi,
   type BaseTimelineItem,
   type CommandOutputSession,
   type SharedTaskEventUiState,
@@ -204,7 +222,7 @@ import {
   TASK_FEED_MEASUREMENT_LAYOUT_VERSION,
   PermissionAccessMode,
 } from "./main-content-constants";
-import type { SettingsTab, CreateTaskOptions } from "./main-content-types";
+import type { SettingsTab, CreateTaskOptions, FocusedCard } from "./main-content-types";
 import {
   type WelcomeTaskSuggestion,
   type ActiveWelcomeSuggestionDraft,
@@ -240,6 +258,7 @@ import {
   getCompletionSummaryText,
   getAssistantBubbleStatusLabel,
   getAssistantOrCompletionText,
+  getBotTranscriptSpeaker,
   getUserEventDisplayMessage,
   isLowSignalPauseMessage,
   buildPauseDecisionFallbackFromRecentEvents,
@@ -295,6 +314,8 @@ import {
   taskCanBecomeRoutineFromFollowUp,
 } from "./TaskAutomationModal";
 import { BotConversationHistory } from "../BotConversationHistory";
+import { BotCollaborationHeader } from "../BotCollaborationHeader";
+import type { BotConversationProjection } from "../../../shared/bot-lifecycle";
 
 const VISUAL_ATTACHMENT_MIME_SET = new Set([
   "image/jpeg",
@@ -460,7 +481,8 @@ import {
 import { CanvasPreview } from "../CanvasPreview";
 import { StepFeed } from "../timeline/StepFeed";
 import { ParallelGroupFeed } from "../timeline/ParallelGroupFeed";
-import { ActionBlock, buildActionBlockSummary } from "../timeline/ActionBlock";
+import { ActionBlock } from "../timeline/ActionBlock";
+import { buildActionBlockSummary } from "../timeline/ActionBlockSummary";
 import { TaskStatusStrip } from "../TaskStatusStrip";
 import { buildParallelGroupProjection } from "../timeline/parallel-group-projection";
 import {
@@ -511,6 +533,7 @@ interface MainContentProps {
   onSelectTask?: (taskId: string | null) => void;
   botConversations?: Task[];
   isLoadingBotConversations?: boolean;
+  conversationProjection?: BotConversationProjection | null;
   onSelectBotConversation?: (conversationId: string) => void | Promise<void>;
   onNewBotConversation?: (botRoleId: string) => void | Promise<void>;
   draftValue?: string;
@@ -563,6 +586,7 @@ interface MainContentProps {
     options?: CreateTaskOptions,
     images?: ImageAttachment[],
   ) => void | boolean | Promise<void | boolean>;
+  onFirstTaskReady?: (task: Task, workspace: Workspace) => void;
   onAskInbox?: (query: string) => void;
   onChangeWorkspace?: () => void;
   onSelectWorkspace?: (workspace: Workspace) => void;
@@ -872,17 +896,23 @@ function getTaskFeedRowsSignature(rows: TaskFeedRow[]): string {
 export function TaskSessionLineageFooter({
   task,
   onSelectTask,
+  isBotConversation = false,
 }: {
   task: Task | null | undefined;
   onSelectTask?: (taskId: string | null) => void;
+  isBotConversation?: boolean;
 }) {
   const sourceTaskId = task?.branchFromTaskId?.trim();
   if (!sourceTaskId) return null;
 
+  const lineageLabel = isBotConversation ? "Previous bot conversation" : "Forked from conversation";
+  const sourceTitle = isBotConversation
+    ? "Open previous bot conversation"
+    : "Open source conversation";
   const content = (
     <>
       <GitFork size={18} strokeWidth={1.8} aria-hidden="true" />
-      <span>Forked from conversation</span>
+      <span>{lineageLabel}</span>
     </>
   );
 
@@ -894,7 +924,7 @@ export function TaskSessionLineageFooter({
           type="button"
           className="session-lineage-link"
           onClick={() => onSelectTask(sourceTaskId)}
-          title="Open source conversation"
+          title={sourceTitle}
         >
           {content}
         </button>
@@ -1498,6 +1528,10 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
   const suppressedParallelEventIds = props.suppressedParallelEventIds as Set<string>;
   const task = props.task as Task;
   const isBotConversation = task?.agentConfig?.botConversation === true;
+  // Bot transcripts follow the teammate-conversation model: keep messages and
+  // user-relevant outcomes in the flow, but keep internal execution activity
+  // out of the primary conversation surface.
+  const isConversationOnlySurface = isChatTask || isBotConversation;
   const botName = props.botName as string | undefined;
   const timelineItems = props.timelineItems as Array<any>;
   const timelineRef = props.timelineRef as React.RefObject<HTMLDivElement | null>;
@@ -1517,7 +1551,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
   const stepFeedTimelineIndexPosition = new Map<number, number>();
   let stepFeedEventCount = 0;
   timelineItems.forEach((timelineItem, timelineIndex) => {
-    if (isChatTask && timelineItem.kind === "action_block") {
+    if (isConversationOnlySurface && timelineItem.kind === "action_block") {
       return;
     }
     if (timelineItem.kind === "action_block") {
@@ -1780,7 +1814,9 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
     () =>
       feedRows.filter((row) => {
         if (row.kind === "history-control") return true;
-        if (row.kind === "leading-command-outputs") return row.sessions.length > 0;
+        if (row.kind === "leading-command-outputs") {
+          return !isConversationOnlySurface && row.sessions.length > 0;
+        }
         if (row.kind === "artifact-stack") return Boolean(workspace?.path);
         if (row.kind !== "timeline") return true;
 
@@ -1790,10 +1826,10 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
           item.kind === "cli-agent-frame" ||
           item.kind === "dispatched-agents"
         ) {
-          return true;
+          return !isConversationOnlySurface;
         }
         if (item.kind === "action_block") {
-          return !isChatTask;
+          return !isConversationOnlySurface;
         }
         if (item.kind !== "event") return true;
 
@@ -1805,8 +1841,13 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
         const commandOutputsAfterEvent = commandOutputSessionsByInsertIndex.get(item.eventIndex);
         const hasCommandOutputs = Boolean(commandOutputsAfterEvent?.length);
 
-        if (isChatTask && !isUserMessage && !isAssistantMessage && !isCompletionSummaryMessage) {
-          return (effectiveType === "llm_streaming" && isTaskWorking) || hasCommandOutputs;
+        if (
+          isConversationOnlySurface &&
+          !isUserMessage &&
+          !isAssistantMessage &&
+          !isCompletionSummaryMessage
+        ) {
+          return effectiveType === "llm_streaming" && isTaskWorking;
         }
 
         if (isUserMessage) {
@@ -1834,7 +1875,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
       commandOutputSessionsByInsertIndex,
       feedRows,
       initialPromptEventId,
-      isChatTask,
+      isConversationOnlySurface,
       isTaskWorking,
       parallelGroupsByAnchorEventId,
       shouldRenderTimelineEventInStepFeed,
@@ -1859,7 +1900,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
   );
   const showReasoningPanel =
     transcriptMode === "live" &&
-    !isChatTask &&
+    !isConversationOnlySurface &&
     isTaskWorking &&
     hasAgentReasoningPanelContent(reasoningPanelState);
   const reasoningPanelSignature = showReasoningPanel
@@ -2035,6 +2076,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
 
               const { item, timelineIndex } = row;
               if (item.kind === "canvas") {
+                if (isConversationOnlySurface) return null;
                 return (
                   <CanvasPreview
                     session={item.session}
@@ -2046,6 +2088,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
               }
 
               if (item.kind === "cli-agent-frame") {
+                if (isConversationOnlySurface) return null;
                 const agentType =
                   resolveCliAgentType(item.childTask, item.childTaskEvents) || "codex-cli";
                 return (
@@ -2060,6 +2103,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
               }
 
               if (item.kind === "dispatched-agents") {
+                if (isConversationOnlySurface) return null;
                 // Collaborative runs own every child agent in the shared team-run surface.
                 const nonCliChildTasks = childTasks.filter((t) => !isCliAgentChildTask(t));
                 const panelTasks = collaborativeRun
@@ -2099,7 +2143,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
               }
 
               if (item.kind === "action_block") {
-                if (isChatTask) return null;
+                if (isConversationOnlySurface) return null;
                 const isBlockOnlyMinimalCompletions =
                   !verboseSteps &&
                   item.events.length > 0 &&
@@ -2548,7 +2592,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
               );
 
               if (
-                isChatTask &&
+                isConversationOnlySurface &&
                 !isUserMessage &&
                 !isAssistantMessage &&
                 !isCompletionSummaryMessage
@@ -2613,20 +2657,13 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
                     typeof event.payload?.message === "string"
                       ? normalizeInitialPromptText(event.payload.message)
                       : "Agent message";
-                  const inboundMessageId =
-                    typeof event.payload?.messageId === "string"
-                      ? event.payload.messageId.trim()
-                      : "";
-                  const inboundDeliveryStatus =
-                    typeof event.payload?.deliveryStatus === "string"
-                      ? event.payload.deliveryStatus.trim()
-                      : typeof event.payload?.status === "string"
-                        ? event.payload.status.trim()
-                        : "";
-                  const inboundSenderTaskId =
-                    typeof event.payload?.senderTaskId === "string"
-                      ? event.payload.senderTaskId.trim()
-                      : "";
+                  const inboundReceipt = getAgentMessageReceipt(
+                    event.payload as Record<string, unknown>,
+                    { defaultStatus: "delivered" },
+                  );
+                  const inboundMessageId = inboundReceipt.messageId;
+                  const inboundDeliveryStatus = inboundReceipt.status;
+                  const inboundSenderTaskId = inboundReceipt.senderTaskId;
                   const senderLabel =
                     typeof event.payload?.senderLabel === "string" &&
                     event.payload.senderLabel.trim().length > 0
@@ -2643,6 +2680,20 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
                       >
                         <div className="agent-inbound-message-label">
                           Message from {senderLabel}
+                        </div>
+                        <div
+                          className={`agent-inbound-message-receipt agent-inbound-message-receipt-${inboundReceipt.status}`}
+                          aria-label={`Message ${inboundReceipt.label.toLowerCase()}`}
+                        >
+                          <span>{inboundReceipt.label}</span>
+                          {inboundReceipt.messageId ? (
+                            <span
+                              className="agent-message-receipt-id"
+                              title={`Message ID ${inboundReceipt.messageId}`}
+                            >
+                              {` · ${inboundReceipt.shortMessageId}`}
+                            </span>
+                          ) : null}
                         </div>
                         <div className="agent-inbound-message-body markdown-content">
                           <UserMessageText
@@ -2763,6 +2814,9 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
                 const messageText = isCompletionSummaryMessage
                   ? completionSummaryText
                   : event.payload?.message || "";
+                const agentMessageProtocolReceipt = isBotConversation
+                  ? parseAgentMessageProtocolResult(messageText)
+                  : null;
                 const cleanedMessageText = cleanAssistantMessageForDisplay(messageText);
                 const inlineFrames = getTaskEventInlineFrames(event);
                 const sourceUserMessage = getPreviousUserMessageText(events, item.eventIndex);
@@ -2773,7 +2827,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
                 );
                 const isLastAssistant = isLastAssistantMessageEvent(event, lastAssistantMessage);
                 const assistantStatusLabel =
-                  isLastAssistant && !isChatTask
+                  isLastAssistant && !isConversationOnlySurface
                     ? getAssistantBubbleStatusLabel(
                         task,
                         agentContext.getMessage("taskBlocked") || "Needs approval",
@@ -2795,207 +2849,252 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
                 return (
                   <Fragment key={event.id || `event-${item.eventIndex}`}>
                     <div className="chat-message assistant-message">
-                      <div className="chat-bubble assistant-bubble">
-                        {isBotConversation && (
-                          <div className="bot-message-attribution">{botMessageSender}</div>
-                        )}
-                        {assistantStatusLabel && (
-                          <div className="chat-bubble-header">
-                            <span className="chat-status">{assistantStatusLabel}</span>
+                      {agentMessageProtocolReceipt ? (
+                        <div
+                          className="agent-outbound-message-receipt"
+                          data-message-id={agentMessageProtocolReceipt.messageId || undefined}
+                          data-delivery-state={agentMessageProtocolReceipt.status}
+                          aria-label={`Agent message ${agentMessageProtocolReceipt.label.toLowerCase()}`}
+                        >
+                          <div className="bot-message-attribution">
+                            <span className="bot-message-attribution-avatar" aria-hidden="true">
+                              <BotGlyph size={12} />
+                            </span>
+                            <span>{botMessageSender}</span>
                           </div>
-                        )}
-                        <div className="chat-bubble-content markdown-content">
-                          <AssistantMessageContent
-                            message={cleanedMessageText}
-                            markdownComponents={markdownComponents}
-                            workspacePath={workspace?.path}
-                            onOpenViewer={setViewerFilePath}
-                          />
-                        </div>
-                      </div>
-                      {(inlineFrames.length > 0 || (isAssistantMessage && event.id)) && (
-                        <div className="chat-inline-frames">
-                          {inlineFrames.map((frame) => (
-                            <MailComposeFrame
-                              key={`${frame.kind}:${frame.draftId}`}
-                              frame={frame}
-                            />
-                          ))}
-                          {inlineFrames.length === 0 && isLastAssistant && !isTaskWorking && (
-                            <AutoMailComposeFrame
-                              eventId={event.id}
-                              taskId={event.taskId}
-                              assistantMessage={cleanedMessageText}
-                              sourceUserMessage={sourceUserMessage}
-                              allowCreate={true}
-                            />
-                          )}
-                        </div>
-                      )}
-                      <div className="message-actions">
-                        <MessageCopyButton text={messageText} />
-                        <MessageSpeakButton text={messageText} voiceEnabled={voiceEnabled} />
-                        {quotedAssistantMessage && onQuoteAssistantMessage && (
-                          <MessageQuoteButton
-                            onQuote={() => onQuoteAssistantMessage(quotedAssistantMessage)}
-                          />
-                        )}
-                        {event.id &&
-                          onForkTaskSessionFromEvent &&
-                          !isBotConversation &&
-                          isLastAssistant && (
-                            <MessageForkButton onFork={() => onForkTaskSessionFromEvent(event)} />
-                          )}
-                        {isLastAssistant && event.id && !isTaskWorking && (
-                          <>
-                            <button
-                              className={`message-feedback-btn${messageFeedbackMap.get(event.id) === "accepted" ? " active" : ""}`}
-                              title="Helpful"
-                              onClick={() =>
-                                void handleMessageFeedback({
-                                  messageId: event.id!,
-                                  decision: "accepted",
-                                })
-                              }
-                            >
-                              👍
-                            </button>
-                            <div
-                              ref={rejectMenuOpenFor === event.id ? rejectMenuRef : undefined}
-                              className="message-feedback-thumbdown-wrap"
-                            >
-                              <button
-                                className={`message-feedback-btn${messageFeedbackMap.get(event.id) === "rejected" ? " active" : ""}`}
-                                title="Not helpful"
-                                onClick={() =>
-                                  setRejectMenuOpenFor((v) =>
-                                    v === event.id ? null : (event.id ?? null),
-                                  )
-                                }
-                              >
-                                👎
-                              </button>
-                              {rejectMenuOpenFor === event.id && (
-                                <div className="message-feedback-menu">
-                                  {(
-                                    [
-                                      ["incorrect", "Incorrect"],
-                                      ["too_verbose", "Too verbose"],
-                                      ["ignored_instructions", "Ignored instructions"],
-                                      ["wrong_tone", "Wrong tone"],
-                                      ["unsafe", "Unsafe / unwanted"],
-                                    ] as const
-                                  ).map(([reason, label]) => (
-                                    <button
-                                      key={reason}
-                                      className="message-feedback-reason"
-                                      onClick={() =>
-                                        void handleMessageFeedback({
-                                          messageId: event.id!,
-                                          decision: "rejected",
-                                          reason,
-                                        })
-                                      }
-                                    >
-                                      {label}
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </>
-                        )}
-                        {isLastAssistant && isTaskWorking && !isBotConversation && (
-                          <button
-                            className="bubble-feedback-toggle"
-                            onClick={() => setStepFeedbackOpen((o) => !o)}
-                            title="Give feedback"
+                          <div
+                            className={`agent-inbound-message-receipt agent-inbound-message-receipt-${agentMessageProtocolReceipt.status}`}
                           >
-                            <svg
-                              width="14"
-                              height="14"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <circle cx="12" cy="12" r="1" />
-                              <circle cx="19" cy="12" r="1" />
-                              <circle cx="5" cy="12" r="1" />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                      {isLastAssistant && stepFeedbackOpen && !isBotConversation && (
-                        <div className="bubble-feedback-panel">
-                          {currentStep && (
-                            <div className="bubble-feedback-step-label">
-                              {currentStep.description === "Thinking..." ? (
-                                <span className="thinking-title">
-                                  Thinking
-                                  <span className="thinking-ellipsis">
-                                    <span>.</span>
-                                    <span>.</span>
-                                    <span>.</span>
-                                  </span>
+                            <span>{agentMessageProtocolReceipt.label}</span>
+                            {agentMessageProtocolReceipt.messageId ? (
+                              <span
+                                className="agent-message-receipt-id"
+                                title={`Message ID ${agentMessageProtocolReceipt.messageId}`}
+                              >
+                                {` · ${agentMessageProtocolReceipt.shortMessageId}`}
+                              </span>
+                            ) : null}
+                          </div>
+                          {agentMessageProtocolReceipt.error ? (
+                            <div className="agent-outbound-message-error">
+                              {agentMessageProtocolReceipt.error}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <>
+                          <div className="chat-bubble assistant-bubble">
+                            {isBotConversation && (
+                              <div className="bot-message-attribution">
+                                <span className="bot-message-attribution-avatar" aria-hidden="true">
+                                  <BotGlyph size={12} />
                                 </span>
-                              ) : (
-                                currentStep.description
+                                <span>{botMessageSender}</span>
+                              </div>
+                            )}
+                            {assistantStatusLabel && (
+                              <div className="chat-bubble-header">
+                                <span className="chat-status">{assistantStatusLabel}</span>
+                              </div>
+                            )}
+                            <div className="chat-bubble-content markdown-content">
+                              <AssistantMessageContent
+                                message={cleanedMessageText}
+                                markdownComponents={markdownComponents}
+                                workspacePath={workspace?.path}
+                                onOpenViewer={setViewerFilePath}
+                              />
+                            </div>
+                          </div>
+                          {(inlineFrames.length > 0 || (isAssistantMessage && event.id)) && (
+                            <div className="chat-inline-frames">
+                              {inlineFrames.map((frame) => (
+                                <MailComposeFrame
+                                  key={`${frame.kind}:${frame.draftId}`}
+                                  frame={frame}
+                                />
+                              ))}
+                              {inlineFrames.length === 0 && isLastAssistant && !isTaskWorking && (
+                                <AutoMailComposeFrame
+                                  eventId={event.id}
+                                  taskId={event.taskId}
+                                  assistantMessage={cleanedMessageText}
+                                  sourceUserMessage={sourceUserMessage}
+                                  allowCreate={true}
+                                />
                               )}
                             </div>
                           )}
-                          <div className="bubble-feedback-actions">
-                            {currentStep && (
+                          <div className="message-actions">
+                            <MessageCopyButton text={messageText} />
+                            <MessageSpeakButton text={messageText} voiceEnabled={voiceEnabled} />
+                            {quotedAssistantMessage && onQuoteAssistantMessage && (
+                              <MessageQuoteButton
+                                onQuote={() => onQuoteAssistantMessage(quotedAssistantMessage)}
+                              />
+                            )}
+                            {event.id &&
+                              onForkTaskSessionFromEvent &&
+                              !isBotConversation &&
+                              isLastAssistant && (
+                                <MessageForkButton
+                                  onFork={() => onForkTaskSessionFromEvent(event)}
+                                />
+                              )}
+                            {isLastAssistant && event.id && !isTaskWorking && (
                               <>
                                 <button
-                                  className="bubble-feedback-btn skip"
-                                  disabled={stepFeedbackSending}
-                                  onClick={() => handleStepFeedback("skip")}
+                                  className={`message-feedback-btn${messageFeedbackMap.get(event.id) === "accepted" ? " active" : ""}`}
+                                  title="Helpful"
+                                  onClick={() =>
+                                    void handleMessageFeedback({
+                                      messageId: event.id!,
+                                      decision: "accepted",
+                                    })
+                                  }
                                 >
-                                  Skip
+                                  👍
                                 </button>
-                                <button
-                                  className="bubble-feedback-btn retry"
-                                  disabled={stepFeedbackSending}
-                                  onClick={() => handleStepFeedback("retry")}
+                                <div
+                                  ref={rejectMenuOpenFor === event.id ? rejectMenuRef : undefined}
+                                  className="message-feedback-thumbdown-wrap"
                                 >
-                                  Retry
-                                </button>
+                                  <button
+                                    className={`message-feedback-btn${messageFeedbackMap.get(event.id) === "rejected" ? " active" : ""}`}
+                                    title="Not helpful"
+                                    onClick={() =>
+                                      setRejectMenuOpenFor((v) =>
+                                        v === event.id ? null : (event.id ?? null),
+                                      )
+                                    }
+                                  >
+                                    👎
+                                  </button>
+                                  {rejectMenuOpenFor === event.id && (
+                                    <div className="message-feedback-menu">
+                                      {(
+                                        [
+                                          ["incorrect", "Incorrect"],
+                                          ["too_verbose", "Too verbose"],
+                                          ["ignored_instructions", "Ignored instructions"],
+                                          ["wrong_tone", "Wrong tone"],
+                                          ["unsafe", "Unsafe / unwanted"],
+                                        ] as const
+                                      ).map(([reason, label]) => (
+                                        <button
+                                          key={reason}
+                                          className="message-feedback-reason"
+                                          onClick={() =>
+                                            void handleMessageFeedback({
+                                              messageId: event.id!,
+                                              decision: "rejected",
+                                              reason,
+                                            })
+                                          }
+                                        >
+                                          {label}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
                               </>
                             )}
-                            <button
-                              className="bubble-feedback-btn stop"
-                              disabled={stepFeedbackSending || !currentStep}
-                              onClick={() => handleStepFeedback("stop")}
-                            >
-                              Stop
-                            </button>
+                            {isLastAssistant && isTaskWorking && !isBotConversation && (
+                              <button
+                                className="bubble-feedback-toggle"
+                                onClick={() => setStepFeedbackOpen((o) => !o)}
+                                title="Give feedback"
+                              >
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <circle cx="12" cy="12" r="1" />
+                                  <circle cx="19" cy="12" r="1" />
+                                  <circle cx="5" cy="12" r="1" />
+                                </svg>
+                              </button>
+                            )}
                           </div>
-                          <div className="bubble-feedback-input-row">
-                            <input
-                              className="bubble-feedback-input"
-                              type="text"
-                              placeholder="Adjust direction…"
-                              value={stepFeedbackText}
-                              onChange={(e) => setStepFeedbackText(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter" && stepFeedbackText.trim()) {
-                                  handleStepFeedback("drift", stepFeedbackText.trim());
-                                }
-                              }}
-                              disabled={stepFeedbackSending}
-                            />
-                            <button
-                              className="bubble-feedback-btn drift"
-                              disabled={stepFeedbackSending || !stepFeedbackText.trim()}
-                              onClick={() => handleStepFeedback("drift", stepFeedbackText.trim())}
-                            >
-                              Send
-                            </button>
-                          </div>
-                        </div>
+                          {isLastAssistant && stepFeedbackOpen && !isBotConversation && (
+                            <div className="bubble-feedback-panel">
+                              {currentStep && (
+                                <div className="bubble-feedback-step-label">
+                                  {currentStep.description === "Thinking..." ? (
+                                    <span className="thinking-title">
+                                      Thinking
+                                      <span className="thinking-ellipsis">
+                                        <span>.</span>
+                                        <span>.</span>
+                                        <span>.</span>
+                                      </span>
+                                    </span>
+                                  ) : (
+                                    currentStep.description
+                                  )}
+                                </div>
+                              )}
+                              <div className="bubble-feedback-actions">
+                                {currentStep && (
+                                  <>
+                                    <button
+                                      className="bubble-feedback-btn skip"
+                                      disabled={stepFeedbackSending}
+                                      onClick={() => handleStepFeedback("skip")}
+                                    >
+                                      Skip
+                                    </button>
+                                    <button
+                                      className="bubble-feedback-btn retry"
+                                      disabled={stepFeedbackSending}
+                                      onClick={() => handleStepFeedback("retry")}
+                                    >
+                                      Retry
+                                    </button>
+                                  </>
+                                )}
+                                <button
+                                  className="bubble-feedback-btn stop"
+                                  disabled={stepFeedbackSending || !currentStep}
+                                  onClick={() => handleStepFeedback("stop")}
+                                >
+                                  Stop
+                                </button>
+                              </div>
+                              <div className="bubble-feedback-input-row">
+                                <input
+                                  className="bubble-feedback-input"
+                                  type="text"
+                                  placeholder="Adjust direction…"
+                                  value={stepFeedbackText}
+                                  onChange={(e) => setStepFeedbackText(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter" && stepFeedbackText.trim()) {
+                                      handleStepFeedback("drift", stepFeedbackText.trim());
+                                    }
+                                  }}
+                                  disabled={stepFeedbackSending}
+                                />
+                                <button
+                                  className="bubble-feedback-btn drift"
+                                  disabled={stepFeedbackSending || !stepFeedbackText.trim()}
+                                  onClick={() =>
+                                    handleStepFeedback("drift", stepFeedbackText.trim())
+                                  }
+                                >
+                                  Send
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                     {renderCommandOutputs(commandOutputsAfterEvent)}
@@ -3162,7 +3261,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
                 onLoadMoreTimelineHistory={onLoadMoreTimelineHistory}
                 rendererPerfLoggingEnabled={Boolean(rendererPerfLoggingEnabled)}
                 visibleFeedRows={visibleFeedRows}
-                isChatTask={isChatTask}
+                isChatTask={isConversationOnlySurface}
                 isTaskWorking={isTaskWorking}
                 task={task}
                 formatTime={formatTime}
@@ -3241,7 +3340,7 @@ const TaskConversationFlow = memo(function TaskConversationFlow(props: any) {
       timelineHistoryError,
       isBotConversation,
       botName,
-      isChatTask,
+      isConversationOnlySurface,
       isTaskWorking,
       isReplayMode,
       markdownComponents,
@@ -3484,6 +3583,15 @@ const TypewriterPlaceholder = memo(function TypewriterPlaceholder({
   );
 });
 
+let calmSuggestionCardsCache: FocusedCard[] | null = null;
+function getCalmSuggestionCards(): FocusedCard[] {
+  calmSuggestionCardsCache ??= pickFocusedCards(
+    FOCUSED_CARD_POOL.filter((card) => card.action.type === "prompt"),
+    8,
+  );
+  return calmSuggestionCardsCache;
+}
+
 function MainContentComponent({
   task,
   selectedTaskId,
@@ -3497,6 +3605,7 @@ function MainContentComponent({
   onSelectTask,
   botConversations = [],
   isLoadingBotConversations = false,
+  conversationProjection = null,
   onSelectBotConversation,
   onNewBotConversation,
   draftValue,
@@ -3513,6 +3622,7 @@ function MainContentComponent({
   onStartOnboarding,
   onStartFreshSession,
   onCreateTask,
+  onFirstTaskReady,
   onAskInbox,
   onChangeWorkspace,
   onSelectWorkspace,
@@ -3586,10 +3696,19 @@ function MainContentComponent({
     setTranscriptModeOverride(null);
   }, [task?.id]);
   const isReplayMode = replayControls?.isReplayMode ?? false;
-  const effectiveSharedTaskEventUi =
+  const baseSharedTaskEventUi =
     sharedTaskEventUi?.projectionMode === "live" && transcriptModeOverride === "inspect"
       ? null
       : sharedTaskEventUi;
+  const effectiveSharedTaskEventUi = useMemo(
+    () =>
+      reconcileBotConversationSharedTaskEventUi(baseSharedTaskEventUi, {
+        task,
+        workspace,
+        isReplayMode,
+      }),
+    [baseSharedTaskEventUi, isReplayMode, task, workspace],
+  );
   const statusTaskEventUi = useMemo(
     () =>
       sharedTaskEventUi ??
@@ -3619,10 +3738,10 @@ function MainContentComponent({
     if (effectiveSharedTaskEventUi) {
       return effectiveSharedTaskEventUi.normalizedEvents;
     }
-    return measureRendererPerf("MainContent.normalizeEvents", rendererPerfLoggingEnabled, () =>
-      normalizeEventsForTimelineUi(rawEvents),
-    );
-  }, [rawEvents, rendererPerfLoggingEnabled, effectiveSharedTaskEventUi]);
+    return measureRendererPerf("MainContent.normalizeEvents", rendererPerfLoggingEnabled, () => {
+      return normalizeEventsForTimelineUi(rawEvents);
+    });
+  }, [rawEvents, rendererPerfLoggingEnabled, effectiveSharedTaskEventUi, task]);
   const taskStatusStripModel = useMemo(
     () => ({
       ...statusTaskEventUi.taskStatusStrip,
@@ -3653,6 +3772,11 @@ function MainContentComponent({
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const [isUploadingAttachments, setIsUploadingAttachments] = useState(false);
   const [isPreparingMessage, setIsPreparingMessage] = useState(false);
+  const pendingFollowUpSubmissionRef = useRef<{
+    taskId: string;
+    fingerprint: string;
+    messageId: string;
+  } | null>(null);
   const [agentRoles, setAgentRoles] = useState<AgentRoleData[]>([]);
   const [integrationMentionOptions, setIntegrationMentionOptions] = useState<
     IntegrationMentionOption[]
@@ -3691,6 +3815,12 @@ function MainContentComponent({
   const draftRevisionRef = useRef(draftRevision);
   const draftKeyRef = useRef<string | undefined>(draftSnapshot?.draftKey);
   const draftSnapshotRef = useRef<ComposerDraft | null>(draftSnapshot);
+  const acceptedDraftClearRef = useRef<{
+    draftKey?: string;
+    taskId?: string;
+    revision: number;
+    text: string;
+  } | null>(null);
   const renderedDraftKey = draftSnapshot?.draftKey;
   if (draftKeyRef.current !== renderedDraftKey) {
     // A key change is an owner transition, so reset the revision fence for
@@ -3728,6 +3858,34 @@ function MainContentComponent({
   // prompt remains visible in the fresh composer.
   useEffect(() => {
     const draftKey = draftSnapshot?.draftKey;
+    const acceptedDraftClear = acceptedDraftClearRef.current;
+    const acceptedDraftStillVisible =
+      acceptedDraftClear &&
+      isSameAcceptedComposerDraftFence({
+        fenceDraftKey: acceptedDraftClear.draftKey,
+        currentDraftKey: draftKey,
+        fenceTaskId: acceptedDraftClear.taskId,
+        currentTaskId: task?.id,
+        fenceRevision: acceptedDraftClear.revision,
+        currentRevision: draftSnapshot?.revision ?? draftRevision,
+      }) &&
+      draftValue === acceptedDraftClear.text &&
+      inputValueRef.current === "";
+    if (acceptedDraftStillVisible) {
+      // The durable clear is still in flight. Do not hydrate the accepted
+      // prompt back into the editor after the optimistic local clear.
+      previousTaskIdRef.current = task?.id;
+      previousDraftKeyRef.current = draftKey;
+      return;
+    }
+    if (
+      acceptedDraftClear &&
+      (!draftSnapshot ||
+        draftKey !== acceptedDraftClear.draftKey ||
+        (draftSnapshot.revision ?? draftRevision) > acceptedDraftClear.revision)
+    ) {
+      acceptedDraftClearRef.current = null;
+    }
     const taskChanged = previousTaskIdRef.current !== task?.id;
     const draftChanged = previousDraftKeyRef.current !== draftKey;
     const restoredAttachments = (draftSnapshot?.attachments ?? []).map((attachment) => ({
@@ -3824,6 +3982,10 @@ function MainContentComponent({
 
   // Focused mode card pool - pick random cards on mount
   const focusedCards = useMemo(() => pickFocusedCards(FOCUSED_CARD_POOL, CARDS_TO_SHOW), []);
+  const isCalm = useIsCalmTheme();
+  const [showAllCalmChips, setShowAllCalmChips] = useState(false);
+  // Picked once per app session so the chips don't reshuffle on every visit.
+  const calmSuggestionCards = useMemo(getCalmSuggestionCards, []);
 
   // ── Rotating placeholder prompts (persona-aware engine) ──────────────
   const [rotatingPlaceholders, setRotatingPlaceholders] = useState<string[]>([]);
@@ -4055,6 +4217,7 @@ function MainContentComponent({
       allowShellNetwork?: boolean;
     };
   } | null>(null);
+  const [approvalPromptsEnabled, setApprovalPromptsEnabled] = useState<boolean | null>(null);
   const newTaskAccessProfileId = newTaskUsesLegacyPermissionMode ? undefined : permissionAccessMode;
   const taskAccessProfileId = task?.id
     ? (selectedTaskAccessProfileOverride ?? undefined)
@@ -4086,6 +4249,10 @@ function MainContentComponent({
     }
     return BUILTIN_ACCESS_PROFILES[0];
   }, [accessProfiles, selectedProfileId]);
+  const selectedAccessProfilePresentation = getAccessProfilePresentation(
+    selectedAccessProfile,
+    approvalPromptsEnabled,
+  );
   const selectedAccessProfileLabel =
     task?.id && selectedTaskAccessProfileOverride === null
       ? `Legacy mode${task.agentConfig?.permissionMode ? ` · ${task.agentConfig.permissionMode}` : ""}`
@@ -4094,6 +4261,10 @@ function MainContentComponent({
     const notices: string[] = [];
     if (selectedProfileId && selectedAccessProfile.label === "Unavailable access profile") {
       return "This access profile is unavailable; execution will remain paused until you choose a valid profile.";
+    }
+
+    if (selectedAccessProfilePresentation.notice) {
+      notices.push(selectedAccessProfilePresentation.notice);
     }
 
     if (
@@ -4134,7 +4305,12 @@ function MainContentComponent({
       );
     }
     return notices.length > 0 ? notices.join(" ") : null;
-  }, [adminRuntimePolicy, selectedAccessProfile, selectedProfileId]);
+  }, [
+    adminRuntimePolicy,
+    selectedAccessProfile,
+    selectedAccessProfilePresentation.notice,
+    selectedProfileId,
+  ]);
   const [modeSuggestions, setModeSuggestions] = useState<ModeSuggestion[]>([]);
   const [suggestionsDismissed, setSuggestionsDismissed] = useState(false);
   const modeSuggestionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -4146,6 +4322,7 @@ function MainContentComponent({
     (isChatExecutionTask(task?.agentConfig?.executionMode) &&
       task?.agentConfig?.executionModeSource === "user");
   const isBotConversation = task?.agentConfig?.botConversation === true;
+  const isBotHandoffWaiting = isBotConversation && conversationProjection?.state === "waiting";
   const botName = botRole && botRole.id === task?.assignedAgentRoleId ? botRole.displayName : "Bot";
   const actionLabels = getConversationActionLabels(isBotConversation);
   const menuLabel = isBotConversation ? "Bot options" : actionLabels.menu;
@@ -4684,14 +4861,24 @@ function MainContentComponent({
   >(null);
   // Filter events based on verbose mode
   const filteredEvents = useMemo(() => {
-    if (!verboseSteps && effectiveSharedTaskEventUi) {
+    // Bot conversations must take the hydrated Bot-specific filtering path;
+    // the app-level projection may have been built from a lightweight task row.
+    if (
+      !verboseSteps &&
+      effectiveSharedTaskEventUi &&
+      task?.agentConfig?.botConversation !== true
+    ) {
       return effectiveSharedTaskEventUi.filteredEvents;
     }
     return measureRendererPerf("MainContent.filteredEvents", rendererPerfLoggingEnabled, () => {
+      const transcriptEvents =
+        task?.agentConfig?.botConversation === true
+          ? filterBotConversationTranscriptEvents(events)
+          : events;
       const baseEvents = verboseSteps
-        ? filterVerboseTimelineNoise(events)
+        ? filterVerboseTimelineNoise(transcriptEvents)
         : filterAdjacentDuplicateTimelineFailures(
-            filterResolvedApprovalNarration(events).filter((event) =>
+            filterResolvedApprovalNarration(transcriptEvents).filter((event) =>
               shouldShowTaskEventInSummaryMode(event, task?.status),
             ),
           );
@@ -5081,7 +5268,11 @@ function MainContentComponent({
   }, [canvasSessions, latestUserMessageTimestamp]);
 
   const baseTimelineItems = useMemo<BaseTimelineItem[]>(() => {
-    if (!verboseSteps && effectiveSharedTaskEventUi) {
+    if (
+      !verboseSteps &&
+      effectiveSharedTaskEventUi &&
+      task?.agentConfig?.botConversation !== true
+    ) {
       return effectiveSharedTaskEventUi.baseTimelineItems;
     }
     return measureRendererPerf(
@@ -5807,6 +5998,15 @@ function MainContentComponent({
       }
     };
 
+    const loadPermissionRuntimeInfo = async () => {
+      try {
+        const runtime = await window.electronAPI.getPermissionRuntimeInfo();
+        if (!cancelled) setApprovalPromptsEnabled(runtime.approvalPromptsEnabled);
+      } catch (error) {
+        console.debug("Failed to load permission runtime info:", error);
+      }
+    };
+
     const handlePermissionSettingsUpdated = (event: Event) => {
       const detail = (event as CustomEvent).detail;
       if (detail && typeof detail === "object") {
@@ -5816,6 +6016,7 @@ function MainContentComponent({
 
     void loadPermissionDefaults();
     void loadAdminRuntimePolicy();
+    void loadPermissionRuntimeInfo();
     window.addEventListener("cowork:permission-settings-updated", handlePermissionSettingsUpdated);
 
     return () => {
@@ -6080,21 +6281,25 @@ function MainContentComponent({
   };
 
   // Handle workspace dropdown toggle - load workspaces when opening
+  const loadRecentWorkspaces = async () => {
+    try {
+      const workspaces = await window.electronAPI.listWorkspaces();
+      // Filter out temp workspace and sort by most recently used
+      const filteredWorkspaces = workspaces
+        .filter((w: Workspace) => !w.isTemp && !isTempWorkspaceId(w.id))
+        .sort(
+          (a: Workspace, b: Workspace) =>
+            (b.lastUsedAt ?? b.createdAt) - (a.lastUsedAt ?? a.createdAt),
+        );
+      setWorkspacesList(filteredWorkspaces);
+    } catch (error) {
+      console.error("Failed to load workspaces:", error);
+    }
+  };
+
   const handleWorkspaceDropdownToggle = async () => {
     if (!showWorkspaceDropdown) {
-      try {
-        const workspaces = await window.electronAPI.listWorkspaces();
-        // Filter out temp workspace and sort by most recently used
-        const filteredWorkspaces = workspaces
-          .filter((w: Workspace) => !w.isTemp && !isTempWorkspaceId(w.id))
-          .sort(
-            (a: Workspace, b: Workspace) =>
-              (b.lastUsedAt ?? b.createdAt) - (a.lastUsedAt ?? a.createdAt),
-          );
-        setWorkspacesList(filteredWorkspaces);
-      } catch (error) {
-        console.error("Failed to load workspaces:", error);
-      }
+      await loadRecentWorkspaces();
     }
     setShowWorkspaceDropdown(!showWorkspaceDropdown);
   };
@@ -6728,16 +6933,14 @@ function MainContentComponent({
             attachment.draftRefId &&
             !draftSnapshot.attachments.some((ref) => ref.refId === attachment.draftRefId),
         )
-        .map(
-          (attachment): DraftAttachmentRef => ({
-            refId: attachment.draftRefId as string,
-            name: attachment.name,
-            ...(attachment.mimeType ? { mimeType: attachment.mimeType } : {}),
-            size: attachment.size,
-            sha256: attachment.draftSha256 ?? "",
-            status: attachment.status ?? "available",
-          }),
-        ),
+        .map((attachment): DraftAttachmentRef => ({
+          refId: attachment.draftRefId as string,
+          name: attachment.name,
+          ...(attachment.mimeType ? { mimeType: attachment.mimeType } : {}),
+          size: attachment.size,
+          sha256: attachment.draftSha256 ?? "",
+          status: attachment.status ?? "available",
+        })),
     ];
     const deduped = [
       ...new Map(nextRefs.map((attachment) => [attachment.refId, attachment])).values(),
@@ -6929,6 +7132,15 @@ function MainContentComponent({
 
     const trimmedInput = inputValue.trim();
     const hasAttachments = pendingAttachments.length > 0;
+    const pendingFollowUpSubmission = pendingFollowUpSubmissionRef.current;
+    if (
+      pendingFollowUpSubmission &&
+      task?.id === pendingFollowUpSubmission.taskId &&
+      pendingFollowUpSubmission.fingerprint === trimmedInput.replace(/\s+/g, " ").toLowerCase() &&
+      !hasAttachments
+    ) {
+      return;
+    }
     const unavailableAttachments = pendingAttachments.filter(
       (attachment) =>
         attachment.status === "unavailable" ||
@@ -7093,6 +7305,11 @@ function MainContentComponent({
     const submittedDraftKey = draftKeyRef.current;
     const submittedDraftRevision = draftRevisionRef.current;
     const submittedDraft = draftSnapshotRef.current;
+    const submittedTaskId = task?.id;
+    const submittedPendingAttachments = pendingAttachments;
+    const submittedIntegrationMentionSpans = integrationMentionSpans;
+    const submittedQuotedAssistantMessage = quotedAssistantMessage;
+    const submittedWelcomeSuggestionDraft = activeWelcomeSuggestionDraft;
     const isSubmittedDraftCurrent = () =>
       isSameComposerDraftSubmission({
         submittedDraftKey,
@@ -7118,24 +7335,81 @@ function MainContentComponent({
       setSlashTarget(null);
       setModeSuggestions([]);
     };
+    const restoreAcceptedComposer = (): boolean => {
+      const acceptedDraftClear = acceptedDraftClearRef.current;
+      const stillOwnsSubmission = isSameAcceptedComposerDraftFence({
+        fenceDraftKey: submittedDraftKey,
+        currentDraftKey: draftKeyRef.current,
+        fenceTaskId: submittedTaskId,
+        currentTaskId: task?.id,
+        fenceRevision: submittedDraftRevision,
+        currentRevision: draftRevisionRef.current,
+      });
+      if (
+        acceptedDraftClear &&
+        isSameAcceptedComposerDraftFence({
+          fenceDraftKey: acceptedDraftClear.draftKey,
+          currentDraftKey: submittedDraftKey,
+          fenceTaskId: acceptedDraftClear.taskId,
+          currentTaskId: submittedTaskId,
+          fenceRevision: acceptedDraftClear.revision,
+          currentRevision: submittedDraftRevision,
+        }) &&
+        stillOwnsSubmission
+      ) {
+        pendingProgrammaticResizeRef.current = true;
+        setInputValue(submittedInputValue);
+        setActiveWelcomeSuggestionDraft(submittedWelcomeSuggestionDraft);
+        setQuotedAssistantMessage(submittedQuotedAssistantMessage);
+        setPendingAttachments(submittedPendingAttachments);
+        setIntegrationMentionSpans(submittedIntegrationMentionSpans);
+        acceptedDraftClearRef.current = null;
+        return true;
+      }
+      if (
+        acceptedDraftClear &&
+        isSameAcceptedComposerDraftFence({
+          fenceDraftKey: acceptedDraftClear.draftKey,
+          currentDraftKey: submittedDraftKey,
+          fenceTaskId: acceptedDraftClear.taskId,
+          currentTaskId: submittedTaskId,
+          fenceRevision: acceptedDraftClear.revision,
+          currentRevision: submittedDraftRevision,
+        })
+      ) {
+        acceptedDraftClearRef.current = null;
+      }
+      return false;
+    };
     const clearAcceptedComposer = async (): Promise<boolean> => {
       if (!isSubmittedDraftCurrent()) return false;
-      const accepted = await onDraftAccepted?.(submittedDraftRevision, submittedDraft);
-      if (accepted === false) return false;
-      // The successful store clear removes the draft snapshot, so the normal
-      // revision fence is no longer expected to match. Only clear the local
-      // editor if the submitted text/owner is still the one on screen.
-      if (
-        inputValueRef.current !== submittedInputValue ||
-        (draftKeyRef.current && draftKeyRef.current !== submittedDraftKey)
-      ) {
+      acceptedDraftClearRef.current = {
+        draftKey: submittedDraftKey,
+        taskId: submittedTaskId,
+        revision: submittedDraftRevision,
+        text: submittedInputValue,
+      };
+      // Clear the visible editor at the durable execution-acceptance boundary
+      // instead of making the user wait for the SQLite draft deletion round
+      // trip. The hydration fence above prevents the old persisted snapshot
+      // from immediately putting the accepted prompt back.
+      clearComposer(false);
+      try {
+        const accepted = await onDraftAccepted?.(submittedDraftRevision, submittedDraft);
+        if (accepted === false) {
+          restoreAcceptedComposer();
+          return false;
+        }
+      } catch {
+        restoreAcceptedComposer();
         return false;
       }
-      clearComposer(false);
+      acceptedDraftClearRef.current = null;
       return true;
     };
     let shouldDeferComposerClear = false;
     let submissionResult: void | boolean | Promise<void | boolean> = undefined;
+    let submittedFollowUpMessageId: string | null = null;
     if (hasAttachments) {
       setIsUploadingAttachments(true);
     }
@@ -7391,6 +7665,15 @@ function MainContentComponent({
       } else {
         // Task is selected (even if not in current list) - send follow-up message
         const submissionRevision = ++modeSubmissionRevisionRef.current;
+        const messageId =
+          globalThis.crypto?.randomUUID?.() ||
+          `ui-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        submittedFollowUpMessageId = messageId;
+        pendingFollowUpSubmissionRef.current = {
+          taskId: submittedTaskId || task?.id || "",
+          fingerprint: message.trim().replace(/\s+/g, " ").toLowerCase(),
+          messageId,
+        };
         const submission = onSendMessage(
           message,
           imagePayload,
@@ -7399,6 +7682,7 @@ function MainContentComponent({
             interactionMode: selectedInteractionMode,
             integrationMentions: selectedIntegrationMentions,
             returnOnAccepted: true,
+            messageId,
             ...(taskAccessProfileId ? { accessProfileId: taskAccessProfileId } : {}),
           },
         );
@@ -7407,7 +7691,7 @@ function MainContentComponent({
         // IPC can remain pending for the full turn. Keep the composer available
         // for steering, but restore a failed draft if the user has not moved on.
         void Promise.resolve(submission)
-          .then((sent) => {
+          .then(async (sent) => {
             if (
               sent === false &&
               activeModeDraftKeyRef.current === modeDraftKey &&
@@ -7415,6 +7699,9 @@ function MainContentComponent({
             ) {
               setInputValue((current) => current || trimmedInput);
               setPendingAttachments((current) => (current.length ? current : pendingAttachments));
+            }
+            if (pendingFollowUpSubmissionRef.current?.messageId === messageId) {
+              if (sent === false) pendingFollowUpSubmissionRef.current = null;
             }
           })
           .catch((error) => {
@@ -7426,6 +7713,9 @@ function MainContentComponent({
               reportAttachmentError(
                 error instanceof Error ? error.message : "Failed to send message.",
               );
+            }
+            if (pendingFollowUpSubmissionRef.current?.messageId === messageId) {
+              pendingFollowUpSubmissionRef.current = null;
             }
           });
       }
@@ -7461,6 +7751,12 @@ function MainContentComponent({
         void Promise.resolve(submissionResult)
           .then(async (sent) => {
             if (!isTaskCreationAccepted(sent) || !isSubmittedDraftCurrent()) {
+              if (
+                submittedFollowUpMessageId &&
+                pendingFollowUpSubmissionRef.current?.messageId === submittedFollowUpMessageId
+              ) {
+                pendingFollowUpSubmissionRef.current = null;
+              }
               return;
             }
             // Clear the durable draft before clearing the local input. Task
@@ -7468,6 +7764,12 @@ function MainContentComponent({
             // clear is in flight; clearing local state first lets the still
             // persisted draft hydrate the just-sent text back into the box.
             await clearAcceptedComposer();
+            if (
+              submittedFollowUpMessageId &&
+              pendingFollowUpSubmissionRef.current?.messageId === submittedFollowUpMessageId
+            ) {
+              pendingFollowUpSubmissionRef.current = null;
+            }
           })
           .catch(() => {
             // The primary submission handler restores the draft and reports the error.
@@ -8510,16 +8812,18 @@ function MainContentComponent({
   }, [botDeeplink, cleanedDisplayPrompt, task, taskWorkingDirectory]);
   const botTranscriptMarkdown = useMemo(() => {
     if (!task || !isBotConversation) return taskMarkdown;
-    const transcriptRows = events
+    const transcriptRows = filterBotConversationTranscriptEvents(events)
       .map((event) => {
         const type = getEffectiveTaskEventType(event);
         if (type === "user_message") {
           const message = getUserEventDisplayMessage(event);
-          return message ? `### You\n\n${message}` : "";
+          const speaker = getBotTranscriptSpeaker(event);
+          return message ? `### ${speaker}\n\n${message}` : "";
         }
         if (type === "assistant_message" || type === "task_completed") {
           const message = getAssistantOrCompletionText(event);
-          return message ? `### ${botName || "Bot"}\n\n${message}` : "";
+          const displayMessage = formatAgentMessageProtocolForDisplay(message);
+          return displayMessage ? `### ${botName || "Bot"}\n\n${displayMessage}` : "";
         }
         return "";
       })
@@ -8931,15 +9235,72 @@ function MainContentComponent({
   );
 
   // Welcome/Empty state
+  const calmAccess: CalmAccessMenuProps = {
+    label: selectedAccessProfileLabel,
+    selectedId: selectedProfileId,
+    isFullAccess: selectedProfileId === BUILTIN_ACCESS_PROFILE_IDS.fullAccess,
+    options: [...BUILTIN_ACCESS_PROFILES, ...accessProfiles].map((profile) => ({
+      id: profile.id,
+      label: profile.label || getAccessProfileLabel(profile.id),
+      description: getAccessProfilePresentation(profile, approvalPromptsEnabled).description,
+      danger: profile.id === BUILTIN_ACCESS_PROFILE_IDS.fullAccess,
+    })),
+    onSelect: (id) => handlePermissionProfileSelect(id as AccessProfileId),
+    onConfigure: () => onOpenSettings?.("system"),
+  };
+
+  const calmGreeting = agentContext.userName
+    ? `Hi ${agentContext.userName}, how can I help?`
+    : agentContext.getMessage("welcomeSubtitle");
+
+  const renderCalmSuggestionChips = () => {
+    const visible = showAllCalmChips ? calmSuggestionCards : calmSuggestionCards.slice(0, 3);
+    return (
+      <div className="calm-chips" aria-label="Suggestions">
+        {visible.map((card) => (
+          <button
+            key={card.id}
+            type="button"
+            className="calm-chip"
+            title={card.desc}
+            onClick={() => {
+              if (card.action.type === "prompt") handleQuickAction(card.action.prompt);
+              else onOpenSettings?.(card.action.tab);
+              promptInputRef.current?.focus();
+            }}
+          >
+            {card.title}
+          </button>
+        ))}
+        {calmSuggestionCards.length > 3 && (
+          <button
+            type="button"
+            className="calm-chip calm-chip-more"
+            onClick={() => setShowAllCalmChips((value) => !value)}
+            aria-label={showAllCalmChips ? "Show fewer suggestions" : "Show more suggestions"}
+            aria-expanded={showAllCalmChips}
+          >
+            {showAllCalmChips ? "Less" : "…"}
+          </button>
+        )}
+      </div>
+    );
+  };
+
   if (!task) {
     return (
-      <div className="main-content">
+      <div className={`main-content${isCalm ? " calm-main calm-welcome" : ""}`}>
         <div className="main-body welcome-view">
           <div
             className={`welcome-content cli-style${uiDensity === "focused" ? " welcome-content-focused" : ""}`}
           >
+            {isCalm && (
+              <div className="calm-hero">
+                <h1 className="calm-greeting">{calmGreeting}</h1>
+              </div>
+            )}
             {/* Logo */}
-            {uiDensity === "focused" ? (
+            {isCalm ? null : uiDensity === "focused" ? (
               <div className="welcome-header-focused modern-only">
                 <img
                   src="./cowork-os-sl-dark-logo.png"
@@ -8972,9 +9333,19 @@ function MainContentComponent({
               </div>
             )}
 
-            <p className="welcome-positioning modern-only">
-              Your AI super app, powered by the models you choose.
-            </p>
+            {!isCalm && (
+              <p className="welcome-positioning modern-only">
+                An open desktop for getting work done with the AI you choose.
+              </p>
+            )}
+
+            {import.meta.env.VITE_FIRST_TASK_BETA === "1" && onFirstTaskReady && onOpenWebArtifact && onOpenSettings && (
+              <FirstTaskCard
+                onTaskReady={onFirstTaskReady}
+                onOpenBrief={onOpenWebArtifact}
+                onOpenSettings={() => onOpenSettings("llm")}
+              />
+            )}
 
             <div className="terminal-only">
               <div className="welcome-logo">
@@ -9027,7 +9398,7 @@ function MainContentComponent({
             </div>
 
             {/* Quick Start */}
-            <div className="cli-commands">
+            <div className="cli-commands" hidden={isCalm}>
               {uiDensity !== "focused" && (
                 <div className="cli-commands-header">
                   <span className="cli-prompt">&gt;</span>
@@ -9301,6 +9672,15 @@ function MainContentComponent({
                   >
                     <Plus size={24} aria-hidden="true" />
                   </button>
+                  {isCalm && (
+                    <>
+                      <CalmModeToggle
+                        selection={displayedInteractionMode}
+                        onChange={setInteractionMode}
+                      />
+                      <CalmAccessMenu access={calmAccess} placement="up" />
+                    </>
+                  )}
                   <div className="permission-dropdown-container" ref={permissionDropdownRef}>
                     <button
                       type="button"
@@ -9325,74 +9705,75 @@ function MainContentComponent({
                       <span>{selectedAccessProfileLabel}</span>
                       <ChevronDown size={16} aria-hidden="true" />
                     </button>
-                    {profileConstraintNotice && (
-                      <span className="permission-access-constraint" role="status">
-                        {profileConstraintNotice}
-                      </span>
-                    )}
                     {showPermissionDropdown && (
                       <div
                         className="permission-access-dropdown"
                         role="menu"
                         aria-label="Permission access profiles"
                       >
-                        {BUILTIN_ACCESS_PROFILES.map((profile) => (
-                          <button
-                            key={profile.id}
-                            type="button"
-                            className={`permission-access-option ${
-                              profile.id === BUILTIN_ACCESS_PROFILE_IDS.fullAccess ? "danger" : ""
-                            } ${selectedProfileId === profile.id ? "active" : ""}`}
-                            onClick={() => {
-                              handlePermissionProfileSelect(profile.id);
-                            }}
-                            role="menuitemradio"
-                            aria-checked={selectedProfileId === profile.id}
-                            title={profile.description}
-                          >
-                            {profile.id === BUILTIN_ACCESS_PROFILE_IDS.fullAccess ? (
-                              <ShieldAlert size={16} aria-hidden="true" />
-                            ) : (
-                              <ShieldCheck size={16} aria-hidden="true" />
-                            )}
-                            <span className="permission-access-option-copy">
-                              <span className="permission-access-option-title">
-                                {profile.label}
+                        {BUILTIN_ACCESS_PROFILES.map((profile) => {
+                          const presentation = getAccessProfilePresentation(
+                            profile,
+                            approvalPromptsEnabled,
+                          );
+                          return (
+                            <button
+                              key={profile.id}
+                              type="button"
+                              className={`permission-access-option ${
+                                profile.id === BUILTIN_ACCESS_PROFILE_IDS.fullAccess ? "danger" : ""
+                              } ${selectedProfileId === profile.id ? "active" : ""}`}
+                              onClick={() => {
+                                handlePermissionProfileSelect(profile.id);
+                              }}
+                              role="menuitemradio"
+                              aria-checked={selectedProfileId === profile.id}
+                              title={presentation.description}
+                            >
+                              {profile.id === BUILTIN_ACCESS_PROFILE_IDS.fullAccess ? (
+                                <ShieldAlert size={16} aria-hidden="true" />
+                              ) : (
+                                <ShieldCheck size={16} aria-hidden="true" />
+                              )}
+                              <span className="permission-access-option-copy">
+                                <span className="permission-access-option-title">
+                                  {profile.label}
+                                </span>
                               </span>
-                              <span className="permission-access-option-description">
-                                {profile.description}
-                              </span>
-                            </span>
-                          </button>
-                        ))}
+                            </button>
+                          );
+                        })}
                         {accessProfiles.length > 0 && (
                           <div className="permission-access-custom-label">Custom profiles</div>
                         )}
-                        {accessProfiles.map((profile) => (
-                          <button
-                            key={profile.id}
-                            type="button"
-                            className={`permission-access-option ${
-                              selectedProfileId === profile.id ? "active" : ""
-                            }`}
-                            onClick={() => {
-                              handlePermissionProfileSelect(profile.id);
-                            }}
-                            role="menuitemradio"
-                            aria-checked={selectedProfileId === profile.id}
-                            title={profile.description}
-                          >
-                            <SlidersHorizontal size={16} aria-hidden="true" />
-                            <span className="permission-access-option-copy">
-                              <span className="permission-access-option-title">
-                                {profile.label || getAccessProfileLabel(profile.id)}
+                        {accessProfiles.map((profile) => {
+                          const presentation = getAccessProfilePresentation(
+                            profile,
+                            approvalPromptsEnabled,
+                          );
+                          return (
+                            <button
+                              key={profile.id}
+                              type="button"
+                              className={`permission-access-option ${
+                                selectedProfileId === profile.id ? "active" : ""
+                              }`}
+                              onClick={() => {
+                                handlePermissionProfileSelect(profile.id);
+                              }}
+                              role="menuitemradio"
+                              aria-checked={selectedProfileId === profile.id}
+                              title={presentation.description}
+                            >
+                              <SlidersHorizontal size={16} aria-hidden="true" />
+                              <span className="permission-access-option-copy">
+                                <span className="permission-access-option-title">
+                                  {profile.label || getAccessProfileLabel(profile.id)}
+                                </span>
                               </span>
-                              <span className="permission-access-option-description">
-                                {profile.description}
-                              </span>
-                            </span>
-                          </button>
-                        ))}
+                            </button>
+                          );
+                        })}
                         <button
                           type="button"
                           className="permission-access-option"
@@ -9407,72 +9788,58 @@ function MainContentComponent({
                             <span className="permission-access-option-title">
                               Configure custom profiles
                             </span>
-                            <span className="permission-access-option-description">
-                              Define sandbox, filesystem, network, and approval rules in Settings.
-                            </span>
                           </span>
                         </button>
                       </div>
                     )}
                   </div>
-                  {uiDensity === "focused" ? null : (
+                  {uiDensity === "focused" && !isCalm ? null : (
                     <>
-                      <div className="workspace-dropdown-container" ref={workspaceDropdownRef}>
-                        <button className="folder-selector" onClick={handleWorkspaceDropdownToggle}>
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
+                      {!isCalm && (
+                        <div className="workspace-dropdown-container" ref={workspaceDropdownRef}>
+                          <button
+                            className="folder-selector"
+                            onClick={handleWorkspaceDropdownToggle}
                           >
-                            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
-                          </svg>
-                          <span>
-                            {workspace?.isTemp || isTempWorkspaceId(workspace?.id)
-                              ? "Work in a folder"
-                              : workspace?.name || "Work in a folder"}
-                          </span>
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            className={showWorkspaceDropdown ? "chevron-up" : ""}
-                          >
-                            <path d="M6 9l6 6 6-6" />
-                          </svg>
-                        </button>
-                        {showWorkspaceDropdown && (
-                          <div className="workspace-dropdown">
-                            {workspacesList.length > 0 && (
-                              <>
-                                <div className="workspace-dropdown-header">Recent Folders</div>
-                                <div className="workspace-dropdown-list">
-                                  {workspacesList.slice(0, 10).map((w) => (
-                                    <button
-                                      key={w.id}
-                                      className={`workspace-dropdown-item ${workspace?.id === w.id ? "active" : ""}`}
-                                      onClick={() => handleWorkspaceSelect(w)}
-                                    >
-                                      <svg
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
+                            </svg>
+                            <span>
+                              {workspace?.isTemp || isTempWorkspaceId(workspace?.id)
+                                ? "Work in a folder"
+                                : workspace?.name || "Work in a folder"}
+                            </span>
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              className={showWorkspaceDropdown ? "chevron-up" : ""}
+                            >
+                              <path d="M6 9l6 6 6-6" />
+                            </svg>
+                          </button>
+                          {showWorkspaceDropdown && (
+                            <div className="workspace-dropdown">
+                              {workspacesList.length > 0 && (
+                                <>
+                                  <div className="workspace-dropdown-header">Recent Folders</div>
+                                  <div className="workspace-dropdown-list">
+                                    {workspacesList.slice(0, 10).map((w) => (
+                                      <button
+                                        key={w.id}
+                                        className={`workspace-dropdown-item ${workspace?.id === w.id ? "active" : ""}`}
+                                        onClick={() => handleWorkspaceSelect(w)}
                                       >
-                                        <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
-                                      </svg>
-                                      <div className="workspace-item-info">
-                                        <span className="workspace-item-name">{w.name}</span>
-                                        <span className="workspace-item-path">{w.path}</span>
-                                      </div>
-                                      {workspace?.id === w.id && (
                                         <svg
                                           width="14"
                                           height="14"
@@ -9480,36 +9847,52 @@ function MainContentComponent({
                                           fill="none"
                                           stroke="currentColor"
                                           strokeWidth="2"
-                                          className="check-icon"
                                         >
-                                          <path d="M20 6L9 17l-5-5" />
+                                          <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
                                         </svg>
-                                      )}
-                                    </button>
-                                  ))}
-                                </div>
-                                <div className="workspace-dropdown-divider" />
-                              </>
-                            )}
-                            <button
-                              className="workspace-dropdown-item new-folder"
-                              onClick={handleSelectNewFolder}
-                            >
-                              <svg
-                                width="14"
-                                height="14"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
+                                        <div className="workspace-item-info">
+                                          <span className="workspace-item-name">{w.name}</span>
+                                          <span className="workspace-item-path">{w.path}</span>
+                                        </div>
+                                        {workspace?.id === w.id && (
+                                          <svg
+                                            width="14"
+                                            height="14"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            className="check-icon"
+                                          >
+                                            <path d="M20 6L9 17l-5-5" />
+                                          </svg>
+                                        )}
+                                      </button>
+                                    ))}
+                                  </div>
+                                  <div className="workspace-dropdown-divider" />
+                                </>
+                              )}
+                              <button
+                                className="workspace-dropdown-item new-folder"
+                                onClick={handleSelectNewFolder}
                               >
-                                <path d="M12 5v14M5 12h14" />
-                              </svg>
-                              <span>Work in another folder...</span>
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                >
+                                  <path d="M12 5v14M5 12h14" />
+                                </svg>
+                                <span>Work in another folder...</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                       <div className="overflow-menu-container" ref={overflowMenuRef}>
                         <button
                           ref={overflowToggleBtnRef}
@@ -9957,7 +10340,7 @@ function MainContentComponent({
                 />
               )}
             </div>
-            {uiDensity === "focused" && (
+            {(uiDensity === "focused" || isCalm) && (
               <div className="input-status-text welcome-input-status">
                 <div className="input-status-left">
                   <div className="workspace-dropdown-container" ref={workspaceDropdownRef}>
@@ -10049,7 +10432,7 @@ function MainContentComponent({
                   </div>
                 </div>
                 <div className="input-status-right">
-                  <div className="input-status-mode-wrap" ref={modeDropdownRef}>
+                  <div className="input-status-mode-wrap" ref={modeDropdownRef} hidden={isCalm}>
                     <InteractionModePicker
                       selection={displayedInteractionMode}
                       open={showModeDropdown}
@@ -10198,12 +10581,27 @@ function MainContentComponent({
                 </div>
               </div>
             )}
+            {isCalm && renderCalmSuggestionChips()}
+            {isCalm && agentContext.agentName === "CoWork" && !agentContext.isLoading && (
+              <div className="calm-setup-row">
+                <button type="button" className="calm-setup-pill" onClick={openCalmAgentSetup}>
+                  <CalmAgentAvatar size={22} />
+                  <span>Set up your agent</span>
+                </button>
+              </div>
+            )}
+            {isCalm && (
+              <CalmBriefingCard
+                workspaceId={workspace?.id}
+                accessLabel={selectedAccessProfileLabel}
+              />
+            )}
             {renderWelcomeTaskSuggestions()}
           </div>
         </div>
 
         {/* Suggestion hint in focused mode */}
-        {uiDensity === "focused" && !task && (
+        {uiDensity === "focused" && !task && !isCalm && (
           <p className="welcome-hint">
             Try: &quot;Help me organize my project files&quot; or &quot;Write a summary report
             about...&quot;
@@ -10311,7 +10709,24 @@ function MainContentComponent({
 
   // Task view
   return (
-    <div className={`main-content${isBotConversation ? " bot-conversation" : ""}`}>
+    <div
+      className={`main-content${isBotConversation ? " bot-conversation" : ""}${
+        isCalm ? " calm-main calm-task" : ""
+      }`}
+    >
+      {import.meta.env.VITE_FIRST_TASK_BETA === "1" && task?.source === "sample" && onFirstTaskReady && onOpenWebArtifact && onOpenSettings && (
+        <FirstTaskCard
+          taskId={task.id}
+          onTaskReady={onFirstTaskReady}
+          onOpenBrief={onOpenWebArtifact}
+          onOpenSettings={() => onOpenSettings("llm")}
+          onRevise={(prompt) => onSendMessage(prompt)}
+          onUseOwnFiles={onChangeWorkspace}
+        />
+      )}
+      {import.meta.env.VITE_FIRST_TASK_BETA === "1" && task?.status === "completed" && task.source !== "sample" && !task.parentTaskId && !task.evalCaseId && hasTaskOutputs(taskOutputSummary) && onViewTaskOutputs && (
+        <RealWorkFeedback taskId={task.id} primaryOutputPath={taskOutputSummary.primaryOutputPath} onViewOutputs={onViewTaskOutputs} />
+      )}
       {/* Header */}
       <div className="main-header">
         {!isBotConversation && (task?.parentTaskId || task?.branchFromTaskId) && onSelectTask && (
@@ -10716,6 +11131,7 @@ function MainContentComponent({
           selectedConversationId={task?.id}
           conversations={botConversations}
           loading={isLoadingBotConversations}
+          selectedConversationProjection={conversationProjection}
           onSelectConversation={onSelectBotConversation || onSelectTask || undefined}
           onNewConversation={onNewBotConversation}
         />
@@ -10725,6 +11141,18 @@ function MainContentComponent({
         <div className="task-content">
           {/* Always anchor the initial user prompt above the timeline. */}
           {initialPromptBubble}
+          {isBotConversation && task && (
+            <BotCollaborationHeader
+              task={task}
+              botName={botName || "Bot"}
+              events={events}
+              childEvents={childEvents}
+              childTasks={childTasks}
+              botConversations={botConversations}
+              onOpenBotConversation={onSelectBotConversation}
+              conversationProjection={conversationProjection}
+            />
+          )}
           {showLegalWorkflowCard &&
             (legalWorkflowInvocation.kind === "demand-intake" ? (
               <LegalDemandIntakePromptCard
@@ -10771,127 +11199,126 @@ function MainContentComponent({
           )}
 
           {/* Timeline controls - show right after original prompt */}
-          {(!isBotConversation || !isChatTask) &&
-            (hasNonConversationEvents || isTaskWorking || isTaskFinished) && (
-              <div className="timeline-controls">
-                <div className="timeline-controls-status">
-                  {canToggleCompletedTranscript ? (
-                    <button
-                      type="button"
-                      className="timeline-controls-label timeline-controls-label-button with-duration"
-                      onClick={toggleCompletedTranscriptMode}
-                      aria-expanded={transcriptMode !== "delivery"}
-                      title={
-                        transcriptMode === "delivery"
-                          ? "Show full timeline"
-                          : "Show only final output"
-                      }
-                    >
-                      <span>{workDurationLabel}</span>
-                      <span className="timeline-controls-label-chevron" aria-hidden="true">
-                        {transcriptMode === "delivery" ? ">" : "v"}
-                      </span>
-                    </button>
-                  ) : liveActivityHeaderVisible ? null : (
-                    <span
-                      className={`timeline-controls-label ${
-                        isTaskWorking || isTaskFinished ? "with-duration" : ""
-                      }`}
-                    >
-                      {workDurationLabel}
-                    </span>
-                  )}
-                  {isTaskWorking && continuationStatusChip && (
-                    <span className="header-continuation-chip" title="Adaptive continuation status">
-                      <span>{continuationStatusChip.window}</span>
-                      {continuationStatusChip.progress && (
-                        <span className="header-continuation-chip-sep">·</span>
-                      )}
-                      {continuationStatusChip.progress && (
-                        <span>{continuationStatusChip.progress}</span>
-                      )}
-                      {continuationStatusChip.loopRisk && (
-                        <span className="header-continuation-chip-sep">·</span>
-                      )}
-                      {continuationStatusChip.loopRisk && (
-                        <span>{continuationStatusChip.loopRisk}</span>
-                      )}
-                    </span>
-                  )}
-                </div>
-                <div className="timeline-controls-actions">
+          {!isBotConversation && (hasNonConversationEvents || isTaskWorking || isTaskFinished) && (
+            <div className="timeline-controls">
+              <div className="timeline-controls-status">
+                {canToggleCompletedTranscript ? (
                   <button
                     type="button"
-                    className="verbose-switch"
-                    role="switch"
-                    aria-checked={verboseSteps}
-                    aria-label={`Verbose mode ${verboseSteps ? "on" : "off"}`}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      toggleVerboseSteps();
-                    }}
-                    title={`Verbose mode ${verboseSteps ? "on" : "off"} (click to toggle)`}
-                  >
-                    <span className="goal-mode-toggle-switch-content">
-                      <span className="goal-mode-toggle-text">
-                        <span className="verbose-switch-label">Verbose</span>
-                      </span>
-                      <span
-                        className={`goal-mode-switch-track ${verboseSteps ? "on" : ""}`}
-                        aria-hidden="true"
-                      >
-                        <span className="goal-mode-switch-thumb" />
-                      </span>
-                    </span>
-                  </button>
-                  <button
-                    className={`verbose-toggle-btn ${codePreviewsExpanded ? "active" : ""}`}
-                    onClick={toggleCodePreviews}
+                    className="timeline-controls-label timeline-controls-label-button with-duration"
+                    onClick={toggleCompletedTranscriptMode}
+                    aria-expanded={transcriptMode !== "delivery"}
                     title={
-                      codePreviewsExpanded
-                        ? "Collapse code previews by default"
-                        : "Expand code previews by default"
+                      transcriptMode === "delivery"
+                        ? "Show full timeline"
+                        : "Show only final output"
                     }
                   >
-                    {codePreviewsExpanded ? "Code: Open" : "Code: Collapsed"}
+                    <span>{workDurationLabel}</span>
+                    <span className="timeline-controls-label-chevron" aria-hidden="true">
+                      {transcriptMode === "delivery" ? ">" : "v"}
+                    </span>
                   </button>
-                  {replayControls &&
-                    !replayControls.isReplayMode &&
-                    (task?.status === "completed" ||
-                      task?.status === "failed" ||
-                      task?.status === "cancelled") && (
-                      <button
-                        className="replay-entry-btn"
-                        onClick={replayControls.startReplay}
-                        title="Replay this session step by step"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polygon points="5 3 19 12 5 21 5 3" />
-                        </svg>
-                        Replay
-                      </button>
+                ) : liveActivityHeaderVisible ? null : (
+                  <span
+                    className={`timeline-controls-label ${
+                      isTaskWorking || isTaskFinished ? "with-duration" : ""
+                    }`}
+                  >
+                    {workDurationLabel}
+                  </span>
+                )}
+                {isTaskWorking && continuationStatusChip && (
+                  <span className="header-continuation-chip" title="Adaptive continuation status">
+                    <span>{continuationStatusChip.window}</span>
+                    {continuationStatusChip.progress && (
+                      <span className="header-continuation-chip-sep">·</span>
                     )}
-                  {replayControls?.isReplayMode && !replayControls.areControlsVisible && (
+                    {continuationStatusChip.progress && (
+                      <span>{continuationStatusChip.progress}</span>
+                    )}
+                    {continuationStatusChip.loopRisk && (
+                      <span className="header-continuation-chip-sep">·</span>
+                    )}
+                    {continuationStatusChip.loopRisk && (
+                      <span>{continuationStatusChip.loopRisk}</span>
+                    )}
+                  </span>
+                )}
+              </div>
+              <div className="timeline-controls-actions">
+                <button
+                  type="button"
+                  className="verbose-switch"
+                  role="switch"
+                  aria-checked={verboseSteps}
+                  aria-label={`Verbose mode ${verboseSteps ? "on" : "off"}`}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    toggleVerboseSteps();
+                  }}
+                  title={`Verbose mode ${verboseSteps ? "on" : "off"} (click to toggle)`}
+                >
+                  <span className="goal-mode-toggle-switch-content">
+                    <span className="goal-mode-toggle-text">
+                      <span className="verbose-switch-label">Verbose</span>
+                    </span>
+                    <span
+                      className={`goal-mode-switch-track ${verboseSteps ? "on" : ""}`}
+                      aria-hidden="true"
+                    >
+                      <span className="goal-mode-switch-thumb" />
+                    </span>
+                  </span>
+                </button>
+                <button
+                  className={`verbose-toggle-btn ${codePreviewsExpanded ? "active" : ""}`}
+                  onClick={toggleCodePreviews}
+                  title={
+                    codePreviewsExpanded
+                      ? "Collapse code previews by default"
+                      : "Expand code previews by default"
+                  }
+                >
+                  {codePreviewsExpanded ? "Code: Open" : "Code: Collapsed"}
+                </button>
+                {replayControls &&
+                  !replayControls.isReplayMode &&
+                  (task?.status === "completed" ||
+                    task?.status === "failed" ||
+                    task?.status === "cancelled") && (
                     <button
                       className="replay-entry-btn"
-                      onClick={replayControls.showControls}
-                      title="Show replay controls"
+                      onClick={replayControls.startReplay}
+                      title="Replay this session step by step"
                     >
-                      <SlidersHorizontal aria-hidden="true" />
-                      Replay controls
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                      Replay
                     </button>
                   )}
-                </div>
+                {replayControls?.isReplayMode && !replayControls.areControlsVisible && (
+                  <button
+                    className="replay-entry-btn"
+                    onClick={replayControls.showControls}
+                    title="Show replay controls"
+                  >
+                    <SlidersHorizontal aria-hidden="true" />
+                    Replay controls
+                  </button>
+                )}
               </div>
-            )}
+            </div>
+          )}
 
           {/* Replay controls bar — shown when replay mode is active */}
           {replayControls?.isReplayMode && replayControls.areControlsVisible && (
@@ -10899,9 +11326,11 @@ function MainContentComponent({
           )}
 
           {conversationFlow}
-          {!isBotConversation && (
-            <TaskSessionLineageFooter task={task} onSelectTask={onSelectTask} />
-          )}
+          <TaskSessionLineageFooter
+            task={task}
+            onSelectTask={onSelectTask}
+            isBotConversation={isBotConversation}
+          />
         </div>
       </div>
 
@@ -10964,7 +11393,8 @@ function MainContentComponent({
           onDrop={handleDrop}
         >
           {/* Collaborative agent lines — extension of input box, inside same container */}
-          {(collaborativeRun || childTasks.length > 0) &&
+          {!isBotConversation &&
+            (collaborativeRun || childTasks.length > 0) &&
             (onOpenChildAgentSidebar || onSelectChildTask) && (
               <CollaborativeAgentLines
                 collaborativeRun={collaborativeRun}
@@ -11090,22 +11520,33 @@ function MainContentComponent({
             <div className="task-status-banner task-status-banner-blocked">
               <div className="task-status-banner-content">
                 <strong>
-                  {task.terminalStatus === "awaiting_approval"
-                    ? "Blocked - needs approval"
-                    : task.terminalStatus === "awaiting_verification"
-                      ? "Verifying before completion"
-                      : "Blocked - waiting on you"}
+                  {isBotHandoffWaiting
+                    ? "Waiting on a teammate"
+                    : task.terminalStatus === "awaiting_approval"
+                      ? "Blocked - needs approval"
+                      : task.terminalStatus === "awaiting_verification"
+                        ? "Verifying before completion"
+                        : "Blocked - waiting on you"}
                 </strong>
-                {latestApprovalEvent?.payload?.approval?.description &&
+                {isBotHandoffWaiting ? (
+                  <span className="task-status-banner-detail">
+                    The conversation will continue when the teammate replies.
+                  </span>
+                ) : (
+                  latestApprovalEvent?.payload?.approval?.description &&
                   task.terminalStatus === "awaiting_approval" && (
                     <span className="task-status-banner-detail">
                       {latestApprovalEvent.payload.approval.description}
                     </span>
-                  )}
+                  )
+                )}
               </div>
             </div>
           )}
-          {task.status === "cancelled" && (
+          {shouldShowCancelledTaskBanner({
+            taskStatus: task.status,
+            isBotConversation,
+          }) && (
             <div className="task-status-banner task-status-banner-cancelled">
               <div className="task-status-banner-content">
                 <strong>Cancelled</strong>
@@ -11140,7 +11581,7 @@ function MainContentComponent({
                 </div>
               </div>
             )}
-          {taskStatusStripEnabled && (
+          {taskStatusStripEnabled && !isBotConversation && (
             <TaskStatusStrip
               model={taskStatusStripModel}
               activityGroups={statusTaskEventUi.activityGroups}
@@ -11148,6 +11589,17 @@ function MainContentComponent({
               markdownComponents={markdownComponents}
               replay={isReplayMode}
               telemetryEnabled={rendererPerfLoggingEnabled}
+              leading={
+                isCalm ? (
+                  <span className="calm-strip-agent">
+                    <CalmAgentAvatar
+                      size={22}
+                      animated={taskStatusStripModel.state === "working"}
+                    />
+                    <span className="calm-strip-agent-name">{agentContext.agentName}</span>
+                  </span>
+                ) : undefined
+              }
               onOpenOutput={(outputPath) => {
                 if (onViewTaskOutputs) {
                   onViewTaskOutputs(task.id, outputPath);
@@ -11198,6 +11650,15 @@ function MainContentComponent({
             >
               <Plus size={24} aria-hidden="true" />
             </button>
+            {isCalm && (
+              <>
+                <CalmModeToggle
+                  selection={displayedInteractionMode}
+                  onChange={setInteractionMode}
+                />
+                <CalmAccessMenu access={calmAccess} placement="up" />
+              </>
+            )}
             {uiDensity === "focused" && (
               <div className="workspace-dropdown-container" ref={workspaceDropdownRef}>
                 {showWorkspaceDropdown && (
@@ -11514,7 +11975,7 @@ function MainContentComponent({
             </button>
           </div>
           <div className="input-status-right">
-            <div className="input-status-mode-wrap" ref={modeDropdownRef}>
+            <div className="input-status-mode-wrap" ref={modeDropdownRef} hidden={isCalm}>
               <InteractionModePicker
                 selection={displayedInteractionMode}
                 open={showModeDropdown}
@@ -11695,6 +12156,7 @@ function areMainContentPropsEqual(prev: MainContentProps, next: MainContentProps
     prev.sharedTaskEventUi === next.sharedTaskEventUi &&
     prev.botConversations === next.botConversations &&
     prev.isLoadingBotConversations === next.isLoadingBotConversations &&
+    prev.conversationProjection === next.conversationProjection &&
     prev.onSelectBotConversation === next.onSelectBotConversation &&
     prev.onNewBotConversation === next.onNewBotConversation &&
     prev.childTasks === next.childTasks &&

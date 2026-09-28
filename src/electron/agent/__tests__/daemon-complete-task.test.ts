@@ -28,6 +28,7 @@ function createDaemonLike() {
     },
     eventRepo: {
       findByTaskId: vi.fn().mockReturnValue([]),
+      updatePayloadById: vi.fn(),
     },
     approvalRepo: {
       update: vi.fn(),
@@ -298,6 +299,68 @@ describe("AgentDaemon.completeTask", () => {
     clearTimeout(timeoutHandle);
   });
 
+  it("reconciles a persisted completed bot row before accepting terminal state", async () => {
+    const daemonLike = createDaemonLike();
+    const completedTask = {
+      id: "task-1",
+      title: "Atlas",
+      status: "completed",
+      workspaceId: "workspace-1",
+      agentType: "main",
+      agentConfig: { botConversation: true, botTeamId: "team-1" },
+    };
+    daemonLike.taskRepo.findById.mockImplementation((taskId: string) =>
+      taskId === "teammate-1"
+        ? {
+            id: "teammate-1",
+            title: "Scribe",
+            status: "executing",
+            workspaceId: "workspace-1",
+            agentType: "main",
+            agentConfig: { botConversation: true, botTeamId: "team-1" },
+          }
+        : completedTask,
+    );
+    daemonLike.eventRepo.findByTaskId.mockReturnValue([
+      {
+        id: "handoff-1",
+        taskId: "task-1",
+        timestamp: 1,
+        type: "agent_message",
+        payload: {
+          messageId: "handoff-1",
+          senderType: "agent",
+          deliveryMode: "message",
+          deliveryStatus: "delivered",
+          botTeamId: "team-1",
+          targetTaskId: "teammate-1",
+          recipientLabel: "Scribe",
+          message: "Find current opportunities.",
+        },
+      },
+    ]);
+
+    await AgentDaemon.prototype.completeTask.call(daemonLike, "task-1", "Partial result");
+
+    expect(daemonLike.taskRepo.update).toHaveBeenCalledWith(
+      "task-1",
+      expect.objectContaining({
+        status: "blocked",
+        error: "Waiting for Scribe to reply before finishing this conversation.",
+      }),
+    );
+    expect(daemonLike.logEvent).toHaveBeenCalledWith(
+      "task-1",
+      "task_status",
+      expect.objectContaining({ botHandoffWaiting: true }),
+    );
+    expect(daemonLike.logEvent).not.toHaveBeenCalledWith(
+      "task-1",
+      "task_completed",
+      expect.anything(),
+    );
+  });
+
   it("ignores late failures after the task is already completed", () => {
     const taskState: Any = {
       id: "task-1",
@@ -347,6 +410,19 @@ describe("AgentDaemon.completeTask", () => {
         outputSummary,
       }),
     );
+  });
+
+  it("does not learn from a completed synthetic sample task", () => {
+    const daemonLike = createDaemonLike();
+    daemonLike.taskRepo.findById.mockReturnValue({
+      id: "task-1", title: "Synthetic sample", status: "executing",
+      workspaceId: "workspace-1", agentType: "main", source: "sample",
+    });
+    (PersonalityManager.recordTaskCompleted as Any).mockClear();
+
+    AgentDaemon.prototype.completeTask.call(daemonLike, "task-1", "done", { terminalStatus: "ok" });
+
+    expect(PersonalityManager.recordTaskCompleted).not.toHaveBeenCalled();
   });
 
   it("persists semanticSummary and verification metadata on completion when provided", () => {
@@ -545,6 +621,17 @@ describe("AgentDaemon.completeTask", () => {
     expect(keyClaims).toEqual([]);
   });
 
+  it("keeps factual claims on separate unpunctuated list items independent", () => {
+    const daemonLike = createDaemonLike();
+
+    const keyClaims = (AgentDaemon.prototype as Any).extractKeyClaimSentences.call(
+      daemonLike,
+      ["- The report has 4 files", "- The plan has 2 tasks"].join("\n"),
+    );
+
+    expect(keyClaims).toEqual(["The report has 4 files", "The plan has 2 tasks"]);
+  });
+
   it("still extracts concrete dated or measured statements as key claims", () => {
     const daemonLike = createDaemonLike();
 
@@ -554,6 +641,59 @@ describe("AgentDaemon.completeTask", () => {
     );
 
     expect(keyClaims).toEqual(["The due date is 2026-04-13 and the exported file is 585 bytes."]);
+  });
+
+  it("keeps markdown table rows from collapsing into one factual claim", () => {
+    const daemonLike = createDaemonLike();
+
+    const keyClaims = (AgentDaemon.prototype as Any).extractKeyClaimSentences.call(
+      daemonLike,
+      [
+        "## Validated run-of-show",
+        "| Time | Duration | Segment | Owner |",
+        "|---|---|---|---|",
+        "| 10:00–10:03 | 3 minutes | Welcome | Maya |",
+        "| 10:03–10:08 | 5 minutes | Introduction | Maya |",
+        "The agenda is 45 minutes long.",
+      ].join("\n"),
+    );
+
+    expect(keyClaims).toEqual(["The agenda is 45 minutes long."]);
+  });
+
+  it("does not downgrade low-risk planning work when explicit evidence is not required", () => {
+    const daemonLike = createDaemonLike();
+    daemonLike.taskRepo.findById.mockReturnValue({
+      id: "task-1",
+      title: "Webinar run-of-show",
+      prompt: "Create a 45-minute webinar plan using the supplied speaker and topic details.",
+      status: "executing",
+      workspaceId: "workspace-1",
+      parentTaskId: "parent-task",
+      agentType: "sub",
+      agentConfig: { reviewPolicy: "balanced" },
+    });
+    daemonLike.hasEvidenceForKeyClaims.mockReturnValue({
+      passed: false,
+      keyClaims: ["The agenda is 45 minutes long."],
+    });
+
+    AgentDaemon.prototype.completeTask.call(
+      daemonLike,
+      "task-1",
+      "The agenda is 45 minutes long.",
+    );
+
+    expect(daemonLike.taskRepo.update).toHaveBeenCalledWith(
+      "task-1",
+      expect.objectContaining({ status: "completed", terminalStatus: "ok" }),
+    );
+    expect(daemonLike.logEvent).not.toHaveBeenCalledWith(
+      "task-1",
+      "timeline_step_updated",
+      expect.objectContaining({ stepId: "evidence_gate:key_claims", status: "blocked" }),
+    );
+    expect(daemonLike.timelineMetrics.evidenceGateFails).toBe(0);
   });
 
   it("treats successful structured verification evidence as satisfying the key-claim gate", () => {
@@ -581,6 +721,297 @@ describe("AgentDaemon.completeTask", () => {
     });
   });
 
+  it("accepts exact local file claims backed by a successful complete read", () => {
+    const daemonLike = createDaemonLike();
+    const evidenceEvents = [
+      {
+        id: "event-read-file",
+        taskId: "task-1",
+        timestamp: Date.now(),
+        type: "timeline_step_updated",
+        legacyType: "tool_result",
+        schemaVersion: 2,
+        payload: {
+          tool: "read_file",
+          envelope: {
+            toolName: "read_file",
+            status: "success",
+            structuredData: {
+              path: "qa-shell-write-fix-live-20260922.txt",
+              content: "SHELL_WRITE_FIXED",
+              size: 17,
+              truncated: false,
+              window: { start: 0, end: 17, total: 17 },
+            },
+          },
+        },
+      },
+    ];
+
+    const evidenceCheck = (AgentDaemon.prototype as Any).hasEvidenceForKeyClaims.call(
+      daemonLike,
+      "task-1",
+      "The file contains exactly `SHELL_WRITE_FIXED` (17 bytes).",
+      undefined,
+      evidenceEvents,
+    );
+
+    expect(evidenceCheck).toEqual({
+      passed: true,
+      keyClaims: ["The file contains exactly `SHELL_WRITE_FIXED` (17 bytes)."],
+    });
+  });
+
+  it("accepts a readback byte-count claim backed by a successful complete read", () => {
+    const daemonLike = createDaemonLike();
+    const evidenceEvents = [
+      {
+        id: "event-read-file",
+        taskId: "task-1",
+        timestamp: Date.now(),
+        type: "timeline_step_updated",
+        legacyType: "tool_result",
+        schemaVersion: 2,
+        payload: {
+          tool: "read_file",
+          envelope: {
+            toolName: "read_file",
+            status: "success",
+            structuredData: {
+              path: "shell-only-pass.txt",
+              content: "SHELL_ONLY_PASS_OK\n",
+              size: 19,
+              truncated: false,
+              window: { start: 0, end: 19, total: 19 },
+            },
+          },
+        },
+      },
+    ];
+
+    const evidenceCheck = (AgentDaemon.prototype as Any).hasEvidenceForKeyClaims.call(
+      daemonLike,
+      "task-1",
+      "Readback verified it is **19 bytes**.",
+      undefined,
+      evidenceEvents,
+    );
+
+    expect(evidenceCheck).toEqual({
+      passed: true,
+      keyClaims: ["Readback verified it is **19 bytes**."],
+    });
+  });
+
+  it("accepts a rounded calculation when its operands come from a complete file read", () => {
+    const daemonLike = createDaemonLike();
+    const evidenceEvents = [
+      {
+        id: "event-read-file",
+        taskId: "task-1",
+        timestamp: Date.now(),
+        type: "timeline_step_updated",
+        legacyType: "tool_result",
+        schemaVersion: 2,
+        payload: {
+          tool: "read_file",
+          envelope: {
+            toolName: "read_file",
+            status: "success",
+            structuredData: {
+              path: "weekly-active-teams.csv",
+              content: "week,teams\nSep 1,128\nSep 8,134\nSep 15,131\nSep 22,149\n",
+              size: 58,
+              truncated: false,
+              window: { start: 0, end: 58, total: 58 },
+            },
+          },
+        },
+      },
+    ];
+
+    const evidenceCheck = (AgentDaemon.prototype as Any).hasEvidenceForKeyClaims.call(
+      daemonLike,
+      "task-1",
+      "Percent change: (149 − 128) / 128 × 100 = 16.4% increase.",
+      undefined,
+      evidenceEvents,
+    );
+
+    expect(evidenceCheck).toEqual({
+      passed: true,
+      keyClaims: ["Percent change: (149 − 128) / 128 × 100 = 16.4% increase."],
+    });
+  });
+
+  it("rejects calculations with unsupported operands or a result that does not match", () => {
+    const daemonLike = createDaemonLike();
+    const evidenceEvent = {
+      id: "event-read-file",
+      taskId: "task-1",
+      timestamp: Date.now(),
+      type: "timeline_step_updated",
+      legacyType: "tool_result",
+      schemaVersion: 2,
+      payload: {
+        tool: "read_file",
+        envelope: {
+          toolName: "read_file",
+          status: "success",
+          structuredData: {
+            path: "weekly-active-teams.csv",
+            content: "week,teams\nSep 1,128\nSep 8,134\nSep 15,131\nSep 22,149\n",
+            size: 58,
+            truncated: false,
+            window: { start: 0, end: 58, total: 58 },
+          },
+        },
+      },
+    };
+    const check = (claim: string, read = evidenceEvent) =>
+      (AgentDaemon.prototype as Any).hasEvidenceForKeyClaims.call(
+        daemonLike,
+        "task-1",
+        claim,
+        undefined,
+        [read],
+      );
+
+    expect(check("Percent change: (149 − 128) / 128 × 100 = 15.4% increase.").passed).toBe(false);
+    expect(check("Percent change: (149 − 127) / 127 × 100 = 17.3% increase.").passed).toBe(false);
+    expect(
+      check("Percent change: (149 − 128) / 128 × 100 = 16.4% increase.", {
+        ...evidenceEvent,
+        payload: {
+          ...evidenceEvent.payload,
+          envelope: {
+            ...evidenceEvent.payload.envelope,
+            structuredData: {
+              ...evidenceEvent.payload.envelope.structuredData,
+              truncated: true,
+            },
+          },
+        },
+      }).passed,
+    ).toBe(false);
+  });
+
+  it("matches an implicit output reference and requested trailing newline to its file read", () => {
+    const daemonLike = createDaemonLike();
+    const evidenceEvents = [
+      {
+        id: "event-read-file",
+        taskId: "task-1",
+        timestamp: Date.now(),
+        type: "timeline_step_updated",
+        legacyType: "tool_result",
+        schemaVersion: 2,
+        payload: {
+          tool: "read_file",
+          envelope: {
+            toolName: "read_file",
+            status: "success",
+            structuredData: {
+              path: "shell-only-final.txt",
+              content: "SHELL_LEDGER_OK\n",
+              size: 16,
+              truncated: false,
+              window: { start: 0, end: 16, total: 16 },
+            },
+          },
+        },
+      },
+    ];
+
+    const evidenceCheck = (AgentDaemon.prototype as Any).hasEvidenceForKeyClaims.call(
+      daemonLike,
+      "task-1",
+      "Created and verified `shell-only-final.txt`. It contains exactly `SHELL_LEDGER_OK` followed by one newline and is 16 bytes.",
+      undefined,
+      evidenceEvents,
+    );
+
+    expect(evidenceCheck).toEqual({
+      passed: true,
+      keyClaims: ["It contains exactly `SHELL_LEDGER_OK` followed by one newline and is 16 bytes."],
+    });
+  });
+
+  it("does not accept local file claims when the read is incomplete or does not match", () => {
+    const daemonLike = createDaemonLike();
+    const makeReadEvent = (content: string, size: number, truncated = false) => ({
+      id: "event-read-file",
+      taskId: "task-1",
+      timestamp: Date.now(),
+      type: "timeline_step_updated",
+      legacyType: "tool_result",
+      schemaVersion: 2,
+      payload: {
+        tool: "read_file",
+        envelope: {
+          toolName: "read_file",
+          status: "success",
+          structuredData: {
+            path: "qa-shell-write-fix-live-20260922.txt",
+            content,
+            size,
+            truncated,
+            window: { start: 0, end: content.length, total: size },
+          },
+        },
+      },
+    });
+    const check = (claim: string, event: ReturnType<typeof makeReadEvent>) =>
+      (AgentDaemon.prototype as Any).hasEvidenceForKeyClaims.call(
+        daemonLike,
+        "task-1",
+        claim,
+        undefined,
+        [event],
+      );
+
+    expect(
+      check(
+        "The file contains exactly `SHELL_WRITE_FIXED` (17 bytes).",
+        makeReadEvent("SHELL_WRITE_FIXED", 17, true),
+      ).passed,
+    ).toBe(false);
+    expect(
+      check(
+        "The file contains exactly `SHELL_WRITE_FIXED` (17 bytes).",
+        makeReadEvent("OTHER_CONTENT", 13),
+      ).passed,
+    ).toBe(false);
+    expect(
+      check(
+        "The file contains exactly `SHELL_WRITE_FIXED` (17 bytes).",
+        makeReadEvent("SHELL_WRITE_FIXED\n", 17),
+      ).passed,
+    ).toBe(false);
+    const citedRead = makeReadEvent("hello world", 11);
+    expect(
+      check(
+        "The file `qa-shell-write-fix-live-20260922.txt` contains exactly `hello` and is 11 bytes.",
+        citedRead,
+      ).passed,
+    ).toBe(false);
+    expect(
+      check(
+        "The file `qa-shell-write-fix-live-20260922.txt` contains `hello` and is 999 bytes.",
+        citedRead,
+      ).passed,
+    ).toBe(false);
+    expect(
+      check(
+        "The file `qa-shell-write-fix-live-20260922.txt` contains `hello` and is 11 bytes.",
+        citedRead,
+      ).passed,
+    ).toBe(true);
+    expect(check("The due date is 2026-09-22.", makeReadEvent("2026-09-22", 10)).passed).toBe(
+      false,
+    );
+  });
+
   it("accepts markdown-linked source notes as inline evidence for key claims", () => {
     const daemonLike = createDaemonLike();
 
@@ -589,7 +1020,7 @@ describe("AgentDaemon.completeTask", () => {
       "task-1",
       [
         "The exported file is 585 bytes.",
-        "Sources: [dev log](/Users/mesut/Downloads/app/cowork/logs/dev-latest.log:12)",
+        "Sources: [dev log](/Users/alex/Downloads/app/cowork/logs/dev-latest.log:12)",
       ].join("\n"),
     );
 
@@ -618,6 +1049,7 @@ describe("AgentDaemon.completeTask", () => {
       "task-1",
       "The exported file is 585 bytes.",
       verificationEvidenceBundle,
+      expect.any(Array),
     );
   });
 

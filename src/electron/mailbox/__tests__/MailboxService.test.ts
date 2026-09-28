@@ -1722,10 +1722,10 @@ describeWithSqlite("MailboxService", () => {
         (id, provider, address, display_name, status, capabilities_json, sync_cursor, classification_initial_batch_at, last_synced_at, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
-      "outlook-graph:mfelat@msn.com",
+      "outlook-graph:outlook-user@example.com",
       "outlook_graph",
-      "mfelat@msn.com",
-      "mfelat@msn.com",
+      "outlook-user@example.com",
+      "outlook-user@example.com",
       "connected",
       JSON.stringify(["sync", "provider_search", "mark_read", "mark_unread"]),
       null,
@@ -1740,7 +1740,7 @@ describeWithSqlite("MailboxService", () => {
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
       "outlook-graph-thread:junk-conv",
-      "outlook-graph:mfelat@msn.com",
+      "outlook-graph:outlook-user@example.com",
       "junk-conv",
       "outlook_graph",
       "Junk",
@@ -1783,8 +1783,8 @@ describeWithSqlite("MailboxService", () => {
         {
           authMethod: "oauth",
           oauthProvider: "microsoft",
-          email: "mfelat@msn.com",
-          displayName: "mfelat@msn.com",
+          email: "outlook-user@example.com",
+          displayName: "outlook-user@example.com",
         },
         25,
       );
@@ -2493,6 +2493,8 @@ describeWithSqlite("MailboxService", () => {
       syncedThreads: 3,
       syncedMessages: 6,
     });
+    (service as Any).mailboxAuthSyncBackoffUntil = Date.now() + 15 * 60 * 1000;
+    (service as Any).mailboxAuthSyncBackoffKey = "stale-auth-failure";
 
     try {
       const result = await service.sync(25);
@@ -2504,6 +2506,8 @@ describeWithSqlite("MailboxService", () => {
       ]);
       expect(result.syncedThreads).toBe(5);
       expect(result.syncedMessages).toBe(10);
+      expect((service as Any).mailboxAuthSyncBackoffUntil).toBe(0);
+      expect((service as Any).mailboxAuthSyncBackoffKey).toBeNull();
     } finally {
       syncImapSpy.mockRestore();
       hasEmailChannelSpy.mockRestore();
@@ -2518,10 +2522,10 @@ describeWithSqlite("MailboxService", () => {
         (id, provider, address, display_name, status, capabilities_json, sync_cursor, last_synced_at, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
-      "imap:mfelat@msn.com",
+      "imap:outlook-user@example.com",
       "imap",
-      "mfelat@msn.com",
-      "mfelat@msn.com",
+      "outlook-user@example.com",
+      "outlook-user@example.com",
       "connected",
       JSON.stringify(["send", "mark_read"]),
       null,
@@ -2534,10 +2538,10 @@ describeWithSqlite("MailboxService", () => {
         (id, provider, address, display_name, status, capabilities_json, sync_cursor, last_synced_at, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
-      "outlook-graph:mfelat@msn.com",
+      "outlook-graph:outlook-user@example.com",
       "outlook_graph",
-      "mfelat@msn.com",
-      "mfelat@msn.com",
+      "outlook-user@example.com",
+      "outlook-user@example.com",
       "connected",
       JSON.stringify(["sync", "provider_search", "mark_read", "mark_unread"]),
       null,
@@ -2549,7 +2553,7 @@ describeWithSqlite("MailboxService", () => {
     const status = await service.getSyncStatus();
 
     expect(status.accounts.map((account) => account.id)).toEqual([
-      "outlook-graph:mfelat@msn.com",
+      "outlook-graph:outlook-user@example.com",
       "gmail:test@example.com",
     ]);
     expect(status.statusLabel).toContain("2 accounts synced");
@@ -2593,6 +2597,43 @@ describeWithSqlite("MailboxService", () => {
     }
   });
 
+  it("surfaces every provider failure when no mailbox account can sync", async () => {
+    const { GoogleWorkspaceSettingsManager } =
+      await import("../../settings/google-workspace-manager");
+    const loadSettingsSpy = vi
+      .spyOn(GoogleWorkspaceSettingsManager, "loadSettings")
+      .mockReturnValue({
+        enabled: true,
+        accessToken: "token",
+        refreshToken: "refresh-token",
+        tokenExpiresAt: now + 60_000,
+        timeoutMs: 20_000,
+      } as never);
+    const syncGmailSpy = vi
+      .spyOn(service as Any, "syncGmail")
+      .mockRejectedValue(new Error("Google Workspace token refresh failed: Bad Request"));
+    const hasEmailChannelSpy = vi.spyOn(service as Any, "hasEmailChannel").mockReturnValue(true);
+    const syncImapSpy = vi
+      .spyOn(service as Any, "syncImap")
+      .mockRejectedValue(new Error("Microsoft email OAuth failed: AADSTS70000"));
+
+    try {
+      await expect(service.sync(25)).rejects.toThrow(
+        "Gmail sync failed: Google Workspace token refresh failed: Bad Request · Email channel sync failed: Microsoft email OAuth failed: AADSTS70000",
+      );
+      expect((service as Any).syncProgress).toMatchObject({
+        phase: "error",
+        label:
+          "Mailbox sync failed: Gmail sync failed: Google Workspace token refresh failed: Bad Request · Email channel sync failed: Microsoft email OAuth failed: AADSTS70000",
+      });
+    } finally {
+      syncImapSpy.mockRestore();
+      hasEmailChannelSpy.mockRestore();
+      syncGmailSpy.mockRestore();
+      loadSettingsSpy.mockRestore();
+    }
+  });
+
   it("backs off autosync after a transient Gmail fetch failure", async () => {
     const { GoogleWorkspaceSettingsManager } =
       await import("../../settings/google-workspace-manager");
@@ -2623,6 +2664,37 @@ describeWithSqlite("MailboxService", () => {
     } finally {
       syncGmailSpy.mockRestore();
       loadSettingsSpy.mockRestore();
+    }
+  });
+
+  it("pauses repeated autosync after an authorization failure", async () => {
+    const availableSpy = vi.spyOn(service, "isAvailable").mockReturnValue(true);
+    const statusSpy = vi.spyOn(service, "getSyncStatus").mockResolvedValue({
+      accounts: [],
+      connected: true,
+      lastSyncedAt: null,
+      statusLabel: "No accounts synced",
+      unreadCount: 0,
+      needsReplyCount: 0,
+      classificationPendingCount: 0,
+    } as never);
+    const syncSpy = vi
+      .spyOn(service, "sync")
+      .mockRejectedValue(new Error("Microsoft email OAuth failed: AADSTS70000"));
+
+    try {
+      await (service as Any).runAutoSyncIfDue();
+      (service as Any).lastAutoSyncAttemptAt = 0;
+      await (service as Any).runAutoSyncIfDue();
+
+      expect(syncSpy).toHaveBeenCalledTimes(1);
+      expect((service as Any).mailboxAuthSyncBackoffUntil).toBeGreaterThan(Date.now());
+      expect(statusSpy).toHaveBeenCalledTimes(1);
+      expect(availableSpy).toHaveBeenCalledTimes(2);
+    } finally {
+      syncSpy.mockRestore();
+      statusSpy.mockRestore();
+      availableSpy.mockRestore();
     }
   });
 

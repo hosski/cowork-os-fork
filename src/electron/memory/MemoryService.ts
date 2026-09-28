@@ -6,6 +6,7 @@
  */
 
 import { EventEmitter } from "events";
+import { isGeneratedPlaybookContent } from "./playbook-markers";
 import type { DatabaseManager } from "../database/schema";
 import {
   MemoryRepository,
@@ -40,6 +41,7 @@ import { MemoryWriteGate, type MemoryWriteOrigin } from "./MemoryWriteGate";
 import type { CoreMemoryScopeKind } from "../../shared/types";
 import { MemoryFeaturesManager } from "../settings/memory-features-manager";
 import { createLogger } from "../utils/logger";
+import { containsNoMemoryDirective } from "./no-memory-directive";
 
 // Privacy patterns to exclude - matches common sensitive data patterns
 const SENSITIVE_PATTERNS = [
@@ -229,6 +231,11 @@ export class MemoryService {
     logger.info("[MemoryService] Initialized");
   }
 
+  /** The profile database, for narrow indexes kept beside memories (Playbook evidence). */
+  static getDatabase(): import("better-sqlite3").Database | undefined {
+    return this.initialized ? this.db : undefined;
+  }
+
   static initFtsWorker(worker: import("../database/FtsWorkerClient").FtsWorkerClient): void {
     this.ftsWorker = worker;
   }
@@ -306,7 +313,7 @@ export class MemoryService {
   ): Promise<Memory | null> {
     this.ensureInitialized();
 
-    if (this.containsNoMemoryDirective(content)) {
+    if (containsNoMemoryDirective(content)) {
       return null;
     }
 
@@ -907,6 +914,7 @@ export class MemoryService {
       .filter(
         (memory) =>
           !this.isPromptRecallIgnoredContent(memory.content) &&
+          !isGeneratedPlaybookContent(memory.content) &&
           !MemoryObservationService.isPromptSuppressed(memory.id),
       );
   }
@@ -926,6 +934,7 @@ export class MemoryService {
         .filter(
           (memory) =>
             this.isPromptRecallIgnoredContent(memory.content) ||
+            isGeneratedPlaybookContent(memory.content) ||
             MemoryObservationService.isPromptSuppressed(memory.id),
         )
         .map((memory) => memory.id),
@@ -1028,6 +1037,7 @@ export class MemoryService {
       .filter(
         (r) =>
           !this.isPromptRecallIgnoredContent(r.content || r.snippet || "") &&
+          !isGeneratedPlaybookContent(r.content || r.snippet || "") &&
           !MemoryObservationService.isPromptSuppressed(r.id),
       )
       .slice(0, limit)
@@ -1208,10 +1218,6 @@ export class MemoryService {
     if (this.isPromptRecallIgnoredContent(content)) return content;
     const stripped = this.stripPromptRecallIgnoreMarker(content);
     return `${PROMPT_RECALL_IGNORE_MARKER}\n${stripped}`;
-  }
-
-  private static containsNoMemoryDirective(content: string): boolean {
-    return /<\s*no-memory\s*\/?\s*>/i.test(content);
   }
 
   private static applyInlinePrivacy(content: string): {

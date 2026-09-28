@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import path from "path";
 import fs from "fs";
 import { getUserDataDir } from "../utils/user-data-dir";
+import { removeLegacyHealthBridgeTempDirs } from "../utils/retired-feature-cleanup";
 import { createLogger } from "../utils/logger";
 import { ensureEverydayAgentSchema } from "../everyday-agent/schema";
 import {
@@ -12,6 +13,7 @@ import {
 const schemaLogger = createLogger("DatabaseManager");
 const STARTUP_PHASE_WARN_MS = 250;
 const TASK_EVENT_PAYLOAD_SANITIZER_STATE_KEY = "task_event_payload_sanitizer_v1_completed";
+const RETIRED_HEALTH_CHECKPOINT_PENDING_KEY = "retired_health_checkpoint_pending";
 
 export class DatabaseManager {
   private static instance: DatabaseManager | null = null;
@@ -54,6 +56,19 @@ export class DatabaseManager {
     phaseStartedAt = Date.now();
     this.initializeSchema();
     logStartupPhase("initialize-schema", phaseStartedAt);
+
+    phaseStartedAt = Date.now();
+    this.retirePersonalHealthSettings();
+    logStartupPhase("retire-personal-health-settings", phaseStartedAt);
+
+    try {
+      const removedTempDirs = removeLegacyHealthBridgeTempDirs();
+      if (removedTempDirs > 0) {
+        schemaLogger.info(`Removed ${removedTempDirs} legacy HealthKit bridge temp folder(s)`);
+      }
+    } catch (error) {
+      schemaLogger.warn("Could not remove legacy HealthKit bridge temp folders", error);
+    }
 
     phaseStartedAt = Date.now();
     this.repairLegacyHeartbeatRunReferences();
@@ -100,6 +115,73 @@ export class DatabaseManager {
         updated_at INTEGER NOT NULL
       )
     `);
+  }
+
+  /** Retire Health data on every startup, including after an older database is restored. */
+  private retirePersonalHealthSettings(): void {
+    const hasSettingsTable = this.db
+      .prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'secure_settings'")
+      .get();
+    if (!hasSettingsTable) return;
+
+    const hasUnreadableBackupTable = Boolean(
+      this.db
+        .prepare(
+          "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'secure_settings_unreadable_backup'",
+        )
+        .get(),
+    );
+    const settingsCount = (
+      this.db
+        .prepare("SELECT COUNT(*) AS count FROM secure_settings WHERE category = ?")
+        .get("health") as {
+        count: number;
+      }
+    ).count;
+    const backupCount = hasUnreadableBackupTable
+      ? (
+          this.db
+            .prepare(
+              "SELECT COUNT(*) AS count FROM secure_settings_unreadable_backup WHERE category = ?",
+            )
+            .get("health") as { count: number }
+        ).count
+      : 0;
+    const checkpointPending =
+      this.getMaintenanceState(RETIRED_HEALTH_CHECKPOINT_PENDING_KEY) === "1";
+    if (settingsCount === 0 && backupCount === 0 && !checkpointPending) return;
+
+    if (settingsCount > 0 || backupCount > 0) {
+      const previousSecureDelete = this.db.pragma("secure_delete", { simple: true }) as number;
+      this.db.pragma("secure_delete = ON");
+      try {
+        this.db.transaction(() => {
+          this.db.prepare("DELETE FROM secure_settings WHERE category = ?").run("health");
+          if (hasUnreadableBackupTable) {
+            this.db
+              .prepare("DELETE FROM secure_settings_unreadable_backup WHERE category = ?")
+              .run("health");
+          }
+          this.setMaintenanceState(RETIRED_HEALTH_CHECKPOINT_PENDING_KEY, "1");
+        })();
+      } finally {
+        this.db.pragma(`secure_delete = ${previousSecureDelete ? "ON" : "OFF"}`);
+      }
+    }
+
+    try {
+      const checkpoint = this.db.pragma("wal_checkpoint(TRUNCATE)") as Array<{ busy: number }>;
+      if (checkpoint[0]?.busy) {
+        schemaLogger.warn("Health retirement committed, but the WAL checkpoint is busy");
+      } else {
+        this.setMaintenanceState(RETIRED_HEALTH_CHECKPOINT_PENDING_KEY, "0");
+      }
+    } catch (error) {
+      schemaLogger.warn("Health retirement committed, but the WAL checkpoint failed", error);
+    }
+    schemaLogger.info(
+      `Retired ${settingsCount} Health settings row(s) and ${backupCount} unreadable backup row(s)`,
+    );
   }
 
   private getMaintenanceState(key: string): string | null {
@@ -3540,6 +3622,29 @@ export class DatabaseManager {
           ON work_session_child_links(parent_session_id, created_at ASC);
         CREATE INDEX IF NOT EXISTS idx_work_session_child_links_status
           ON work_session_child_links(parent_session_id, status, updated_at DESC);
+
+        -- A recovery record is deliberately append-only and does not expose
+        -- or copy the previous session's transcript.  Previous identifiers
+        -- are retained only for audit/diagnostics; the replacement session is
+        -- the only session that remains bound to the task.
+        CREATE TABLE IF NOT EXISTS work_session_recovery_records (
+          id TEXT PRIMARY KEY,
+          task_id TEXT NOT NULL,
+          previous_session_id TEXT,
+          replacement_session_id TEXT NOT NULL,
+          previous_workspace_id TEXT,
+          workspace_id TEXT NOT NULL,
+          code TEXT NOT NULL,
+          details_json TEXT NOT NULL DEFAULT '{}',
+          created_at INTEGER NOT NULL,
+          FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+          FOREIGN KEY (replacement_session_id) REFERENCES work_sessions(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_work_session_recovery_task_created
+          ON work_session_recovery_records(task_id, created_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_work_session_recovery_replacement
+          ON work_session_recovery_records(replacement_session_id);
       `);
     } catch (error) {
       schemaLogger.error("[DatabaseManager] Failed WorkSession protocol migration:", error);
@@ -4618,7 +4723,13 @@ export class DatabaseManager {
             : "custom";
         updateRoleMetadata.run(derivedRoleKind, sourceTemplateId, sourceTemplateVersion, roleId);
 
-        if (!existingPolicyRoleIds.has(roleId)) {
+        // Templated roles never own heartbeat policies; startup detaches them from core
+        // automation, so backfilling one here would be recreated and deleted every launch.
+        const isTemplatedRole =
+          role.role_kind === "persona_template" ||
+          derivedRoleKind === "persona_template" ||
+          (typeof role.source_template_id === "string" && role.source_template_id !== "");
+        if (!isTemplatedRole && !existingPolicyRoleIds.has(roleId)) {
           insertPolicy.run(
             typeof crypto?.randomUUID === "function"
               ? crypto.randomUUID()
@@ -7476,6 +7587,22 @@ export class DatabaseManager {
           input: 10.0,
           output: 50.0,
           cached: 1.0,
+        },
+        {
+          key: "gpt-6-sol",
+          provider: "OpenAI",
+          display: "GPT-6 Sol",
+          input: 2.0,
+          output: 10.0,
+          cached: 0.2,
+        },
+        {
+          key: "gpt-6-luna",
+          provider: "OpenAI",
+          display: "GPT-6 Luna",
+          input: 0.1,
+          output: 0.5,
+          cached: 0.01,
         },
         // ── OpenAI 5.4 ──
         {

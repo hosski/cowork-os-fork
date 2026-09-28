@@ -4,7 +4,7 @@ import { calculateCost, getCacheTokenAccounting, getModelPricing } from "../pric
 
 describe("Astra pricing", () => {
   it("exposes the documented standard and cache rates", () => {
-    expect(getModelPricing("gpt-6-astra")).toEqual({
+    expect(getModelPricing("gpt-6-astra")).toMatchObject({
       inputPer1M: 10,
       outputPer1M: 50,
       cachedInputPer1M: 1,
@@ -30,7 +30,8 @@ describe("Astra pricing", () => {
     const cost = calculateCost("claude-sonnet-4-5", 100, 0, 50, 50, "disjoint");
 
     expect(cost).toBeCloseTo(
-      (100 / 1_000_000) * 3 + (50 / 1_000_000) * 0.3 + (50 / 1_000_000) * 3,
+      // Cache writes use the catalogue's 5-minute rate (1.25x input).
+      (100 / 1_000_000) * 3 + (50 / 1_000_000) * 0.3 + (50 / 1_000_000) * 3.75,
       10,
     );
     expect(getCacheTokenAccounting("anthropic", "claude-sonnet-4-5")).toBe("disjoint");
@@ -38,6 +39,27 @@ describe("Astra pricing", () => {
     expect(getCacheTokenAccounting("qwen-portal", "qwen3-coder")).toBe("disjoint");
     expect(getCacheTokenAccounting("openai", "gpt-5.6-sol")).toBe("inclusive");
   });
+});
+
+describe("GPT-6 Sol and Luna pricing", () => {
+  it.each([
+    ["gpt-6-sol", 2, 10, 0.2, 2.5],
+    ["gpt-6-luna", 0.1, 0.5, 0.01, 0.125],
+  ] as const)(
+    "prices %s at published rates and applies the long-context multiplier",
+    (model, input, output, cached, write) => {
+      expect(getModelPricing(model)).toMatchObject({
+        inputPer1M: input,
+        outputPer1M: output,
+        cachedInputPer1M: cached,
+        cacheWritePer1M: write,
+      });
+      expect(calculateCost(model, 300_000, 100_000)).toBeCloseTo(
+        0.3 * input * 2 + 0.1 * output * 1.5,
+        8,
+      );
+    },
+  );
 });
 
 describe("current OpenAI prompt-cache pricing", () => {
@@ -48,11 +70,11 @@ describe("current OpenAI prompt-cache pricing", () => {
       cacheWritePer1M: 5,
     });
     expect(
-      calculateCost("gpt-5.6-sol", 1_000_000, 0, 0, 1_000_000, "inclusive", {
+      calculateCost("gpt-5.6-sol", 200_000, 0, 0, 200_000, "inclusive", {
         providerType: "openai",
         cacheTtl: "5m",
       }),
-    ).toBeCloseTo(5, 10);
+    ).toBeCloseTo(1, 10);
   });
 
   it("uses the Anthropic TTL multiplier for cache writes", () => {

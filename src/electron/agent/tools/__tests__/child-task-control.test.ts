@@ -249,17 +249,15 @@ describe("ToolRegistry child task control tools", () => {
         task: recipient,
         role: { id: "forge-role", name: "forge", displayName: recipient.title },
       }),
-      sendMessage: vi.fn().mockResolvedValue({ queued: false, deliveryMode: "follow_up" }),
-      getTaskEvents: vi.fn().mockImplementation((_taskId: string, options?: { types?: string[] }) =>
-        options?.types?.includes("assistant_message")
-          ? [
-              {
-                timestamp: Date.now() + 1_000,
-                payload: { message: "I own product engineering." },
-              },
-            ]
-          : [],
-      ),
+      sendMessage: vi.fn().mockResolvedValue({
+        queued: true,
+        deliveryMode: "message",
+        deliveryStatus: "queued",
+        acceptedAt: 100,
+        queuedAt: 100,
+      }),
+      getTaskEvents: vi.fn(),
+      reconcileAgentMessageSenderProjection: vi.fn(),
       logEvent: vi.fn(),
     } as Any;
 
@@ -271,7 +269,19 @@ describe("ToolRegistry child task control tools", () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.teammate_reply).toBe("I own product engineering.");
+    expect(result).toMatchObject({
+      queued: true,
+      message_id: "bot-message-1",
+      deliveryStatus: "queued",
+      deliveryMode: "message",
+      acceptedAt: 100,
+      queuedAt: 100,
+      sender_task_id: "atlas-task",
+      target_task_id: "forge-task",
+      message: "Message queued for the agent's next turn",
+    });
+    expect(result).not.toHaveProperty("teammate_reply");
+    expect(daemon.getTaskEvents).toHaveBeenCalledWith("atlas-task", { limit: 200 });
     expect(daemon.resolveBotTeamPeer).toHaveBeenCalledWith("atlas-task", {
       botName: "forge",
       taskId: undefined,
@@ -285,20 +295,501 @@ describe("ToolRegistry child task control tools", () => {
       expect.objectContaining({
         messageSource: "agent",
         senderTaskId: "atlas-task",
+        messageId: "bot-message-1",
+        deliveryMode: "message",
+        startAfterAccepted: true,
       }),
     );
-    expect(daemon.sendMessage.mock.calls[0][4]).not.toHaveProperty("deliveryMode");
     expect(daemon.logEvent).toHaveBeenCalledWith(
       "atlas-task",
-      "user_message",
+      "agent_message",
       expect.objectContaining({
-        message: "Reply from Forge — Product Engineer: I own product engineering.",
-        messageSource: "agent",
-        messageId: "bot-message-1:reply",
-        senderTaskId: "forge-task",
-        deliveryStatus: "delivered",
+        message: "Please check the failing build and report the first actionable error.",
+        messageId: "bot-message-1",
+        status: "queued",
+        deliveryStatus: "queued",
+        deliveryMode: "message",
+        replyStatus: "pending",
       }),
     );
+    expect(daemon.logEvent).toHaveBeenCalledTimes(1);
+    expect(daemon.reconcileAgentMessageSenderProjection).toHaveBeenCalledWith(
+      "forge-task",
+      "bot-message-1",
+    );
+  });
+
+  it("correlates a bot reply with the latest durable inbound receipt", async () => {
+    const recipient: Task = {
+      id: "scribe-task",
+      title: "Scribe — Author and Publisher",
+      prompt: "Start chatting with Scribe.",
+      status: "executing",
+      workspaceId: workspace.id,
+      assignedAgentRoleId: "scribe-role",
+      agentConfig: { botConversation: true, botTeamId: "bot-team-1" },
+      createdAt: 1,
+      updatedAt: 1,
+    };
+    const inbound = {
+      id: "inbound-event",
+      taskId: "atlas-task",
+      type: "timeline_step_updated",
+      legacyType: "user_message",
+      timestamp: 100,
+      payload: {
+        messageId: "inbound-1",
+        messageSource: "agent",
+        deliveryMode: "message",
+        deliveryStatus: "delivered",
+        senderTaskId: "scribe-task",
+        senderLabel: "Scribe — Author and Publisher",
+        message: "Please verify the source mechanics.",
+      },
+      schemaVersion: 2,
+    };
+    const markBotHandoffReplied = vi.fn();
+    const daemon = {
+      getTaskById: vi.fn().mockResolvedValue(recipient),
+      resolveBotTeamPeer: vi.fn().mockResolvedValue({
+        ok: true,
+        task: recipient,
+        role: { id: "scribe-role", name: "scribe", displayName: recipient.title },
+      }),
+      // A canonical work-session read may return the projection with a
+      // timeline_step_updated type and legacyType user_message. The reply
+      // correlation path must not pass a type filter that drops that event.
+      getTaskEvents: vi
+        .fn()
+        .mockImplementation((_taskId: string, options?: Any) => (options?.types ? [] : [inbound])),
+      sendMessage: vi.fn().mockResolvedValue({
+        queued: true,
+        deliveryMode: "message",
+        deliveryStatus: "queued",
+        acceptedAt: 101,
+        queuedAt: 101,
+      }),
+      markBotHandoffReplied,
+      logEvent: vi.fn(),
+    } as Any;
+
+    const registry = new ToolRegistry(workspace, daemon, "atlas-task");
+    const result = await registry.executeTool("send_agent_message", {
+      bot: "scribe",
+      message: "The mechanics check is complete.",
+      message_id: "reply-1",
+    });
+
+    expect(result.success).toBe(true);
+    expect(daemon.getTaskEvents).toHaveBeenCalledWith("atlas-task", { limit: 200 });
+    expect(daemon.sendMessage).toHaveBeenCalledWith(
+      "scribe-task",
+      "The mechanics check is complete.",
+      undefined,
+      undefined,
+      expect.objectContaining({
+        inReplyToMessageId: "inbound-1",
+        inReplyToTaskId: "scribe-task",
+      }),
+    );
+    const replyActivity = daemon.logEvent.mock.calls.find(
+      (call: Any[]) => call[1] === "agent_message",
+    )?.[2];
+    expect(replyActivity).toMatchObject({
+      inReplyToMessageId: "inbound-1",
+      inReplyToTaskId: "scribe-task",
+    });
+    expect(replyActivity).not.toHaveProperty("replyStatus");
+    expect(markBotHandoffReplied).not.toHaveBeenCalled();
+  });
+
+  it("uses the durable delivered receipt when the canonical event is still queued", async () => {
+    const recipient: Task = {
+      id: "atlas-task",
+      title: "Atlas",
+      prompt: "Start chatting with Atlas.",
+      status: "completed",
+      workspaceId: workspace.id,
+      assignedAgentRoleId: "atlas-role",
+      agentConfig: { botConversation: true, botTeamId: "bot-team-1" },
+      createdAt: 1,
+      updatedAt: 1,
+    };
+    const delivered = {
+      id: "inbound-event",
+      taskId: "scribe-task",
+      type: "user_message",
+      timestamp: 100,
+      payload: {
+        messageId: "inbound-1",
+        messageSource: "agent",
+        deliveryMode: "message",
+        deliveryStatus: "delivered",
+        senderTaskId: "atlas-task",
+        message: "Check this calculation.",
+      },
+    };
+    const daemon = {
+      getTaskById: vi.fn().mockResolvedValue(recipient),
+      resolveBotTeamPeer: vi.fn().mockResolvedValue({
+        ok: true,
+        task: recipient,
+        role: { id: "atlas-role", name: "atlas", displayName: recipient.title },
+      }),
+      getTaskEvents: vi
+        .fn()
+        .mockReturnValue([
+          { ...delivered, payload: { ...delivered.payload, deliveryStatus: "queued" } },
+        ]),
+      getDurableTaskEvents: vi.fn((_taskId: string, type: string) =>
+        type === "user_message" ? [delivered] : [],
+      ),
+      sendMessage: vi.fn().mockResolvedValue({
+        queued: true,
+        deliveryMode: "message",
+        deliveryStatus: "queued",
+      }),
+      logEvent: vi.fn(),
+    } as Any;
+
+    const registry = new ToolRegistry(workspace, daemon, "scribe-task");
+    const result = await registry.executeTool("send_agent_message", {
+      task_id: "atlas-task",
+      message: "The answer is 59.5.",
+      message_id: "reply-1",
+    });
+
+    expect(result.success).toBe(true);
+    expect(daemon.getTaskEvents).not.toHaveBeenCalled();
+    expect(daemon.sendMessage).toHaveBeenCalledWith(
+      "atlas-task",
+      "The answer is 59.5.",
+      undefined,
+      undefined,
+      expect.objectContaining({
+        inReplyToMessageId: "inbound-1",
+        inReplyToTaskId: "atlas-task",
+      }),
+    );
+  });
+
+  it.each(["queued", "started"] as const)(
+    "does not correlate a %s inbound receipt before the receiver consumes it",
+    async (deliveryStatus) => {
+      const recipient: Task = {
+        id: "scribe-task",
+        title: "Scribe — Author and Publisher",
+        prompt: "Start chatting with Scribe.",
+        status: "executing",
+        workspaceId: workspace.id,
+        assignedAgentRoleId: "scribe-role",
+        agentConfig: { botConversation: true, botTeamId: "bot-team-1" },
+        createdAt: 1,
+        updatedAt: 1,
+      };
+      const daemon = {
+        getTaskById: vi.fn().mockResolvedValue(recipient),
+        resolveBotTeamPeer: vi.fn().mockResolvedValue({
+          ok: true,
+          task: recipient,
+          role: { id: "scribe-role", name: "scribe", displayName: recipient.title },
+        }),
+        getTaskEvents: vi.fn().mockReturnValue([
+          {
+            id: "inbound-event",
+            taskId: "atlas-task",
+            type: "user_message",
+            timestamp: 100,
+            payload: {
+              messageId: "inbound-1",
+              messageSource: "agent",
+              deliveryMode: "message",
+              deliveryStatus,
+              senderTaskId: "scribe-task",
+              senderLabel: "Scribe — Author and Publisher",
+              message: "Please verify the source mechanics.",
+            },
+            schemaVersion: 2,
+          },
+        ]),
+        sendMessage: vi.fn().mockResolvedValue({
+          queued: true,
+          deliveryMode: "message",
+          deliveryStatus: "queued",
+          acceptedAt: 101,
+          queuedAt: 101,
+        }),
+        reconcileAgentMessageSenderProjection: vi.fn(),
+        logEvent: vi.fn(),
+      } as Any;
+
+      const registry = new ToolRegistry(workspace, daemon, "atlas-task");
+      const result = await registry.executeTool("send_agent_message", {
+        bot: "scribe",
+        message: "Start a new, independent check.",
+        message_id: `independent-${deliveryStatus}`,
+      });
+
+      expect(result.success).toBe(true);
+      const sendOptions = daemon.sendMessage.mock.calls[0]?.[4];
+      expect(sendOptions).not.toHaveProperty("inReplyToMessageId");
+      expect(sendOptions).not.toHaveProperty("inReplyToTaskId");
+    },
+  );
+
+  it("suppresses a follow-up when the latest teammate message is a correlated reply receipt", async () => {
+    const recipient: Task = {
+      id: "scribe-task",
+      title: "Scribe — Author and Publisher",
+      prompt: "Start chatting with Scribe.",
+      status: "executing",
+      workspaceId: workspace.id,
+      assignedAgentRoleId: "scribe-role",
+      agentConfig: { botConversation: true, botTeamId: "bot-team-1" },
+      createdAt: 1,
+      updatedAt: 1,
+    };
+    const sender: Task = {
+      id: "atlas-task",
+      title: "Atlas — Chief Community Officer",
+      prompt: "Start chatting with Atlas.",
+      status: "executing",
+      workspaceId: workspace.id,
+      assignedAgentRoleId: "atlas-role",
+      agentConfig: { botConversation: true, botTeamId: "bot-team-1" },
+      createdAt: 1,
+      updatedAt: 1,
+    };
+    const daemon = {
+      getTaskById: vi.fn().mockImplementation(async (taskId: string) => {
+        if (taskId === recipient.id) return recipient;
+        if (taskId === sender.id) return sender;
+        return undefined;
+      }),
+      resolveBotTeamPeer: vi.fn().mockResolvedValue({
+        ok: true,
+        task: recipient,
+        role: { id: "scribe-role", name: "scribe", displayName: recipient.title },
+      }),
+      getTaskEvents: vi.fn().mockReturnValue([
+        {
+          id: "handoff-event",
+          taskId: "atlas-task",
+          type: "agent_message",
+          timestamp: 100,
+          payload: {
+            messageId: "handoff-1",
+            senderType: "agent",
+            deliveryMode: "message",
+            deliveryStatus: "delivered",
+            senderTaskId: "atlas-task",
+            targetTaskId: "scribe-task",
+          },
+        },
+        {
+          id: "reply-event",
+          taskId: "atlas-task",
+          type: "timeline_step_updated",
+          legacyType: "user_message",
+          timestamp: 101,
+          payload: {
+            messageId: "reply-1",
+            messageSource: "agent",
+            deliveryMode: "message",
+            deliveryStatus: "delivered",
+            senderTaskId: "scribe-task",
+            inReplyToMessageId: "handoff-1",
+            inReplyToTaskId: "atlas-task",
+          },
+        },
+      ]),
+      sendMessage: vi.fn(),
+      logEvent: vi.fn(),
+    } as Any;
+
+    const registry = new ToolRegistry(workspace, daemon, "atlas-task");
+    const result = await registry.executeTool("send_agent_message", {
+      bot: "scribe",
+      message: "Thanks, I will record the result.",
+      message_id: "follow-up-1",
+    });
+
+    expect(result).toMatchObject({
+      success: true,
+      duplicate: true,
+      deliveryStatus: "delivered",
+      message:
+        "No message sent: the latest teammate message is a correlated reply receipt. Record it and finish this turn.",
+    });
+    expect(daemon.sendMessage).not.toHaveBeenCalled();
+    expect(daemon.logEvent).toHaveBeenCalledWith(
+      "atlas-task",
+      "log",
+      expect.objectContaining({
+        metric: "bot_correlated_reply_suppressed",
+        inboundMessageId: "reply-1",
+        inReplyToMessageId: "handoff-1",
+        inReplyToTaskId: "atlas-task",
+      }),
+    );
+  });
+
+  it.each(["queued", "started"] as const)(
+    "does not suppress a follow-up for a %s correlated reply receipt",
+    async (deliveryStatus) => {
+      const recipient: Task = {
+        id: "scribe-task",
+        title: "Scribe — Author and Publisher",
+        prompt: "Start chatting with Scribe.",
+        status: "executing",
+        workspaceId: workspace.id,
+        assignedAgentRoleId: "scribe-role",
+        agentConfig: { botConversation: true, botTeamId: "bot-team-1" },
+        createdAt: 1,
+        updatedAt: 1,
+      };
+      const daemon = {
+        getTaskById: vi.fn().mockResolvedValue(recipient),
+        resolveBotTeamPeer: vi.fn().mockResolvedValue({
+          ok: true,
+          task: recipient,
+          role: { id: "scribe-role", name: "scribe", displayName: recipient.title },
+        }),
+        getTaskEvents: vi.fn().mockReturnValue([
+          {
+            id: "handoff-event",
+            taskId: "atlas-task",
+            type: "agent_message",
+            timestamp: 100,
+            payload: {
+              messageId: "handoff-1",
+              messageSource: "agent",
+              deliveryMode: "message",
+              deliveryStatus: "delivered",
+              senderTaskId: "atlas-task",
+              targetTaskId: "scribe-task",
+            },
+          },
+          {
+            id: "reply-event",
+            taskId: "atlas-task",
+            type: "user_message",
+            timestamp: 101,
+            payload: {
+              messageId: "reply-1",
+              messageSource: "agent",
+              deliveryMode: "message",
+              deliveryStatus,
+              senderTaskId: "scribe-task",
+              inReplyToMessageId: "handoff-1",
+              inReplyToTaskId: "atlas-task",
+            },
+          },
+        ]),
+        sendMessage: vi.fn().mockResolvedValue({
+          queued: true,
+          deliveryMode: "message",
+          deliveryStatus: "queued",
+          acceptedAt: 102,
+          queuedAt: 102,
+        }),
+        reconcileAgentMessageSenderProjection: vi.fn(),
+        logEvent: vi.fn(),
+      } as Any;
+
+      const registry = new ToolRegistry(workspace, daemon, "atlas-task");
+      const result = await registry.executeTool("send_agent_message", {
+        bot: "scribe",
+        message: "Continue with the next check.",
+        message_id: `follow-up-${deliveryStatus}`,
+      });
+
+      expect(result.success).toBe(true);
+      expect(daemon.sendMessage).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it("starts a fresh handoff after a new human request follows a correlated reply", async () => {
+    const recipient: Task = {
+      id: "scribe-task",
+      title: "Scribe — Author and Publisher",
+      prompt: "Start chatting with Scribe.",
+      status: "executing",
+      workspaceId: workspace.id,
+      assignedAgentRoleId: "scribe-role",
+      agentConfig: { botConversation: true, botTeamId: "bot-team-1" },
+      createdAt: 1,
+      updatedAt: 1,
+    };
+    const daemon = {
+      getTaskById: vi.fn().mockResolvedValue(recipient),
+      resolveBotTeamPeer: vi.fn().mockResolvedValue({
+        ok: true,
+        task: recipient,
+        role: { id: "scribe-role", name: "scribe", displayName: recipient.title },
+      }),
+      getTaskEvents: vi.fn().mockReturnValue([
+        {
+          id: "handoff-event",
+          taskId: "atlas-task",
+          type: "agent_message",
+          timestamp: 100,
+          payload: {
+            messageId: "handoff-1",
+            messageSource: "agent",
+            deliveryMode: "message",
+            deliveryStatus: "delivered",
+            senderTaskId: "atlas-task",
+            targetTaskId: "scribe-task",
+          },
+        },
+        {
+          id: "reply-event",
+          taskId: "atlas-task",
+          type: "user_message",
+          timestamp: 101,
+          payload: {
+            messageId: "reply-1",
+            messageSource: "agent",
+            deliveryMode: "message",
+            deliveryStatus: "delivered",
+            senderTaskId: "scribe-task",
+            inReplyToMessageId: "handoff-1",
+            inReplyToTaskId: "atlas-task",
+          },
+        },
+        {
+          id: "human-follow-up",
+          taskId: "atlas-task",
+          type: "user_message",
+          timestamp: 102,
+          payload: {
+            message: "Now ask Scribe to verify the second source.",
+          },
+        },
+      ]),
+      sendMessage: vi.fn().mockResolvedValue({
+        queued: true,
+        deliveryMode: "message",
+        deliveryStatus: "queued",
+        acceptedAt: 103,
+        queuedAt: 103,
+      }),
+      reconcileAgentMessageSenderProjection: vi.fn(),
+      logEvent: vi.fn(),
+    } as Any;
+
+    const registry = new ToolRegistry(workspace, daemon, "atlas-task");
+    const result = await registry.executeTool("send_agent_message", {
+      bot: "scribe",
+      message: "Verify the second source.",
+      message_id: "handoff-2",
+    });
+
+    expect(result.success).toBe(true);
+    expect(daemon.sendMessage).toHaveBeenCalledTimes(1);
+    expect(daemon.sendMessage.mock.calls[0]?.[4]).not.toHaveProperty("inReplyToMessageId");
+    expect(daemon.sendMessage.mock.calls[0]?.[4]).not.toHaveProperty("inReplyToTaskId");
   });
 
   it("capture_agent_events returns summarized events", async () => {

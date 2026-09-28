@@ -20,6 +20,7 @@ import {
   getInlinePreviewKindForGeneratedFile,
   getInlinePreviewKindForTaskEvent,
   getAutoScrollTargetTop,
+  getBotTranscriptSpeaker,
   getBootstrapProgressTitle,
   getDefaultTranscriptMode,
   getVisibleEndOfTaskArtifactCards,
@@ -36,6 +37,7 @@ import {
   TaskSessionLineageFooter,
 } from "../MainContent";
 import { AgentReasoningPanel } from "../MainContent/MainContent";
+import { shouldShowCancelledTaskBanner } from "../../utils/bot-conversations";
 import { isTaskActivelyWorking } from "../../utils/task-working-state";
 import {
   buildTaskAutomationCronJobCreate,
@@ -45,6 +47,9 @@ import {
 } from "../task-automation-utils";
 
 const mainContentPath = fileURLToPath(new URL("../MainContent/MainContent.tsx", import.meta.url));
+const mainContentStylesPath = fileURLToPath(
+  new URL("../MainContent/main-content.css", import.meta.url),
+);
 const messageUiPath = fileURLToPath(new URL("../MainContent/message-ui.tsx", import.meta.url));
 const appPath = fileURLToPath(new URL("../../App.tsx", import.meta.url));
 
@@ -62,6 +67,32 @@ describe("shouldCreateFreshTaskForSend", () => {
         forceFreshTask: true,
       }),
     ).toBe(true);
+  });
+});
+
+describe("shouldShowCancelledTaskBanner", () => {
+  it("hides the generic cancellation banner when the bot header owns status", () => {
+    expect(
+      shouldShowCancelledTaskBanner({
+        taskStatus: "cancelled",
+        isBotConversation: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("keeps cancellation visible for ordinary tasks", () => {
+    expect(
+      shouldShowCancelledTaskBanner({
+        taskStatus: "cancelled",
+        isBotConversation: false,
+      }),
+    ).toBe(true);
+    expect(
+      shouldShowCancelledTaskBanner({
+        taskStatus: "cancelled",
+        isBotConversation: true,
+      }),
+    ).toBe(false);
   });
 });
 
@@ -239,10 +270,10 @@ describe("getWorkspaceStatusFolderLabel", () => {
   it("shows only the final folder name for workspace paths", () => {
     expect(
       getWorkspaceStatusFolderLabel(
-        makeWorkspace({ path: "/Users/mesut/Downloads/app/cowork", name: "Custom name" }),
+        makeWorkspace({ path: "/Users/alex/Downloads/app/cowork", name: "Custom name" }),
       ),
     ).toBe("cowork");
-    expect(getWorkspaceStatusFolderLabel(makeWorkspace({ path: "C:\\Users\\mesut\\cowork" }))).toBe(
+    expect(getWorkspaceStatusFolderLabel(makeWorkspace({ path: "C:\\Users\\alex\\cowork" }))).toBe(
       "cowork",
     );
   });
@@ -286,6 +317,30 @@ describe("shouldSuppressInitialPromptUserEvent", () => {
         taskCreatedAt: 10_000,
       }),
     ).toBe(false);
+  });
+});
+
+describe("getBotTranscriptSpeaker", () => {
+  it("attributes teammate messages to the sender instead of the user", () => {
+    expect(
+      getBotTranscriptSpeaker(
+        makeEvent("teammate-message", 1_000, "user_message", {
+          messageSource: "agent",
+          senderLabel: "Scribe — Author and Publisher",
+        }),
+      ),
+    ).toBe("Scribe — Author and Publisher");
+    expect(getBotTranscriptSpeaker(makeEvent("human-message", 1_001, "user_message"))).toBe("You");
+  });
+
+  it("uses a stable fallback when a legacy teammate receipt has no sender label", () => {
+    expect(
+      getBotTranscriptSpeaker(
+        makeEvent("legacy-teammate-message", 1_002, "user_message", {
+          messageSource: "agent",
+        }),
+      ),
+    ).toBe("Teammate");
   });
 });
 
@@ -546,6 +601,20 @@ describe("TaskSessionLineageFooter", () => {
 
     expect(html).toBe("");
   });
+
+  it("makes a reopened bot's preserved transcript discoverable", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(TaskSessionLineageFooter, {
+        task: makeTask({ branchFromTaskId: "previous-bot-task" }),
+        isBotConversation: true,
+        onSelectTask: vi.fn(),
+      }),
+    );
+
+    expect(html).toContain("Previous bot conversation");
+    expect(html).toContain("Open previous bot conversation");
+    expect(html).not.toContain("Forked from conversation");
+  });
 });
 
 describe("message-level session forking", () => {
@@ -598,6 +667,68 @@ describe("bot transcript surface", () => {
     expect(mainContentSource).not.toContain("Bot chats keep one continuous transcript");
     expect(appSource).toContain("botConversationTasks");
     expect(appSource).toContain("bot.displayName,");
+  });
+
+  it("hides execution-step rows from bot transcripts without hiding messages", () => {
+    const mainContentSource = readFileSync(mainContentPath, "utf8");
+
+    expect(mainContentSource).toContain(
+      "const isConversationOnlySurface = isChatTask || isBotConversation;",
+    );
+    expect(mainContentSource).toMatch(
+      /if \(item\.kind === "action_block"\) \{\s+return !isConversationOnlySurface;/,
+    );
+    expect(mainContentSource).toMatch(
+      /isConversationOnlySurface &&\s+!isUserMessage &&\s+!isAssistantMessage &&\s+!isCompletionSummaryMessage/,
+    );
+    expect(mainContentSource).toContain("isChatTask={isConversationOnlySurface}");
+    expect(mainContentSource).toMatch(/\{!isBotConversation &&\s+\(hasNonConversationEvents/);
+  });
+
+  it("turns raw send-agent protocol JSON into a compact bot receipt", () => {
+    const mainContentSource = readFileSync(mainContentPath, "utf8");
+
+    expect(mainContentSource).toContain("parseAgentMessageProtocolResult(messageText)");
+    expect(mainContentSource).toContain("agent-outbound-message-receipt");
+    expect(mainContentSource).toContain("Agent message ${agentMessageProtocolReceipt.label");
+  });
+
+  it("keeps collaboration context inside the transcript and attributes bot replies", () => {
+    const mainContentSource = readFileSync(mainContentPath, "utf8");
+    const mainContentStyles = readFileSync(mainContentStylesPath, "utf8");
+    const taskContentIndex = mainContentSource.indexOf('<div className="task-content">');
+    const collaborationHeaderIndex = mainContentSource.indexOf("<BotCollaborationHeader");
+
+    expect(taskContentIndex).toBeGreaterThan(-1);
+    expect(collaborationHeaderIndex).toBeGreaterThan(taskContentIndex);
+    expect(mainContentSource).toContain("bot-message-attribution-avatar");
+    expect(mainContentStyles).toContain(".bot-conversation .chat-bubble.user-bubble");
+    expect(mainContentStyles).toContain(
+      ".bot-conversation .chat-message.assistant-message .chat-bubble.assistant-bubble",
+    );
+    expect(mainContentStyles).toContain(".bot-conversation .input-container");
+    expect(mainContentStyles).toMatch(
+      /\.bot-conversation \.input-container \.lets-go-btn\.lets-go-btn-sm \{\s+background: var\(--bot-send-bg\);\s+color: var\(--bot-send-fg\);/,
+    );
+    expect(mainContentStyles).toMatch(
+      /\.bot-conversation \.input-container \.lets-go-btn\.lets-go-btn-sm svg \{\s+color: var\(--bot-send-fg\) !important;\s+stroke: currentColor !important;/,
+    );
+  });
+
+  it("uses the shared collaboration projection for waiting copy", () => {
+    const mainContentSource = readFileSync(mainContentPath, "utf8");
+    const appSource = readFileSync(appPath, "utf8");
+
+    expect(mainContentSource).toContain(
+      "conversationProjection?: BotConversationProjection | null",
+    );
+    expect(mainContentSource).toContain("const isBotHandoffWaiting =");
+    expect(mainContentSource).toContain("Waiting on a teammate");
+    expect(mainContentSource).toContain(
+      "The conversation will continue when the teammate replies.",
+    );
+    expect(mainContentSource).toContain("conversationProjection={conversationProjection}");
+    expect(appSource).toContain("conversationProjection={botConversationProjection}");
   });
 });
 
@@ -914,12 +1045,12 @@ describe("isTaskActivelyWorking", () => {
     });
     const absolute = makeEvent("absolute", 200, "assistant_message", {
       message:
-        "Updated /Users/mesut/Downloads/app/cowork/cowork-os-presentation.pptx and verified the deck.",
+        "Updated /Users/alex/Downloads/app/cowork/cowork-os-presentation.pptx and verified the deck.",
     });
 
     expect(collectLatestEndOfTaskArtifactCards([relative, absolute])).toEqual([
       {
-        path: "/Users/mesut/Downloads/app/cowork/cowork-os-presentation.pptx",
+        path: "/Users/alex/Downloads/app/cowork/cowork-os-presentation.pptx",
         kind: "presentation",
         eventId: "absolute",
         lastReferenceIndex: 1,

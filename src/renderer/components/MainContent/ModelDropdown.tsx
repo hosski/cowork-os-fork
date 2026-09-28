@@ -12,6 +12,7 @@ import {
 import { getModelAccessDescriptor } from "../../../shared/model-access";
 import { Check, ChevronLeft, ChevronRight, Search, Settings2, Sparkles } from "lucide-react";
 import { getLLMProviderIcon } from "../llm-provider-icons";
+import { useIsCalmTheme } from "../../hooks/useIsCalmTheme";
 import type { SettingsTab } from "./main-content-types";
 
 type ModelPickerView = "quick" | "advanced";
@@ -50,6 +51,7 @@ function QuickModelPicker({
   onReasoningEffortChange,
   onOpenAdvanced,
 }: QuickModelPickerProps) {
+  const isCalm = useIsCalmTheme();
   const fallbackIndex = Math.max(
     0,
     reasoningEffortOptions.findIndex((option) => option.value === "medium"),
@@ -89,7 +91,12 @@ function QuickModelPicker({
         <div className="model-quick-effort-control" aria-label="Reasoning effort">
           <div
             className={`model-quick-effort-shell ${isEffortLocked ? "disabled" : ""}`}
-            style={{ "--model-quick-progress": `${progress}%` } as React.CSSProperties}
+            style={
+              {
+                "--model-quick-progress": `${progress}%`,
+                "--model-quick-ratio": lastIndex > 0 ? sliderIndex / lastIndex : 1,
+              } as React.CSSProperties
+            }
           >
             {/* Markers render before the input so the thumb paints over them. */}
             <div className="model-quick-effort-markers" aria-hidden="true">
@@ -122,6 +129,15 @@ function QuickModelPicker({
               }}
             />
           </div>
+          {isCalm && selectedOption && (
+            <p className="model-quick-effort-caption" aria-hidden="true">
+              <strong>{selectedOption.label}</strong>
+              <span>
+                {REASONING_EFFORT_DESCRIPTIONS[selectedOption.value] ||
+                  "Reasoning depth for the next response"}
+              </span>
+            </p>
+          )}
         </div>
       ) : (
         <div className="model-quick-empty-state">
@@ -573,8 +589,10 @@ export function ModelDropdown({
                               key={provider.type}
                               className="model-dropdown-provider-row"
                               onMouseEnter={() => {
-                                setActiveProviderMenu(provider.type);
-                                void loadProviderModels(provider.type);
+                                if (align !== "right") {
+                                  setActiveProviderMenu(provider.type);
+                                  void loadProviderModels(provider.type);
+                                }
                               }}
                             >
                               <button
@@ -582,7 +600,7 @@ export function ModelDropdown({
                                 aria-expanded={isActive}
                                 className={`model-dropdown-provider-option ${isActive ? "highlighted" : ""}`}
                                 onClick={() => {
-                                  setActiveProviderMenu(isActive ? null : provider.type);
+                                  setActiveProviderMenu(provider.type);
                                   void loadProviderModels(provider.type);
                                 }}
                               >
@@ -620,6 +638,15 @@ export function ModelDropdown({
           {pickerView === "advanced" && activeProvider && (
             <div className="model-dropdown-submenu">
               <div className="model-dropdown-submenu-header">
+                <button
+                  type="button"
+                  className="model-dropdown-submenu-back"
+                  onClick={() => setActiveProviderMenu(null)}
+                  aria-label="Back to model sources"
+                >
+                  <ChevronLeft size={13} aria-hidden="true" />
+                  <span>Other sources</span>
+                </button>
                 <span className="model-dropdown-kicker">SWITCH TO</span>
                 <strong>{activeProvider.name}</strong>
                 <span>{activeProviderModels.length} available models</span>

@@ -548,6 +548,192 @@ export function filterAdjacentDuplicateTimelineFailures(events: TaskEvent[]): Ta
   return filterDuplicateTimelineArtifacts(out);
 }
 
+const BOT_CONVERSATION_INTERNAL_EVENT_TYPES = new Set([
+  "agent_message",
+  "agent_spawn_requested",
+  "agent_spawned",
+  "agent_completed",
+  "agent_failed",
+  "agent_follow_up_scheduled",
+  "agent_follow_up_started",
+]);
+const BOT_CONVERSATION_MESSAGE_DEDUPE_WINDOW_MS = 30_000;
+
+/**
+ * Recovery attempts used to be persisted as ordinary user-message events.
+ * They are useful in the durable activity log, but showing the same long
+ * orchestration brief in the primary bot conversation makes a retry look like
+ * a new user instruction and buries the actual teammate exchange.
+ */
+const BOT_CONVERSATION_INTERNAL_PROMPT_PATTERNS = [
+  /^\s*\[RETRY CONTEXT\]:/i,
+  /^\s*Recovery run(?:\s+for\b|\b)/i,
+  /\bread-only\s+opportunity-discovery\b[\s\S]*\b(?:send_agent_message|do not merely describe or simulate)\b/i,
+];
+
+function isBotConversationInternalPrompt(event: TaskEvent): boolean {
+  if (getEffectiveTaskEventType(event) !== "user_message") return false;
+
+  const payload = asObject(event.payload);
+  // Inbound teammate work is a real conversation message, even when its text
+  // happens to mention recovery.
+  if (payload.messageSource === "agent") return false;
+
+  const message = getEventMessage(event);
+  return BOT_CONVERSATION_INTERNAL_PROMPT_PATTERNS.some((pattern) => pattern.test(message));
+}
+
+function normalizeConversationMessage(value: string): string {
+  return value.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function getBotTranscriptMessageScope(payload: Record<string, unknown>): string {
+  if (payload.messageSource !== "agent") return "";
+  return [
+    payload.senderTaskId,
+    payload.sender_task_id,
+    payload.senderLabel,
+    payload.sender,
+    payload.targetTaskId,
+    payload.target_task_id,
+    payload.recipientLabel,
+    payload.recipient,
+  ]
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+    .map((value) => value.trim().toLocaleLowerCase())
+    .join("|");
+}
+
+/**
+ * A streamed assistant turn can be appended twice when the live event and
+ * its durable replay arrive in the same render batch. Collapse only an exact
+ * repeated payload; ordinary repeated prose remains untouched.
+ */
+function collapseRepeatedAssistantMessage(value: string): string {
+  const normalized = value.replace(/\r\n?/g, "\n").trim();
+  if (!normalized) return value;
+
+  if (normalized.length % 2 === 0) {
+    const halfLength = normalized.length / 2;
+    if (normalized.slice(0, halfLength) === normalized.slice(halfLength)) {
+      return normalized.slice(0, halfLength).trimEnd();
+    }
+  }
+
+  for (const separator of ["\n\n", "\n"]) {
+    const parts = normalized.split(separator);
+    if (parts.length < 2 || parts.length % 2 !== 0) continue;
+    const midpoint = parts.length / 2;
+    const firstHalf = parts.slice(0, midpoint).join(separator);
+    const secondHalf = parts.slice(midpoint).join(separator);
+    if (firstHalf === secondHalf) return firstHalf.trimEnd();
+  }
+
+  return value;
+}
+
+/**
+ * Keep bot conversations message-first. Handoff delivery and retry lifecycle
+ * events are represented by BotCollaborationHeader, while the transcript gets
+ * one visible card per logical message even when a renderer retry persisted a
+ * second event with a different event id.
+ */
+export function filterBotConversationTranscriptEvents(events: TaskEvent[]): TaskEvent[] {
+  const out: TaskEvent[] = [];
+  const byStableMessageId = new Map<string, number>();
+  const byMessageText = new Map<string, { index: number; timestamp: number }>();
+
+  for (const event of events) {
+    const effectiveType = getEffectiveTaskEventType(event);
+    if (BOT_CONVERSATION_INTERNAL_EVENT_TYPES.has(effectiveType)) continue;
+    if (isBotConversationInternalPrompt(event)) continue;
+
+    const payload = asObject(event.payload);
+    const timestamp = Number.isFinite(event.timestamp) ? event.timestamp : event.ts || 0;
+
+    // Completion summaries are persisted independently from assistant-message events. When a
+    // coordinator turn completes, the summary can therefore replay the same waiting text (or
+    // the final receipt) that is already present as a conversation message. Keep one message
+    // card, while still retaining a distinct completion outcome when it has unique content.
+    if (effectiveType === "task_completed") {
+      const rawSummary =
+        typeof payload.resultSummary === "string" ? payload.resultSummary.trim() : "";
+      const collapsedSummary = collapseRepeatedAssistantMessage(rawSummary);
+      const summary = normalizeConversationMessage(collapsedSummary);
+      if (summary) {
+        const previousAssistant = byMessageText.get(`${event.taskId}|assistant_message|${summary}`);
+        if (
+          previousAssistant &&
+          Math.abs(timestamp - previousAssistant.timestamp) <=
+            BOT_CONVERSATION_MESSAGE_DEDUPE_WINDOW_MS
+        ) {
+          continue;
+        }
+      }
+      out.push(
+        collapsedSummary !== rawSummary && typeof payload.resultSummary === "string"
+          ? { ...event, payload: { ...payload, resultSummary: collapsedSummary } }
+          : event,
+      );
+      continue;
+    }
+
+    if (effectiveType !== "user_message" && effectiveType !== "assistant_message") {
+      out.push(event);
+      continue;
+    }
+
+    const rawMessage = getEventMessage(event);
+    const collapsedMessage =
+      effectiveType === "assistant_message"
+        ? collapseRepeatedAssistantMessage(rawMessage)
+        : rawMessage;
+    const renderEvent =
+      collapsedMessage !== rawMessage && typeof payload.message === "string"
+        ? { ...event, payload: { ...payload, message: collapsedMessage } }
+        : event;
+    const messageId =
+      typeof payload.messageId === "string" && payload.messageId.trim()
+        ? payload.messageId.trim()
+        : typeof payload.message_id === "string" && payload.message_id.trim()
+          ? payload.message_id.trim()
+          : "";
+    const message = normalizeConversationMessage(collapsedMessage);
+    const messageScope = getBotTranscriptMessageScope(payload);
+    const stableKey = messageId
+      ? `${event.taskId}|${effectiveType}|${messageId}`
+      : message
+        ? `${event.taskId}|${effectiveType}|${messageScope ? `scope:${messageScope}|` : ""}text:${message}`
+        : "";
+    if (stableKey && byStableMessageId.has(stableKey)) {
+      // Delivery status can be updated by a later receipt event. Keep the
+      // latest copy for agent messages so the compact card is not left queued.
+      if (payload.messageSource === "agent") {
+        out[byStableMessageId.get(stableKey)!] = renderEvent;
+      }
+      continue;
+    }
+    if (message) {
+      const textKey = messageScope
+        ? `${event.taskId}|${effectiveType}|${messageScope}|${message}`
+        : `${event.taskId}|${effectiveType}|${message}`;
+      const previous = byMessageText.get(textKey);
+      if (
+        previous &&
+        Math.abs(timestamp - previous.timestamp) <= BOT_CONVERSATION_MESSAGE_DEDUPE_WINDOW_MS
+      ) {
+        if (payload.messageSource === "agent") out[previous.index] = renderEvent;
+        continue;
+      }
+      byMessageText.set(textKey, { index: out.length, timestamp });
+    }
+    if (stableKey) byStableMessageId.set(stableKey, out.length);
+    out.push(renderEvent);
+  }
+
+  return out;
+}
+
 function getToolCorrelationId(payload: Record<string, unknown>): string {
   const toolUseId =
     typeof payload.toolUseId === "string" && payload.toolUseId.trim().length > 0

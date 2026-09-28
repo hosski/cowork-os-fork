@@ -88,7 +88,7 @@ export function UpdateSettings() {
       setChecking(true);
       setError(null);
       setUpdateInfo(null);
-      const info = await window.electronAPI.checkForUpdates();
+      const info = await window.electronAPI.checkForUpdates("manual");
       setUpdateInfo(info);
     } catch (err: Any) {
       setError(err.message);
@@ -270,12 +270,20 @@ export function UpdateSettings() {
                   </strong>
                 </div>
               </>
+            ) : updateInfo.provenance.source === "no_release" ? (
+              <div className="update-header up-to-date">
+                <CheckCircle size={20} strokeWidth={2} />
+                <span>No published release found.</span>
+              </div>
             ) : (
               <div className="update-header up-to-date">
                 <CheckCircle size={20} strokeWidth={2} />
                 <span>You're up to date!</span>
               </div>
             )}
+            <div className="update-date">
+              Checked {new Date(updateInfo.provenance.checkedAt).toLocaleString()}.
+            </div>
           </div>
         )}
 

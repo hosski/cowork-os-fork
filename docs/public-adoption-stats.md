@@ -9,9 +9,9 @@ These numbers are acquisition and download-intent signals for CoWork OS. They do
 | Metric | Value |
 |---|---:|
 | GitHub stars | 459 |
-| GitHub forks | 79 |
+| GitHub forks | 80 |
 | GitHub watchers | 4 |
-| GitHub open issues | 0 |
+| GitHub open issues | 6 |
 | Latest release | v0.5.54 |
 | Latest release date | 2026-09-20 |
 | Installer/server downloads, lifetime | 1,510 |

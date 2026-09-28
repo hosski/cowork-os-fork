@@ -139,8 +139,8 @@ bounded_research=true
   it("routes SSH connectivity troubleshooting prompts to execution in operations domain", () => {
     const prompt = [
       "This is the azure VM private address but I cannot connect to it",
-      "alice@host % ssh user@10.213.136.68",
-      "Connection closed by 10.213.136.68 port 22",
+      "alice@host % ssh user@192.0.2.10",
+      "Connection closed by 192.0.2.10 port 22",
       "Zscaler is open on my mac",
     ].join("\n");
 
@@ -247,6 +247,26 @@ bounded_research=true
         "rather than fixing the existing bugs, build the new feature",
       );
       expect(routed.intent).toBe("redirect");
+    });
+
+    it("does not treat a rationale followed by later constraints as a task redirect", () => {
+      const routed = IntentRouter.route(
+        "Read orders.csv and create daily-orders-summary.md",
+        "Calculate totals from the source rows rather than guessing. Use write_file exactly once, then read_file the report. Do not change the source file or take external actions.",
+      );
+
+      expect(routed.intent).toBe("execution");
+      expect(routed.signals).not.toContain("redirect-contrast");
+    });
+
+    it("does not treat a negative constraint after a rationale as the redirected action", () => {
+      const routed = IntentRouter.route(
+        "Create daily-orders-summary.md",
+        "Calculate from source rows rather than guessing, and do not use shell commands.",
+      );
+
+      expect(routed.intent).toBe("execution");
+      expect(routed.signals).not.toContain("redirect-contrast");
     });
 
     it("routes 'forget that, work on X instead' negate-and-pivot pattern", () => {

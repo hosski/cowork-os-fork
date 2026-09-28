@@ -28,7 +28,6 @@ import {
   Search,
   Server,
   Workflow,
-  HeartPulse,
   Lightbulb,
   Inbox,
   Users,
@@ -57,7 +56,11 @@ import { VirtualList } from "./VirtualList";
 import { capitalizeSidebarSessionTitle } from "../utils/sidebar-title";
 import { deriveSlashCommandTaskTitle } from "../utils/slash-command-title";
 import { BotsPane, type BotRole } from "./BotsPane";
+import { useIsCalmTheme } from "../hooks/useIsCalmTheme";
+import { useAgentContext } from "../hooks/useAgentContext";
+import { CalmSidebarNav, CalmSidebarProfile, type CalmSidebarSegment } from "./calm/CalmSidebarNav";
 import { BOT_PROFILE_DELETED_EVENT, BOT_PROFILE_UPDATED_EVENT } from "./BotProfileDialog";
+import type { BotConversationRosterProjection } from "../../shared/bot-lifecycle";
 
 const SIDEBAR_ITEM_HEIGHT = 22;
 const SIDEBAR_DATE_HEADER_HEIGHT = 20;
@@ -91,11 +94,25 @@ export function formatRelativeShort(timestamp?: number): string {
   return `${Math.max(1, years)}y`;
 }
 
+function getBotProjectionSignature(
+  projections?: Readonly<Record<string, BotConversationRosterProjection>>,
+): string {
+  return Object.entries(projections || {})
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(
+      ([roleId, projection]) =>
+        `${roleId}:${projection.state}:${projection.activityLabel}:${projection.lastActivityAt}`,
+    )
+    .join("|");
+}
+
 interface SidebarProps {
   workspace: Workspace | null;
   tasks: Task[];
   botTasks?: Task[];
   selectedTaskId: string | null;
+  selectedBotConversationProjection?: BotConversationRosterProjection | null;
+  botConversationProjections?: Readonly<Record<string, BotConversationRosterProjection>>;
   isBotViewActive?: boolean;
   isAutomationsActive?: boolean;
   isIdeasActive?: boolean;
@@ -114,6 +131,7 @@ interface SidebarProps {
   onOpenInboxAgent?: () => void;
   onOpenAgents?: () => void;
   onOpenBot?: (bot: BotRole) => void | Promise<void>;
+  onReopenBot?: (task: Task) => void | Promise<void>;
   onBotUpdated?: (bot: BotRole) => void | Promise<void>;
   onBotDeleted?: (botId: string) => void | Promise<void>;
   onOpenEverydayAgent?: () => void;
@@ -124,6 +142,13 @@ interface SidebarProps {
   onOpenMissionControl: () => void;
   onOpenDevices?: () => void;
   isDevicesActive?: boolean;
+  /** Calm-theme navigation targets. */
+  onOpenHome?: () => void;
+  onOpenBuild?: () => void;
+  isBuildActive?: boolean;
+  onOpenLibrary?: () => void;
+  isLibraryActive?: boolean;
+  onOpenPlugins?: () => void;
 
   onTasksChanged: () => void;
   onLoadMoreTasks?: () => void;
@@ -825,6 +850,14 @@ function areSidebarPropsEqual(prev: SidebarProps, next: SidebarProps): boolean {
   return (
     prev.workspace?.id === next.workspace?.id &&
     prev.selectedTaskId === next.selectedTaskId &&
+    prev.selectedBotConversationProjection?.state ===
+      next.selectedBotConversationProjection?.state &&
+    prev.selectedBotConversationProjection?.activityLabel ===
+      next.selectedBotConversationProjection?.activityLabel &&
+    prev.selectedBotConversationProjection?.lastActivityAt ===
+      next.selectedBotConversationProjection?.lastActivityAt &&
+    getBotProjectionSignature(prev.botConversationProjections) ===
+      getBotProjectionSignature(next.botConversationProjections) &&
     prev.isBotViewActive === next.isBotViewActive &&
     prev.isAutomationsActive === next.isAutomationsActive &&
     prev.isIdeasActive === next.isIdeasActive &&
@@ -835,6 +868,8 @@ function areSidebarPropsEqual(prev: SidebarProps, next: SidebarProps): boolean {
     prev.isHealthActive === next.isHealthActive &&
     prev.isWorkflowsActive === next.isWorkflowsActive &&
     prev.isDevicesActive === next.isDevicesActive &&
+    prev.isBuildActive === next.isBuildActive &&
+    prev.isLibraryActive === next.isLibraryActive &&
     prev.isLoadingSessions === next.isLoadingSessions &&
     prev.isLoadingMoreTasks === next.isLoadingMoreTasks &&
     prev.hasMoreTasks === next.hasMoreTasks &&
@@ -847,6 +882,7 @@ function areSidebarPropsEqual(prev: SidebarProps, next: SidebarProps): boolean {
     prev.updateInfo?.latestVersion === next.updateInfo?.latestVersion &&
     prev.onSelectTask === next.onSelectTask &&
     prev.onOpenBot === next.onOpenBot &&
+    prev.onReopenBot === next.onReopenBot &&
     prev.onBotUpdated === next.onBotUpdated &&
     prev.onBotDeleted === next.onBotDeleted &&
     prev.onTasksChanged === next.onTasksChanged &&
@@ -860,6 +896,8 @@ function SidebarComponent({
   tasks,
   botTasks: botTasksOverride,
   selectedTaskId,
+  selectedBotConversationProjection,
+  botConversationProjections,
   isBotViewActive = false,
   isAutomationsActive = false,
   isIdeasActive = false,
@@ -877,6 +915,7 @@ function SidebarComponent({
   onOpenInboxAgent,
   onOpenAgents,
   onOpenBot,
+  onReopenBot,
   onOpenEverydayAgent,
   onOpenHealth,
   onOpenWorkflows,
@@ -885,6 +924,12 @@ function SidebarComponent({
   onOpenMissionControl,
   onOpenDevices,
   isDevicesActive = false,
+  onOpenHome,
+  onOpenBuild,
+  isBuildActive = false,
+  onOpenLibrary,
+  isLibraryActive = false,
+  onOpenPlugins,
   isLoadingMoreTasks = false,
 
   onTasksChanged,
@@ -896,13 +941,22 @@ function SidebarComponent({
   onBotUpdated,
   onBotDeleted,
 }: SidebarProps) {
+  const isCalm = useIsCalmTheme();
+  const calmAgentContext = useAgentContext();
   const [updateDismissed, setUpdateDismissed] = useState(false);
   const [menuOpenTaskId, setMenuOpenTaskId] = useState<string | null>(null);
   const [renameTaskId, setRenameTaskId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [collapsedTasks, setCollapsedTasks] = useState<Set<string>>(new Set());
   const [agentRoles, setAgentRoles] = useState<Map<string, AgentRoleInfo>>(new Map());
-  const [sidebarTab, setSidebarTab] = useState<"sessions" | "bots">("sessions");
+  const [sidebarTab, setSidebarTab] = useState<"sessions" | "bots">(
+    isBotViewActive ? "bots" : "sessions",
+  );
+  // Follow navigation into a bot, but let the user browse Sessions while that
+  // conversation stays open. A render-time override made Sessions unclickable.
+  useEffect(() => {
+    if (isBotViewActive) setSidebarTab("bots");
+  }, [isBotViewActive, selectedTaskId]);
   const [isLoadingBots, setIsLoadingBots] = useState(false);
   const [botsError, setBotsError] = useState<string | null>(null);
   // Keep the full session history visible by default. Users can still hide
@@ -949,7 +1003,7 @@ function SidebarComponent({
     [deferredSessionSearch],
   );
   const hasSessionSearch = normalizedSessionSearch.length > 0;
-  const isMoreActive = isMissionControlActive || isHealthActive || isIdeasActive;
+  const isMoreActive = isMissionControlActive || isIdeasActive;
   const isMoreExpanded = isMoreActive || !moreCollapsed;
 
   const loadSidebarWorkspaces = useCallback(async () => {
@@ -1278,7 +1332,7 @@ function SidebarComponent({
       ),
     [botTasksOverride, tasks, workspace?.id],
   );
-  const visibleSidebarTab = isBotViewActive ? "bots" : sidebarTab;
+  const visibleSidebarTab = sidebarTab;
 
   const handleBotCreated = useCallback((bot: BotRole) => {
     if (bot.isSystem) return;
@@ -1329,6 +1383,21 @@ function SidebarComponent({
   }, [loadMailboxInboxUnread]);
 
   const inboxUnreadCount = mailboxDigest?.unreadCount ?? mailboxStatus?.unreadCount ?? 0;
+  const calmSegment: CalmSidebarSegment = isBuildActive
+    ? "build"
+    : isAgentsActive || sidebarTab === "bots"
+      ? "agents"
+      : "home";
+  const handleCalmSegmentChange = (segment: CalmSidebarSegment) => {
+    if (segment === "agents") {
+      setSidebarTab("bots");
+      onOpenAgents?.();
+      return;
+    }
+    setSidebarTab("sessions");
+    if (segment === "build") onOpenBuild?.();
+    else onOpenHome?.();
+  };
   const inboxNavLabel =
     inboxUnreadCount > 0 ? `Inbox (${inboxUnreadCount > 99 ? "99+" : inboxUnreadCount})` : "Inbox";
   // Build task tree from flat list
@@ -1663,9 +1732,12 @@ function SidebarComponent({
           ? taskRows
           : getSidebarProjectSessionPreview(taskRows, false).visibleItems;
       rows.push(
-        ...visibleTaskRows.map(
-          (row): SidebarVirtualRow => ({ kind: "task", row, section, grouped }),
-        ),
+        ...visibleTaskRows.map((row): SidebarVirtualRow => ({
+          kind: "task",
+          row,
+          section,
+          grouped,
+        })),
       );
       return taskRows.length;
     };
@@ -2850,9 +2922,44 @@ function SidebarComponent({
   };
 
   return (
-    <div className="sidebar cli-sidebar">
+    <div className={`sidebar cli-sidebar${isCalm ? " calm-sidebar" : ""}`}>
+      {isCalm && (
+        <CalmSidebarNav
+          segment={calmSegment}
+          onSegmentChange={handleCalmSegmentChange}
+          onNew={handleNewTask}
+          onSearch={() => {
+            setSidebarTab("sessions");
+            setSessionsCollapsed(false);
+            setShowSessionSearch((value) => {
+              if (value) setSessionSearch("");
+              return !value;
+            });
+          }}
+          isSearchActive={showSessionSearch}
+          onOpenLibrary={onOpenLibrary}
+          isLibraryActive={isLibraryActive}
+          onOpenPlugins={onOpenPlugins}
+          onOpenAutomations={onOpenAutomations}
+          isAutomationsActive={isAutomationsActive}
+          more={{
+            inboxLabel: "Inbox",
+            inboxUnread: inboxUnreadCount,
+            onOpenInbox: onOpenInboxAgent,
+            isInboxActive: isInboxAgentActive,
+            onOpenEveryday: onOpenEverydayAgent,
+            isEverydayActive: isEverydayAgentActive,
+            onOpenDevices,
+            isDevicesActive,
+            onOpenMissionControl,
+            isMissionControlActive,
+            onOpenIdeas,
+            isIdeasActive,
+          }}
+        />
+      )}
       {/* New Session Button */}
-      <div className="sidebar-header">
+      <div className="sidebar-header" hidden={isCalm}>
         <div className="cli-header-actions sidebar-nav">
           <button
             className="new-task-btn cli-new-task-btn cli-action-btn sidebar-new-session-btn"
@@ -3058,28 +3165,6 @@ function SidebarComponent({
 
               <button
                 type="button"
-                className={`new-task-btn cli-new-task-btn cli-action-btn sidebar-home-btn sidebar-nav-item ${isHealthActive ? "active" : ""}`}
-                onClick={onOpenHealth}
-                aria-pressed={isHealthActive}
-                title="Health"
-              >
-                <span className="cli-btn-text">
-                  <span className="terminal-only">health</span>
-                  <span className="modern-only cli-new-task-modern-label">
-                    <span
-                      className="sidebar-home-btn-icon"
-                      aria-hidden="true"
-                      style={{ display: "flex" }}
-                    >
-                      <HeartPulse size={16} strokeWidth={2} style={{ display: "block" }} />
-                    </span>
-                    <span>Health</span>
-                  </span>
-                </span>
-              </button>
-
-              <button
-                type="button"
                 className={`new-task-btn cli-new-task-btn cli-action-btn sidebar-ideas-btn sidebar-nav-item ${isIdeasActive ? "active" : ""}`}
                 onClick={onOpenIdeas}
                 aria-pressed={isIdeasActive}
@@ -3225,7 +3310,12 @@ function SidebarComponent({
         </div>
       ) : (
         <>
-          <div className="sidebar-session-tabs" role="tablist" aria-label="Workspace views">
+          <div
+            className="sidebar-session-tabs"
+            role="tablist"
+            aria-label="Workspace views"
+            hidden={isCalm}
+          >
             <button
               type="button"
               role="tab"
@@ -3251,11 +3341,14 @@ function SidebarComponent({
               roles={botRoles}
               tasks={botTasks}
               selectedTaskId={selectedTaskId}
+              selectedConversationProjection={selectedBotConversationProjection}
+              conversationProjections={botConversationProjections}
               isLoading={isLoadingBots}
               error={botsError}
               onRetry={() => void loadAgentRoles()}
               onSelectTask={onSelectTask}
               onOpenBot={onOpenBot}
+              onReopenBot={onReopenBot}
               onOpenAgents={onOpenAgents}
               onBotCreated={handleBotCreated}
               onBotUpdated={async (bot) => {
@@ -3528,8 +3621,14 @@ function SidebarComponent({
         </>
       )}
 
+      {isCalm && (
+        <CalmSidebarProfile
+          agentName={calmAgentContext.agentName}
+          onOpenSettings={onOpenSettings}
+        />
+      )}
       {/* Footer */}
-      <div className="sidebar-footer cli-sidebar-footer">
+      <div className="sidebar-footer cli-sidebar-footer" hidden={isCalm && !updateInfo?.available}>
         <InfraWalletBadge onOpenSettings={onOpenSettings} />
         <div className="cli-footer-actions">
           <button

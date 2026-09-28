@@ -11,6 +11,7 @@ import {
   Suspense,
   startTransition,
 } from "react";
+import { PulseConsentPrompt } from "./components/PulseConsentPrompt";
 import type { KeyboardEvent as ReactKeyboardEvent, PointerEvent as ReactPointerEvent } from "react";
 import { useReplayMode, type ReplayControls } from "./hooks/useReplayMode";
 import { useTaskDuration } from "./hooks/useTaskDuration";
@@ -31,13 +32,16 @@ import {
   BOT_CONVERSATION_HISTORY_OPEN_EVENT,
   createBotConversationOptions,
   isBotConversation,
+  isBotRecoveryBranch,
   matchesBotConversation,
   selectLatestBotConversation,
+  shouldReopenBotConversationInWorkspace,
 } from "./utils/bot-conversations";
 import type { SpreadsheetTurnContext } from "./components/SpreadsheetArtifactViewer";
 import { ResizableDividerHandle } from "./components/ResizableDividerHandle";
 import { DisclaimerModal } from "./components/DisclaimerModal";
 import { Onboarding } from "./components/Onboarding";
+import { QuickFirstRun } from "./components/QuickFirstRun";
 // TaskQueuePanel moved to RightPanel
 import { ToastContainer } from "./components/Toast";
 import {
@@ -50,6 +54,9 @@ import {
 } from "./components/BrowserUseApprovalDialog";
 import { GenericApprovalDialog } from "./components/GenericApprovalDialog";
 import { ApproveAllSessionWarningDialog } from "./components/ApproveAllSessionWarningDialog";
+import { LibraryPanel } from "./components/calm/LibraryPanel";
+import { BuildPanel } from "./components/calm/BuildPanel";
+import { CalmAgentSetupHost } from "./components/calm/CalmAgentSetup";
 import { QuickTaskFAB } from "./components/QuickTaskFAB";
 import { NotificationPanel } from "./components/NotificationPanel";
 import { WebAccessClient } from "./components/WebAccessClient";
@@ -91,10 +98,23 @@ import {
 import type { ComposerDraft, DraftAttachmentRef } from "../shared/composer-drafts";
 import { TASK_EVENT_STATUS_MAP } from "../shared/task-event-status-map";
 import { getEffectiveTaskEventType } from "./utils/task-event-compat";
+import {
+  clampResizableSidebarWidth,
+  getResizableSidebarWidthConstraints,
+  RESIZABLE_SIDEBAR_MIN_WIDTH,
+} from "./utils/resizable-sidebar-layout";
+import {
+  getLatestTaskSnapshotAfterCreate,
+  shouldApplyReconciledTaskSnapshot,
+} from "./utils/task-create-reconciliation";
 import { isLlmRequestCancelledEvent } from "./utils/task-event-visibility";
 import { markSessionAutoResolvingApproval } from "./utils/approval-event-state";
 import { appendRendererTaskEvents, capTaskEvents } from "./utils/task-event-append";
 import { TaskTimelineCache } from "./utils/task-timeline-cache";
+import {
+  deriveBotConversationProjection,
+  type BotConversationRosterProjection,
+} from "../shared/bot-lifecycle";
 import {
   createTaskEventScheduler,
   getTaskEventTargetKey,
@@ -274,8 +294,9 @@ const MissionControlPanel = lazy(() =>
 );
 
 const SPREADSHEET_SIDEBAR_DEFAULT_WIDTH = 720;
-const SPREADSHEET_SIDEBAR_MIN_WIDTH = 420;
-const SPREADSHEET_MAIN_MIN_WIDTH = 390;
+const SPREADSHEET_SIDEBAR_MIN_WIDTH = RESIZABLE_SIDEBAR_MIN_WIDTH;
+/** Conversation column width beside an open artifact in the calm theme. */
+const CALM_CHAT_COLUMN_WIDTH = 400;
 const SPREADSHEET_SIDEBAR_WIDTH_STORAGE_KEY = "cowork:spreadsheetSidebarWidth";
 type ActiveArtifactKind = "spreadsheet" | "document" | "presentation" | "webpage";
 type BrowserWorkbenchOpenRequest = {
@@ -676,12 +697,13 @@ type AppView =
   | "settings"
   | "browser"
   | "devices"
-  | "health"
   | "ideas"
   | "inboxAgent"
   | "agents"
   | "everydayAgent"
-  | "missionControl";
+  | "missionControl"
+  | "library"
+  | "build";
 type RemoteTaskView = {
   deviceId: string;
   deviceName: string;
@@ -786,6 +808,8 @@ type SelectedTaskWorkspaceViewProps = {
     quotedAssistantMessage?: QuotedAssistantMessage,
     options?: {
       interactionMode?: import("../shared/interaction-mode").InteractionModeSelection;
+      deliveryMode?: "message" | "follow_up";
+      messageId?: string;
       permissionMode?: PermissionMode;
       shellAccess?: boolean;
       accessProfileId?: AccessProfileId;
@@ -810,6 +834,7 @@ type SelectedTaskWorkspaceViewProps = {
     images?: ImageAttachment[],
     workspace?: Workspace,
   ) => Promise<void | boolean>;
+  onFirstTaskReady: (task: Task, workspace: Workspace) => void;
   onAskInbox: (query: string) => void;
   onChangeWorkspace: () => void;
   onSelectWorkspace: (workspace: Workspace) => void;
@@ -937,6 +962,7 @@ const SelectedTaskWorkspaceView = memo(
     onStartOnboarding,
     onStartFreshSession,
     onCreateTask,
+    onFirstTaskReady,
     onAskInbox,
     onChangeWorkspace,
     onSelectWorkspace,
@@ -987,41 +1013,54 @@ const SelectedTaskWorkspaceView = memo(
       setBrowserWorkbench(null);
       setSpawnedAgentSidebar(null);
     }, [sideChat?.task?.id]);
+    // Calm theme: artifacts take most of the width and the conversation narrows
+    // to a column beside them, instead of opening the right panel as well.
+    const prepareArtifactSidebar = useCallback(() => {
+      if (!document.documentElement.classList.contains("visual-calm")) {
+        onRevealRightSidebar?.();
+        return;
+      }
+      const containerWidth =
+        splitLayoutRef.current?.getBoundingClientRect().width || window.innerWidth;
+      setSpreadsheetSidebarWidth(
+        clampResizableSidebarWidth(containerWidth - CALM_CHAT_COLUMN_WIDTH, containerWidth),
+      );
+    }, [onRevealRightSidebar]);
     const openSpreadsheetArtifact = useCallback(
       (path: string) => {
         setBrowserWorkbench(null);
         setSpawnedAgentSidebar(null);
-        onRevealRightSidebar?.();
+        prepareArtifactSidebar();
         setSpreadsheetArtifact({ kind: "spreadsheet", path, mode: "sidebar" });
       },
-      [onRevealRightSidebar],
+      [prepareArtifactSidebar],
     );
     const openDocumentArtifact = useCallback(
       (path: string) => {
         setBrowserWorkbench(null);
         setSpawnedAgentSidebar(null);
-        onRevealRightSidebar?.();
+        prepareArtifactSidebar();
         setSpreadsheetArtifact({ kind: "document", path, mode: "sidebar" });
       },
-      [onRevealRightSidebar],
+      [prepareArtifactSidebar],
     );
     const openPresentationArtifact = useCallback(
       (path: string) => {
         setBrowserWorkbench(null);
         setSpawnedAgentSidebar(null);
-        onRevealRightSidebar?.();
+        prepareArtifactSidebar();
         setSpreadsheetArtifact({ kind: "presentation", path, mode: "sidebar" });
       },
-      [onRevealRightSidebar],
+      [prepareArtifactSidebar],
     );
     const openWebArtifact = useCallback(
       (path: string) => {
         setBrowserWorkbench(null);
         setSpawnedAgentSidebar(null);
-        onRevealRightSidebar?.();
+        prepareArtifactSidebar();
         setSpreadsheetArtifact({ kind: "webpage", path, mode: "sidebar" });
       },
-      [onRevealRightSidebar],
+      [prepareArtifactSidebar],
     );
     const closeSpreadsheetArtifact = useCallback(() => {
       setSpreadsheetArtifact(null);
@@ -1068,16 +1107,12 @@ const SelectedTaskWorkspaceView = memo(
         onRevealRightSidebar?.();
         const containerWidth =
           splitLayoutRef.current?.getBoundingClientRect().width || window.innerWidth;
-        const maxWidth = Math.max(
-          SPREADSHEET_SIDEBAR_MIN_WIDTH,
-          containerWidth - SPREADSHEET_MAIN_MIN_WIDTH,
-        );
         const preferredBrowserWidth = Math.max(
           SPREADSHEET_SIDEBAR_DEFAULT_WIDTH,
           containerWidth - 460,
         );
         setSpreadsheetSidebarWidth(
-          Math.min(Math.max(preferredBrowserWidth, SPREADSHEET_SIDEBAR_MIN_WIDTH), maxWidth),
+          clampResizableSidebarWidth(preferredBrowserWidth, containerWidth),
         );
         setBrowserWorkbench({
           sessionId: request.sessionId || "default",
@@ -1147,12 +1182,11 @@ const SelectedTaskWorkspaceView = memo(
     const clampSpreadsheetSidebarWidth = useCallback((width: number) => {
       const containerWidth =
         splitLayoutRef.current?.getBoundingClientRect().width || window.innerWidth;
-      const maxWidth = Math.max(
-        SPREADSHEET_SIDEBAR_MIN_WIDTH,
-        containerWidth - SPREADSHEET_MAIN_MIN_WIDTH,
-      );
-      return Math.min(Math.max(width, SPREADSHEET_SIDEBAR_MIN_WIDTH), maxWidth);
+      return clampResizableSidebarWidth(width, containerWidth);
     }, []);
+    const sidebarWidthConstraints = getResizableSidebarWidthConstraints(
+      splitLayoutRef.current?.getBoundingClientRect().width || window.innerWidth,
+    );
     useLayoutEffect(() => {
       if (
         !(
@@ -1184,12 +1218,7 @@ const SelectedTaskWorkspaceView = memo(
         event.currentTarget.setPointerCapture?.(event.pointerId);
         const resizeHandle = event.currentTarget;
         const pointerId = event.pointerId;
-        const maxWidth = Math.max(
-          SPREADSHEET_SIDEBAR_MIN_WIDTH,
-          rect.width - SPREADSHEET_MAIN_MIN_WIDTH,
-        );
-        const clampWidth = (width: number) =>
-          Math.min(Math.max(width, SPREADSHEET_SIDEBAR_MIN_WIDTH), maxWidth);
+        const clampWidth = (width: number) => clampResizableSidebarWidth(width, rect.width);
         setIsSpreadsheetResizing(true);
         setSpreadsheetSidebarWidth(clampWidth(rect.right - event.clientX));
 
@@ -1462,6 +1491,7 @@ const SelectedTaskWorkspaceView = memo(
         return (
           <WebArtifactViewer
             filePath={spreadsheetArtifact.path}
+            readOnlyPreview={task?.source === "sample"}
             workspacePath={workspace.path}
             mode="fullscreen"
             onClose={closeSpreadsheetArtifact}
@@ -1510,6 +1540,18 @@ const SelectedTaskWorkspaceView = memo(
       workspace?.path &&
       !remoteTaskView,
     );
+    const botConversationProjection = useMemo(
+      () =>
+        task?.agentConfig?.botConversation
+          ? deriveBotConversationProjection({
+              task,
+              events: replayControls.replayEvents,
+              childEvents,
+              childTasks,
+            })
+          : null,
+      [childEvents, childTasks, replayControls.replayEvents, task],
+    );
 
     return (
       <div
@@ -1529,6 +1571,7 @@ const SelectedTaskWorkspaceView = memo(
               replayControls={replayControls}
               botConversations={botConversations}
               isLoadingBotConversations={isLoadingBotConversations}
+              conversationProjection={botConversationProjection}
               draftValue={draftValue}
               draftRevision={draftRevision}
               onDraftValueChange={onDraftValueChange}
@@ -1548,6 +1591,7 @@ const SelectedTaskWorkspaceView = memo(
               onStartOnboarding={onStartOnboarding}
               onStartFreshSession={onStartFreshSession}
               onCreateTask={onCreateTask}
+              onFirstTaskReady={onFirstTaskReady}
               onAskInbox={onAskInbox}
               onChangeWorkspace={onChangeWorkspace}
               onSelectWorkspace={onSelectWorkspace}
@@ -1645,7 +1689,7 @@ const SelectedTaskWorkspaceView = memo(
                 role="separator"
                 orientation="vertical"
                 aria-label="Resize workbench sidebar"
-                aria-valuemin={SPREADSHEET_SIDEBAR_MIN_WIDTH}
+                aria-valuemin={sidebarWidthConstraints.minWidth}
                 aria-valuenow={Math.round(spreadsheetSidebarWidth)}
                 tabIndex={0}
                 onPointerDown={handleSpreadsheetResizePointerDown}
@@ -1720,6 +1764,7 @@ const SelectedTaskWorkspaceView = memo(
                   ) : spreadsheetArtifact?.kind === "webpage" ? (
                     <WebArtifactViewer
                       filePath={spreadsheetArtifact.path}
+                      readOnlyPreview={task?.source === "sample"}
                       workspacePath={workspace.path}
                       mode="sidebar"
                       onClose={closeSpreadsheetArtifact}
@@ -1743,7 +1788,7 @@ const SelectedTaskWorkspaceView = memo(
           ) : task?.agentConfig?.botConversation && !remoteTaskView && !effectiveRightCollapsed ? (
             <BotDetailsRail
               task={task}
-              workspace={workspace}
+              conversationProjection={botConversationProjection}
               onEdit={() => {
                 // The bot identity header owns the profile dialog; focus it
                 // through the same history action rather than duplicating the
@@ -1756,7 +1801,6 @@ const SelectedTaskWorkspaceView = memo(
               onOpenHistory={() => {
                 window.dispatchEvent(new Event(BOT_CONVERSATION_HISTORY_OPEN_EVENT));
               }}
-              onOpenComputerSettings={() => onOpenSettings("tools")}
               onClose={onCloseRightPanel}
             />
           ) : !effectiveRightCollapsed && !remoteTaskView ? (
@@ -1850,6 +1894,25 @@ const MAX_RENDERER_CHILD_EVENTS = 300;
 const MAX_TIMELINE_HISTORY_EVENTS = 1200;
 const MAX_TIMELINE_HISTORY_PAYLOAD_BYTES = 2 * 1024 * 1024;
 const MAX_TIMELINE_HISTORY_PAGE_PAYLOAD_BYTES = 512 * 1024;
+const BOT_CONVERSATION_PROJECTION_EVENT_TYPES = new Set([
+  "agent_message",
+  "agent_spawn_requested",
+  "agent_spawned",
+  "agent_completed",
+  "agent_failed",
+  "assistant_message",
+  "input_request_created",
+  "input_request_dismissed",
+  "input_request_resolved",
+  "task_cancelled",
+  "task_completed",
+  "task_failed",
+  "task_interrupted",
+  "task_paused",
+  "task_resumed",
+  "task_status",
+  "user_message",
+]);
 // Safety stop for a one-click "load all" expansion so a very long task cannot
 // issue unbounded history requests.
 const TIMELINE_HISTORY_LOAD_ALL_MAX_PAGES = 40;
@@ -2060,6 +2123,9 @@ export function App() {
   // Bot transcripts use a dedicated feed so the paged Sessions list cannot
   // hide older conversations belonging to a bot.
   const [botConversationTasks, setBotConversationTasks] = useState<Task[]>([]);
+  const [botConversationProjections, setBotConversationProjections] = useState<
+    Record<string, BotConversationRosterProjection>
+  >({});
   const [isLoadingBotConversations, setIsLoadingBotConversations] = useState(false);
   const [hasMoreTasks, setHasMoreTasks] = useState(true);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
@@ -2099,21 +2165,21 @@ export function App() {
     | "skills"
     | "scheduled"
     | "voice"
-    | "companies"
-    | "digitaltwins"
     | "mcp"
     | "triggers"
     | "subconscious"
-    | "health"
-    | "suggestions"
+      | "suggestions"
     | "insights"
     | "pulse"
     | "traces"
     | "everydayAgent"
+    | "customize"
   >("appearance");
   const [homeAutomationFocusTick, setHomeAutomationFocusTick] = useState(0);
   const [events, setEvents] = useState<TaskEvent[]>([]);
   const [childEvents, setChildEvents] = useState<TaskEvent[]>([]);
+  const botConversationTasksRef = useRef<Task[]>([]);
+  botConversationTasksRef.current = botConversationTasks;
 
   // Child tasks dispatched from the selected parent task (for DispatchedAgentsPanel)
   const childTasks = useMemo(() => {
@@ -2128,6 +2194,18 @@ export function App() {
           botConversationTasks.find((task) => task.id === selectedTaskId)
         : undefined),
     [botConversationTasks, remoteTaskView, tasks, selectedTaskId],
+  );
+  const selectedBotConversationProjection = useMemo(
+    () =>
+      selectedTask?.agentConfig?.botConversation && !remoteTaskView
+        ? deriveBotConversationProjection({
+            task: selectedTask,
+            events,
+            childEvents,
+            childTasks,
+          })
+        : null,
+    [childEvents, childTasks, events, remoteTaskView, selectedTask],
   );
   const completedTaskIdsSignature = useMemo(
     () =>
@@ -2257,6 +2335,10 @@ export function App() {
   const fetchedFullTaskForMentionMetadataRef = useRef<Set<string>>(new Set());
   const currentViewRef = useRef<AppView>("main");
   const rightSidebarCollapsedRef = useRef(false);
+  const botConversationPanelMemoryRef = useRef<{
+    active: boolean;
+    previousCollapsed: boolean | null;
+  }>({ active: false, previousCollapsed: null });
   const currentWorkspaceRef = useRef<Workspace | null>(null);
   const noiseEventThrottleRef = useRef<Map<string, number>>(new Map());
   const taskLastEventTimestampRef = useRef<Map<string, number>>(new Map());
@@ -2650,6 +2732,130 @@ export function App() {
     );
   }, []);
 
+  const botConversationProjectionRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const botConversationProjectionRefreshTaskIdsRef = useRef<Set<string>>(new Set());
+
+  const loadBotConversationRosterProjections = useCallback(async (conversationTasks: Task[]) => {
+    const getTaskEvents = window.electronAPI?.getTaskEvents;
+    if (!getTaskEvents) return {};
+
+    const roleIds = new Set(
+      conversationTasks
+        .map((task) => task.assignedAgentRoleId)
+        .filter((roleId): roleId is string => Boolean(roleId)),
+    );
+    const latestTasks = Array.from(roleIds)
+      .map((roleId) => {
+        const task = selectLatestBotConversation(conversationTasks, roleId);
+        return task ? ([roleId, task] as const) : null;
+      })
+      .filter((entry): entry is readonly [string, Task] => entry !== null);
+
+    const entries = await Promise.all(
+      latestTasks.map(async ([roleId, task]) => {
+        try {
+          const taskEvents = (await getTaskEvents(task.id)) as TaskEvent[];
+          const projection = deriveBotConversationProjection({
+            task,
+            events: taskEvents,
+          });
+          return [
+            roleId,
+            {
+              state: projection.state,
+              activityLabel: projection.activityLabel,
+              lastActivityAt: projection.lastActivityAt,
+            },
+          ] as const;
+        } catch (error) {
+          console.warn("Failed to load bot roster projection", {
+            roleId,
+            taskId: task.id,
+            error,
+          });
+          return null;
+        }
+      }),
+    );
+
+    return Object.fromEntries(
+      entries.filter(
+        (entry): entry is readonly [string, BotConversationRosterProjection] => entry !== null,
+      ),
+    ) as Record<string, BotConversationRosterProjection>;
+  }, []);
+
+  const refreshBotConversationProjection = useCallback(async (taskId: string) => {
+    const getTaskEvents = window.electronAPI?.getTaskEvents;
+    if (!getTaskEvents) return;
+    const currentTasks = botConversationTasksRef.current;
+    const task = currentTasks.find((candidate) => candidate.id === taskId);
+    const roleId = task?.assignedAgentRoleId;
+    if (!task || !roleId) return;
+
+    try {
+      const taskEvents = (await getTaskEvents(task.id)) as TaskEvent[];
+      const latestTask = selectLatestBotConversation(botConversationTasksRef.current, roleId);
+      if (!latestTask || latestTask.id !== task.id) return;
+      const projection = deriveBotConversationProjection({
+        task: latestTask,
+        events: taskEvents,
+      });
+      setBotConversationProjections((previous) => {
+        if (
+          previous[roleId]?.state === projection.state &&
+          previous[roleId]?.activityLabel === projection.activityLabel &&
+          previous[roleId]?.lastActivityAt === projection.lastActivityAt
+        ) {
+          return previous;
+        }
+        return {
+          ...previous,
+          [roleId]: {
+            state: projection.state,
+            activityLabel: projection.activityLabel,
+            lastActivityAt: projection.lastActivityAt,
+          },
+        };
+      });
+    } catch (error) {
+      console.warn("Failed to refresh bot roster projection", {
+        roleId,
+        taskId: task.id,
+        error,
+      });
+    }
+  }, []);
+
+  const scheduleBotConversationProjectionRefresh = useCallback(
+    (taskId: string) => {
+      if (!botConversationTasksRef.current.some((task) => task.id === taskId)) return;
+      botConversationProjectionRefreshTaskIdsRef.current.add(taskId);
+      if (botConversationProjectionRefreshTimerRef.current !== null) return;
+      botConversationProjectionRefreshTimerRef.current = setTimeout(() => {
+        botConversationProjectionRefreshTimerRef.current = null;
+        const taskIds = Array.from(botConversationProjectionRefreshTaskIdsRef.current);
+        botConversationProjectionRefreshTaskIdsRef.current.clear();
+        void Promise.all(
+          taskIds.map((pendingTaskId) => refreshBotConversationProjection(pendingTaskId)),
+        );
+      }, 250);
+    },
+    [refreshBotConversationProjection],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (botConversationProjectionRefreshTimerRef.current !== null) {
+        clearTimeout(botConversationProjectionRefreshTimerRef.current);
+        botConversationProjectionRefreshTimerRef.current = null;
+      }
+      botConversationProjectionRefreshTaskIdsRef.current.clear();
+    };
+  }, []);
+
   const upsertBotConversationSnapshot = useCallback((task: Task) => {
     if (!isBotConversation(task) || task.source === "side_chat") return;
     setBotConversationTasks((previous) =>
@@ -2724,6 +2930,8 @@ export function App() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState<boolean | null>(null);
   // Onboarding state (null = loading)
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
+  const [pendingOnboardingPrompt, setPendingOnboardingPrompt] = useState<string | null>(null);
+  const firstOnboardingPromptStartedRef = useRef(false);
   // Timestamp of when onboarding was completed
   const [onboardingCompletedAt, setOnboardingCompletedAt] = useState<string | undefined>(undefined);
   const hasElectronAPI = typeof window !== "undefined" && !!window.electronAPI;
@@ -3018,21 +3226,22 @@ export function App() {
     setDisclaimerAccepted(true);
   };
 
-  const handleOnboardingComplete = (dontShowAgain: boolean) => {
+  const handleOnboardingComplete = async (dontShowAgain: boolean, firstPrompt?: string) => {
     const timestamp = new Date().toISOString();
     // Save to main process for persistence
     // If dontShowAgain is true, mark as completed with timestamp
     // If false, just save the timestamp but don't mark as completed (user can see it again next time)
-    window.electronAPI
-      ?.saveAppearanceSettings?.({
+    try {
+      await window.electronAPI?.saveAppearanceSettings?.({
         onboardingCompleted: dontShowAgain,
         onboardingCompletedAt: timestamp,
-      })
-      ?.catch((error) => {
-        console.error("Failed to save onboarding state:", error);
       });
+    } catch (error) {
+      console.error("Failed to save onboarding state:", error);
+    }
     setOnboardingCompleted(true); // Always allow proceeding to main app
     setOnboardingCompletedAt(timestamp);
+    if (firstPrompt?.trim()) setPendingOnboardingPrompt(firstPrompt.trim());
 
     // Sync any onboarding-time appearance changes (e.g. light/dark toggle)
     window.electronAPI
@@ -3049,6 +3258,32 @@ export function App() {
 
     // Refresh LLM config after onboarding (user may have configured a provider)
     loadLLMConfig();
+  };
+
+  const handleQuickFirstRunComplete = async (
+    choice: "ready" | "skipped" | "browsing_without_ai" | "connecting",
+    openSettings = false,
+  ) => {
+    try {
+      const previousTasks = await window.electronAPI.listTasks({ limit: 1 });
+      if (Array.isArray(previousTasks) && previousTasks.length === 0) {
+        const currentMemoryFeatures = await window.electronAPI.getMemoryFeaturesSettings();
+        await window.electronAPI.saveMemoryFeaturesSettings({
+          ...currentMemoryFeatures,
+          contextPackInjectionEnabled: false,
+          heartbeatMaintenanceEnabled: false,
+        });
+      }
+      await window.electronAPI.setFirstTaskSetup(choice);
+    } catch (error) {
+      // Setup preferences are best-effort; never trap the user in first-run.
+      console.error("Failed to save first-run setup:", error);
+    }
+    await handleOnboardingComplete(true);
+    if (openSettings) {
+      setSettingsTab("llm");
+      setCurrentView("settings");
+    }
   };
 
   const handleOpenBrowserView = (url?: string) => {
@@ -3225,7 +3460,7 @@ export function App() {
 
     const checkUpdates = async () => {
       try {
-        const info = await window.electronAPI.checkForUpdates();
+        const info = await window.electronAPI.checkForUpdates("background");
         if (info.available) {
           setUpdateInfo(info);
         }
@@ -3254,9 +3489,14 @@ export function App() {
     // dark is default, no class needed unless specified otherwise by visual styles
 
     // Remove existing visual theme classes
-    root.classList.remove("visual-terminal", "visual-warm", "visual-oblivion");
-    const resolvedVisualTheme = visualTheme === "warm" ? "oblivion" : visualTheme;
+    root.classList.remove("visual-terminal", "visual-warm", "visual-oblivion", "visual-calm");
+    // Calm layers its overrides on top of the modern (oblivion) styles.
+    const resolvedVisualTheme =
+      visualTheme === "warm" || visualTheme === "calm" ? "oblivion" : visualTheme;
     root.classList.add(`visual-${resolvedVisualTheme}`);
+    if (visualTheme === "calm") {
+      root.classList.add("visual-calm");
+    }
 
     // Remove existing accent classes
     root.classList.remove(
@@ -4004,6 +4244,10 @@ export function App() {
         }
       }
 
+      if (BOT_CONVERSATION_PROJECTION_EVENT_TYPES.has(event.type)) {
+        scheduleBotConversationProjectionRefresh(event.taskId);
+      }
+
       if (event.type === "task_completed" || event.type === "task_cancelled") {
         // Completion payloads carry the latest preview/result fields, so
         // refresh the dedicated bot roster once per terminal run instead of
@@ -4581,6 +4825,7 @@ export function App() {
     remoteTaskView,
     selectTaskAfterDraftFlush,
     selectedTaskId,
+    scheduleBotConversationProjectionRefresh,
     taskTimelineCacheKey,
     updateBotConversationSnapshot,
   ]);
@@ -5285,6 +5530,7 @@ export function App() {
     const workspaceId = currentWorkspace?.id;
     if (!workspaceId) {
       setBotConversationTasks([]);
+      setBotConversationProjections({});
       setIsLoadingBotConversations(false);
       return;
     }
@@ -5293,6 +5539,7 @@ export function App() {
       const api = window.electronAPI;
       if (!api) {
         setBotConversationTasks([]);
+        setBotConversationProjections({});
         return;
       }
       const includeAllWorkspaces = isTempWorkspaceId(workspaceId);
@@ -5311,10 +5558,12 @@ export function App() {
           task.agentConfig?.botConversation === true &&
           task.source !== "side_chat",
       );
+      const rosterProjections = await loadBotConversationRosterProjections(filtered);
       const roleIds = Array.from(
         new Set(filtered.map((task) => task.assignedAgentRoleId).filter(Boolean) as string[]),
       );
       await Promise.all(roleIds.map((roleId) => getBotNotificationPolicy(roleId)));
+      setBotConversationProjections(rosterProjections);
       setBotConversationTasks((previous) => {
         const byId = new Map(filtered.map((task) => [task.id, task]));
         // Preserve a just-created/selected transcript if a refresh races the
@@ -5335,7 +5584,7 @@ export function App() {
     } finally {
       setIsLoadingBotConversations(false);
     }
-  }, [currentWorkspace?.id, getBotNotificationPolicy]);
+  }, [currentWorkspace?.id, getBotNotificationPolicy, loadBotConversationRosterProjections]);
 
   const refreshTaskLists = useCallback(async () => {
     await Promise.allSettled([loadTasks(), loadBotConversations()]);
@@ -5508,45 +5757,56 @@ export function App() {
     [addToast, remoteTaskView, selectedTaskId],
   );
 
+  // Opens the folder dialog and returns the matching (or newly created)
+  // workspace, without applying it anywhere.
+  const pickFolderWorkspace = async (): Promise<Workspace | null> => {
+    const pickerDefaultPath =
+      currentWorkspace && !currentWorkspace.isTemp && !isTempWorkspaceId(currentWorkspace.id)
+        ? currentWorkspace.path
+        : undefined;
+
+    // Open folder selection dialog
+    const folderPath = await window.electronAPI.selectFolder(pickerDefaultPath);
+    if (!folderPath) return null; // User cancelled
+
+    // Reuse the workspace if this folder already is one
+    const existingWorkspaces = await window.electronAPI.listWorkspaces();
+    const existingWorkspace = existingWorkspaces.find((w: Workspace) => w.path === folderPath);
+    if (existingWorkspace) return existingWorkspace;
+
+    // Create a new workspace for this folder
+    const folderName = folderPath.split(/[\\/]/).filter(Boolean).pop() || "Workspace";
+    return window.electronAPI.createWorkspace({
+      name: folderName,
+      path: folderPath,
+      permissions: {
+        read: true,
+        write: true,
+        delete: true,
+        network: true,
+        // Command tools are enabled by the selected access profile for a
+        // task; keep the persisted workspace baseline fail-closed.
+        shell: false,
+      },
+    });
+  };
+
   // Handle workspace change - opens folder selection dialog directly
   const handleChangeWorkspace = async () => {
     try {
-      const pickerDefaultPath =
-        currentWorkspace && !currentWorkspace.isTemp && !isTempWorkspaceId(currentWorkspace.id)
-          ? currentWorkspace.path
-          : undefined;
+      const workspace = await pickFolderWorkspace();
+      if (workspace) await handleSelectWorkspace(workspace);
+    } catch (error) {
+      console.error("Failed to change workspace:", error);
+    }
+  };
 
-      // Open folder selection dialog
-      const folderPath = await window.electronAPI.selectFolder(pickerDefaultPath);
-      if (!folderPath) return; // User cancelled
-
-      // Get list of existing workspaces for reference
-      const existingWorkspaces = await window.electronAPI.listWorkspaces();
-
-      // Check if this folder is already a workspace
-      const existingWorkspace = existingWorkspaces.find((w: Workspace) => w.path === folderPath);
-      if (existingWorkspace) {
-        await handleSelectWorkspace(existingWorkspace);
-        return;
-      }
-
-      // Create a new workspace for this folder
-      const folderName = folderPath.split(/[\\/]/).filter(Boolean).pop() || "Workspace";
-      const workspace = await window.electronAPI.createWorkspace({
-        name: folderName,
-        path: folderPath,
-        permissions: {
-          read: true,
-          write: true,
-          delete: true,
-          network: true,
-          // Command tools are enabled by the selected access profile for a
-          // task; keep the persisted workspace baseline fail-closed.
-          shell: false,
-        },
-      });
-
-      await handleSelectWorkspace(workspace);
+  // Build starts a new task, so picking a folder there only changes the
+  // working folder and never moves the currently selected task.
+  const handlePickBuildFolder = async () => {
+    try {
+      const workspace = await pickFolderWorkspace();
+      if (workspace) setCurrentWorkspace(workspace);
     } catch (error) {
       console.error("Failed to change workspace:", error);
     }
@@ -5759,6 +6019,29 @@ export function App() {
       });
       tasksRef.current = optimisticTasks;
       setTasks((prev) => upsertTaskPreservingIdentity(prev, task, { prependIfMissing: true }));
+
+      // Startup can fail before the create-task IPC returns. In that case the
+      // terminal event may arrive before this task is in tasksRef, so reconcile
+      // the optimistic snapshot against the persisted task after registering it.
+      void getLatestTaskSnapshotAfterCreate(task, (taskId) => window.electronAPI.getTask(taskId))
+        .then((latestTask) => {
+          if (latestTask === task) return;
+          const currentTask = tasksRef.current.find((candidate) => candidate.id === task.id);
+          if (currentTask && !shouldApplyReconciledTaskSnapshot(currentTask, latestTask)) return;
+
+          tasksRef.current = upsertTaskPreservingIdentity(tasksRef.current, latestTask, {
+            prependIfMissing: true,
+          });
+          setTasks((prev) => {
+            const current = prev.find((candidate) => candidate.id === task.id);
+            if (current && !shouldApplyReconciledTaskSnapshot(current, latestTask)) return prev;
+            return upsertTaskPreservingIdentity(prev, latestTask, { prependIfMissing: true });
+          });
+        })
+        .catch((error) => {
+          console.warn("Failed to reconcile task state after creation:", error);
+        });
+
       await selectTaskAfterDraftFlush(task.id);
       setCurrentView("main");
       return true;
@@ -5785,6 +6068,23 @@ export function App() {
       return false;
     }
   };
+
+  useEffect(() => {
+    if (!pendingOnboardingPrompt || !onboardingCompleted || !disclaimerAccepted || firstOnboardingPromptStartedRef.current) return;
+    firstOnboardingPromptStartedRef.current = true;
+    const prompt = pendingOnboardingPrompt;
+    setPendingOnboardingPrompt(null);
+    void (async () => {
+      try {
+        const workspace = currentWorkspace ?? await window.electronAPI.getTempWorkspace({ createNew: true });
+        if (!workspace) throw new Error("Could not create a workspace for the first task.");
+        if (!currentWorkspace) setCurrentWorkspace(workspace);
+        await handleCreateTask(prompt.slice(0, 80), prompt, { generateTitle: true }, undefined, workspace);
+      } catch (error) {
+        addToast({ type: "error", title: "First task could not start", message: error instanceof Error ? error.message : "Try the prompt again in the workspace." });
+      }
+    })();
+  }, [pendingOnboardingPrompt, onboardingCompleted, disclaimerAccepted, currentWorkspace]);
 
   const handleOpenManagedAgentTask = useCallback(
     async (taskId: string) => {
@@ -6552,6 +6852,42 @@ export function App() {
         : !selectedTaskId
           ? true
           : rightSidebarCollapsed;
+  const isBotConversationSurface =
+    currentView === "main" &&
+    !remoteTaskView &&
+    selectedTask?.agentConfig?.botConversation === true;
+
+  useLayoutEffect(() => {
+    const panelMemory = botConversationPanelMemoryRef.current;
+
+    if (isBotConversationSurface) {
+      if (panelMemory.active) return;
+
+      const previousCollapsed = rightSidebarCollapsedRef.current;
+      botConversationPanelMemoryRef.current = {
+        active: true,
+        previousCollapsed,
+      };
+      if (!previousCollapsed) {
+        setRightSidebarCollapsed(true);
+      }
+      return;
+    }
+
+    if (!panelMemory.active) return;
+
+    botConversationPanelMemoryRef.current = {
+      active: false,
+      previousCollapsed: null,
+    };
+    if (
+      panelMemory.previousCollapsed !== null &&
+      rightSidebarCollapsedRef.current !== panelMemory.previousCollapsed
+    ) {
+      setRightSidebarCollapsed(panelMemory.previousCollapsed);
+    }
+  }, [isBotConversationSurface]);
+
   const unseenOutputCount = unseenOutputTaskIds.length;
   const showTitleBarTerminalToggle =
     currentView === "main" &&
@@ -6620,6 +6956,51 @@ export function App() {
     [addToast, currentWorkspace?.id, handleCreateTask, loadBotConversations],
   );
   const openingBotRef = useRef(false);
+  // Source task id -> branch reopened into the current workspace, so repeated
+  // clicks on an old conversation reuse one branch instead of creating more.
+  const reopenedBotBranchesRef = useRef(new Map<string, Task>());
+  const continueBotConversationInWorkspace = useCallback(
+    async (task: Task, workspaceId: string): Promise<Task> => {
+      if (!isTempWorkspaceId(workspaceId)) return task;
+      const teams =
+        task.workspaceId === workspaceId && task.agentConfig?.botTeamId
+          ? await window.electronAPI.listTeams(workspaceId, true)
+          : [];
+      if (!shouldReopenBotConversationInWorkspace(task, workspaceId, teams)) return task;
+      const cachedBranch = reopenedBotBranchesRef.current.get(task.id);
+      if (cachedBranch?.workspaceId === workspaceId) {
+        const current = await window.electronAPI.getTask(cachedBranch.id).catch(() => null);
+        if (current) return current as Task;
+        reopenedBotBranchesRef.current.delete(task.id);
+      }
+      let reopened: Task;
+      try {
+        reopened = await window.electronAPI.reopenBotConversation({ workspaceId, taskId: task.id });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (/BOT_(?:MEMBERSHIP_REVOKED|TEAM_UNAVAILABLE)/.test(message)) {
+          reopened = await window.electronAPI.reopenBotConversation({
+            workspaceId,
+            taskId: task.id,
+            repairMembership: true,
+          });
+        } else if (/BOT_WORKSPACE_CONFLICT/.test(message) && task.workspaceId !== workspaceId) {
+          // Legacy or custom-team transcripts can't be branched; adopt them into
+          // this workspace as before so they still open.
+          const adopted = (await window.electronAPI.updateTaskWorkspace(task.id, workspaceId)) as
+            | Task
+            | null
+            | undefined;
+          return adopted || task;
+        } else {
+          throw error;
+        }
+      }
+      if (reopened.id !== task.id) reopenedBotBranchesRef.current.set(task.id, reopened);
+      return reopened;
+    },
+    [],
+  );
   const handleOpenBot = useCallback(
     async (bot: BotRole) => {
       const workspaceId = currentWorkspace?.id;
@@ -6628,8 +7009,8 @@ export function App() {
       try {
         // Query the bot's canonical transcript, including records beyond the
         // sidebar page. Temporary UI workspaces are recreated on every launch,
-        // so search prior temporary workspaces and adopt the latest transcript
-        // into the current workspace before resuming it.
+        // so search prior workspaces and branch a mismatched transcript into
+        // the current workspace before resuming it.
         const includeAllWorkspaces = isTempWorkspaceId(workspaceId);
         const candidates = (await window.electronAPI.listBotConversations({
           workspaceId,
@@ -6639,13 +7020,27 @@ export function App() {
           limit: 500,
           offset: 0,
         })) as Task[];
-        let botTask = selectLatestBotConversation(candidates, bot.id);
-        if (botTask && botTask.workspaceId !== workspaceId && includeAllWorkspaces) {
-          const adopted = (await window.electronAPI.updateTaskWorkspace(botTask.id, workspaceId)) as
-            | Task
-            | undefined;
-          botTask = adopted || { ...botTask, workspaceId };
-        }
+        const selectedBotTask = candidates.find(
+          (candidate) =>
+            candidate.id === selectedTaskIdRef.current &&
+            matchesBotConversation(candidate, workspaceId, bot.id),
+        );
+        const latestBotTask = selectLatestBotConversation(candidates, bot.id);
+        const selectedTaskHasRecoveryBranch = Boolean(
+          selectedBotTask &&
+          candidates.some(
+            (candidate) =>
+              candidate.branchFromTaskId === selectedBotTask.id &&
+              isBotRecoveryBranch(candidate) &&
+              matchesBotConversation(candidate, workspaceId, bot.id),
+          ),
+        );
+        // A user can inspect the preserved source transcript through the
+        // lineage link. Returning to the roster must still select its fresh
+        // recovery branch rather than reopening the cancelled source task.
+        let botTask =
+          selectedTaskHasRecoveryBranch || !selectedBotTask ? latestBotTask : selectedBotTask;
+        if (botTask) botTask = await continueBotConversationInWorkspace(botTask, workspaceId);
         if (botTask && !matchesBotConversation(botTask, workspaceId, bot.id)) {
           throw new Error("Restart CoWork OS to load the updated bot transcript service.");
         }
@@ -6690,8 +7085,85 @@ export function App() {
     [
       addToast,
       clearRemoteTaskView,
+      continueBotConversationInWorkspace,
       currentWorkspace?.id,
       handleCreateTask,
+      loadBotConversations,
+      markTaskSwitchStart,
+      selectTaskAfterDraftFlush,
+    ],
+  );
+  const handleReopenBot = useCallback(
+    async (task: Task) => {
+      const workspaceId = currentWorkspace?.id;
+      if (!workspaceId) {
+        addToast({
+          type: "error",
+          title: "Select a workspace first",
+          message: "Bot recovery needs an active workspace so the replacement stays local.",
+        });
+        return;
+      }
+      if (!window.electronAPI?.reopenBotConversation) {
+        addToast({
+          type: "error",
+          title: "Restart CoWork OS to recover this bot",
+          message: "The recovery control is not available in this running app instance yet.",
+        });
+        return;
+      }
+      try {
+        let reopened: Task;
+        try {
+          reopened = await window.electronAPI.reopenBotConversation({
+            workspaceId,
+            taskId: task.id,
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          if (!/BOT_(?:MEMBERSHIP_REVOKED|TEAM_UNAVAILABLE)/.test(message)) throw error;
+          reopened = await window.electronAPI.reopenBotConversation({
+            workspaceId,
+            taskId: task.id,
+            repairMembership: true,
+          });
+        }
+        setBotConversationTasks((previous) => [
+          reopened,
+          ...previous.filter((candidate) => candidate.id !== reopened.id),
+        ]);
+        tasksRef.current = upsertTaskPreservingIdentity(tasksRef.current, reopened, {
+          prependIfMissing: true,
+        });
+        setTasks((previous) =>
+          upsertTaskPreservingIdentity(previous, reopened, { prependIfMissing: true }),
+        );
+        clearRemoteTaskView();
+        markTaskSwitchStart(reopened.id);
+        void selectTaskAfterDraftFlush(reopened.id);
+        setCurrentView("main");
+        await loadBotConversations();
+        addToast({
+          type: "success",
+          title: "Bot conversation reopened",
+          message:
+            "The old transcript was preserved and a fresh workspace-local conversation is ready.",
+        });
+      } catch (error) {
+        addToast({
+          type: "error",
+          title: "Could not recover bot conversation",
+          message:
+            error instanceof Error
+              ? error.message.replace(/^BOT_[A-Z_]+:\s*/, "")
+              : "The old transcript was preserved. Try again or repair the bot team.",
+        });
+      }
+    },
+    [
+      addToast,
+      clearRemoteTaskView,
+      currentWorkspace?.id,
       loadBotConversations,
       markTaskSwitchStart,
       selectTaskAfterDraftFlush,
@@ -6820,35 +7292,58 @@ export function App() {
   const handleSelectBotConversation = useCallback(
     async (conversationId: string) => {
       const workspaceId = currentWorkspaceRef.current?.id || currentWorkspace?.id;
-      const knownConversation = botConversationTasks.find(
-        (candidate) =>
-          candidate.id === conversationId &&
-          candidate.workspaceId === workspaceId &&
-          isBotConversation(candidate),
+      let selectedConversation = botConversationTasks.find(
+        (candidate) => candidate.id === conversationId && isBotConversation(candidate),
       );
-      if (!knownConversation) {
+      if (!selectedConversation || !workspaceId) {
         await openTaskById(conversationId);
+        return;
+      }
+      if (selectedConversation.workspaceId !== workspaceId && !isTempWorkspaceId(workspaceId)) {
+        await openTaskById(conversationId);
+        return;
+      }
+      try {
+        selectedConversation = await continueBotConversationInWorkspace(
+          selectedConversation,
+          workspaceId,
+        );
+      } catch (error) {
+        addToast({
+          type: "error",
+          title: "Could not open bot conversation",
+          message:
+            error instanceof Error
+              ? error.message.replace(/^BOT_[A-Z_]+:\s*/, "")
+              : "The old transcript was preserved. Try again or reopen the bot team.",
+        });
         return;
       }
 
       clearRemoteTaskView();
-      tasksRef.current = upsertTaskPreservingIdentity(tasksRef.current, knownConversation, {
+      setBotConversationTasks((previous) =>
+        upsertTaskPreservingIdentity(previous, selectedConversation!, { prependIfMissing: true }),
+      );
+      tasksRef.current = upsertTaskPreservingIdentity(tasksRef.current, selectedConversation, {
         prependIfMissing: true,
       });
       setTasks((prev) =>
-        upsertTaskPreservingIdentity(prev, knownConversation, { prependIfMissing: true }),
+        upsertTaskPreservingIdentity(prev, selectedConversation!, { prependIfMissing: true }),
       );
-      markTaskSwitchStart(knownConversation.id);
-      void selectTaskAfterDraftFlush(knownConversation.id);
+      markTaskSwitchStart(selectedConversation.id);
+      void selectTaskAfterDraftFlush(selectedConversation.id);
       setCurrentView("main");
     },
     [
+      addToast,
       botConversationTasks,
       clearRemoteTaskView,
+      continueBotConversationInWorkspace,
       currentWorkspace?.id,
       markTaskSwitchStart,
       openTaskById,
       selectTaskAfterDraftFlush,
+      setBotConversationTasks,
     ],
   );
 
@@ -6869,12 +7364,7 @@ export function App() {
           ) {
             throw new Error("That bot conversation could not be found.");
           }
-          if (task.workspaceId !== workspaceId && isTempWorkspaceId(workspaceId)) {
-            const adopted = (await window.electronAPI.updateTaskWorkspace(task.id, workspaceId)) as
-              | Task
-              | undefined;
-            task = adopted || { ...task, workspaceId };
-          }
+          task = await continueBotConversationInWorkspace(task, workspaceId);
         } else {
           const candidates = (await window.electronAPI.listBotConversations({
             workspaceId,
@@ -6885,12 +7375,7 @@ export function App() {
             offset: 0,
           })) as Task[];
           task = selectLatestBotConversation(candidates, route.botId);
-          if (task && task.workspaceId !== workspaceId && isTempWorkspaceId(workspaceId)) {
-            const adopted = (await window.electronAPI.updateTaskWorkspace(task.id, workspaceId)) as
-              | Task
-              | undefined;
-            task = adopted || { ...task, workspaceId };
-          }
+          if (task) task = await continueBotConversationInWorkspace(task, workspaceId);
           if (!task) {
             const role = await window.electronAPI.getAgentRole(route.botId);
             if (!role) throw new Error("That bot could not be found.");
@@ -6923,6 +7408,7 @@ export function App() {
     [
       addToast,
       clearRemoteTaskView,
+      continueBotConversationInWorkspace,
       currentWorkspace?.id,
       handleNewBotConversation,
       markTaskSwitchStart,
@@ -7013,10 +7499,17 @@ export function App() {
   if (!onboardingCompleted) {
     return (
       <div className="app">
-        <Onboarding
-          onComplete={handleOnboardingComplete}
-          workspaceId={currentWorkspace?.id ?? null}
-        />
+        {import.meta.env.VITE_FIRST_TASK_BETA === "1" ? (
+          <QuickFirstRun
+            onComplete={(choice) => handleQuickFirstRunComplete(choice, false)}
+            onOpenSettings={() => handleQuickFirstRunComplete("connecting", true)}
+          />
+        ) : (
+          <Onboarding
+            onComplete={handleOnboardingComplete}
+            workspaceId={currentWorkspace?.id ?? null}
+          />
+        )}
       </div>
     );
   }
@@ -7326,12 +7819,13 @@ export function App() {
         currentView === "automations" ||
         currentView === "workflows" ||
         currentView === "devices" ||
-        currentView === "health" ||
         currentView === "ideas" ||
         currentView === "inboxAgent" ||
         currentView === "agents" ||
         currentView === "everydayAgent" ||
-        currentView === "missionControl") && (
+        currentView === "missionControl" ||
+        currentView === "library" ||
+        currentView === "build") && (
         <>
           <div
             className={`app-layout ${leftSidebarCollapsed ? "left-collapsed" : ""} ${effectiveRightCollapsed ? "right-collapsed" : ""}`}
@@ -7342,6 +7836,8 @@ export function App() {
                 tasks={tasks}
                 botTasks={botConversationTasks}
                 selectedTaskId={selectedTaskId}
+                selectedBotConversationProjection={selectedBotConversationProjection}
+                botConversationProjections={botConversationProjections}
                 isBotViewActive={
                   currentView === "main" &&
                   !remoteTaskView &&
@@ -7354,8 +7850,16 @@ export function App() {
                 isAgentsActive={currentView === "agents"}
                 isEverydayAgentActive={currentView === "everydayAgent"}
                 isMissionControlActive={currentView === "missionControl"}
-                isHealthActive={currentView === "health"}
                 isDevicesActive={currentView === "devices"}
+                isBuildActive={currentView === "build"}
+                isLibraryActive={currentView === "library"}
+                onOpenHome={() => setCurrentView("main")}
+                onOpenBuild={() => setCurrentView("build")}
+                onOpenLibrary={() => setCurrentView("library")}
+                onOpenPlugins={() => {
+                  setSettingsTab("customize");
+                  setCurrentView("settings");
+                }}
                 isLoadingSessions={isInitialTaskListLoading}
                 isLoadingMoreTasks={isLoadingMoreTasks}
                 completionAttentionTaskIds={unseenCompletedTaskIds}
@@ -7366,13 +7870,13 @@ export function App() {
                 onOpenInboxAgent={() => setCurrentView("inboxAgent")}
                 onOpenAgents={() => setCurrentView("agents")}
                 onOpenBot={handleOpenBot}
+                onReopenBot={handleReopenBot}
                 onBotDeleted={(botId) => {
                   if (selectedTask?.assignedAgentRoleId === botId) {
                     handleClearTaskView();
                   }
                 }}
                 onOpenEverydayAgent={() => setCurrentView("everydayAgent")}
-                onOpenHealth={() => setCurrentView("health")}
                 onOpenDevices={() => setCurrentView("devices")}
                 onNewSession={handleNewSession}
                 onOpenSettings={handleOpenSettings}
@@ -7545,17 +8049,6 @@ export function App() {
                   }}
                   availableProviders={availableProviders}
                 />
-              ) : currentView === "health" ? (
-                <HealthPanel
-                  onOpenSettings={() => {
-                    setSettingsTab("health");
-                    setCurrentView("settings");
-                  }}
-                  onCreateTask={(title, prompt) => {
-                    setCurrentView("main");
-                    handleCreateTask(title, prompt, { generateTitle: true });
-                  }}
-                />
               ) : currentView === "ideas" ? (
                 <IdeasPanel
                   onCreateTaskFromPrompt={handleCreateTaskFromIdea}
@@ -7582,10 +8075,6 @@ export function App() {
                       setMissionControlInitialIssueId(null);
                       setMissionControlEverydayAgentFocus(false);
                       setCurrentView("missionControl");
-                    }}
-                    onOpenAgentPersonas={() => {
-                      setSettingsTab("digitaltwins");
-                      setCurrentView("settings");
                     }}
                     onOpenSlackSettings={() => {
                       setSettingsTab("slack");
@@ -7614,6 +8103,27 @@ export function App() {
                   onCreateTask={(title, prompt) => {
                     setCurrentView("main");
                     handleCreateTask(title, prompt, { generateTitle: true });
+                  }}
+                />
+              ) : currentView === "library" ? (
+                <LibraryPanel workspaceId={currentWorkspace?.id} />
+              ) : currentView === "build" ? (
+                <BuildPanel
+                  onStart={handleCreateTaskFromIdea}
+                  workspace={currentWorkspace}
+                  onSelectWorkspace={setCurrentWorkspace}
+                  onPickFolder={handlePickBuildFolder}
+                  model={{
+                    models: availableModels,
+                    selectedModel,
+                    selectedProvider,
+                    selectedReasoningEffort,
+                    providers: availableProviders,
+                    onModelChange: handleModelChange,
+                    onOpenSettings: (tab) => {
+                      if (tab) setSettingsTab(tab);
+                      setCurrentView("settings");
+                    },
                   }}
                 />
               ) : currentView === "missionControl" ? (
@@ -7687,6 +8197,14 @@ export function App() {
                   onStartOnboarding={handleShowOnboarding}
                   onStartFreshSession={handleClearTaskView}
                   onCreateTask={handleCreateTask}
+                  onFirstTaskReady={(task, workspace) => {
+                    setTasks((previous) => upsertTaskPreservingIdentity(previous, task, { prependIfMissing: true }));
+                    tasksRef.current = upsertTaskPreservingIdentity(tasksRef.current, task, { prependIfMissing: true });
+                    setCurrentWorkspace(workspace);
+                    clearRemoteTaskView();
+                    setCurrentView("main");
+                    void selectTaskAfterDraftFlush(task.id);
+                  }}
                   onAskInbox={handleAskInboxFromComposer}
                   onChangeWorkspace={handleChangeWorkspace}
                   onSelectWorkspace={handleSelectWorkspace}
@@ -7718,6 +8236,7 @@ export function App() {
           {currentWorkspace && currentView === "main" && (
             <QuickTaskFAB onCreateTask={handleQuickTask} />
           )}
+          <CalmAgentSetupHost />
 
           {/* DAG Execution Status Panel */}
           {currentView === "main" && (
@@ -7770,6 +8289,9 @@ export function App() {
             />
           ) : null}
 
+          {/* Ask for Pulse consent after the first successful real task, not at install. */}
+          <PulseConsentPrompt tasks={tasks} />
+
           {/* Toast Notifications */}
           <ToastContainer
             toasts={toasts}
@@ -7816,15 +8338,6 @@ export function App() {
               setCurrentView("main");
               void selectTaskAfterDraftFlush(taskId);
               setRightSidebarCollapsed(false);
-            }}
-            onNavigateToMissionControl={(companyId) => {
-              setMissionControlInitialCompanyId(companyId);
-              setMissionControlInitialIssueId(null);
-              setMissionControlEverydayAgentFocus(false);
-              setCurrentView("missionControl");
-            }}
-            onNavigateToAgents={() => {
-              setCurrentView("agents");
             }}
           />
         </Suspense>

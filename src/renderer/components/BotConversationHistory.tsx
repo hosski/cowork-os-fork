@@ -1,8 +1,12 @@
 import { Archive, Check, Clock3, MessageCircle, Plus } from "lucide-react";
 import { BotGlyph } from "./BotGlyph";
 import type { Task } from "../../shared/types";
+import type { BotConversationProjection } from "../../shared/bot-lifecycle";
 import { isBotConversation } from "../utils/bot-conversations";
 import "./BotConversationHistory.css";
+
+type BotConversationHistoryProjection = Pick<BotConversationProjection, "state"> &
+  Partial<Pick<BotConversationProjection, "activityLabel" | "lastActivityAt">>;
 
 export interface BotConversationHistoryProps {
   botName: string;
@@ -10,6 +14,7 @@ export interface BotConversationHistoryProps {
   selectedConversationId?: string | null;
   conversations: Task[];
   loading?: boolean;
+  selectedConversationProjection?: BotConversationHistoryProjection | null;
   onSelectConversation?: (conversationId: string) => void | Promise<void>;
   onNewConversation?: (botRoleId: string) => void | Promise<void>;
 }
@@ -18,12 +23,32 @@ function isArchived(task: Task): boolean {
   return task.sessionArchived === true;
 }
 
-function getConversationTitle(task: Task, index: number): string {
+const SYNTHETIC_BOT_PROMPT_RE =
+  /^(?:start (?:a )?(?:conversation|chatting) with .+|resume the .+ bot conversation)\b/i;
+
+function isSyntheticBotPrompt(value: string): boolean {
+  return SYNTHETIC_BOT_PROMPT_RE.test(value.trim());
+}
+
+export function getBotConversationTitle(task: Task, index: number, botName: string): string {
   const title = String(task.title || "").trim();
-  if (title && !/^start chatting with /i.test(title)) return title;
-  const firstMessage = String(task.userPrompt || task.prompt || "").trim();
-  if (firstMessage && !/^start chatting with /i.test(firstMessage)) {
+  const genericTitle = !title || title.toLocaleLowerCase() === botName.trim().toLocaleLowerCase();
+  if (!genericTitle && !isSyntheticBotPrompt(title)) return title;
+  const firstMessage = [task.userPrompt, task.sidebarPromptPreview, task.rawPrompt, task.prompt]
+    .map((value) =>
+      String(value || "")
+        .replace(/\s+/g, " ")
+        .trim(),
+    )
+    .find((value) => value && !isSyntheticBotPrompt(value));
+  if (firstMessage) {
     return firstMessage.length > 58 ? `${firstMessage.slice(0, 57).trimEnd()}…` : firstMessage;
+  }
+  if (/^reopened bot conversation$/i.test(task.branchLabel || "")) {
+    return "Reopened conversation";
+  }
+  if (/^repaired bot conversation$/i.test(task.branchLabel || "")) {
+    return "Repaired conversation";
   }
   return index === 0 ? "New conversation" : `Conversation ${index + 1}`;
 }
@@ -39,12 +64,62 @@ function formatConversationDate(timestamp?: number): string {
   }
 }
 
+export function getBotConversationHistoryStatusLabel(
+  task: Pick<Task, "status" | "error"> & Partial<Pick<Task, "resultSummary">>,
+  projection?: BotConversationHistoryProjection | null,
+): string {
+  const activityLabel = projection?.activityLabel?.trim();
+  if (projection?.state === "working") return activityLabel || "Working on latest message";
+  if (projection?.state === "waiting") return activityLabel || "Waiting on a teammate";
+  if (projection?.state === "needs_input") return activityLabel || "Needs attention";
+  if (projection?.state === "failed") return activityLabel || "Unavailable — reopen to retry";
+  if (projection?.state === "completed") return "Completed";
+  if (task.status === "completed") return "Completed";
+  if (task.status === "cancelled" && task.resultSummary?.trim()) return "Completed";
+  if (task.status === "failed" || task.status === "cancelled") {
+    return "Unavailable — reopen to retry";
+  }
+  if (task.status === "pending" || task.status === "queued") {
+    return "Ready for another message";
+  }
+  if (task.status === "planning" || task.status === "executing") {
+    return "Working on latest message";
+  }
+  if (
+    (task.status === "blocked" || task.status === "paused" || task.status === "interrupted") &&
+    /^waiting for .+? to reply(?: before finishing this conversation)?\.?$/i.test(
+      String(task.error || "")
+        .replace(/\s+/g, " ")
+        .trim(),
+    )
+  ) {
+    return "Waiting on a teammate";
+  }
+  if (task.status === "blocked" || task.status === "paused" || task.status === "interrupted") {
+    return "Needs attention";
+  }
+  return "Ready for another message";
+}
+
+export function getBotConversationHistoryTimestamp(
+  task: Pick<Task, "id" | "updatedAt" | "createdAt">,
+  selectedConversationId?: string | null,
+  selectedConversationProjection?: Partial<
+    Pick<BotConversationProjection, "lastActivityAt">
+  > | null,
+): number {
+  const taskTimestamp = task.updatedAt || task.createdAt;
+  if (task.id !== selectedConversationId) return taskTimestamp;
+  return Math.max(taskTimestamp, selectedConversationProjection?.lastActivityAt || 0);
+}
+
 export function BotConversationHistory({
   botName,
   botRoleId,
   selectedConversationId,
   conversations,
   loading = false,
+  selectedConversationProjection,
   onSelectConversation,
   onNewConversation,
 }: BotConversationHistoryProps) {
@@ -57,7 +132,16 @@ export function BotConversationHistory({
     )
     .sort(
       (a, b) =>
-        (b.updatedAt || b.createdAt) - (a.updatedAt || a.createdAt) || b.createdAt - a.createdAt,
+        getBotConversationHistoryTimestamp(
+          b,
+          selectedConversationId,
+          selectedConversationProjection,
+        ) -
+          getBotConversationHistoryTimestamp(
+            a,
+            selectedConversationId,
+            selectedConversationProjection,
+          ) || b.createdAt - a.createdAt,
     );
 
   return (
@@ -114,15 +198,28 @@ export function BotConversationHistory({
                   )}
                 </span>
                 <span className="bot-conversation-history-row-copy">
-                  <strong>{getConversationTitle(conversation, index)}</strong>
+                  <strong>{getBotConversationTitle(conversation, index, botName)}</strong>
                   <span>
                     {archived
                       ? "Archived"
-                      : conversation.status === "completed"
-                        ? "Completed"
-                        : conversation.status}
-                    {formatConversationDate(conversation.updatedAt || conversation.createdAt)
-                      ? ` · ${formatConversationDate(conversation.updatedAt || conversation.createdAt)}`
+                      : getBotConversationHistoryStatusLabel(
+                          conversation,
+                          selected ? selectedConversationProjection : null,
+                        )}
+                    {formatConversationDate(
+                      getBotConversationHistoryTimestamp(
+                        conversation,
+                        selectedConversationId,
+                        selected ? selectedConversationProjection : null,
+                      ),
+                    )
+                      ? ` · ${formatConversationDate(
+                          getBotConversationHistoryTimestamp(
+                            conversation,
+                            selectedConversationId,
+                            selected ? selectedConversationProjection : null,
+                          ),
+                        )}`
                       : ""}
                   </span>
                 </span>

@@ -19,6 +19,7 @@ import {
   InlineKeyboardButton,
   MessageAttachment,
   ChannelConfig,
+  CHANNEL_TYPES,
 } from "./channels/types";
 import { TelegramAdapter } from "./channels/telegram";
 import { SecurityManager } from "./security";
@@ -729,25 +730,7 @@ export class MessageRouter {
     );
   }
 
-  private static readonly TEXT_ONLY_CHANNELS = new Set<ChannelType>([
-    "telegram",
-    "discord",
-    "slack",
-    "whatsapp",
-    "imessage",
-    "signal",
-    "mattermost",
-    "matrix",
-    "twitch",
-    "line",
-    "bluebubbles",
-    "email",
-    "teams",
-    "googlechat",
-    "feishu",
-    "wecom",
-    "x",
-  ]);
+  private static readonly TEXT_ONLY_CHANNELS = new Set<ChannelType>(CHANNEL_TYPES);
 
   private static readonly TEXT_ONLY_RESTRICTED_TOOLS = [
     "canvas_create",
@@ -1099,6 +1082,17 @@ export class MessageRouter {
     if (adapter.onCallbackQuery) {
       adapter.onCallbackQuery(async (query) => {
         await this.handleCallbackQuery(adapter, query);
+      });
+    }
+
+    if (adapter.onDeliveryStatus) {
+      adapter.onDeliveryStatus((update) => {
+        this.emitEvent({
+          type: "message:delivery_status",
+          channel: adapter.type,
+          timestamp: update.timestamp,
+          data: { ...update },
+        });
       });
     }
 
@@ -5380,25 +5374,7 @@ export class MessageRouter {
     const deliverFlags = new Set(["--if-result", "--only-if-result", "--quiet", "--silent"]);
     const sourceChatFlags = new Set(["--source-chat", "--chat"]);
     const sourceChannelFlags = new Set(["--source-channel", "--channel"]);
-    const channelTypes: Set<string> = new Set([
-      "telegram",
-      "discord",
-      "slack",
-      "whatsapp",
-      "imessage",
-      "signal",
-      "mattermost",
-      "matrix",
-      "twitch",
-      "line",
-      "bluebubbles",
-      "email",
-      "teams",
-      "googlechat",
-      "feishu",
-      "wecom",
-      "x",
-    ]);
+    const channelTypes: Set<string> = new Set(CHANNEL_TYPES);
 
     // Parse leading flags before the prompt.
     while (promptParts.length > 0) {
@@ -6057,21 +6033,7 @@ export class MessageRouter {
 
       case "openai": {
         currentModel = status.currentModel;
-        const cachedOpenAI = LLMProviderFactory.getCachedModels("openai");
-        if (cachedOpenAI && cachedOpenAI.length > 0) {
-          models = cachedOpenAI;
-        } else {
-          // Default OpenAI models
-          models = [
-            { key: "gpt-6-astra", displayName: "GPT-6 Astra" },
-            { key: "gpt-4o", displayName: "GPT-4o" },
-            { key: "gpt-4o-mini", displayName: "GPT-4o Mini" },
-            { key: "gpt-4-turbo", displayName: "GPT-4 Turbo" },
-            { key: "gpt-3.5-turbo", displayName: "GPT-3.5 Turbo" },
-            { key: "o1", displayName: "o1" },
-            { key: "o1-mini", displayName: "o1 Mini" },
-          ];
-        }
+        models = status.models;
         break;
       }
 
@@ -6230,20 +6192,7 @@ export class MessageRouter {
 
       case "openai": {
         currentModel = status.currentModel;
-        const cachedOpenAI = LLMProviderFactory.getCachedModels("openai");
-        if (cachedOpenAI && cachedOpenAI.length > 0) {
-          models = cachedOpenAI;
-        } else {
-          models = [
-            { key: "gpt-6-astra", displayName: "GPT-6 Astra" },
-            { key: "gpt-4o", displayName: "GPT-4o" },
-            { key: "gpt-4o-mini", displayName: "GPT-4o Mini" },
-            { key: "gpt-4-turbo", displayName: "GPT-4 Turbo" },
-            { key: "gpt-3.5-turbo", displayName: "GPT-3.5 Turbo" },
-            { key: "o1", displayName: "o1" },
-            { key: "o1-mini", displayName: "o1 Mini" },
-          ];
-        }
+        models = status.models;
         break;
       }
 

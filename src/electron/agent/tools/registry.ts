@@ -1,3 +1,8 @@
+import {
+  EXTERNAL_RUNTIME_AGENTS,
+  normalizeExternalRuntimeAgent,
+  type ExternalRuntimeAgent,
+} from "../../../shared/types";
 import * as fs from "fs";
 import * as fsPromises from "fs/promises";
 import * as path from "path";
@@ -20,11 +25,16 @@ import {
   RuntimeToolSideEffectLevel,
   WorkspacePathAliasPolicy,
   WorkerRoleKind,
+  AgentMessageDeliveryStatus,
 } from "../../../shared/types";
 import {
   allowsStructuredHumanInput,
   resolveHumanInputPolicy,
 } from "../../../shared/human-input-policy";
+import {
+  compareBotHandoffEventOrder,
+  isBotHandoffMessageDelivered,
+} from "../../../shared/bot-handoff";
 import { AgentDaemon } from "../daemon";
 import { FileTools } from "./file-tools";
 import { SkillTools } from "./skill-tools";
@@ -41,6 +51,7 @@ import { ShellTools } from "./shell-tools";
 import { ImageTools } from "./image-tools";
 import { VideoTools } from "./video-tools";
 import { YouTubeTools } from "./youtube-tools";
+import { MeetingArtifactTools } from "./meeting-artifact-tools";
 import { VisionTools } from "./vision-tools";
 import { SystemTools } from "./system-tools";
 import { CronTools } from "./cron-tools";
@@ -294,7 +305,7 @@ const READ_MOSTLY_CODEX_PROMPT_PATTERN =
   /\b(review|analy[sz]e|analysis|plan|audit|inspect|investigate|research|summari[sz]e|critique)\b/i;
 
 export type SpawnAgentRuntimeMode = "native" | "acpx";
-export type SpawnAgentRuntimeAgent = "codex" | "claude";
+export type SpawnAgentRuntimeAgent = ExternalRuntimeAgent;
 
 export function isExplicitCodexSpawnRequest(input: {
   runtime_agent?: string;
@@ -344,8 +355,8 @@ export function resolveSpawnAgentExternalRuntime(input: {
   }
 
   const codexRequested = isExplicitCodexSpawnRequest(input);
-  const explicitRuntimeAgent =
-    typeof input.runtime_agent === "string" ? input.runtime_agent : undefined;
+  // Only agents acpx is known to support; anything else falls back to native execution.
+  const explicitRuntimeAgent = normalizeExternalRuntimeAgent(input.runtime_agent);
   const shouldUseAcpx =
     (explicitRuntime === "acpx" && Boolean(explicitRuntimeAgent)) ||
     (input.defaultCodexRuntimeMode === "acpx" && codexRequested);
@@ -551,6 +562,7 @@ export class ToolRegistry {
   private imageTools: ImageTools;
   private videoTools: VideoTools;
   private youtubeTools: YouTubeTools;
+  private meetingArtifactTools = new MeetingArtifactTools();
   private visionTools: VisionTools;
   private systemTools: SystemTools;
   private computerUseTools: ComputerUseTools;
@@ -1202,6 +1214,10 @@ export class ToolRegistry {
     return this.shellTools.killProcess(force);
   }
 
+  async cancelShellSession(): Promise<void> {
+    await this.shellTools.cancelPersistentShellSession();
+  }
+
   private deriveChronicleDestinationHints(input: {
     appName?: string;
     windowTitle?: string;
@@ -1354,6 +1370,9 @@ export class ToolRegistry {
     // YouTube transcript tools are local/best-effort and do not require YouTube API keys.
     allTools.push(...YouTubeTools.getToolDefinitions());
 
+    // Locally saved meeting transcripts (read-only; empty until meeting capture is connected).
+    allTools.push(...MeetingArtifactTools.getToolDefinitions());
+
     // Vision tools (image understanding); may surface setup guidance if API keys are missing
     allTools.push(...VisionTools.getToolDefinitions());
 
@@ -1432,7 +1451,7 @@ export class ToolRegistry {
       allTools.push(...SupermemoryTools.getToolDefinitions());
     }
 
-    // Scraping tools (Scrapling integration - anti-bot, stealth, structured extraction)
+    // Scraping tools (Scrapling integration - JS rendering, structured extraction)
     // Only add when scraping is enabled in settings
     if (ScrapingTools.isEnabled()) {
       allTools.push(...ScrapingTools.getToolDefinitions());
@@ -2150,6 +2169,10 @@ export class ToolRegistry {
           : undefined,
         semanticReviewEvaluation: semanticReview?.evaluate,
         semanticReviewMode: semanticReview?.mode,
+        allowReadOnlyNetworkWhenApprovalDisabled:
+          taskForApproval?.agentConfig?.botConversation === true &&
+          typeof (this.daemon as Any).isBotConversationMessagingAuthorized === "function" &&
+          (this.daemon as Any).isBotConversationMessagingAuthorized(taskForApproval.id) === true,
         headlessSemanticReviewPolicy:
           isHeadlessTask && hasExplicitNonInteractiveAuthority && semanticReview?.mode === "active"
             ? "allow_if_authorized"
@@ -2542,6 +2565,16 @@ export class ToolRegistry {
     register(
       "youtube_list_ingested_videos",
       async ({ request }) => this.youtubeTools.listVideos(request.input),
+      readParallelSchedulerSpec,
+    );
+    register(
+      "meeting_artifacts_list",
+      async ({ request }) => this.meetingArtifactTools.list(request.input),
+      readParallelSchedulerSpec,
+    );
+    register(
+      "meeting_artifact_get",
+      async ({ request }) => this.meetingArtifactTools.get(request.input),
       readParallelSchedulerSpec,
     );
     register("tool_search", async ({ request }) =>
@@ -4122,7 +4155,7 @@ Channel Message Log (Local Gateway):
 	- set_quirks: Set personality quirks (catchphrase, sign_off, analogy_domain).
 - set_vibes: Update the workspace's current energy/mode (crunch, explore, deep-focus, maintenance, playful, low-energy, default). Call when you detect a shift in the user's working energy.
 - update_lore: Record a notable shared moment or reference in the workspace lore. Use after significant accomplishments, breakthroughs, or discoveries.
-- manage_heartbeat: Enable or disable the heartbeat (periodic wake-up) for a digital twin / agent role. Use when asked to start or stop a twin.
+- manage_heartbeat: Enable or disable the heartbeat (periodic wake-up) for an agent role. Use when asked to start or stop an agent's scheduled check-ins.
 - set_agent_name: Set or change the assistant's name when the user wants to give you a name.
 - set_user_name: Store the user's name when they introduce themselves (e.g., "I'm Alice", "My name is Bob").`;
 
@@ -4534,6 +4567,8 @@ ${skillDescriptions}`;
       return await this.youtubeTools.askOrIngestVideo(input);
     if (name === "youtube_search_ingested_segments") return this.youtubeTools.searchSegments(input);
     if (name === "youtube_list_ingested_videos") return this.youtubeTools.listVideos(input);
+    if (name === "meeting_artifacts_list") return this.meetingArtifactTools.list(input);
+    if (name === "meeting_artifact_get") return this.meetingArtifactTools.get(input);
 
     // Vision tools
     if (name === "analyze_image") return await this.visionTools.analyzeImage(input);
@@ -5207,10 +5242,22 @@ ${skillDescriptions}`;
         }
       }
 
-      // Combine text content
-      const textParts = result.content
-        .filter((c: Any) => c.type === "text")
-        .map((c: Any) => c.text);
+      // Combine text content. MCP 2025-06-18 servers may also return embedded
+      // resources, resource links and structuredContent; surface those as text too.
+      const textParts: string[] = [];
+      for (const c of result.content as Any[]) {
+        if (c?.type === "text" && typeof c.text === "string") {
+          textParts.push(c.text);
+        } else if (c?.type === "resource" && typeof c.resource?.text === "string") {
+          textParts.push(c.resource.text);
+        } else if (c?.type === "resource_link" && typeof c.uri === "string") {
+          const label = [c.name || c.title, c.description].filter(Boolean).join(" - ");
+          textParts.push(`Resource: ${label ? `${label} ` : ""}(${c.uri})`);
+        }
+      }
+      if (textParts.length === 0 && result.structuredContent !== undefined) {
+        textParts.push(JSON.stringify(result.structuredContent, null, 2));
+      }
 
       if (textParts.length > 0) {
         const baseText = textParts.join("\n");
@@ -6475,6 +6522,15 @@ ${skillDescriptions}`;
           proposal,
         };
       }
+      if (proposal.evidenceStatus === "unverified") {
+        return {
+          success: false,
+          action,
+          message:
+            "This proposal was auto-generated from legacy Playbook reinforcement text and has no durable evidence of repeated successful executions. Revalidate it (or create a new proposal) before approving.",
+          proposal,
+        };
+      }
 
       const availableToolNames = new Set(this.getTools().map((tool) => tool.name));
       const missingRequiredTools = proposal.requiredTools.filter(
@@ -6950,14 +7006,29 @@ ${skillDescriptions}`;
             filename: { type: "string", description: "Name of the Excel file (without extension)" },
             sheets: {
               type: "array",
-              description: "Array of sheets to create",
+              description: "Sheets use 2D data, or paired headers and rows arrays",
               items: {
                 type: "object",
                 properties: {
                   name: { type: "string", description: "Sheet name" },
                   data: {
                     type: "array",
-                    description: "2D array of cell values (rows of columns)",
+                    description:
+                      "Optional 2D array of cell values (rows of columns); include the header row as row 1",
+                    items: {
+                      type: "array",
+                      description: "Row of cell values",
+                      items: { type: "string", description: "Cell value" },
+                    },
+                  },
+                  headers: {
+                    type: "array",
+                    description: "Optional column headers when using the headers/rows shape",
+                    items: { type: "string", description: "Column header" },
+                  },
+                  rows: {
+                    type: "array",
+                    description: "Optional data rows paired with headers",
                     items: {
                       type: "array",
                       description: "Row of cell values",
@@ -11817,7 +11888,18 @@ ${skillDescriptions}`;
     message_id?: string;
     queued?: boolean;
     duplicate?: boolean;
-    teammate_reply?: string;
+    deliveryStatus?: AgentMessageDeliveryStatus;
+    deliveryMode?: "message" | "follow_up";
+    acceptedAt?: number;
+    queuedAt?: number;
+    startedAt?: number;
+    deliveredAt?: number;
+    failedAt?: number;
+    quarantinedAt?: number;
+    attempt?: number;
+    failureCode?: string;
+    sender_task_id?: string;
+    target_task_id?: string;
     message: string;
     error?: string;
   }> {
@@ -11847,11 +11929,11 @@ ${skillDescriptions}`;
         botPeer = true;
         botPeerRoleId = peer.role?.id;
         botPeerTeamId = peer.task.agentConfig?.botTeamId;
-      } else if (!requestedTaskId && peer?.message) {
+      } else if (peer?.message) {
         return {
           success: false,
           message: peer.message,
-          error: peer.error || "BOT_NOT_FOUND",
+          error: peer.error || (requestedTaskId ? "BOT_CONVERSATION_UNAVAILABLE" : "BOT_NOT_FOUND"),
         };
       }
     }
@@ -11876,16 +11958,115 @@ ${skillDescriptions}`;
 
     const requestedMessageId = typeof input?.message_id === "string" ? input.message_id.trim() : "";
     const messageId = requestedMessageId || randomUUID();
+    const messageHash = createHash("sha256").update(message, "utf8").digest("hex");
     const recipient = await this.daemon.getTaskById?.(resolved.taskId);
     const sender = await this.daemon.getTaskById?.(this.taskId);
     const senderLabel = sender?.title || this.taskId;
-    // A bot teammate is a persistent conversation, so its first handoff must
-    // enter the conversation as a normal turn. Queue-only admission would wake
-    // the synthetic "Start chatting with ..." seed task and make it execute a
-    // generic plan before it ever sees the delegated request. Ordinary
-    // task-to-task messages retain the durable queue-only contract below.
-    const botPeerDirectTurn = botPeer === true;
-    const dispatchStartedAt = Date.now();
+    const botPeerConversation =
+      botPeer ||
+      (recipient?.agentConfig?.botConversation === true &&
+        typeof recipient.agentConfig?.botTeamId === "string" &&
+        recipient.agentConfig.botTeamId.trim().length > 0);
+    if (!botPeer && botPeerConversation) {
+      botPeerRoleId = recipient?.assignedAgentRoleId;
+      botPeerTeamId = recipient?.agentConfig?.botTeamId;
+    }
+    const taskEvents = botPeerConversation
+      ? typeof this.daemon.getDurableTaskEvents === "function"
+        ? [
+            ...this.daemon.getDurableTaskEvents(this.taskId, "user_message"),
+            ...this.daemon.getDurableTaskEvents(this.taskId, "agent_message"),
+          ]
+        : typeof this.daemon.getTaskEvents === "function"
+          ? this.daemon.getTaskEvents(this.taskId, { limit: 200 }) || []
+          : []
+      : [];
+    const orderedTaskEvents = taskEvents.slice().sort(compareBotHandoffEventOrder);
+    const latestInboundEvent = botPeerConversation
+      ? orderedTaskEvents
+          .slice()
+          .reverse()
+          .find((event) => {
+            const payload = event.payload as Record<string, unknown> | undefined;
+            const senderTaskId =
+              typeof payload?.senderTaskId === "string" ? payload.senderTaskId.trim() : "";
+            const inboundMessageId =
+              typeof payload?.messageId === "string" ? payload.messageId.trim() : "";
+            return (
+              payload?.messageSource === "agent" &&
+              payload?.deliveryMode === "message" &&
+              senderTaskId === resolved.taskId &&
+              inboundMessageId.length > 0 &&
+              isBotHandoffMessageDelivered(payload)
+            );
+          })
+      : undefined;
+    const latestInbound = latestInboundEvent?.payload as Record<string, unknown> | undefined;
+    const hasNewHumanMessageAfterLatestInbound = Boolean(
+      latestInboundEvent &&
+      orderedTaskEvents.some((event) => {
+        const eventType = event.legacyType || event.type;
+        if (eventType !== "user_message") return false;
+        const payload = event.payload as Record<string, unknown> | undefined;
+        if (payload?.messageSource === "agent") return false;
+        return compareBotHandoffEventOrder(event, latestInboundEvent) > 0;
+      }),
+    );
+    const inReplyToMessageId =
+      !hasNewHumanMessageAfterLatestInbound && typeof latestInbound?.messageId === "string"
+        ? latestInbound.messageId.trim()
+        : "";
+    const inReplyToTaskId =
+      !hasNewHumanMessageAfterLatestInbound && typeof latestInbound?.senderTaskId === "string"
+        ? latestInbound.senderTaskId.trim()
+        : "";
+    const isCorrelatedReply = Boolean(inReplyToMessageId && inReplyToTaskId);
+    const correlatedReplyMessageId =
+      typeof latestInbound?.inReplyToMessageId === "string"
+        ? latestInbound.inReplyToMessageId.trim()
+        : "";
+    const correlatedReplyTaskId =
+      typeof latestInbound?.inReplyToTaskId === "string"
+        ? latestInbound.inReplyToTaskId.trim()
+        : "";
+    const isCorrelatedReplyToCurrentTask = Boolean(
+      !hasNewHumanMessageAfterLatestInbound &&
+      correlatedReplyMessageId &&
+      correlatedReplyTaskId === this.taskId &&
+      isBotHandoffMessageDelivered(latestInbound || {}) &&
+      taskEvents.some((event) => {
+        const payload = event.payload as Record<string, unknown> | undefined;
+        return (
+          (payload?.senderType === "agent" || payload?.messageSource === "agent") &&
+          payload?.deliveryMode === "message" &&
+          payload?.senderTaskId === this.taskId &&
+          payload?.targetTaskId === resolved.taskId &&
+          payload?.messageId === correlatedReplyMessageId
+        );
+      }),
+    );
+    if (isCorrelatedReplyToCurrentTask) {
+      this.daemon.logEvent(this.taskId, "log", {
+        metric: "bot_correlated_reply_suppressed",
+        targetTaskId: resolved.taskId,
+        inboundMessageId: latestInbound?.messageId,
+        inReplyToMessageId: correlatedReplyMessageId,
+        inReplyToTaskId: correlatedReplyTaskId,
+        message:
+          "Suppressed a follow-up message because the latest teammate message is a correlated reply receipt.",
+      });
+      return {
+        success: true,
+        task_id: resolved.taskId,
+        duplicate: true,
+        deliveryMode: "message",
+        deliveryStatus: "delivered",
+        sender_task_id: this.taskId,
+        target_task_id: resolved.taskId,
+        message:
+          "No message sent: the latest teammate message is a correlated reply receipt. Record it and finish this turn.",
+      };
+    }
     try {
       const result = (await this.daemon.sendMessage(
         resolved.taskId,
@@ -11893,122 +12074,104 @@ ${skillDescriptions}`;
         undefined,
         undefined,
         {
-          ...(botPeerDirectTurn ? {} : { deliveryMode: "message" as const }),
+          deliveryMode: "message" as const,
+          ...(botPeerConversation ? { startAfterAccepted: true } : {}),
           messageSource: "agent",
           messageId,
           senderTaskId: this.taskId,
           senderLabel,
+          ...(inReplyToMessageId ? { inReplyToMessageId } : {}),
+          ...(inReplyToTaskId ? { inReplyToTaskId } : {}),
         },
       )) || { queued: false };
-      let teammateReply = "";
-      let teammateSentExplicitReply = false;
-      if (botPeerDirectTurn && !result.queued) {
-        try {
-          const childEvents = this.daemon.getTaskEvents(resolved.taskId, {
-            limit: 80,
-            types: ["assistant_message"],
-          });
-          const latestAssistant = [...(childEvents || [])].reverse().find((event) => {
-            if (Number(event.timestamp || 0) < dispatchStartedAt) return false;
-            const payload = (event.payload || {}) as Record<string, unknown>;
-            if (payload.internal === true) return false;
-            const text =
-              (typeof payload.message === "string" && payload.message.trim()) ||
-              (typeof payload.content === "string" && payload.content.trim()) ||
-              "";
-            if (!text) return false;
-            teammateReply = text;
-            return true;
-          });
-          if (!latestAssistant) teammateReply = "";
-
-          // A teammate may have used its own send_agent_message call to reply
-          // explicitly. In that case the durable agent-message queue already
-          // carries the reply, so avoid injecting a second copy into the lead.
-          const outboundEvents = this.daemon.getTaskEvents(resolved.taskId, {
-            limit: 80,
-            types: ["agent_message"],
-          });
-          teammateSentExplicitReply = (outboundEvents || []).some((event) => {
-            if (Number(event.timestamp || 0) < dispatchStartedAt) return false;
-            const payload = (event.payload || {}) as Record<string, unknown>;
-            return (
-              payload.targetTaskId === this.taskId &&
-              payload.deliveryStatus !== "failed" &&
-              payload.status !== "failed"
-            );
-          });
-        } catch {
-          // Best-effort enrichment; delivery itself has already succeeded.
-          teammateReply = "";
-          teammateSentExplicitReply = false;
-        }
-      }
-
-      if (botPeerDirectTurn && teammateReply && !teammateSentExplicitReply) {
-        const replyMessageId = `${messageId}:reply`;
-        try {
-          // Persist the reply as an inbound timeline message without starting
-          // a second parent turn while this tool call is still in flight. The
-          // tool result already contains the reply for the current turn; the
-          // timeline event keeps the bot conversation visibly shared and
-          // avoids racing the parent's tool_result persistence boundary.
-          this.daemon.logEvent(this.taskId, "user_message", {
-            message: `Reply from ${recipient?.title || "teammate"}: ${teammateReply}`,
-            messageSource: "agent",
-            messageId: replyMessageId,
-            deliveryMode: "follow_up",
-            deliveryStatus: "delivered",
-            acceptedAt: Date.now(),
-            deliveredAt: Date.now(),
-            senderTaskId: resolved.taskId,
-            senderLabel: recipient?.title || resolved.taskId,
-          });
-        } catch {
-          // The direct tool result still contains the reply even if the parent
-          // is already completing and cannot persist the timeline relay.
-        }
-      }
-      const status = result.queued ? "queued" : "delivered";
+      // A missing status means the transport accepted the call, not that the
+      // receiver consumed it. Keep the protocol honest for older/lightweight
+      // daemon implementations that only return `queued`.
+      const status: AgentMessageDeliveryStatus =
+        result.deliveryStatus || (result.queued ? "queued" : "accepted");
       const acceptedAt = result.acceptedAt ?? Date.now();
       this.daemon.logEvent(this.taskId, "agent_message", {
         messageId,
         correlationId: messageId,
+        messageHash,
         targetTaskId: resolved.taskId,
         message,
         status,
         deliveryStatus: status,
-        deliveryMode: botPeerDirectTurn ? "follow_up" : "message",
+        deliveryMode: result.deliveryMode || "message",
         acceptedAt,
-        ...(result.queued ? { queuedAt: result.queuedAt ?? acceptedAt } : {}),
-        ...(!result.queued ? { deliveredAt: result.deliveredAt ?? acceptedAt } : {}),
+        ...(status === "queued" ? { queuedAt: result.queuedAt ?? acceptedAt } : {}),
+        ...(status === "started" ? { startedAt: result.startedAt ?? acceptedAt } : {}),
+        ...(status === "delivered" ? { deliveredAt: result.deliveredAt ?? acceptedAt } : {}),
+        ...(status === "quarantined" ? { quarantinedAt: result.quarantinedAt ?? acceptedAt } : {}),
+        ...(result.attempt !== undefined ? { attempt: result.attempt } : {}),
+        ...(result.failureCode ? { failureCode: result.failureCode } : {}),
         senderType: "agent",
         senderTaskId: this.taskId,
         senderLabel,
         recipientLabel: recipient?.title || resolved.taskId,
         ...(botPeerRoleId ? { recipientBotRoleId: botPeerRoleId } : {}),
         ...(botPeerTeamId ? { botTeamId: botPeerTeamId } : {}),
-        ...(teammateReply ? { teammateReply } : {}),
+        ...(inReplyToMessageId ? { inReplyToMessageId } : {}),
+        ...(inReplyToTaskId ? { inReplyToTaskId } : {}),
+        ...(botPeerConversation && !isCorrelatedReply ? { replyStatus: "pending" } : {}),
         duplicate: result.duplicate === true,
       });
+      // The recipient can consume a queue receipt before this sender-side
+      // activity row is written. Reconcile once more after logging so a fast
+      // recipient cannot leave the sender projection stuck at "queued".
+      (this.daemon as Any).reconcileAgentMessageSenderProjection?.(resolved.taskId, messageId);
+      // Queue-only bot messages are not replies until the recipient consumes
+      // their durable user_message receipt. The daemon marks that correlation
+      // from the receiver-side delivery transition. Keep the direct path only
+      // for transports that explicitly report delivered, which is the one
+      // state that already proves the receiver-side boundary was crossed.
+      if (status === "delivered" && inReplyToMessageId && inReplyToTaskId) {
+        (this.daemon as Any).markBotHandoffReplied?.(
+          inReplyToTaskId,
+          inReplyToMessageId,
+          this.taskId,
+          this.taskId,
+          messageId,
+        );
+      }
       return {
         success: true,
         task_id: resolved.taskId,
         message_id: messageId,
         queued: result.queued,
         duplicate: result.duplicate === true,
-        ...(teammateReply ? { teammate_reply: teammateReply } : {}),
-        message: result.queued
-          ? "Message queued for the agent's next turn"
-          : teammateReply
-            ? `Message delivered. Teammate reply: ${teammateReply}`
-            : "Message delivered",
+        deliveryStatus: status,
+        deliveryMode: result.deliveryMode || "message",
+        ...(result.acceptedAt !== undefined ? { acceptedAt: result.acceptedAt } : { acceptedAt }),
+        ...(result.queuedAt !== undefined ? { queuedAt: result.queuedAt } : {}),
+        ...(result.startedAt !== undefined ? { startedAt: result.startedAt } : {}),
+        ...(result.deliveredAt !== undefined ? { deliveredAt: result.deliveredAt } : {}),
+        ...(result.failedAt !== undefined ? { failedAt: result.failedAt } : {}),
+        ...(result.quarantinedAt !== undefined ? { quarantinedAt: result.quarantinedAt } : {}),
+        ...(result.attempt !== undefined ? { attempt: result.attempt } : {}),
+        ...(result.failureCode ? { failureCode: result.failureCode } : {}),
+        sender_task_id: this.taskId,
+        target_task_id: resolved.taskId,
+        message:
+          status === "queued"
+            ? "Message queued for the agent's next turn"
+            : status === "accepted"
+              ? "Message accepted; delivery is pending"
+              : status === "started"
+                ? "Message started on the agent's next turn"
+                : status === "delivered"
+                  ? "Message delivered"
+                  : status === "quarantined"
+                    ? "Message quarantined; repair the bot team before retrying"
+                    : `Message ${status}`,
       };
     } catch (error: Any) {
       const errorMessage = error?.message || String(error);
       this.daemon.logEvent(this.taskId, "agent_message", {
         messageId,
         correlationId: messageId,
+        messageHash,
         targetTaskId: resolved.taskId,
         message,
         status: "failed",
@@ -12019,12 +12182,20 @@ ${skillDescriptions}`;
         senderTaskId: this.taskId,
         senderLabel,
         recipientLabel: recipient?.title || resolved.taskId,
+        ...(inReplyToMessageId ? { inReplyToMessageId } : {}),
+        ...(inReplyToTaskId ? { inReplyToTaskId } : {}),
         error: errorMessage,
       });
       return {
         success: false,
         task_id: resolved.taskId,
         message_id: messageId,
+        deliveryStatus: "failed",
+        deliveryMode: "message",
+        failedAt: Date.now(),
+        failureCode: "BOT_MESSAGE_DELIVERY_FAILED",
+        sender_task_id: this.taskId,
+        target_task_id: resolved.taskId,
         message: `Failed to message agent: ${errorMessage}`,
         error: errorMessage,
       };
@@ -13269,9 +13440,9 @@ ${skillDescriptions}`;
             },
             runtime_agent: {
               type: "string",
-              enum: ["codex", "claude"],
+              enum: [...EXTERNAL_RUNTIME_AGENTS],
               description:
-                'When runtime is "acpx", selects the target adapter, such as "codex" or "claude".',
+                'When runtime is "acpx", selects the coding agent CLI to run, such as "codex", "claude", "gemini" or "opencode". The CLI must be installed and signed in.',
             },
             wait: {
               type: "boolean",
@@ -13419,7 +13590,7 @@ ${skillDescriptions}`;
         name: "send_agent_message",
         description:
           "Send a focused message to a descendant child agent or to a named teammate in the current persistent bot team. " +
-          "Use task_id for a child task, or bot for a teammate handle such as forge or scribe. Bot-team messages are durably queued and wake the addressed bot; child-agent messages remain queue-only. Reuse message_id when retrying the same message.",
+          "Use task_id for a child task, or bot for a teammate handle such as forge or scribe. Bot-team messages are durably queued and wake the addressed bot; child-agent messages remain queue-only. The result includes a delivery receipt: accepted/queued means the request is admitted but not yet consumed, while delivered means the receiver transcript was persisted. Reuse message_id when retrying the same message.",
         input_schema: {
           type: "object",
           properties: {
@@ -13520,16 +13691,15 @@ ${skillDescriptions}`;
       {
         name: "manage_heartbeat",
         description:
-          "Enable or disable the heartbeat (periodic wake-up) for a digital twin / agent role. " +
-          "Use this when the user asks to start or stop a twin. Disabling the heartbeat prevents " +
+          "Enable or disable the heartbeat (periodic wake-up) for an agent role. " +
+          "Use this when the user asks to start or stop an agent. Disabling the heartbeat prevents " +
           "the agent from waking up on its own schedule.",
         input_schema: {
           type: "object",
           properties: {
             agent_name: {
               type: "string",
-              description:
-                "The display name of the agent role / digital twin (e.g. 'Engineering Manager Twin')",
+              description: "The display name of the agent role (e.g. 'Engineering Manager')",
             },
             enabled: {
               type: "boolean",

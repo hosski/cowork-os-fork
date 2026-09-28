@@ -88,8 +88,6 @@ import { registerAgentSecurityMethods } from "./registerAgentSecurityMethods";
 import { registerStrategicPlannerMethods } from "./registerStrategicPlannerMethods";
 import { registerWorkSessionMethods } from "./registerWorkSessionMethods";
 import { getStrategicPlannerService } from "./StrategicPlannerService";
-import { registerSymphonyMethods } from "./registerSymphonyMethods";
-import { getSymphonyService } from "./SymphonyService";
 import {
   getFleetConnectionManager,
   initFleetConnectionManager,
@@ -104,6 +102,8 @@ import { PermissionSettingsManager } from "../security/permission-settings-manag
 import { taskAgentConfigForCreation } from "../../shared/security/task-entrypoint";
 import { BUILTIN_ACCESS_PROFILE_IDS } from "../../shared/access-profiles";
 import { AgentConfigSchema, validateInput } from "../utils/validation";
+import { ManagedSessionRequirementCorrectionEventSchema } from "../../shared/managed-session-schemas";
+import { ManagedSessionSuccessCriteriaSchema } from "../../shared/managed-session-schemas";
 import {
   buildTaskEventDetailForTransport,
   buildTaskEventHistoryForTransport,
@@ -185,6 +185,20 @@ function writeLocalControlPlaneConnectionFile(settings: {
   } catch (error) {
     console.warn("[ControlPlane] Failed to write local CLI connection file:", error);
   }
+}
+
+/**
+ * The server may fall back to an OS-assigned loopback port, so every start path
+ * must record the bound port for CLI discovery (otherwise the CLI connects to
+ * whatever process holds the configured port).
+ */
+function writeLocalControlPlaneConnectionFileForServer(server: ControlPlaneServer): void {
+  const settings = ControlPlaneSettingsManager.loadSettings();
+  writeLocalControlPlaneConnectionFile({
+    host: settings.host,
+    port: server.getAddress()?.port ?? settings.port,
+    token: settings.token,
+  });
 }
 
 function toNodePlatform(platform?: string): "ios" | "android" | "macos" | "linux" | "windows" {
@@ -495,19 +509,9 @@ async function getManagedRemoteNodeInfo(device: ManagedDevice): Promise<NodeInfo
         : device.version || "unknown",
     deviceId: status.clientId,
     modelIdentifier: hostname,
-    capabilities: [],
-    commands: [],
-    permissions: {},
     connectedAt: status.connectedAt || Date.now(),
     lastActivityAt: status.lastActivityAt || status.connectedAt || Date.now(),
-    isForeground: false,
   };
-}
-
-async function listManagedRemoteNodes(): Promise<NodeInfo[]> {
-  const remoteDevices = listStoredManagedDevices();
-  const nodes = await Promise.all(remoteDevices.map((device) => getManagedRemoteNodeInfo(device)));
-  return nodes.filter((node): node is NodeInfo => !!node);
 }
 
 async function getManagedRemoteNodeAliases(
@@ -1978,13 +1982,14 @@ function sanitizeManagedEnvironmentIdParams(params: unknown): { environmentId: s
   return { environmentId };
 }
 
-function sanitizeManagedSessionCreateParams(params: unknown): Any {
+export function sanitizeManagedSessionCreateParams(params: unknown): Any {
   return validateInput(
     z
       .object({
         agentId: z.string().trim().min(1).max(200),
         environmentId: z.string().trim().min(1).max(200),
         title: z.string().trim().min(1).max(500),
+        successCriteria: ManagedSessionSuccessCriteriaSchema.optional(),
         initialEvent: ManagedSessionInitialEventSchema.optional(),
       })
       .strict(),
@@ -2022,7 +2027,7 @@ function sanitizeManagedSessionEventsParams(params: unknown): { sessionId: strin
   return { sessionId, limit: Math.min(Math.max(rawLimit, 1), 5000) };
 }
 
-function sanitizeManagedSessionSendEventParams(params: unknown): Any {
+export function sanitizeManagedSessionSendEventParams(params: unknown): Any {
   const p = (params ?? {}) as Any;
   const { sessionId } = sanitizeManagedSessionIdParams(params);
   const event = p.event;
@@ -2060,6 +2065,16 @@ function sanitizeManagedSessionSendEventParams(params: unknown): Any {
             : "submitted",
       },
     };
+  }
+  if (type === "requirement.corrected") {
+    const parsed = ManagedSessionRequirementCorrectionEventSchema.safeParse(event);
+    if (!parsed.success) {
+      throw {
+        code: ErrorCodes.INVALID_PARAMS,
+        message: "Invalid managed session requirement correction event",
+      };
+    }
+    return { sessionId, event: parsed.data };
   }
   throw { code: ErrorCodes.INVALID_PARAMS, message: "Unsupported managed session event type" };
 }
@@ -2445,7 +2460,7 @@ export async function startControlPlaneFromSettings(
       const tailscale = getExposureStatus();
       writeLocalControlPlaneConnectionFile({
         host: settings.host,
-        port: settings.port,
+        port: addr?.port ?? settings.port,
         token: settings.token,
       });
       return {
@@ -2498,7 +2513,6 @@ export async function startControlPlaneFromSettings(
         host: settings.host,
         trustProxy: settings.trustProxy,
         token: settings.token,
-        nodeToken: settings.nodeToken,
         handshakeTimeoutMs: settings.handshakeTimeoutMs,
         heartbeatIntervalMs: settings.heartbeatIntervalMs,
         maxPayloadBytes: settings.maxPayloadBytes,
@@ -2561,7 +2575,7 @@ export async function startControlPlaneFromSettings(
     if (address && settings.enabled) {
       writeLocalControlPlaneConnectionFile({
         host: settings.host,
-        port: settings.port,
+        port: address.port,
         token: settings.token,
       });
     }
@@ -2708,11 +2722,6 @@ function registerCompanyOpsMethods(server: ControlPlaneServer, deps: ControlPlan
   registerStrategicPlannerMethods({
     server,
     plannerService: getStrategicPlannerService(),
-    requireScope,
-  });
-  registerSymphonyMethods({
-    server,
-    getSymphonyService,
     requireScope,
   });
 }
@@ -3788,10 +3797,9 @@ function registerTaskAndWorkspaceMethods(
 
     const searchStatus = SearchProviderFactory.getConfigStatus();
 
-    // Redacted unconditionally: `config.get` is gated at `read` scope, which is
-    // what companion "node" clients hold, and the raw settings carry `token`
-    // (the admin credential), `nodeToken`, and per-device tokens. Redacting for
-    // admins too keeps the token out of `cowork doctor --json` stdout.
+    // Redacted unconditionally: `config.get` is gated at `read` scope, and the
+    // raw settings carry `token` (the admin credential) and per-device tokens.
+    // Redacting for admins too keeps the token out of `cowork doctor --json` stdout.
     //
     // The raw settings are kept separately for the deployment-posture check
     // below, which inspects the real token values; only the copy that leaves
@@ -3944,12 +3952,11 @@ export function setupControlPlaneHandlers(
     async (): Promise<{
       ok: boolean;
       token?: string;
-      nodeToken?: string;
       error?: string;
     }> => {
       try {
         const settings = ControlPlaneSettingsManager.enable();
-        return { ok: true, token: settings.token, nodeToken: settings.nodeToken };
+        return { ok: true, token: settings.token };
       } catch (error: any) {
         return { ok: false, error: error.message || String(error) };
       }
@@ -4041,7 +4048,6 @@ export function setupControlPlaneHandlers(
           host: settings.host,
           trustProxy: settings.trustProxy,
           token: settings.token,
-          nodeToken: settings.nodeToken,
           handshakeTimeoutMs: settings.handshakeTimeoutMs,
           heartbeatIntervalMs: settings.heartbeatIntervalMs,
           maxPayloadBytes: settings.maxPayloadBytes,
@@ -4072,6 +4078,7 @@ export function setupControlPlaneHandlers(
 
           // Start with Tailscale if configured
           const tailscaleResult = await server.startWithTailscale();
+          writeLocalControlPlaneConnectionFileForServer(server);
 
           const address = server.getAddress();
 
@@ -4180,7 +4187,6 @@ export function setupControlPlaneHandlers(
     async (): Promise<{
       ok: boolean;
       token?: string;
-      nodeToken?: string;
       remoteToken?: string;
       error?: string;
     }> => {
@@ -4189,7 +4195,6 @@ export function setupControlPlaneHandlers(
         return {
           ok: true,
           token: settings.token || "",
-          nodeToken: settings.nodeToken || "",
           remoteToken: settings.remote?.token || "",
         };
       } catch (error: any) {
@@ -4204,7 +4209,6 @@ export function setupControlPlaneHandlers(
     async (): Promise<{
       ok: boolean;
       token?: string;
-      nodeToken?: string;
       error?: string;
     }> => {
       try {
@@ -4224,7 +4228,6 @@ export function setupControlPlaneHandlers(
             host: settings.host,
             trustProxy: settings.trustProxy,
             token: settings.token,
-            nodeToken: settings.nodeToken,
             handshakeTimeoutMs: settings.handshakeTimeoutMs,
             heartbeatIntervalMs: settings.heartbeatIntervalMs,
             maxPayloadBytes: settings.maxPayloadBytes,
@@ -4249,10 +4252,10 @@ export function setupControlPlaneHandlers(
           registerCanvasMethods(controlPlaneServer);
 
           await controlPlaneServer.startWithTailscale();
+          writeLocalControlPlaneConnectionFileForServer(controlPlaneServer);
         }
 
-        const settings = ControlPlaneSettingsManager.loadSettings();
-        return { ok: true, token: newToken, nodeToken: settings.nodeToken };
+        return { ok: true, token: newToken };
       } catch (error: any) {
         return { ok: false, error: error.message || String(error) };
       }
@@ -4304,7 +4307,6 @@ export function setupControlPlaneHandlers(
             host: settings.host,
             trustProxy: settings.trustProxy,
             token: settings.token,
-            nodeToken: settings.nodeToken,
             handshakeTimeoutMs: settings.handshakeTimeoutMs,
             heartbeatIntervalMs: settings.heartbeatIntervalMs,
             maxPayloadBytes: settings.maxPayloadBytes,
@@ -4328,6 +4330,7 @@ export function setupControlPlaneHandlers(
           registerCanvasMethods(controlPlaneServer);
 
           await controlPlaneServer.startWithTailscale();
+          writeLocalControlPlaneConnectionFileForServer(controlPlaneServer);
         }
 
         return { ok: true };
@@ -4684,123 +4687,6 @@ export function setupControlPlaneHandlers(
         };
       } catch (error: any) {
         return { ok: false, error: error.message || String(error) };
-      }
-    },
-  );
-
-  // ===== Node (Mobile Companion) Handlers =====
-
-  // List connected nodes
-  ipcMain.handle(
-    IPC_CHANNELS.NODE_LIST,
-    async (): Promise<{
-      ok: boolean;
-      nodes?: import("../../shared/types").NodeInfo[];
-      error?: string;
-    }> => {
-      try {
-        const localNodes = controlPlaneServer?.isRunning
-          ? ((controlPlaneServer as any).clients.getNodeInfoList() as NodeInfo[])
-          : [];
-        const remoteNodes = await listManagedRemoteNodes();
-        return { ok: true, nodes: [...localNodes, ...remoteNodes] };
-      } catch (error: any) {
-        return { ok: false, error: error.message || String(error) };
-      }
-    },
-  );
-
-  // Get a specific node
-  ipcMain.handle(
-    IPC_CHANNELS.NODE_GET,
-    async (
-      _,
-      nodeId: string,
-    ): Promise<{
-      ok: boolean;
-      node?: import("../../shared/types").NodeInfo;
-      error?: string;
-    }> => {
-      try {
-        if (controlPlaneServer?.isRunning) {
-          const client = (controlPlaneServer as any).clients.getNodeByIdOrName(nodeId);
-          if (client) {
-            return { ok: true, node: client.getNodeInfo() };
-          }
-        }
-
-        const remoteNodes = await listManagedRemoteNodes();
-        const remoteNode = remoteNodes.find(
-          (candidate) => candidate.id === nodeId || candidate.displayName === nodeId,
-        );
-        if (remoteNode) {
-          return { ok: true, node: remoteNode };
-        }
-        return { ok: false, error: `Node not found: ${nodeId}` };
-      } catch (error: any) {
-        return { ok: false, error: error.message || String(error) };
-      }
-    },
-  );
-
-  // Invoke a command on a node
-  ipcMain.handle(
-    IPC_CHANNELS.NODE_INVOKE,
-    async (
-      _,
-      params: import("../../shared/types").NodeInvokeParams,
-    ): Promise<import("../../shared/types").NodeInvokeResult> => {
-      try {
-        if (!controlPlaneServer || !controlPlaneServer.isRunning) {
-          return {
-            ok: false,
-            error: { code: "SERVER_NOT_RUNNING", message: "Control Plane is not running" },
-          };
-        }
-
-        const { nodeId, command, params: commandParams, timeoutMs = 30000 } = params;
-
-        // Find the node
-        const client = (controlPlaneServer as any).clients.getNodeByIdOrName(nodeId);
-        if (!client) {
-          return {
-            ok: false,
-            error: { code: "NODE_NOT_FOUND", message: `Node not found: ${nodeId}` },
-          };
-        }
-
-        const nodeInfo = client.getNodeInfo();
-        if (!nodeInfo) {
-          return {
-            ok: false,
-            error: { code: "NODE_NOT_FOUND", message: `Node not found: ${nodeId}` },
-          };
-        }
-
-        // Check if node supports the command
-        if (!nodeInfo.commands.includes(command)) {
-          return {
-            ok: false,
-            error: {
-              code: "COMMAND_NOT_SUPPORTED",
-              message: `Node does not support command: ${command}`,
-            },
-          };
-        }
-
-        // Forward to the server's internal method
-        const result = await (controlPlaneServer as any).invokeNodeCommand(
-          client,
-          command,
-          commandParams,
-          timeoutMs,
-        );
-        return result;
-      } catch (error: any) {
-        return {
-          ok: false,
-          error: { code: "INVOKE_FAILED", message: error.message || String(error) },
-        };
       }
     },
   );

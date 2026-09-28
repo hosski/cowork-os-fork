@@ -5,6 +5,7 @@
 import type { ChannelType } from "../gateway/channels/types";
 import type { AgentConfig } from "../../shared/types";
 import type { AccessProfileId } from "../../shared/access-profiles";
+import type { CronOutcomeCountMap, CronOutcomeCounts } from "../../shared/cron-outcomes";
 
 /**
  * Schedule type definitions:
@@ -26,7 +27,12 @@ export type CronJobStatus =
   | "needs_user_action"
   | "error"
   | "skipped"
-  | "timeout";
+  | "timeout"
+  | "cancelled"
+  // The run was started but its durable outcome was not observed (for example a
+  // workflow still running when the scheduler stopped waiting). Never counted as
+  // success; reported as unclassified.
+  | "unknown";
 
 export type CronDeliveryMode = "direct" | "outbox";
 export type CronDeliverableStatus = "none" | "queued" | "sent" | "dead_letter";
@@ -81,10 +87,13 @@ export interface CronJobState {
   lastTaskId?: string;
   // Run history (most recent first, limited to maxHistoryEntries)
   runHistory?: CronRunHistoryEntry[];
-  // Execution stats
+  // Legacy execution stats. `successfulRuns` counts partial and needs-action runs
+  // too; new consumers must read `outcomeCounts` instead.
   totalRuns?: number;
   successfulRuns?: number;
   failedRuns?: number;
+  /** Versioned per-category outcome counts; only `ok` is a full run success. */
+  outcomeCounts?: CronOutcomeCounts;
 }
 
 /**
@@ -367,9 +376,12 @@ export interface CronRunHistoryResult {
   jobId: string;
   jobName: string;
   entries: CronRunHistoryEntry[];
+  /** Legacy aggregates, kept with their legacy semantics. */
   totalRuns: number;
   successfulRuns: number;
   failedRuns: number;
+  /** Per-category counts; the rate is ok / classified attempts. */
+  outcomeCounts: CronOutcomeCountMap;
 }
 
 /**

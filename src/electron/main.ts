@@ -14,6 +14,7 @@ import {
   nativeTheme,
   Menu,
   screen,
+  safeStorage,
   type BrowserWindowConstructorOptions,
 } from "electron";
 import mime from "mime-types";
@@ -23,6 +24,7 @@ import {
   SecureSettingsRepository,
   type SettingsCategory,
 } from "./database/SecureSettingsRepository";
+import { resetUnreadableSettings } from "./utils/secure-settings-recovery";
 import {
   setupIpcHandlers,
   getHooksServer,
@@ -33,18 +35,17 @@ import {
   setHookTriggerEmitter,
 } from "./ipc/handlers";
 import { setupMissionControlHandlers } from "./ipc/mission-control-handlers";
-import { setupPersonaTemplateHandlers } from "./ipc/persona-template-handlers";
 import { setupPluginPackHandlers } from "./ipc/plugin-pack-handlers";
 import { setupPluginDistributionHandlers } from "./ipc/plugin-distribution-handlers";
 import { setupAdminPolicyHandlers } from "./ipc/admin-policy-handlers";
 import { setupAgentSecurityHandlers } from "./ipc/agent-security-handlers";
 import { NumbatService } from "./security/numbat";
-import { getPersonaTemplateService } from "./agents/PersonaTemplateService";
 import { setupWorktreeHandlers } from "./ipc/worktree-handlers";
 import { ComparisonService } from "./git/ComparisonService";
 import { TaskSubscriptionRepository } from "./agents/TaskSubscriptionRepository";
 import { StandupReportService } from "./reports/StandupReportService";
 import { UsageInsightsProjector } from "./reports/UsageInsightsProjector";
+import { describeCronRunStatus } from "../shared/cron-outcomes";
 import { PulseService } from "./telemetry/pulse-service";
 import {
   HeartbeatService,
@@ -98,6 +99,7 @@ import {
   WorkspaceRepository,
 } from "./database/repositories";
 import { LLMProviderFactory } from "./agent/llm";
+import { ModelMetadataRefresher } from "./agent/llm/model-metadata-refresh";
 import { SearchProviderFactory } from "./agent/search";
 import { ChannelGateway } from "./gateway";
 import { formatChatTranscriptForPrompt } from "./gateway/chat-transcript";
@@ -125,7 +127,6 @@ import {
   StrategicPlannerService,
   setStrategicPlannerService,
 } from "./control-plane/StrategicPlannerService";
-import { SymphonyService, setSymphonyService } from "./control-plane/SymphonyService";
 import { attachControlPlaneTaskLifecycleSync } from "./control-plane/task-run-sync";
 import {
   buildManagedScheduledWorkspacePath,
@@ -154,11 +155,12 @@ import {
   ChronicleSettingsManager,
 } from "./chronicle";
 import { revealWindow } from "./utils/window-visibility";
+import { StartupActionGate } from "./utils/startup-action-gate";
 import { KnowledgeGraphService } from "./knowledge-graph/KnowledgeGraphService";
 import { MailboxAutomationHub } from "./mailbox/MailboxAutomationHub";
 import { MailboxAutomationRegistry } from "./mailbox/MailboxAutomationRegistry";
 import { MailboxForwardingService } from "./mailbox/MailboxForwardingService";
-import { getMailboxServiceInstance } from "./mailbox/MailboxService";
+import { getMailboxServiceInstance, MailboxService } from "./mailbox/MailboxService";
 import { setMailboxForwardingServiceInstance } from "./mailbox/mailbox-forwarding-singleton";
 import {
   ControlPlaneSettingsManager,
@@ -210,6 +212,8 @@ import {
   readWorkspacePriorities,
 } from "./briefing/workspace-briefing-context";
 import { setupBriefingHandlers } from "./ipc/briefing-handlers";
+import { setupMeetingArtifactHandlers } from "./ipc/meeting-artifacts-handlers";
+import { MeetingArtifactsService } from "./meetings/meeting-artifacts-service";
 import { setupImprovementHandlers, setupSubconsciousHandlers } from "./ipc/subconscious-handlers";
 import { FileHubService } from "./file-hub/FileHubService";
 import { setupFileHubHandlers } from "./ipc/file-hub-handlers";
@@ -248,16 +252,28 @@ import { rememberApprovedImportFiles } from "./security/file-import-approvals";
 import { healMovedDesktopWorkspacePaths } from "./utils/workspace-path-healer";
 import {
   APP_DISPLAY_NAME,
+  MAC_SAFE_STORAGE_MIGRATION_WORKER_FLAG,
   applyApplicationIdentity,
   getDesktopIconImage,
   getDesktopIconPath,
 } from "./branding";
+import { primeMacSafeStorageContext } from "./utils/mac-safe-storage-bootstrap";
+import {
+  keepDirectRunAliveWithoutWindows,
+  stripInjectedSystemCaOption,
+} from "./utils/direct-run-lifecycle";
+import {
+  runMacSafeStorageMigrationWorker,
+  migrateLegacyMacSafeStorageChannels,
+  migrateLegacyMacSafeStorageSettings,
+} from "./utils/mac-safe-storage-migration";
 
 let mainWindow: BrowserWindow | null = null;
 let dbManager: DatabaseManager;
 let agentDaemon: AgentDaemon;
 let channelGateway: ChannelGateway;
 let cronService: CronService | null = null;
+let pulseService: PulseService | null = null;
 let councilService: CouncilService | null = null;
 let dailyBriefingService: DailyBriefingService | null = null;
 let ambientMonitoringService: AmbientMonitoringService | null = null;
@@ -271,7 +287,6 @@ let feedbackService: FeedbackService | null = null;
 let loreService: LoreService | null = null;
 let xMentionBridgeService: XMentionBridgeService | null = null;
 let strategicPlannerService: StrategicPlannerService | null = null;
-let symphonyService: SymphonyService | null = null;
 let automationOutcomeService: AutomationOutcomeService | null = null;
 let recurringApprovalService: RecurringApprovalService | null = null;
 let eventTriggerService: EventTriggerService | null = null;
@@ -372,9 +387,9 @@ interface MainWindowState {
   isFullScreen?: boolean;
 }
 
-function normalizeTwinCoreBoundary(): void {
+function normalizeTemplatedRoleCoreBoundary(): void {
   const db = dbManager.getDatabase();
-  const twinRoles = db
+  const templatedRoles = db
     .prepare(
       `SELECT id
        FROM agent_roles
@@ -384,7 +399,7 @@ function normalizeTwinCoreBoundary(): void {
     )
     .all() as Array<{ id?: string }>;
 
-  const roleIds = twinRoles
+  const roleIds = templatedRoles
     .map((row) => (typeof row.id === "string" ? row.id : ""))
     .filter(Boolean);
   if (!roleIds.length) {
@@ -392,9 +407,16 @@ function normalizeTwinCoreBoundary(): void {
   }
 
   const placeholders = roleIds.map(() => "?").join(", ");
+  const targetKeys = roleIds.map((id) => `agent_role:${id}`);
+  const now = Date.now();
+  let changes = 0;
+  const run = (sql: string, ...params: unknown[]): void => {
+    changes += Number(db.prepare(sql).run(...params).changes || 0);
+  };
   db.exec("BEGIN");
   try {
-    db.prepare(
+    // Only touch rows that still need it, so repeat launches are no-ops.
+    run(
       `UPDATE agent_roles
        SET role_kind = 'persona_template',
            heartbeat_enabled = 0,
@@ -402,57 +424,46 @@ function normalizeTwinCoreBoundary(): void {
            heartbeat_last_pulse_result = NULL,
            heartbeat_last_dispatch_kind = NULL,
            updated_at = ?
-       WHERE id IN (${placeholders})`,
-    ).run(Date.now(), ...roleIds);
-
-    db.prepare(
+       WHERE id IN (${placeholders})
+         AND (COALESCE(role_kind, '') != 'persona_template'
+           OR COALESCE(heartbeat_enabled, 0) != 0
+           OR COALESCE(heartbeat_status, 'idle') != 'idle'
+           OR heartbeat_last_pulse_result IS NOT NULL
+           OR heartbeat_last_dispatch_kind IS NOT NULL)`,
+      now,
+      ...roleIds,
+    );
+    run(
       `UPDATE automation_profiles
        SET enabled = 0,
            updated_at = ?
-       WHERE agent_role_id IN (${placeholders})`,
-    ).run(Date.now(), ...roleIds);
-
-    db.prepare(
-      `DELETE FROM heartbeat_policies
-       WHERE agent_role_id IN (${placeholders})`,
-    ).run(...roleIds);
-
-    db.prepare(
-      `DELETE FROM subconscious_dispatch_records
-       WHERE target_key IN (${placeholders})`,
-    ).run(...roleIds.map((id) => `agent_role:${id}`));
-    db.prepare(
-      `DELETE FROM subconscious_backlog_items
-       WHERE target_key IN (${placeholders})`,
-    ).run(...roleIds.map((id) => `agent_role:${id}`));
-    db.prepare(
-      `DELETE FROM subconscious_decisions
-       WHERE target_key IN (${placeholders})`,
-    ).run(...roleIds.map((id) => `agent_role:${id}`));
-    db.prepare(
-      `DELETE FROM subconscious_critiques
-       WHERE target_key IN (${placeholders})`,
-    ).run(...roleIds.map((id) => `agent_role:${id}`));
-    db.prepare(
-      `DELETE FROM subconscious_hypotheses
-       WHERE target_key IN (${placeholders})`,
-    ).run(...roleIds.map((id) => `agent_role:${id}`));
-    db.prepare(
-      `DELETE FROM subconscious_runs
-       WHERE target_key IN (${placeholders})`,
-    ).run(...roleIds.map((id) => `agent_role:${id}`));
-    db.prepare(
-      `DELETE FROM subconscious_targets
-       WHERE target_key IN (${placeholders})`,
-    ).run(...roleIds.map((id) => `agent_role:${id}`));
+       WHERE agent_role_id IN (${placeholders}) AND enabled != 0`,
+      now,
+      ...roleIds,
+    );
+    run(`DELETE FROM heartbeat_policies WHERE agent_role_id IN (${placeholders})`, ...roleIds);
+    for (const table of [
+      "subconscious_dispatch_records",
+      "subconscious_backlog_items",
+      "subconscious_decisions",
+      "subconscious_critiques",
+      "subconscious_hypotheses",
+      "subconscious_runs",
+      "subconscious_targets",
+    ]) {
+      run(`DELETE FROM ${table} WHERE target_key IN (${placeholders})`, ...targetKeys);
+    }
 
     db.exec("COMMIT");
-    logger.info("Normalized Twin roles out of core cognition ownership", {
-      roleCount: roleIds.length,
-    });
+    if (changes > 0) {
+      logger.info("Detached templated agent roles from core automation", {
+        roleCount: roleIds.length,
+        changes,
+      });
+    }
   } catch (error) {
     db.exec("ROLLBACK");
-    logger.error("Failed to normalize Twin cognition ownership:", error);
+    logger.error("Failed to detach templated agent roles from core automation:", error);
   }
 }
 
@@ -1011,22 +1022,58 @@ const RESETTABLE_SECURE_SETTINGS_CATEGORIES: SettingsCategory[] = [
   "webaccess",
 ];
 
+const ACCEPT_NEW_KEYCHAIN_KEY_ENV = "COWORK_ACCEPT_NEW_KEYCHAIN_KEY";
+let keychainIdentityMismatch = false;
+
+/** Returns true when secure-settings writes are refused because the keychain key changed. */
+function verifySecureSettingsKeychainIdentity(): boolean {
+  const repository = SecureSettingsRepository.getInstance();
+  const status = repository.verifyKeychainIdentity();
+  if (status !== "mismatch") return false;
+
+  if (process.env[ACCEPT_NEW_KEYCHAIN_KEY_ENV] === "1") {
+    const archived = repository.adoptCurrentKeychainIdentity();
+    logger.warn("Adopted the current OS keychain key; unreadable settings were archived.", {
+      archived,
+    });
+    return false;
+  }
+  logger.error(
+    `The OS keychain key differs from the one that encrypted existing settings. Settings changes will not be saved until the original keychain access is restored, or relaunch with ${ACCEPT_NEW_KEYCHAIN_KEY_ENV}=1 to archive unreadable settings and continue with the current key.`,
+  );
+  return true;
+}
+
+async function notifyKeychainIdentityMismatch(): Promise<void> {
+  if (!keychainIdentityMismatch) return;
+  try {
+    await getNotificationService()?.add({
+      type: "error",
+      title: "Settings can't be saved",
+      message:
+        "CoWork OS can't use the Keychain key that encrypted your settings, so changes won't be saved to avoid losing them. Allow CoWork OS access to \"CoWork OS Safe Storage\" in Keychain Access and relaunch. To start over with the current key, relaunch with COWORK_ACCEPT_NEW_KEYCHAIN_KEY=1; unreadable settings are archived, not deleted.",
+    });
+  } catch (error) {
+    logger.warn("Could not show the keychain mismatch notification:", error);
+  }
+}
+
 function healResettableSecureSettings(): void {
   if (!SecureSettingsRepository.isInitialized()) {
     return;
   }
 
   const repository = SecureSettingsRepository.getInstance();
-  for (const category of RESETTABLE_SECURE_SETTINGS_CATEGORIES) {
-    const status = repository.checkHealth(category, { logErrors: false });
-    if (status === "decryption_failed" || status === "checksum_mismatch") {
-      const didDelete = repository.delete(category);
-      if (didDelete) {
-        logger.warn(
-          `Reset corrupted secure settings category ${category} (${status}); defaults will be recreated.`,
-        );
-      }
-    }
+  const recovery = resetUnreadableSettings(repository, RESETTABLE_SECURE_SETTINGS_CATEGORIES);
+  for (const category of recovery.resetCategories) {
+    logger.warn(
+      `Reset secure settings category ${category} after a verified checksum mismatch; defaults will be recreated.`,
+    );
+  }
+  for (const { category, status } of recovery.preservedCategories) {
+    logger.error(
+      `Preserved secure settings category ${category} (${status}); encrypted data was not deleted and must be recovered before replacement.`,
+    );
   }
 }
 
@@ -1195,7 +1242,12 @@ registerLocationProbeScheme();
 registerTaskDeeplinkProtocol();
 
 applyApplicationIdentity();
-applyStableUserDataPath();
+const isMacSafeStorageMigrationWorker = process.argv.includes(
+  MAC_SAFE_STORAGE_MIGRATION_WORKER_FLAG,
+);
+if (!isMacSafeStorageMigrationWorker) {
+  applyStableUserDataPath();
+}
 
 const CLI_DIRECT_RUN_FLAG = "--cowork-cli-direct-run";
 const CLI_APPROVAL_RESPONSE_FLAG = "--cowork-cli-approval-response";
@@ -1246,7 +1298,14 @@ async function handleCliApprovalResponse(request: {
 async function runCliDirectMode(): Promise<void> {
   try {
     process.env.COWORK_HEADLESS = "1";
+    stripInjectedSystemCaOption(process.env);
+    keepDirectRunAliveWithoutWindows(app);
     await app.whenReady();
+    // Headless CLI runs should not appear as a second app in the Dock.
+    app.dock?.hide();
+    if (await primeMacSafeStorageContext()) {
+      logger.info("Initialized macOS Keychain context before loading secure settings.");
+    }
     const directRunPath = path.join(app.getAppPath(), "dist", "cli", "cli", "direct-run.js");
     if (!fsSync.existsSync(directRunPath)) {
       throw new Error(
@@ -1266,7 +1325,43 @@ async function runCliDirectMode(): Promise<void> {
   }
 }
 
-if (isCliDirectRunMode()) {
+async function runMacSafeStorageMigrationWorkerMode(): Promise<void> {
+  try {
+    // Destroying the bootstrap window must not trigger Electron's default quit
+    // before stdin has been read and the result written.
+    keepDirectRunAliveWithoutWindows(app);
+    await app.whenReady();
+    app.dock?.hide();
+    await primeMacSafeStorageContext();
+    let pendingResult = "";
+    await runMacSafeStorageMigrationWorker({
+      platform: process.platform,
+      safeStorage,
+      readInput: async () => {
+        const chunks: Buffer[] = [];
+        for await (const chunk of process.stdin) {
+          chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+        }
+        return Buffer.concat(chunks).toString("utf8");
+      },
+      writeResult: (result) => {
+        pendingResult = result;
+      },
+    });
+    // Pipe writes are asynchronous on macOS; wait for the flush before quitting
+    // so large results are not truncated.
+    await new Promise<void>((resolve) => process.stdout.write(pendingResult, () => resolve()));
+    app.quit();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "unknown error";
+    process.stderr.write(`[SafeStorageMigration] Worker failed: ${message}\n`);
+    app.exit(1);
+  }
+}
+
+if (isMacSafeStorageMigrationWorker) {
+  void runMacSafeStorageMigrationWorkerMode();
+} else if (isCliDirectRunMode()) {
   void runCliDirectMode();
 } else {
   // Ensure only one CoWork OS instance runs at a time.
@@ -1287,7 +1382,7 @@ if (isCliDirectRunMode()) {
     if (!ACTIVE_FOREGROUND_TASK_STATUSES.has(task.status)) return false;
     if (isAutomatedTaskLike(task)) return false;
     const source = task.source || "manual";
-    return source === "manual" || source === "api";
+    return source === "manual" || source === "api" || source === "sample";
   }
   if (!gotTheLock) {
     if (process.env.NODE_ENV === "development") {
@@ -1300,6 +1395,12 @@ if (isCliDirectRunMode()) {
       app.quit();
     }
   } else {
+    const startupActionGate = new StartupActionGate();
+
+    function ensureMainWindowVisible(): void {
+      if (!revealWindow(mainWindow)) createWindow();
+    }
+
     function flushPendingTaskDeeplink(): void {
       const taskId = pendingTaskDeeplinkId;
       if (!taskId || !mainWindow || mainWindow.isDestroyed()) return;
@@ -1318,7 +1419,7 @@ if (isCliDirectRunMode()) {
       if (HEADLESS) return;
       pendingTaskDeeplinkId = taskId;
       if (!revealWindow(mainWindow)) {
-        createWindow();
+        startupActionGate.runWhenReady(ensureMainWindowVisible);
         return;
       }
       if (mainWindow?.webContents.isLoadingMainFrame()) {
@@ -1332,7 +1433,7 @@ if (isCliDirectRunMode()) {
       if (HEADLESS) return;
       pendingBotDeeplink = route;
       if (!revealWindow(mainWindow)) {
-        createWindow();
+        startupActionGate.runWhenReady(ensureMainWindowVisible);
         return;
       }
       if (mainWindow?.webContents.isLoadingMainFrame()) {
@@ -1361,7 +1462,9 @@ if (isCliDirectRunMode()) {
       if (HEADLESS) return;
       const approvalResponse = getCliApprovalResponseArgv(argv);
       if (approvalResponse) {
-        void handleCliApprovalResponse(approvalResponse);
+        startupActionGate.runWhenReady(() => {
+          void handleCliApprovalResponse(approvalResponse);
+        });
         return;
       }
       const taskId = extractTaskDeeplinkArg(argv);
@@ -1378,8 +1481,9 @@ if (isCliDirectRunMode()) {
       if (revealWindow(mainWindow)) {
         return;
       }
-      // If the window was closed (but app kept running), recreate it.
-      createWindow();
+      // During startup, wait for IPC registration before creating a renderer.
+      // After startup, recreate a closed window as usual.
+      startupActionGate.runWhenReady(ensureMainWindowVisible);
     });
 
     const startupApprovalResponse = getCliApprovalResponseArgv(process.argv);
@@ -1574,6 +1678,9 @@ if (isCliDirectRunMode()) {
     }
 
     app.whenReady().then(async () => {
+      if (await primeMacSafeStorageContext()) {
+        logger.info("Initialized macOS Keychain context before loading secure settings.");
+      }
       getDesktopLocationService().installPermissionHandlers();
       installMcpInstallConfirmationHandler();
       const startupStartedAt = Date.now();
@@ -1709,10 +1816,40 @@ if (isCliDirectRunMode()) {
       // This MUST be done before provider factories so they can migrate legacy settings
       new SecureSettingsRepository(dbManager.getDatabase());
       logger.info("SecureSettingsRepository initialized");
-      new PulseService(dbManager.getDatabase(), {
-        version: app.getVersion(),
-        runtime: "desktop",
-      }).start();
+      if (process.platform === "darwin") {
+        await migrateLegacyMacSafeStorageSettings({
+          platform: process.platform,
+          database: dbManager.getDatabase(),
+          repository: SecureSettingsRepository.getInstance(),
+          executable: process.execPath,
+          appPath: app.getAppPath(),
+          logger,
+        });
+        await migrateLegacyMacSafeStorageChannels({
+          platform: process.platform,
+          database: dbManager.getDatabase(),
+          safeStorage,
+          executable: process.execPath,
+          appPath: app.getAppPath(),
+          logger,
+        });
+      }
+      keychainIdentityMismatch = verifySecureSettingsKeychainIdentity();
+      // One lifecycle-owned instance serves the timer and the Settings IPC, so a
+      // user decision and an in-flight delivery share one fence and one shutdown.
+      // Opt-in telemetry must never block startup; Settings then reports it unavailable.
+      try {
+        pulseService = new PulseService(dbManager.getDatabase(), {
+          version: app.getVersion(),
+          runtime: "desktop",
+        });
+        pulseService.start();
+      } catch (error) {
+        pulseService = null;
+        logger.warn("CoWork Pulse could not start; reporting stays paused this session.", {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
       healResettableSecureSettings();
       {
         const workspaceRepo = new WorkspaceRepository(dbManager.getDatabase());
@@ -1734,7 +1871,7 @@ if (isCliDirectRunMode()) {
           });
         }
       }
-      normalizeTwinCoreBoundary();
+      normalizeTemplatedRoleCoreBoundary();
       ensureCoreAutomationProfiles();
       ensureCoreBotTeams();
       try {
@@ -1805,6 +1942,9 @@ if (isCliDirectRunMode()) {
 
       // Initialize provider factories (loads settings from disk, migrates legacy files)
       LLMProviderFactory.initialize();
+      new ModelMetadataRefresher(
+        () => LLMProviderFactory.loadSettings().modelMetadataAutoRefresh === true,
+      ).start();
       SearchProviderFactory.initialize();
       GuardrailManager.initialize();
       AppearanceManager.initialize();
@@ -1908,6 +2048,17 @@ if (isCliDirectRunMode()) {
       }
 
       try {
+        const meetingArtifacts = MeetingArtifactsService.initialize(
+          path.join(getUserDataDir(), "meeting-artifacts"),
+        );
+        setupMeetingArtifactHandlers(meetingArtifacts);
+        logger.info("Meeting artifacts service initialized");
+      } catch (error) {
+        // Meeting capture is optional and must not block app startup.
+        logger.error("Failed to initialize meeting artifacts service:", error);
+      }
+
+      try {
         const chronicleSettings = ChronicleSettingsManager.loadSettings();
         await ChronicleCaptureService.getInstance().applySettings(chronicleSettings);
         ChronicleMemoryService.getInstance().applySettings(chronicleSettings);
@@ -1976,18 +2127,6 @@ if (isCliDirectRunMode()) {
         db: dbManager.getDatabase(),
         log: (...args) => logger.warn(...args),
       });
-      try {
-        symphonyService = new SymphonyService({
-          db: dbManager.getDatabase(),
-          agentDaemon,
-          log: (...args) => logger.info(...args),
-        });
-        setSymphonyService(symphonyService);
-        symphonyService.start();
-        logger.info("Symphony issue orchestration initialized");
-      } catch (error) {
-        logger.error("Failed to initialize Symphony issue orchestration:", error);
-      }
 
       // Optional: bootstrap a default workspace on startup for headless/server deployments.
       // This makes a fresh VPS instance usable without first opening the desktop UI.
@@ -2520,14 +2659,8 @@ if (isCliDirectRunMode()) {
             );
 
             // Build the message
-            const statusEmoji =
-              params.status === "ok"
-                ? "✅"
-                : params.status === "partial_success" || params.status === "needs_user_action"
-                  ? "⚠️"
-                  : params.status === "error"
-                    ? "❌"
-                    : "⏱️";
+            const statusLabel = describeCronRunStatus(params.status);
+            const statusEmoji = statusLabel.emoji;
             let message: string;
 
             if (hasFullResult) {
@@ -2542,17 +2675,7 @@ if (isCliDirectRunMode()) {
               // No result text or error/timeout — generic status message
               let msg = `${statusEmoji} **Scheduled Task: ${params.jobName}**\n\n`;
 
-              if (params.status === "ok") {
-                msg += `Task completed successfully.\n`;
-              } else if (params.status === "partial_success") {
-                msg += `Task completed with partial results.\n`;
-              } else if (params.status === "needs_user_action") {
-                msg += `Task completed - action required.\n`;
-              } else if (params.status === "error") {
-                msg += `Task failed.\n`;
-              } else {
-                msg += `Task timed out.\n`;
-              }
+              msg += `${statusLabel.sentence}\n`;
 
               if (params.error) {
                 msg += `\n**Error:** ${params.error}\n`;
@@ -2619,24 +2742,9 @@ if (isCliDirectRunMode()) {
 
             // Show desktop notification when scheduled task finishes
             if (evt.action === "finished") {
-              const statusEmoji =
-                evt.status === "ok"
-                  ? "✅"
-                  : evt.status === "partial_success" || evt.status === "needs_user_action"
-                    ? "⚠️"
-                    : evt.status === "error"
-                      ? "❌"
-                      : "⏱️";
-              const statusText =
-                evt.status === "ok"
-                  ? "completed"
-                  : evt.status === "partial_success"
-                    ? "completed with partial results"
-                    : evt.status === "needs_user_action"
-                      ? "completed, action required"
-                      : evt.status === "error"
-                        ? "failed"
-                        : "timed out";
+              const statusLabel = describeCronRunStatus(evt.status);
+              const statusEmoji = statusLabel.emoji;
+              const statusText = statusLabel.short;
 
               // Add in-app notification
               const notificationService = getNotificationService();
@@ -2656,7 +2764,11 @@ if (isCliDirectRunMode()) {
                     type:
                       evt.status === "ok"
                         ? "task_completed"
-                        : evt.status === "partial_success" || evt.status === "needs_user_action"
+                        : evt.status === "partial_success" ||
+                            evt.status === "needs_user_action" ||
+                            evt.status === "cancelled" ||
+                            evt.status === "skipped" ||
+                            evt.status === "unknown"
                           ? "warning"
                           : "task_failed",
                     title: `${statusEmoji} ${jobName} ${statusText}`,
@@ -2763,6 +2875,7 @@ if (isCliDirectRunMode()) {
       await setupIpcHandlers(dbManager, agentDaemon, channelGateway, {
         getMainWindow: () => mainWindow,
         getRoutineService: () => routineService,
+        getPulseService: () => pulseService,
       });
       if (subconsciousLoopService) {
         setupSubconsciousHandlers(subconsciousLoopService);
@@ -3128,7 +3241,6 @@ if (isCliDirectRunMode()) {
             standupService,
             heartbeatService,
             getPlannerService: () => strategicPlannerService,
-            getSymphonyService: () => symphonyService,
             getMainWindow: () => mainWindow,
             coreTraceService,
             coreMemoryDistiller,
@@ -3189,18 +3301,6 @@ if (isCliDirectRunMode()) {
         logger.info("Strategic Planner initialized");
       } catch (error) {
         logger.error("Failed to initialize Strategic Planner:", error);
-      }
-
-      // Register Persona Template handlers; templates are loaded lazily when the
-      // Digital Twins UI requests them.
-      try {
-        const db = dbManager.getDatabase();
-        const agentRoleRepo = new AgentRoleRepository(db);
-        const personaTemplateService = getPersonaTemplateService(agentRoleRepo);
-        setupPersonaTemplateHandlers({ personaTemplateService });
-        logger.debug("Persona Template handlers initialized");
-      } catch (error) {
-        logger.error("Failed to initialize Persona Template handlers:", error);
       }
 
       // Initialize Plugin Pack handlers (Customize panel)
@@ -3343,6 +3443,7 @@ if (isCliDirectRunMode()) {
         // are registered before the renderer finishes loading and calls them
         setupCanvasHandlers(mainWindow, agentDaemon);
         setupQAHandlers(mainWindow, agentDaemon);
+        startupActionGate.open();
         CanvasManager.getInstance().setMainWindow(mainWindow);
 
         // Initialize Git Worktree & Comparison handlers
@@ -4303,14 +4404,6 @@ if (isCliDirectRunMode()) {
           },
         },
         {
-          name: "symphony",
-          run: () => {
-            symphonyService?.stop();
-            symphonyService = null;
-            setSymphonyService(null);
-          },
-        },
-        {
           name: "X mention bridge",
           run: () => {
             xMentionBridgeService?.stop();
@@ -4334,7 +4427,20 @@ if (isCliDirectRunMode()) {
           },
         },
         { name: "channel gateway", run: () => channelGateway?.shutdown() },
+        {
+          name: "meeting artifacts",
+          run: () => MeetingArtifactsService.getInstance()?.shutdown(),
+        },
+        { name: "mailbox", run: () => MailboxService.stopBackgroundServices() },
         { name: "box brain", run: () => BoxBrainService.getInstance().stop() },
+        {
+          name: "heartbeats",
+          run: async () => {
+            await heartbeatService?.stop();
+            heartbeatService = null;
+            setHeartbeatService(null);
+          },
+        },
         // Keep lifecycle listeners, MCP, memory, and storage alive until tasks settle.
         { name: "agent daemon", run: () => agentDaemon?.shutdown() },
         {
@@ -4362,6 +4468,13 @@ if (isCliDirectRunMode()) {
           run: () => MCPClientManager.getInstance().shutdown(),
         },
         { name: "memory", requiresQuiescence: true, run: () => MemoryService.shutdown() },
+        {
+          name: "pulse",
+          run: async () => {
+            await pulseService?.shutdown();
+            pulseService = null;
+          },
+        },
         { name: "local previews", run: () => getLocalPreviewProcessService().stopAll() },
         { name: "database", requiresQuiescence: true, run: () => dbManager?.close() },
       ],

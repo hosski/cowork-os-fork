@@ -5,10 +5,13 @@ import { describe, expect, it } from "vitest";
 import {
   BotsPane,
   filterBots,
+  getBotConversationReadiness,
+  getBotConversationReadinessLabel,
   getBotHandle,
   getBotLatestTask,
   getBotPreview,
   getBotRelativeTime,
+  getBotTimestamp,
   stripMarkdownForBotPreview,
 } from "../BotsPane";
 
@@ -36,9 +39,78 @@ const task = {
 };
 
 describe("BotsPane", () => {
+  it("separates persistent conversation readiness from the last run status", () => {
+    expect(getBotConversationReadiness({ status: "completed" } as Any)).toBe("ready");
+    expect(getBotConversationReadiness({ status: "executing" } as Any)).toBe("working");
+    expect(getBotConversationReadiness({ status: "completed" } as Any, { state: "waiting" })).toBe(
+      "waiting",
+    );
+    expect(getBotConversationReadiness({ status: "blocked" } as Any, { state: "completed" })).toBe(
+      "ready",
+    );
+    expect(
+      getBotConversationReadiness({
+        status: "blocked",
+        error: "Waiting for Atlas to reply before finishing this conversation.",
+      } as Any),
+    ).toBe("waiting");
+    expect(getBotConversationReadiness({ status: "blocked" } as Any)).toBe("attention");
+    expect(getBotConversationReadiness({ status: "interrupted" } as Any)).toBe("attention");
+    expect(getBotConversationReadiness({ status: "failed" } as Any)).toBe("unavailable");
+    expect(getBotConversationReadinessLabel("ready")).toBe("Ready for another message");
+    expect(getBotConversationReadinessLabel("waiting")).toBe("Waiting on a teammate");
+  });
+
   it("derives a stable handle and prefers the latest result preview", () => {
     expect(getBotHandle(bot)).toBe("research-desk");
     expect(getBotPreview(task as Any)).toBe("Onboarding findings are ready");
+  });
+
+  it("does not show a stale success result for an unavailable conversation", () => {
+    expect(
+      getBotPreview({
+        ...task,
+        status: "failed",
+        resultSummary: "Verified package.json successfully",
+        error: undefined,
+      } as Any),
+    ).toBe("Conversation unavailable — reopen to retry");
+  });
+
+  it("shows the failure reason for an unavailable conversation", () => {
+    expect(
+      getBotPreview({
+        ...task,
+        status: "failed",
+        resultSummary: "Verified package.json successfully",
+        error: "The provider timed out before the teammate reply arrived.",
+      } as Any),
+    ).toBe("Failed: The provider timed out before the teammate reply arrived.");
+  });
+
+  it("uses the pending teammate reply as the waiting-row preview", () => {
+    expect(
+      getBotPreview({
+        ...task,
+        status: "blocked",
+        resultSummary: "Verified and reported to Atlas",
+        error: "Waiting for Atlas to reply before finishing this conversation.",
+      } as Any),
+    ).toBe("Waiting for Atlas to reply");
+  });
+
+  it.each([
+    ["working", "Working on latest message"],
+    ["waiting", "Waiting for Forge to reply"],
+    ["needs_input", "Needs your input"],
+    ["failed", "No reply from Forge; partial result available"],
+  ] as const)("does not show a stale result while projection is %s", (state, expected) => {
+    expect(
+      getBotPreview(task as Any, {
+        state,
+        activityLabel: expected,
+      }),
+    ).toBe(expected);
   });
 
   it("shows Markdown previews as plain text without formatting syntax", () => {
@@ -61,13 +133,40 @@ describe("BotsPane", () => {
     );
   });
 
+  it("turns a raw agent-message receipt into a human-facing preview", () => {
+    expect(
+      getBotPreview({
+        ...task,
+        resultSummary: '{"success":true,"deliveryStatus":"queued","message_id":"message-3"}',
+      } as Any),
+    ).toBe("Queued for the next turn");
+  });
+
   it("formats bot activity with compact relative units", () => {
     expect(getBotRelativeTime(10_000, 10_000 + 2 * 60 * 60 * 1000)).toBe("2h");
+  });
+
+  it("uses durable projection activity for roster age when it is newer than the task row", () => {
+    expect(
+      getBotTimestamp(bot, { ...task, updatedAt: 2_000 } as Any, { lastActivityAt: 9_000 }),
+    ).toBe(9_000);
   });
 
   it("matches bots by identity, description, or recent task text", () => {
     expect(filterBots([bot], [task as Any], "onboarding")).toEqual([bot]);
     expect(filterBots([bot], [task as Any], "billing")).toEqual([]);
+  });
+
+  it("matches bots by their current durable teammate activity", () => {
+    expect(
+      filterBots([bot], [task as Any], "waiting for forge", {
+        [bot.id]: {
+          state: "waiting",
+          activityLabel: "Waiting for Forge to reply",
+          lastActivityAt: 3_000,
+        },
+      }),
+    ).toEqual([bot]);
   });
 
   it("renders the roster row with its name, preview, and timestamp", () => {
@@ -88,6 +187,48 @@ describe("BotsPane", () => {
     expect(markup).toContain('aria-label="Edit Research Desk"');
     expect(markup).toContain("Onboarding findings are ready");
     expect(markup).toMatch(/class="sidebar-bot-row selected\b/);
+  });
+
+  it("uses the selected conversation projection for a stale completed roster row", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(BotsPane, {
+        roles: [bot],
+        tasks: [task as Any],
+        selectedTaskId: task.id,
+        selectedConversationProjection: {
+          state: "waiting",
+          activityLabel: "Waiting for Forge to reply",
+          lastActivityAt: 3_000,
+        },
+        onSelectTask: () => {},
+      }),
+    );
+
+    expect(markup).toContain("Waiting on a teammate");
+    expect(markup).toContain("Waiting for Forge to reply");
+    expect(markup).not.toContain("Ready for another message");
+    expect(markup).not.toContain("Onboarding findings are ready");
+  });
+
+  it("uses a durable projection for a non-selected stale completed roster row", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(BotsPane, {
+        roles: [bot],
+        tasks: [task as Any],
+        selectedTaskId: null,
+        conversationProjections: {
+          [bot.id]: {
+            state: "waiting",
+            activityLabel: "Waiting for Forge to reply",
+            lastActivityAt: 3_000,
+          },
+        },
+        onSelectTask: () => {},
+      }),
+    );
+
+    expect(markup).toContain("Waiting on a teammate");
+    expect(markup).not.toContain("Ready for another message");
   });
 
   it("keeps a bot selected for an older bot conversation but ignores normal role tasks", () => {

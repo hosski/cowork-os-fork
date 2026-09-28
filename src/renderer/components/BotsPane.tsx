@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
-import { AlertCircle, CircleDashed, LoaderCircle, Plus, Search, X } from "lucide-react";
+import { AlertCircle, CircleDashed, LoaderCircle, Plus, RefreshCw, Search, X } from "lucide-react";
 import { BotGlyph } from "./BotGlyph";
 import type { Task } from "../../shared/types";
 import {
@@ -13,6 +13,11 @@ import { LUCIDE_TWIN_ICONS, TWIN_ICON_KEYS, type TwinIconKey } from "../utils/tw
 import { DEFAULT_BOT_COLOR } from "../utils/bot-colors";
 import { BotProfileDialog } from "./BotProfileDialog";
 import { selectLatestBotConversation } from "../utils/bot-conversations";
+import { parseAgentMessageProtocolResult } from "../utils/agent-message-receipt";
+import type {
+  BotConversationProjection,
+  BotConversationRosterProjection,
+} from "../../shared/bot-lifecycle";
 
 export interface BotRole {
   id: string;
@@ -38,22 +43,24 @@ interface BotsPaneProps {
   onRetry?: () => void;
   onSelectTask: (id: string | null) => void;
   onOpenBot?: (bot: BotRole) => void | Promise<void>;
+  onReopenBot?: (task: Task) => void | Promise<void>;
   onOpenAgents?: () => void;
+  selectedConversationProjection?: BotConversationRosterProjection | null;
+  conversationProjections?: Readonly<Record<string, BotConversationRosterProjection>>;
   onBotCreated?: (bot: BotRole) => void | Promise<void>;
   onBotUpdated?: (bot: BotRole) => void | Promise<void>;
   onBotDeleted?: (botId: string) => void | Promise<void>;
 }
 
-const ACTIVE_BOT_STATUSES: ReadonlySet<Task["status"]> = new Set([
-  "executing",
-  "planning",
-  "interrupted",
-]);
+const ACTIVE_BOT_STATUSES: ReadonlySet<Task["status"]> = new Set(["executing", "planning"]);
 
 const AWAITING_BOT_STATUSES: ReadonlySet<Task["status"]> = new Set(["paused", "blocked"]);
+const UNAVAILABLE_BOT_STATUSES: ReadonlySet<Task["status"]> = new Set(["failed", "cancelled"]);
 
 const DEFAULT_BOT_ICON: TwinIconKey = "Bot";
 const MAX_BOT_PREVIEW_LENGTH = 140;
+const BOT_WAITING_FOR_REPLY_RE =
+  /^waiting for (.+?) to reply(?: before finishing this conversation)?\.?$/i;
 
 export function isBotConversationTask(task: Task): boolean {
   return task.agentConfig?.botConversation === true;
@@ -98,15 +105,115 @@ function flattenBotPreviewText(value: string | undefined): string {
   return stripAllEmojis(stripMarkdownForBotPreview(value));
 }
 
+function getHumanBotPreview(value: string | undefined): string {
+  const protocolResult = value ? parseAgentMessageProtocolResult(value) : null;
+  return protocolResult ? protocolResult.label : flattenBotPreviewText(value);
+}
+
 export function getBotLatestTask(tasks: Task[], roleId: string): Task | undefined {
   return selectLatestBotConversation(tasks, roleId);
 }
 
-export function getBotPreview(task: Task | undefined): string {
-  if (!task) return "No messages yet";
-  const promptPreview = flattenBotPreviewText(task.userPrompt);
-  const sidebarPreview = flattenBotPreviewText(task.sidebarPromptPreview);
-  const resultPreview = flattenBotPreviewText(task.resultSummary);
+export type BotConversationReadiness =
+  | "ready"
+  | "working"
+  | "waiting"
+  | "attention"
+  | "unavailable";
+
+function hasPendingTeammateReply(task: Pick<Task, "status" | "error"> | undefined): boolean {
+  if (!task || !["blocked", "paused", "interrupted"].includes(task.status)) return false;
+  return (
+    typeof task.error === "string" && BOT_WAITING_FOR_REPLY_RE.test(flattenTaskText(task.error))
+  );
+}
+
+function getPendingTeammateReplyPreview(task: Pick<Task, "status" | "error">): string | null {
+  if (!hasPendingTeammateReply(task) || typeof task.error !== "string") return null;
+  const match = flattenTaskText(task.error).match(BOT_WAITING_FOR_REPLY_RE);
+  return match?.[1] ? `Waiting for ${match[1]} to reply` : "Waiting for a teammate to reply";
+}
+
+function getProjectionPreview(
+  projection?:
+    | (Pick<BotConversationProjection, "state"> &
+        Partial<Pick<BotConversationProjection, "activityLabel">>)
+    | null,
+): string | null {
+  const activityLabel = projection?.activityLabel?.trim();
+  switch (projection?.state) {
+    case "working":
+      return activityLabel || "Working on latest message";
+    case "waiting":
+      return activityLabel || "Waiting on a teammate";
+    case "needs_input":
+      return activityLabel || "Needs your input";
+    case "failed":
+      return activityLabel || "Unavailable — reopen to retry";
+    default:
+      return null;
+  }
+}
+
+/** Persistent readiness is intentionally separate from the last run result. */
+export function getBotConversationReadiness(
+  task: Pick<Task, "status" | "error"> | undefined,
+  projection?: Pick<BotConversationProjection, "state"> | null,
+): BotConversationReadiness {
+  if (projection?.state === "waiting") return "waiting";
+  if (projection?.state === "working") return "working";
+  if (projection?.state === "needs_input") return "attention";
+  if (projection?.state === "failed") return "unavailable";
+  if (projection?.state === "completed") return "ready";
+  if (!task) return "ready";
+  if (hasPendingTeammateReply(task)) return "waiting";
+  if (ACTIVE_BOT_STATUSES.has(task.status)) return "working";
+  if (AWAITING_BOT_STATUSES.has(task.status) || task.status === "interrupted") {
+    return "attention";
+  }
+  if (UNAVAILABLE_BOT_STATUSES.has(task.status)) return "unavailable";
+  return "ready";
+}
+
+export function getBotConversationReadinessLabel(readiness: BotConversationReadiness): string {
+  switch (readiness) {
+    case "working":
+      return "Working on latest message";
+    case "waiting":
+      return "Waiting on a teammate";
+    case "attention":
+      return "Needs attention";
+    case "unavailable":
+      return "Unavailable — reopen to retry";
+    default:
+      return "Ready for another message";
+  }
+}
+
+export function getBotPreview(
+  task: Task | undefined,
+  projection?:
+    | (Pick<BotConversationProjection, "state"> &
+        Partial<Pick<BotConversationProjection, "activityLabel">>)
+    | null,
+): string {
+  if (!task) return getProjectionPreview(projection) || "No messages yet";
+  if (task.status === "failed" || task.status === "cancelled") {
+    const failurePreview = getHumanBotPreview(task.error || undefined);
+    const preview = failurePreview
+      ? `Failed: ${failurePreview}`
+      : "Conversation unavailable — reopen to retry";
+    return preview.length > MAX_BOT_PREVIEW_LENGTH
+      ? `${preview.slice(0, MAX_BOT_PREVIEW_LENGTH - 1).trimEnd()}…`
+      : preview;
+  }
+  const projectionPreview = getProjectionPreview(projection);
+  if (projectionPreview) return projectionPreview;
+  const pendingReplyPreview = getPendingTeammateReplyPreview(task);
+  if (pendingReplyPreview) return pendingReplyPreview;
+  const promptPreview = getHumanBotPreview(task.userPrompt);
+  const sidebarPreview = getHumanBotPreview(task.sidebarPromptPreview);
+  const resultPreview = getHumanBotPreview(task.resultSummary);
   const isDormantSeed = (value: string) =>
     /^start (?:a )?(?:conversation|chatting) with /i.test(value);
   const preview =
@@ -139,7 +246,12 @@ export function getBotRelativeTime(timestamp?: number, now = Date.now()): string
   return `${Math.max(1, Math.round(days / 365))}y`;
 }
 
-export function filterBots(roles: BotRole[], tasks: Task[], query: string): BotRole[] {
+export function filterBots(
+  roles: BotRole[],
+  tasks: Task[],
+  query: string,
+  projections?: Readonly<Record<string, BotConversationRosterProjection>>,
+): BotRole[] {
   const normalizedQuery = flattenTaskText(query).toLocaleLowerCase();
   if (!normalizedQuery) return roles;
 
@@ -150,7 +262,7 @@ export function filterBots(roles: BotRole[], tasks: Task[], query: string): BotR
       bot.name,
       bot.description,
       getBotHandle(bot),
-      getBotPreview(latestTask),
+      getBotPreview(latestTask, projections?.[bot.id]),
     ]
       .map((value) => flattenTaskText(value).toLocaleLowerCase())
       .join(" ");
@@ -165,11 +277,22 @@ function getSafeBotIcon(icon: string | undefined) {
   return BotGlyph;
 }
 
-function getBotTimestamp(bot: BotRole, task: Task | undefined): number {
-  return task?.updatedAt || task?.createdAt || bot.updatedAt || 0;
+export function getBotTimestamp(
+  bot: BotRole,
+  task: Task | undefined,
+  projection?: Pick<BotConversationProjection, "lastActivityAt"> | null,
+): number {
+  return Math.max(
+    task?.updatedAt || task?.createdAt || bot.updatedAt || 0,
+    projection?.lastActivityAt || 0,
+  );
 }
 
-function sortBots(roles: BotRole[], tasks: Task[]): BotRole[] {
+function sortBots(
+  roles: BotRole[],
+  tasks: Task[],
+  projections?: Readonly<Record<string, BotConversationRosterProjection>>,
+): BotRole[] {
   return [...roles].sort((a, b) => {
     const aTask = getBotLatestTask(tasks, a.id);
     const bTask = getBotLatestTask(tasks, b.id);
@@ -177,7 +300,9 @@ function sortBots(roles: BotRole[], tasks: Task[]): BotRole[] {
     const bActive = bTask && ACTIVE_BOT_STATUSES.has(bTask.status) ? 1 : 0;
     if (aActive !== bActive) return bActive - aActive;
 
-    const activityDifference = getBotTimestamp(b, bTask) - getBotTimestamp(a, aTask);
+    const activityDifference =
+      getBotTimestamp(b, bTask, projections?.[b.id]) -
+      getBotTimestamp(a, aTask, projections?.[a.id]);
     if (activityDifference !== 0) return activityDifference;
     return (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.displayName.localeCompare(b.displayName);
   });
@@ -186,26 +311,34 @@ function sortBots(roles: BotRole[], tasks: Task[]): BotRole[] {
 function BotRow({
   bot,
   latestTask,
+  conversationProjection,
   selected,
   onSelect,
   onOpenBot,
+  onReopenBot,
   onOpenAgents,
   onEditBot,
 }: {
   bot: BotRole;
   latestTask?: Task;
+  conversationProjection?: BotConversationRosterProjection | null;
   selected: boolean;
   onSelect: () => void;
   onOpenBot?: () => void | Promise<void>;
+  onReopenBot?: (task: Task) => void | Promise<void>;
   onOpenAgents?: () => void;
   onEditBot?: () => void;
 }) {
+  const [isReopening, setIsReopening] = useState(false);
   const Icon = getSafeBotIcon(bot.icon);
-  const isActive = latestTask ? ACTIVE_BOT_STATUSES.has(latestTask.status) : false;
-  const isAwaiting = latestTask ? AWAITING_BOT_STATUSES.has(latestTask.status) : false;
+  const readiness = getBotConversationReadiness(latestTask, conversationProjection);
+  const isActive = readiness === "working";
+  const isAwaiting =
+    readiness === "waiting" || readiness === "attention" || readiness === "unavailable";
+  const readinessLabel = getBotConversationReadinessLabel(readiness);
   const displayName = flattenTaskText(bot.displayName) || "Unnamed bot";
-  const preview = getBotPreview(latestTask);
-  const age = getBotRelativeTime(latestTask?.updatedAt || latestTask?.createdAt || bot.updatedAt);
+  const preview = getBotPreview(latestTask, conversationProjection);
+  const age = getBotRelativeTime(getBotTimestamp(bot, latestTask, conversationProjection));
 
   return (
     <div className="sidebar-bot-row-wrap">
@@ -220,7 +353,7 @@ function BotRow({
           .join(" ")}
         onClick={onOpenBot || (latestTask ? onSelect : onOpenAgents)}
         aria-current={selected ? "page" : undefined}
-        aria-label={`${displayName}, ${preview}`}
+        aria-label={`${displayName}, ${readinessLabel}, ${preview}`}
         title={latestTask ? preview : "Open bot chat"}
       >
         <span
@@ -241,6 +374,12 @@ function BotRow({
             {age && <span className="sidebar-bot-age">{age}</span>}
           </span>
           <span className="sidebar-bot-secondary-line">
+            <span
+              className={`sidebar-bot-readiness sidebar-bot-readiness-${readiness}`}
+              title={readinessLabel}
+            >
+              {readinessLabel}
+            </span>
             <span className="sidebar-bot-preview">{preview}</span>
           </span>
         </span>
@@ -254,6 +393,27 @@ function BotRow({
           title="Edit bot"
         >
           <span aria-hidden="true">⋯</span>
+        </button>
+      )}
+      {onReopenBot && latestTask && readiness === "unavailable" && (
+        <button
+          type="button"
+          className="sidebar-bot-reopen-button"
+          onClick={async (event) => {
+            event.stopPropagation();
+            if (isReopening) return;
+            setIsReopening(true);
+            try {
+              await onReopenBot(latestTask);
+            } finally {
+              setIsReopening(false);
+            }
+          }}
+          aria-label={`Reopen ${displayName} conversation`}
+          title="Reopen conversation"
+          disabled={isReopening}
+        >
+          <RefreshCw size={13} className={isReopening ? "spinning" : undefined} />
         </button>
       )}
     </div>
@@ -420,7 +580,10 @@ export function BotsPane({
   onRetry,
   onSelectTask,
   onOpenBot,
+  onReopenBot,
   onOpenAgents,
+  selectedConversationProjection,
+  conversationProjections,
   onBotCreated,
   onBotUpdated,
   onBotDeleted,
@@ -430,8 +593,13 @@ export function BotsPane({
   const [editingBot, setEditingBot] = useState<BotRole | null>(null);
 
   const visibleBots = useMemo(
-    () => sortBots(filterBots(roles, tasks, query), tasks),
-    [roles, tasks, query],
+    () =>
+      sortBots(
+        filterBots(roles, tasks, query, conversationProjections),
+        tasks,
+        conversationProjections,
+      ),
+    [conversationProjections, roles, tasks, query],
   );
 
   return (
@@ -521,26 +689,35 @@ export function BotsPane({
         </div>
       ) : (
         <div className="sidebar-bots-list" role="list" aria-label="Bots">
-          {visibleBots.map((bot) => (
-            <BotRow
-              key={bot.id}
-              bot={bot}
-              latestTask={getBotLatestTask(tasks, bot.id)}
-              selected={tasks.some(
-                (task) =>
-                  task.id === selectedTaskId &&
-                  task.assignedAgentRoleId === bot.id &&
-                  isBotConversationTask(task),
-              )}
-              onSelect={() => {
-                const latestTask = getBotLatestTask(tasks, bot.id);
-                if (latestTask) onSelectTask(latestTask.id);
-              }}
-              onOpenBot={onOpenBot ? () => onOpenBot(bot) : undefined}
-              onOpenAgents={onOpenAgents}
-              onEditBot={() => setEditingBot(bot)}
-            />
-          ))}
+          {visibleBots.map((bot) => {
+            const latestTask = getBotLatestTask(tasks, bot.id);
+            const selected = tasks.some(
+              (task) =>
+                task.id === selectedTaskId &&
+                task.assignedAgentRoleId === bot.id &&
+                isBotConversationTask(task),
+            );
+            return (
+              <BotRow
+                key={bot.id}
+                bot={bot}
+                latestTask={latestTask}
+                conversationProjection={
+                  selected
+                    ? (selectedConversationProjection ?? conversationProjections?.[bot.id] ?? null)
+                    : (conversationProjections?.[bot.id] ?? null)
+                }
+                selected={selected}
+                onSelect={() => {
+                  if (latestTask) onSelectTask(latestTask.id);
+                }}
+                onOpenBot={onOpenBot ? () => onOpenBot(bot) : undefined}
+                onReopenBot={onReopenBot}
+                onOpenAgents={onOpenAgents}
+                onEditBot={() => setEditingBot(bot)}
+              />
+            );
+          })}
         </div>
       )}
 
