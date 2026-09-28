@@ -2,11 +2,12 @@
  * Cost Data IPC Handler — OpenViking Backend
  *
  * Provides cost analytics by querying OpenViking audit logs.
- * For detailed queries, use viking_search() from the Hermes CLI.
+ * Integrates alerting checks for cost and error thresholds.
  */
 
 import { ipcMain } from 'electron';
 import type { AuditLogService } from '../services/audit-log-service';
+import { getAlertingService } from '../services/alerting-service';
 
 export function registerCostDataHandler(auditService: AuditLogService): void {
   ipcMain.handle('cost:getData', async (_event) => {
@@ -22,6 +23,29 @@ export function registerCostDataHandler(auditService: AuditLogService): void {
       // Calculate totals
       const totalCost = dailyCosts.reduce((sum: number, day: any) => sum + (day.cost || 0), 0);
       const totalModelCost = modelCosts.reduce((sum: number, model: any) => sum + (model.cost || 0), 0);
+
+      // Check thresholds and send alerts
+      try {
+        const alerting = await getAlertingService({
+          enableEmailAlerts: false, // Stubs for now; configure via settings
+          enableTelegramAlerts: false,
+        });
+
+        // Alert on daily cost if there is a cost today
+        if (dailyCosts.length > 0) {
+          const todaysCost = dailyCosts[dailyCosts.length - 1]?.cost || 0;
+          const today = new Date().toISOString().split('T')[0];
+          await alerting.checkDailyCost(todaysCost, today);
+        }
+
+        // Alert on error rate
+        if (errorRate.rate > 0) {
+          await alerting.checkErrorRate(errorRate.rate, 'last 30 days');
+        }
+      } catch (alertError) {
+        console.warn('[CostData IPC] Alerting check failed:', alertError);
+        // Non-fatal; don't block cost data return
+      }
 
       return {
         success: true,
