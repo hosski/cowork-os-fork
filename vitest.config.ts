@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     globals: true,
-    environment: "node",
+    environment: "jsdom",
     // Keep the full suite within the native-resource and shared-state limits
     // of CI runners after the Vitest 5 worker-pool changes.
     maxWorkers: 4,
