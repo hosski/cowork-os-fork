@@ -27,22 +27,29 @@ export interface DagExecutionState {
 /**
  * DAG Executor — tier-by-tier execution with parallel support
  * Executes all nodes in tier N before moving to tier N+1
+ * Integrates with OpenViking for persistent execution history
  */
 export class DagExecutor {
   private state: DagExecutionState;
   private onStateChange: (state: DagExecutionState) => void;
   private maxRetries: number;
   private retryDelayMs: number;
+  private onHistoryUpdate?: (executionSummary: Record<string, unknown>) => Promise<void>;
 
   constructor(
     dag: TaskDag,
     taskId: string,
     onStateChange: (state: DagExecutionState) => void,
-    options?: { maxRetries?: number; retryDelayMs?: number },
+    options?: { 
+      maxRetries?: number; 
+      retryDelayMs?: number;
+      onHistoryUpdate?: (executionSummary: Record<string, unknown>) => Promise<void>;
+    },
   ) {
     this.maxRetries = options?.maxRetries ?? 3;
     this.retryDelayMs = options?.retryDelayMs ?? 5000;
     this.onStateChange = onStateChange;
+    this.onHistoryUpdate = options?.onHistoryUpdate;
 
     // Calculate total tiers from DAG
     const totalTiers = this.calculateTotalTiers(dag);
@@ -333,5 +340,50 @@ export class DagExecutor {
       ...this.state,
       nodeStates: new Map(this.state.nodeStates),
     };
+  }
+
+  /**
+   * Persist execution to OpenViking (called when complete)
+   */
+  async persistToOpenViking(dag: TaskDag): Promise<void> {
+    if (!this.onHistoryUpdate) return;
+
+    const executionSummary = {
+      id: `${this.state.dagId}-${this.state.startedAt}`,
+      dagId: this.state.dagId,
+      templateName: (dag as any).name || 'Untitled',
+      status: this.state.status,
+      startedAt: this.state.startedAt,
+      completedAt: this.state.completedAt,
+      duration: this.state.completedAt && this.state.startedAt
+        ? this.state.completedAt - this.state.startedAt
+        : 0,
+      totalNodes: dag.nodes.length,
+      completedNodes: Array.from(this.state.nodeStates.values()).filter(
+        (n) => n.status === 'completed'
+      ).length,
+      failedNodes: Array.from(this.state.nodeStates.values()).filter(
+        (n) => n.status === 'failed'
+      ).length,
+      skippedNodes: Array.from(this.state.nodeStates.values()).filter(
+        (n) => n.status === 'skipped'
+      ).length,
+      error: this.state.error,
+      nodeDetails: Array.from(this.state.nodeStates.entries()).map(([id, state]) => ({
+        nodeId: id,
+        status: state.status,
+        duration: state.completedAt && state.startedAt
+          ? state.completedAt - state.startedAt
+          : 0,
+        error: state.error,
+        retries: state.retryCount,
+      })),
+    };
+
+    try {
+      await this.onHistoryUpdate(executionSummary);
+    } catch (err) {
+      console.error('Failed to persist execution history:', err);
+    }
   }
 }
