@@ -5409,6 +5409,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.removeListener('rework:execution-event', listener);
     };
   },
+  getCostData: () =>
+    ipcRenderer.invoke('cost:getData'),
 });
 
 // Type declarations for TypeScript

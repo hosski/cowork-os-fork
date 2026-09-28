@@ -219,6 +219,8 @@ import { DEFAULT_WEB_ACCESS_CONFIG, type WebAccessConfig } from "./web-server/ty
 import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
 import { registerDAGExecutionHandler } from "./ipc/dag-execution-handler";
 import { registerReworkHandler, initializeReworkHandler } from "./ipc/rework-handler";
+import { getAuditService } from "./services/audit-log-service";
+import { registerCostDataHandler } from "./ipc/cost-data-handler";
 import { registerGrillTabConversionHandler } from "./ipc/grill-tab-conversion-handler";
 import { registerTestDAGHandler } from "./ipc/test-dag-handler";
 import { registerVideoWorkflowHandler } from "./ipc/video-workflow-handler";
@@ -1923,12 +1925,21 @@ if (isCliDirectRunMode()) {
       });
       await agentDaemon.initialize();
       
+      // Initialize audit log service
+      const auditService = await getAuditService();
+      logger.info('Audit log service initialized');
+      
+      // Register cost data IPC handler
+      registerCostDataHandler(auditService);
+      logger.info('Cost data handler registered');
+      
       // Register DAG execution IPC handler
       registerDAGExecutionHandler(
         () => agentDaemon,
         () => undefined,
         () => ({ id: 'default' }),
         mainWindow,
+        auditService,
       );
       
       // Initialize DAG executor with loaded classes (avoid dynamic imports in renderer)

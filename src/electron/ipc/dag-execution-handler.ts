@@ -32,6 +32,7 @@ export function registerDAGExecutionHandler(
   getToolRegistry: (workspace: any) => any,
   getWorkspace: () => any,
   mainWindow?: any,
+  auditService?: any,
 ): void {
   ipcMain.handle('dag:execute', async (_event, data: any) => {
     console.error('[DAG IPC] Handler called');
@@ -82,6 +83,16 @@ export function registerDAGExecutionHandler(
         pollIntervalMs: 1000,
         verbose: true,
       });
+
+      // Attach audit logging if available
+      if (auditService) {
+        try {
+          const { attachAuditLogging } = await import('../services/audit-hook');
+          await attachAuditLogging(executor, auditService, dag.id);
+        } catch (err) {
+          console.warn('[DAG IPC] Failed to attach audit logging:', err);
+        }
+      }
 
       // Register event listener to forward to renderer
       if (mainWindow && !mainWindow.isDestroyed()) {
