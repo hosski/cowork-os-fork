@@ -7,6 +7,8 @@
 import React, { useState } from 'react';
 import { WORKFLOW_TEMPLATES, type WorkflowTemplate } from '../../electron/data/workflow-templates';
 import { useDagExecution } from '../hooks/useDagExecution';
+import { useWorkflowVersioning } from '../hooks/useWorkflowVersioning';
+import { WorkflowVersionSelector } from './WorkflowVersionSelector';
 
 interface TemplateModalProps {
   isOpen: boolean;
@@ -23,7 +25,11 @@ export const WorkflowTemplateModal: React.FC<TemplateModalProps> = ({
 }) => {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [executingTemplateId, setExecutingTemplateId] = useState<string | null>(null);
+  const [selectedTemplateForVersioning, setSelectedTemplateForVersioning] = useState<WorkflowTemplate | null>(
+    null
+  );
   const { startExecution } = useDagExecution();
+  const versioning = useWorkflowVersioning(selectedTemplateForVersioning?.id || '');
 
   if (!isOpen) return null;
 
@@ -93,6 +99,16 @@ export const WorkflowTemplateModal: React.FC<TemplateModalProps> = ({
                     Use Template
                   </button>
                   <button
+                    className="template-card-version-btn"
+                    onClick={() => {
+                      setSelectedTemplateForVersioning(template);
+                      versioning.openVersionSelector();
+                    }}
+                    title="View template versions and rollback"
+                  >
+                    📋 Versions
+                  </button>
+                  <button
                     className={`template-card-execute-btn ${executingTemplateId === template.id ? 'executing' : ''}`}
                     onClick={async () => {
                       setExecutingTemplateId(template.id);
@@ -108,6 +124,17 @@ export const WorkflowTemplateModal: React.FC<TemplateModalProps> = ({
                     {executingTemplateId === template.id ? '⚡ Executing...' : '⚡ Execute'}
                   </button>
                 </div>
+
+                {/* Version Selector Modal */}
+                <WorkflowVersionSelector
+                  isOpen={selectedTemplateForVersioning?.id === template.id && versioning.isVersionSelectorOpen}
+                  onClose={versioning.closeVersionSelector}
+                  versions={versioning.versions}
+                  currentVersion={versioning.currentVersion}
+                  templateName={template.name}
+                  onSelectVersion={versioning.selectVersion}
+                  onRollback={versioning.rollback}
+                />
               </div>
             ))}
           </div>
