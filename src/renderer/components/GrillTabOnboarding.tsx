@@ -171,7 +171,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         .grill-tab-onboarding-overlay {
           position: fixed;
           inset: 0;
-          background: #ffffff;
+          background: var(--color-bg-primary);
           display: flex;
           align-items: stretch;
           justify-content: center;
@@ -185,7 +185,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .grill-tab-onboarding-modal {
-          background: #ffffff;
+          background: var(--color-bg-primary);
           border-radius: 0;
           max-width: 100%;
           width: 100%;
@@ -220,7 +220,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         .onboarding-header h1 {
           font-size: 48px;
           font-weight: 700;
-          color: #000;
+          color: var(--color-text-primary);
           margin: 0 0 20px 0;
           letter-spacing: -0.8px;
           display: flex;
@@ -236,7 +236,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
 
         .onboarding-header p {
           font-size: 18px;
-          color: #666;
+          color: var(--color-text-secondary);
           margin: 0;
           font-weight: 400;
         }
@@ -250,7 +250,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .feature-card {
-          background: #f5f5f7;
+          background: var(--color-bg-secondary);
           border: none;
           border-radius: 16px;
           padding: 48px 40px;
@@ -260,7 +260,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .feature-card:hover {
-          background: #efefef;
+          background: var(--color-bg-tertiary);
           transform: none;
         }
 
@@ -273,14 +273,14 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         .feature-card h3 {
           font-size: 24px;
           font-weight: 600;
-          color: #000;
+          color: var(--color-text-primary);
           margin: 0 0 12px 0;
           letter-spacing: -0.3px;
         }
 
         .feature-card p {
           font-size: 16px;
-          color: #666;
+          color: var(--color-text-secondary);
           margin: 0;
           line-height: 1.6;
         }
@@ -299,7 +299,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .step-number {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: var(--color-accent);
           color: white;
           width: 44px;
           height: 44px;
@@ -310,42 +310,42 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
           font-weight: 700;
           flex-shrink: 0;
           font-size: 16px;
-          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+          box-shadow: var(--shadow-glow);
         }
 
         .step-content h3 {
           font-size: 15px;
           font-weight: 600;
-          color: #1a1a1a;
+          color: var(--color-text-primary);
           margin: 2px 0 6px 0;
         }
 
         .step-content p {
           font-size: 13px;
-          color: #666;
+          color: var(--color-text-secondary);
           margin: 0 0 10px 0;
           line-height: 1.5;
         }
 
         .example {
           display: block;
-          background: rgba(102, 126, 234, 0.08);
+          background: var(--color-accent-subtle);
           padding: 10px 14px;
           border-radius: 6px;
           font-size: 12px;
-          color: #667eea;
+          color: var(--color-accent);
           font-family: 'SF Mono', Monaco, 'Inconsolata', monospace;
-          border-left: 3px solid #667eea;
+          border-left: 3px solid var(--color-accent);
           margin: 0;
         }
 
         .ready-card {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
           color: white;
           border-radius: 14px;
           padding: 40px 32px;
           text-align: center;
-          box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+          box-shadow: var(--shadow-lg);
         }
 
         .ready-icon {
@@ -409,19 +409,20 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .btn-primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: var(--color-accent);
           color: white;
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+          box-shadow: var(--shadow-md);
         }
 
         .btn-primary:hover {
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+          box-shadow: var(--shadow-lg);
+          background: var(--color-accent-hover);
         }
 
         .btn-primary:active {
           transform: translateY(0);
-          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+          box-shadow: var(--shadow-sm);
         }
 
         .btn-primary.btn-large {
@@ -430,18 +431,18 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .btn-secondary {
-          background: rgba(0, 0, 0, 0.06);
-          color: #1a1a1a;
-          border: 1px solid rgba(0, 0, 0, 0.08);
+          background: var(--color-bg-secondary);
+          color: var(--color-text-primary);
+          border: 1px solid var(--color-border);
         }
 
         .btn-secondary:hover {
-          background: rgba(0, 0, 0, 0.1);
-          border-color: rgba(0, 0, 0, 0.12);
+          background: var(--color-bg-tertiary);
+          border-color: var(--color-border-light);
         }
 
         .btn-secondary:active {
-          background: rgba(0, 0, 0, 0.08);
+          background: var(--color-bg-secondary);
         }
       `}</style>
     </div>
