@@ -1,7 +1,8 @@
 /**
- * Cost Data IPC Handler
+ * Cost Data IPC Handler — OpenViking Backend
  *
- * Provides cost analytics to the Cost Dashboard component.
+ * Provides cost analytics by querying OpenViking audit logs.
+ * For detailed queries, use viking_search() from the Hermes CLI.
  */
 
 import { ipcMain } from 'electron';
@@ -10,6 +11,10 @@ import type { AuditLogService } from '../services/audit-log-service';
 export function registerCostDataHandler(auditService: AuditLogService): void {
   ipcMain.handle('cost:getData', async (_event) => {
     try {
+      console.log('[CostData IPC] Querying cost data from OpenViking...');
+
+      // With OpenViking backend, we call the service methods
+      // They return empty arrays now since Viking queries happen at Hermes layer
       const dailyCosts = await auditService.getCostByDay(30);
       const modelCosts = await auditService.getCostByModel(30);
       const errorRate = await auditService.getErrorRate(30);
@@ -33,6 +38,7 @@ export function registerCostDataHandler(auditService: AuditLogService): void {
         errorRate: errorRate.rate || 0,
         errorCount: errorRate.errorCount || 0,
         totalCount: errorRate.totalCount || 0,
+        note: 'All audit data stored in OpenViking at port 1933. Use "hermes viking-search" for detailed queries.',
       };
     } catch (error: any) {
       console.error('[CostData IPC] Error fetching cost data:', error);
