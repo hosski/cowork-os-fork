@@ -171,12 +171,13 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         .grill-tab-onboarding-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0, 0, 0, 0.5);
+          background: rgba(0, 0, 0, 0.3);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 1000;
           animation: fadeIn 0.3s ease-in;
+          backdrop-filter: blur(2px);
         }
 
         @keyframes fadeIn {
@@ -185,14 +186,16 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .grill-tab-onboarding-modal {
-          background: white;
-          border-radius: 12px;
-          max-width: 600px;
+          background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+          border-radius: 16px;
+          max-width: 620px;
           width: 90%;
-          max-height: 80vh;
+          max-height: 85vh;
           overflow-y: auto;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-          animation: slideUp 0.3s ease-out;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+                      0 1px 3px rgba(0, 0, 0, 0.1);
+          animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         @keyframes slideUp {
@@ -201,49 +204,60 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .onboarding-step {
-          padding: 40px 32px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          padding: 48px 40px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
         }
 
         .onboarding-header {
           text-align: center;
-          margin-bottom: 32px;
+          margin-bottom: 40px;
         }
 
         .onboarding-header h1 {
-          font-size: 28px;
+          font-size: 32px;
           font-weight: 700;
-          color: #222;
-          margin: 0 0 8px 0;
+          color: #1a1a1a;
+          margin: 0 0 12px 0;
+          letter-spacing: -0.5px;
         }
 
         .onboarding-header p {
-          font-size: 14px;
+          font-size: 15px;
           color: #666;
           margin: 0;
+          font-weight: 500;
         }
 
         .onboarding-content {
-          margin-bottom: 32px;
+          margin-bottom: 40px;
         }
 
         .feature-card {
-          background: #f8f9fa;
-          border-radius: 8px;
-          padding: 20px;
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+          border: 1px solid rgba(102, 126, 234, 0.1);
+          border-radius: 12px;
+          padding: 24px;
           margin-bottom: 16px;
           text-align: center;
+          transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+          border-color: rgba(102, 126, 234, 0.15);
+          transform: translateY(-2px);
         }
 
         .feature-icon {
-          font-size: 32px;
+          font-size: 36px;
           margin-bottom: 12px;
+          display: inline-block;
         }
 
         .feature-card h3 {
           font-size: 16px;
           font-weight: 600;
-          color: #222;
+          color: #1a1a1a;
           margin: 0 0 8px 0;
         }
 
@@ -251,86 +265,90 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
           font-size: 13px;
           color: #666;
           margin: 0;
-          line-height: 1.5;
+          line-height: 1.6;
         }
 
         .step-item {
           display: flex;
-          gap: 16px;
-          margin-bottom: 20px;
+          gap: 20px;
+          margin-bottom: 24px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .step-item:last-child {
+          border-bottom: none;
+          padding-bottom: 0;
         }
 
         .step-number {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          width: 40px;
-          height: 40px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: 700;
           flex-shrink: 0;
+          font-size: 16px;
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
         .step-content h3 {
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 600;
-          color: #222;
-          margin: 0 0 4px 0;
+          color: #1a1a1a;
+          margin: 2px 0 6px 0;
         }
 
         .step-content p {
           font-size: 13px;
           color: #666;
-          margin: 0 0 8px 0;
-        }
-
-        example {
-          display: block;
-          background: #f0f2f5;
-          padding: 8px 12px;
-          border-radius: 4px;
-          font-size: 12px;
-          color: #667eea;
-          font-style: italic;
-          border-left: 2px solid #667eea;
+          margin: 0 0 10px 0;
+          line-height: 1.5;
         }
 
         .example {
           display: block;
-          background: #f0f2f5;
-          padding: 8px 12px;
-          border-radius: 4px;
+          background: rgba(102, 126, 234, 0.08);
+          padding: 10px 14px;
+          border-radius: 6px;
           font-size: 12px;
           color: #667eea;
-          font-style: italic;
-          border-left: 2px solid #667eea;
+          font-family: 'SF Mono', Monaco, 'Inconsolata', monospace;
+          border-left: 3px solid #667eea;
+          margin: 0;
         }
 
         .ready-card {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          border-radius: 8px;
-          padding: 32px;
+          border-radius: 14px;
+          padding: 40px 32px;
           text-align: center;
+          box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
         }
 
         .ready-icon {
-          font-size: 48px;
-          margin-bottom: 16px;
+          font-size: 56px;
+          margin-bottom: 20px;
+          display: inline-block;
         }
 
         .ready-card h2 {
-          font-size: 20px;
+          font-size: 24px;
           font-weight: 700;
           margin: 0 0 12px 0;
+          letter-spacing: -0.3px;
         }
 
         .ready-card p {
-          font-size: 14px;
-          margin: 0 0 16px 0;
+          font-size: 15px;
+          margin: 0 0 20px 0;
           opacity: 0.95;
+          line-height: 1.6;
         }
 
         .ready-card ul {
@@ -338,17 +356,20 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
           padding: 0;
           margin: 0;
           text-align: left;
+          display: inline-block;
         }
 
         .ready-card li {
-          padding: 8px 0;
-          font-size: 13px;
+          padding: 10px 0;
+          font-size: 14px;
+          font-weight: 500;
         }
 
         .ready-card li::before {
           content: '✓ ';
-          margin-right: 8px;
-          font-weight: 600;
+          margin-right: 10px;
+          font-weight: 700;
+          opacity: 1;
         }
 
         .onboarding-actions {
@@ -359,37 +380,50 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
 
         .btn-primary,
         .btn-secondary {
-          padding: 10px 24px;
+          padding: 11px 28px;
           border: none;
-          border-radius: 6px;
+          border-radius: 8px;
           font-weight: 600;
           font-size: 14px;
           cursor: pointer;
           transition: all 0.2s ease;
+          font-family: inherit;
         }
 
         .btn-primary {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+          transform: translateY(0);
+          box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary.btn-large {
-          padding: 14px 40px;
-          font-size: 16px;
+          padding: 14px 44px;
+          font-size: 15px;
         }
 
         .btn-secondary {
-          background: #f0f2f5;
-          color: #222;
+          background: rgba(0, 0, 0, 0.06);
+          color: #1a1a1a;
+          border: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .btn-secondary:hover {
-          background: #e4e7eb;
+          background: rgba(0, 0, 0, 0.1);
+          border-color: rgba(0, 0, 0, 0.12);
+        }
+
+        .btn-secondary:active {
+          background: rgba(0, 0, 0, 0.08);
         }
       `}</style>
     </div>
