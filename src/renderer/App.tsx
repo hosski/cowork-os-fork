@@ -2221,6 +2221,8 @@ export function App() {
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
   const [terminalTabsOpen, setTerminalTabsOpen] = useState(false);
+  const [showGrillTabOnboarding, setShowGrillTabOnboarding] = useState(false);
+  const [showWorkflowTemplateModal, setShowWorkflowTemplateModal] = useState(false);
   const handleCloseTerminalTabs = useCallback(() => {
     setTerminalTabsOpen(false);
   }, []);
@@ -5789,6 +5791,22 @@ export function App() {
     [selectTaskAfterDraftFlush],
   );
 
+  const handleGrillTabOnboardingClose = useCallback(() => {
+    setShowGrillTabOnboarding(false);
+  }, []);
+
+  const handleWorkflowTemplateClose = useCallback(() => {
+    setShowWorkflowTemplateModal(false);
+  }, []);
+
+  const handleWorkflowTemplateSelect = useCallback(
+    (template: WorkflowTemplate) => {
+      setShowWorkflowTemplateModal(false);
+      void handleCreateTask(template.name, template.description);
+    },
+    [handleCreateTask],
+  );
+
   const handleAskInboxFromComposer = useCallback((query: string) => {
     const trimmed = query.trim();
     if (!trimmed) return;
@@ -7794,6 +7812,23 @@ export function App() {
         <Suspense fallback={<LazyViewFallback />}>
           <BrowserView initialUrl={browserUrl} onBack={() => setCurrentView("main")} />
         </Suspense>
+      )}
+      {showGrillTabOnboarding && (
+        <GrillTabOnboarding
+          isOpen={showGrillTabOnboarding}
+          onClose={handleGrillTabOnboardingClose}
+          onStartGrillTab={() => {
+            setShowGrillTabOnboarding(false);
+            setShowWorkflowTemplateModal(true);
+          }}
+        />
+      )}
+      {showWorkflowTemplateModal && (
+        <WorkflowTemplateModal
+          isOpen={showWorkflowTemplateModal}
+          onClose={handleWorkflowTemplateClose}
+          onSelectTemplate={handleWorkflowTemplateSelect}
+        />
       )}
     </div>
   );
