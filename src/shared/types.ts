@@ -14547,3 +14547,28 @@ export interface StrategicPlannerRunRequest {
   companyId: string;
   trigger?: StrategicPlannerRun["trigger"];
 }
+
+/**
+ * DAG (Directed Acyclic Graph) Types for multi-agent workflow execution
+ */
+
+export interface TaskDagNode {
+  id: string;
+  title: string;
+  description: string;
+  role: string; // agent role (e.g., 'designer', 'coder')
+  model: string; // LLM model to use
+  prompt: string; // system prompt for this agent
+  tier?: number; // execution tier (0 = no deps, 1 = depends on tier 0, etc.)
+  dependencies?: string[]; // node IDs this node depends on
+  maxRetries?: number;
+  timeoutMs?: number;
+}
+
+export interface TaskDag {
+  id: string;
+  templateId?: string; // reference to workflow template if created from one
+  nodes: TaskDagNode[];
+  createdAt: number;
+  createdBy?: string;
+}

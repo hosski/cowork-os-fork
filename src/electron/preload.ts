@@ -8844,6 +8844,16 @@ export interface ElectronAPI {
   windowIsMaximized: () => Promise<boolean>;
   getPlatform: () => string;
   getNativeFrameMode: () => boolean;
+
+  // DAG Executor APIs
+  startDagExecution: (args: { dag: Any; taskId: string }) => Promise<{ success: boolean; message: string }>;
+  pauseDagExecution: (taskId: string) => Promise<{ success: boolean }>;
+  resumeDagExecution: (args: { taskId: string; dag: Any }) => Promise<{ success: boolean }>;
+  skipDagNode: (args: { taskId: string; nodeId: string; dag: Any }) => Promise<{ success: boolean }>;
+  retryDagNode: (args: { taskId: string; nodeId: string; dag: Any }) => Promise<{ success: boolean }>;
+  abortDagExecution: (taskId: string) => Promise<{ success: boolean }>;
+  getDagExecutionState: (taskId: string) => Promise<Any | null>;
+  onDagStateChanged: (callback: (data: { taskId: string; state: Any }) => void) => () => void;
 }
 
 // Migration status type (for showing one-time notifications after app rename)
