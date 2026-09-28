@@ -27,7 +27,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         {step === 'welcome' && (
           <div className="onboarding-step welcome">
             <div className="onboarding-header">
-              <h1>🎯 Welcome to CoWork OS</h1>
+              <h1><span className="icon">🎯</span>Welcome to CoWork OS</h1>
               <p>Create your first task with guided planning</p>
             </div>
 
@@ -171,13 +171,12 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         .grill-tab-onboarding-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0, 0, 0, 0.3);
+          background: #ffffff;
           display: flex;
-          align-items: center;
+          align-items: stretch;
           justify-content: center;
           z-index: 1000;
           animation: fadeIn 0.3s ease-in;
-          backdrop-filter: blur(2px);
         }
 
         @keyframes fadeIn {
@@ -186,16 +185,19 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .grill-tab-onboarding-modal {
-          background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
-          border-radius: 16px;
-          max-width: 620px;
-          width: 90%;
-          max-height: 85vh;
+          background: #ffffff;
+          border-radius: 0;
+          max-width: 100%;
+          width: 100%;
+          max-height: 100vh;
           overflow-y: auto;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
-                      0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: none;
           animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          border: 1px solid rgba(255, 255, 255, 0.8);
+          border: none;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 60px 40px;
         }
 
         @keyframes slideUp {
@@ -204,65 +206,80 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         }
 
         .onboarding-step {
-          padding: 48px 40px;
+          padding: 0;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+          width: 100%;
+          max-width: 900px;
         }
 
         .onboarding-header {
           text-align: center;
-          margin-bottom: 40px;
+          margin-bottom: 60px;
         }
 
         .onboarding-header h1 {
-          font-size: 32px;
+          font-size: 48px;
           font-weight: 700;
-          color: #1a1a1a;
-          margin: 0 0 12px 0;
-          letter-spacing: -0.5px;
+          color: #000;
+          margin: 0 0 20px 0;
+          letter-spacing: -0.8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+        }
+
+        .onboarding-header h1 .icon {
+          font-size: 48px;
+          display: inline-block;
         }
 
         .onboarding-header p {
-          font-size: 15px;
+          font-size: 18px;
           color: #666;
           margin: 0;
-          font-weight: 500;
+          font-weight: 400;
         }
 
         .onboarding-content {
-          margin-bottom: 40px;
+          margin-bottom: 0;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
         }
 
         .feature-card {
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-          border: 1px solid rgba(102, 126, 234, 0.1);
-          border-radius: 12px;
-          padding: 24px;
-          margin-bottom: 16px;
+          background: #f5f5f7;
+          border: none;
+          border-radius: 16px;
+          padding: 48px 40px;
+          margin-bottom: 0;
           text-align: center;
           transition: all 0.2s ease;
         }
 
         .feature-card:hover {
-          background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-          border-color: rgba(102, 126, 234, 0.15);
-          transform: translateY(-2px);
+          background: #efefef;
+          transform: none;
         }
 
         .feature-icon {
-          font-size: 36px;
-          margin-bottom: 12px;
+          font-size: 56px;
+          margin-bottom: 20px;
           display: inline-block;
         }
 
         .feature-card h3 {
-          font-size: 16px;
+          font-size: 24px;
           font-weight: 600;
-          color: #1a1a1a;
-          margin: 0 0 8px 0;
+          color: #000;
+          margin: 0 0 12px 0;
+          letter-spacing: -0.3px;
         }
 
         .feature-card p {
-          font-size: 13px;
+          font-size: 16px;
           color: #666;
           margin: 0;
           line-height: 1.6;
@@ -271,9 +288,9 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
         .step-item {
           display: flex;
           gap: 20px;
-          margin-bottom: 24px;
-          padding-bottom: 20px;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          margin-bottom: 0;
+          padding-bottom: 0;
+          border-bottom: none;
         }
 
         .step-item:last-child {
@@ -376,6 +393,7 @@ export const GrillTabOnboarding: React.FC<GrillTabOnboardingProps> = ({
           display: flex;
           gap: 12px;
           justify-content: center;
+          margin-top: 60px;
         }
 
         .btn-primary,
