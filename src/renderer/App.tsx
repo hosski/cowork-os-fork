@@ -2225,6 +2225,15 @@ export function App() {
   const [terminalTabsOpen, setTerminalTabsOpen] = useState(false);
   const [showGrillTabOnboarding, setShowGrillTabOnboarding] = useState(false);
   const [showWorkflowTemplateModal, setShowWorkflowTemplateModal] = useState(false);
+
+  // Detect first-time user and show onboarding
+  useEffect(() => {
+    if (isFirstTimeUser()) {
+      setShowGrillTabOnboarding(true);
+      setOnboardingStep('welcome');
+    }
+  }, []);
+
   const handleCloseTerminalTabs = useCallback(() => {
     setTerminalTabsOpen(false);
   }, []);
@@ -5804,7 +5813,17 @@ export function App() {
   const handleWorkflowTemplateSelect = useCallback(
     (template: WorkflowTemplate) => {
       setShowWorkflowTemplateModal(false);
-      void handleCreateTask(template.name, template.description);
+      
+      // Convert template to executable DAG with tier assignment
+      const dag = templateToTaskDag(template);
+      
+      // Create task with DAG metadata in description
+      const taskDescription = `${template.description}\n\n[DAG: ${dag.id}]`;
+      void handleCreateTask(template.name, taskDescription);
+      
+      // Mark onboarding as completed
+      markOnboardingComplete();
+      setOnboardingStep('completed');
     },
     [handleCreateTask],
   );
