@@ -5400,6 +5400,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.removeListener('dag:execution-event', listener);
     };
   },
+  reworkNode: (dagId: string, nodeId: string, dagJson: any) =>
+    ipcRenderer.invoke('rework:node', { dagId, nodeId, dagJson }),
+  onReworkExecutionEvent: (callback: (event: any) => void) => {
+    const listener = (_event: any, data: any) => callback(data);
+    ipcRenderer.on('rework:execution-event', listener);
+    return () => {
+      ipcRenderer.removeListener('rework:execution-event', listener);
+    };
+  },
 });
 
 // Type declarations for TypeScript

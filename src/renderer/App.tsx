@@ -17,6 +17,7 @@ import { useTaskDuration } from "./hooks/useTaskDuration";
 import { useComposerDraft } from "./hooks/useComposerDraft";
 import { useDAGExecutionListener } from "./middleware/dag-execution-listener";
 import { DAGExecutionStatusPanel } from "./components/DAGExecutionStatusPanel";
+import { DAGErrorRecoveryPanel } from "./components/DAGErrorRecoveryPanel";
 import { Sidebar } from "./components/Sidebar";
 import { BotDetailsRail } from "./components/BotDetailsRail";
 import type { BotRole } from "./components/BotsPane";
@@ -7678,6 +7679,7 @@ export function App() {
           {/* DAG Execution Status Panel */}
           {currentView === "main" && (
             <div style={{ position: "fixed", bottom: 100, right: 24, maxWidth: 480, zIndex: 100 }}>
+              <DAGErrorRecoveryPanel />
               <DAGExecutionStatusPanel />
             </div>
           )}

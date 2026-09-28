@@ -218,6 +218,7 @@ import { WebAccessServer } from "./web-server/WebAccessServer";
 import { DEFAULT_WEB_ACCESS_CONFIG, type WebAccessConfig } from "./web-server/types";
 import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
 import { registerDAGExecutionHandler } from "./ipc/dag-execution-handler";
+import { registerReworkHandler, initializeReworkHandler } from "./ipc/rework-handler";
 import { registerGrillTabConversionHandler } from "./ipc/grill-tab-conversion-handler";
 import { registerTestDAGHandler } from "./ipc/test-dag-handler";
 import { registerVideoWorkflowHandler } from "./ipc/video-workflow-handler";
@@ -1935,6 +1936,15 @@ if (isCliDirectRunMode()) {
       const { TaskDAG } = await import('./agent/orchestration/task-dag');
       const { initializeDAGExecutionHandler } = await import('./ipc/dag-execution-handler');
       initializeDAGExecutionHandler(DAGExecutor, TaskDAG);
+      
+      // Register rework handler
+      registerReworkHandler(
+        () => agentDaemon,
+        () => undefined,
+        () => ({ id: 'default' }),
+        mainWindow,
+      );
+      initializeReworkHandler(DAGExecutor, TaskDAG);
       
       // Register Grill-Tab conversion handler
       registerGrillTabConversionHandler();

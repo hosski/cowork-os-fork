@@ -184,6 +184,7 @@ interface DAGExecutionState {
   currentTierIdx: number;
   totalTiers: number;
   nodeStates: Record<string, NodeExecutionState>;
+  failedNodeIds: string[]; // Track which nodes failed for rework
   status: 'idle' | 'running' | 'completed' | 'failed';
   startTime?: number;
   error?: string;
@@ -194,6 +195,7 @@ const initialDAGExecutionState: DAGExecutionState = {
   currentTierIdx: 0,
   totalTiers: 0,
   nodeStates: {},
+  failedNodeIds: [],
   status: 'idle',
 };
 
@@ -222,6 +224,10 @@ const dagExecutionSlice = createSlice({
         retryCount,
         completedAt: ['completed', 'failed'].includes(status) ? new Date().toISOString() : undefined,
       };
+      // Track failed nodes for rework
+      if (status === 'failed' && !state.failedNodeIds.includes(nodeId)) {
+        state.failedNodeIds.push(nodeId);
+      }
     },
     executionCompleted: (state) => {
       state.status = 'completed';
@@ -235,6 +241,7 @@ const dagExecutionSlice = createSlice({
       state.currentTierIdx = 0;
       state.totalTiers = 0;
       state.nodeStates = {};
+      state.failedNodeIds = [];
       state.status = 'idle';
       state.startTime = undefined;
       state.error = undefined;
