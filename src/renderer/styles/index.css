@@ -31135,3 +31135,66 @@ html:not(.theme-light) .selected-workspace-main-row {
     padding: 20px;
   }
 }
+
+/* Template card button container */
+.template-card-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.template-card-select-btn,
+.template-card-execute-btn {
+  flex: 1;
+}
+
+/* Execute button (secondary action) */
+.template-card-execute-btn {
+  background: transparent;
+  color: var(--color-accent, #22d3ee);
+  border: 1px solid var(--color-accent, #22d3ee);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm, 8px);
+  font-weight: 600;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.template-card-execute-btn:hover:not(:disabled) {
+  background: var(--color-accent-subtle, rgba(34, 211, 238, 0.2));
+  transform: translateY(-2px);
+}
+
+.template-card-execute-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.template-card-execute-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.template-card-execute-btn.executing {
+  background: var(--color-accent, #22d3ee);
+  color: #1a1a1a;
+  border-color: var(--color-accent, #22d3ee);
+}
+
+/* Light theme overrides for buttons */
+.theme-light .template-card-execute-btn {
+  background: transparent;
+  color: var(--color-accent, #22d3ee);
+  border: 1px solid var(--color-accent, #22d3ee);
+}
+
+.theme-light .template-card-execute-btn:hover:not(:disabled) {
+  background: var(--color-accent-subtle, rgba(34, 211, 238, 0.15));
+}
+
+.theme-light .template-card-execute-btn.executing {
+  background: var(--color-accent, #22d3ee);
+  color: #fff;
+  border-color: var(--color-accent, #22d3ee);
+}

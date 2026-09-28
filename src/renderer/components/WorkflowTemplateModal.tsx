@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { WORKFLOW_TEMPLATES, type WorkflowTemplate } from '../../electron/data/workflow-templates';
+import { useDagExecution } from '../hooks/useDagExecution';
 
 interface TemplateModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export const WorkflowTemplateModal: React.FC<TemplateModalProps> = ({
   onSelectTemplate,
 }) => {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [executingTemplateId, setExecutingTemplateId] = useState<string | null>(null);
+  const { startExecution } = useDagExecution();
 
   if (!isOpen) return null;
 
@@ -79,15 +82,32 @@ export const WorkflowTemplateModal: React.FC<TemplateModalProps> = ({
                   ))}
                 </div>
 
-                <button
-                  className="template-card-select-btn"
-                  onClick={() => {
-                    onSelectTemplate(template);
-                    onClose();
-                  }}
-                >
-                  Use Template
-                </button>
+                <div className="template-card-buttons">
+                  <button
+                    className="template-card-select-btn"
+                    onClick={() => {
+                      onSelectTemplate(template);
+                      onClose();
+                    }}
+                  >
+                    Use Template
+                  </button>
+                  <button
+                    className={`template-card-execute-btn ${executingTemplateId === template.id ? 'executing' : ''}`}
+                    onClick={async () => {
+                      setExecutingTemplateId(template.id);
+                      try {
+                        await startExecution(template as any); // TODO: convert template to TaskDag
+                      } catch (error) {
+                        console.error('Execution failed:', error);
+                        setExecutingTemplateId(null);
+                      }
+                    }}
+                    disabled={executingTemplateId !== null}
+                  >
+                    {executingTemplateId === template.id ? '⚡ Executing...' : '⚡ Execute'}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
