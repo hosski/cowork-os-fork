@@ -156,7 +156,7 @@ export class ExecutionHistoryService {
   /**
    * Persist pending records to Viking
    */
-  private async flush(): Promise<void> {
+  async flush(): Promise<void> {
     if (this.flushTimeout) {
       clearTimeout(this.flushTimeout);
       this.flushTimeout = null;

@@ -1,22 +1,30 @@
 import { ipcMain } from 'electron';
 import type { TaskDag } from '../../shared/types';
-import { DagExecutor, type DagExecutionState } from './dag-executor';
+import { DagExecutor, type DagExecutionState } from '../services/dag-executor';
+import { ExecutionHistoryService } from '../services/execution-history';
+import { WorkflowVersioningService } from '../../shared/workflow-versioning';
 
 /**
  * DAG Executor IPC Handler
  * Manages executor lifecycle on main process, sends state updates to renderer
+ * Integrates with ExecutionHistoryService and WorkflowVersioningService
  */
 export class DagExecutorIpc {
   private executors = new Map<string, DagExecutor>(); // key: taskId
+  private historyService: ExecutionHistoryService;
+  private versioningService: WorkflowVersioningService;
+
+  constructor(
+    private onSendToViking?: (memory: string) => Promise<void>,
+  ) {
+    this.historyService = new ExecutionHistoryService(onSendToViking);
+    this.versioningService = new WorkflowVersioningService();
+  }
 
   /**
    * Register all IPC handlers
    */
   registerHandlers(ipcSend: (channel: string, data: unknown) => void): void {
-    /**
-     * Start DAG execution
-     * Args: { dag: TaskDag; taskId: string }
-     */
     ipcMain.handle('dag:start', async (_, args: { dag: TaskDag; taskId: string }) => {
       const { dag, taskId } = args;
 
@@ -24,14 +32,27 @@ export class DagExecutorIpc {
         throw new Error(`Executor already running for task ${taskId}`);
       }
 
-      const executor = new DagExecutor(dag, taskId, (state) => {
-        ipcSend('dag:state-changed', { taskId, state: this.serializeState(state) });
-      });
+      const executor = new DagExecutor(
+        dag,
+        taskId,
+        (state) => {
+          ipcSend('dag:state-changed', { taskId, state: this.serializeState(state) });
+        },
+        {
+          onHistoryUpdate: async (summary) => {
+            await this.historyService.flush();
+          },
+        }
+      );
 
       this.executors.set(taskId, executor);
 
       try {
         await executor.startTier(dag);
+        
+        // Persist execution to OpenViking when complete
+        await executor.persistToOpenViking(dag);
+        
         return { success: true, message: 'DAG execution completed' };
       } catch (error) {
         executor.abort();
@@ -127,9 +148,12 @@ export class DagExecutorIpc {
  */
 let globalExecutorIpc: DagExecutorIpc | null = null;
 
-export function initializeDagExecutorIpc(ipcSend: (channel: string, data: unknown) => void): void {
+export function initializeDagExecutorIpc(
+  ipcSend: (channel: string, data: unknown) => void,
+  onSendToViking?: (memory: string) => Promise<void>
+): void {
   if (!globalExecutorIpc) {
-    globalExecutorIpc = new DagExecutorIpc();
+    globalExecutorIpc = new DagExecutorIpc(onSendToViking);
     globalExecutorIpc.registerHandlers(ipcSend);
   }
 }

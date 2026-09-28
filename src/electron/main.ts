@@ -2768,10 +2768,19 @@ if (isCliDirectRunMode()) {
         setupImprovementHandlers(subconsciousLoopService);
       }
 
-      // Initialize DAG Executor IPC
-      initializeDagExecutorIpc((channel: string, data: unknown) => {
-        mainWindow?.webContents.send(channel, data);
-      });
+      // Initialize DAG Executor IPC with OpenViking history persistence
+      const onSendToOpenViking = async (memory: string): Promise<void> => {
+        // TODO: Call OpenViking API or via IPC to renderer
+        // For now, log to console
+        console.log('[Executor History]', memory.substring(0, 100) + '...');
+      };
+
+      initializeDagExecutorIpc(
+        (channel: string, data: unknown) => {
+          mainWindow?.webContents.send(channel, data);
+        },
+        onSendToOpenViking
+      );
       const startXMentionBridge = () => {
         if (!xMentionBridgeService) {
           xMentionBridgeService = initializeXMentionBridgeService(agentDaemon, {
