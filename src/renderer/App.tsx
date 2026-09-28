@@ -18,6 +18,7 @@ import { useComposerDraft } from "./hooks/useComposerDraft";
 import { useDAGExecutionListener } from "./middleware/dag-execution-listener";
 import { DAGExecutionStatusPanel } from "./components/DAGExecutionStatusPanel";
 import { DAGErrorRecoveryPanel } from "./components/DAGErrorRecoveryPanel";
+import { CostDashboard } from "./components/CostDashboard";
 import { Sidebar } from "./components/Sidebar";
 import { BotDetailsRail } from "./components/BotDetailsRail";
 import type { BotRole } from "./components/BotsPane";
@@ -7681,6 +7682,13 @@ export function App() {
             <div style={{ position: "fixed", bottom: 100, right: 24, maxWidth: 480, zIndex: 100 }}>
               <DAGErrorRecoveryPanel />
               <DAGExecutionStatusPanel />
+            </div>
+          )}
+
+          {/* Cost Dashboard */}
+          {currentView === "main" && (
+            <div style={{ position: "fixed", top: 24, right: 24, maxWidth: 600, maxHeight: 600, zIndex: 99, overflowY: "auto" }}>
+              <CostDashboard />
             </div>
           )}
 
