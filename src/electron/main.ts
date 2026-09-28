@@ -219,6 +219,7 @@ import { DEFAULT_WEB_ACCESS_CONFIG, type WebAccessConfig } from "./web-server/ty
 import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
 import { registerDAGExecutionHandler } from "./ipc/dag-execution-handler";
 import { initializeDagExecutorIpc } from "./ipc/dag-ipc";
+import { OpenVikingService } from "./services/openviking-service";
 import { registerReworkHandler, initializeReworkHandler } from "./ipc/rework-handler";
 import { getAuditService } from "./services/audit-log-service";
 import { registerCostDataHandler } from "./ipc/cost-data-handler";
@@ -2769,10 +2770,23 @@ if (isCliDirectRunMode()) {
       }
 
       // Initialize DAG Executor IPC with OpenViking history persistence
+      const openVikingService = new OpenVikingService();
+      
       const onSendToOpenViking = async (memory: string): Promise<void> => {
-        // TODO: Call OpenViking API or via IPC to renderer
-        // For now, log to console
-        console.log('[Executor History]', memory.substring(0, 100) + '...');
+        try {
+          const isHealthy = await openVikingService.healthCheck();
+          if (!isHealthy) {
+            console.warn('[OpenViking] Service unavailable, execution history will not persist');
+            return;
+          }
+          
+          const success = await openVikingService.remember(memory, 'executions');
+          if (success) {
+            console.log('[OpenViking] Execution history persisted');
+          }
+        } catch (err) {
+          console.error('[OpenViking] Failed to persist history:', err);
+        }
       };
 
       initializeDagExecutorIpc(
