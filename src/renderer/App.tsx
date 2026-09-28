@@ -22,6 +22,8 @@ import { CostDashboard } from "./components/CostDashboard";
 import { GrillTabOnboarding } from "./components/GrillTabOnboarding";
 import { WorkflowTemplateModal } from "./components/WorkflowTemplateModal";
 import type { WorkflowTemplate } from "../electron/data/workflow-templates";
+import { isFirstTimeUser, setOnboardingStep, markOnboardingComplete } from "./utils/first-time-user";
+import { templateToTaskDag } from "./utils/template-to-dag";
 import { Sidebar } from "./components/Sidebar";
 import { BotDetailsRail } from "./components/BotDetailsRail";
 import type { BotRole } from "./components/BotsPane";
