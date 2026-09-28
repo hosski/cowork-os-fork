@@ -31198,3 +31198,466 @@ html:not(.theme-light) .selected-workspace-main-row {
   color: #fff;
   border-color: var(--color-accent, #22d3ee);
 }
+
+/* ============================================
+   Execution Status Panel - Real-Time Workflow
+   ============================================ */
+
+.execution-status-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.execution-status-panel {
+  background: var(--color-bg-elevated, rgba(45, 45, 48, 0.95));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  border-radius: var(--radius-lg, 14px);
+  max-width: 800px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.3));
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Header */
+.execution-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-elevated, rgba(45, 45, 48, 0.95));
+}
+
+.execution-status-title {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.execution-status-icon {
+  font-size: 32px;
+}
+
+.execution-status-title h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text, #fff);
+  margin: 0;
+}
+
+.execution-status-subtitle {
+  font-size: 13px;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  margin: 4px 0 0 0;
+}
+
+.execution-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm, 8px);
+  transition: all 0.2s ease;
+}
+
+.execution-close-btn:hover {
+  background: var(--color-bg-hover, rgba(255, 255, 255, 0.08));
+  color: var(--color-text, #fff);
+}
+
+/* Progress Section */
+.execution-progress-section {
+  padding: 24px 32px;
+  background: var(--color-bg-secondary, rgba(60, 60, 65, 0.6));
+}
+
+.execution-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  margin-bottom: 12px;
+}
+
+.execution-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.execution-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--color-bg-input, rgba(0, 0, 0, 0.25));
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.execution-progress-fill {
+  height: 100%;
+  background: var(--color-accent, #22d3ee);
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+
+.execution-progress-fill.has-errors {
+  background: var(--color-error, #f87171);
+}
+
+.execution-progress-percent {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+/* Status Controls */
+.execution-status-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: var(--color-bg-primary, rgba(26, 26, 28, 0.97));
+  border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+}
+
+.execution-status-info {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.execution-error-count {
+  color: var(--color-error, #f87171);
+  font-weight: 600;
+}
+
+.execution-action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.execution-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  color: var(--color-text, #fff);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-ui);
+}
+
+.execution-btn:hover {
+  background: var(--color-bg-hover, rgba(255, 255, 255, 0.08));
+  border-color: var(--color-text-secondary, rgba(255, 255, 255, 0.3));
+}
+
+.execution-btn.abort {
+  border-color: var(--color-error, #f87171);
+  color: var(--color-error, #f87171);
+}
+
+.execution-btn.abort:hover {
+  background: var(--color-error-subtle, rgba(248, 113, 113, 0.15));
+}
+
+/* Tiers Section */
+.execution-tiers-section {
+  padding: 24px 32px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.execution-tier {
+  margin-bottom: 24px;
+  background: var(--color-bg-secondary, rgba(60, 60, 65, 0.6));
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.execution-tier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.execution-tier-header h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text, #fff);
+  margin: 0;
+}
+
+.execution-tier-progress {
+  font-size: 12px;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+.execution-tier-completed {
+  border-color: var(--color-success, #4ade80);
+}
+
+.execution-tier-running {
+  border-color: var(--color-accent, #22d3ee);
+}
+
+/* Nodes List */
+.execution-nodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.execution-node {
+  background: var(--color-bg-primary, rgba(26, 26, 28, 0.97));
+  border-radius: var(--radius-sm, 8px);
+  padding: 12px;
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.execution-node-info {
+  flex: 1;
+}
+
+.execution-node-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.execution-node-icon {
+  font-size: 16px;
+  min-width: 20px;
+}
+
+.execution-node-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text, #fff);
+}
+
+.execution-node-running .execution-node-name {
+  color: var(--color-accent, #22d3ee);
+}
+
+.execution-node-failed .execution-node-name {
+  color: var(--color-error, #f87171);
+}
+
+.execution-node-progress {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.execution-node-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--color-bg-input, rgba(0, 0, 0, 0.25));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.execution-node-progress-fill {
+  height: 100%;
+  background: var(--color-accent, #22d3ee);
+  border-radius: 2px;
+}
+
+.execution-node-progress-text {
+  font-size: 11px;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  min-width: 30px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.execution-node-error {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 6px 8px;
+  background: var(--color-error-subtle, rgba(248, 113, 113, 0.15));
+  border-radius: 4px;
+}
+
+.execution-error-icon {
+  font-size: 12px;
+}
+
+.execution-error-text {
+  font-size: 11px;
+  color: var(--color-error, #f87171);
+}
+
+/* Node Controls */
+.execution-node-controls {
+  display: flex;
+  gap: 6px;
+  margin-left: 12px;
+}
+
+.execution-node-btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  border-radius: var(--radius-xs, 4px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-ui);
+  white-space: nowrap;
+}
+
+.execution-node-btn:hover {
+  background: var(--color-bg-hover, rgba(255, 255, 255, 0.08));
+}
+
+.execution-node-btn.retry {
+  color: var(--color-accent, #22d3ee);
+  border-color: var(--color-accent, #22d3ee);
+}
+
+.execution-node-btn.retry:hover {
+  background: var(--color-accent-subtle, rgba(34, 211, 238, 0.15));
+}
+
+.execution-node-btn.skip {
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+}
+
+/* Global Error */
+.execution-global-error {
+  margin: 24px 32px;
+  padding: 16px;
+  background: var(--color-error-subtle, rgba(248, 113, 113, 0.15));
+  border: 1px solid var(--color-error, #f87171);
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  gap: 12px;
+}
+
+.execution-global-error-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.execution-global-error h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-error, #f87171);
+  margin: 0 0 4px 0;
+}
+
+.execution-global-error p {
+  font-size: 12px;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Footer */
+.execution-footer {
+  padding: 16px 32px;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.execution-btn-primary {
+  padding: 10px 20px;
+  background: var(--color-accent, #22d3ee);
+  color: #1a1a1a;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-weight: 600;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.execution-btn-primary:hover {
+  background: var(--color-accent-hover, #67e8f9);
+  transform: translateY(-2px);
+}
+
+/* Light theme overrides */
+.theme-light .execution-status-panel {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .execution-status-header,
+.theme-light .execution-status-controls {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .execution-status-title h2 {
+  color: #1a1a1a;
+}
+
+.theme-light .execution-progress-section {
+  background: rgba(240, 240, 242, 0.8);
+}
+
+.theme-light .execution-tier {
+  background: rgba(240, 240, 242, 0.8);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .execution-node {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 600px) {
+  .execution-status-panel {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+
+  .execution-action-buttons {
+    flex-direction: column;
+  }
+
+  .execution-node-controls {
+    flex-direction: column;
+  }
+}
