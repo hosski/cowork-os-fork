@@ -1,7 +1,19 @@
 import { execFile as execFileCallback } from "child_process";
 import { promisify } from "util";
+import { existsSync } from "fs";
 
 const execFile = promisify(execFileCallback);
+
+// Resolve tesseract binary — Electron doesn't inherit shell PATH on macOS
+const TESSERACT_BINARY = (() => {
+  const candidates = [
+    "/opt/homebrew/bin/tesseract", // Apple Silicon brew
+    "/usr/local/bin/tesseract",    // Intel brew
+    "/usr/bin/tesseract",          // system
+    "tesseract",                   // fallback: hope it's in PATH
+  ];
+  return candidates.find((p) => p === "tesseract" || existsSync(p)) ?? "tesseract";
+})();
 
 const OCR_TIMEOUT_MS = 12_000;
 const MAX_IMAGE_OCR_SIZE = 8 * 1024 * 1024;
@@ -38,7 +50,7 @@ const isTesseractInstalled = async (): Promise<boolean> => {
   ocrBinaryChecked = true;
   ocrBinaryCheckedAt = now;
   try {
-    await execFile("tesseract", ["--version"]);
+    await execFile(TESSERACT_BINARY, ["--version"]);
     isOcrBinaryAvailable = true;
     return true;
   } catch {
@@ -76,7 +88,7 @@ const runOcrFromImagePath = async (imagePath: string, maxChars: number): Promise
 
   try {
     const { stdout } = await execFile(
-      "tesseract",
+      TESSERACT_BINARY,
       [imagePath, "stdout", "-l", TESSERACT_LANGUAGE_DEFAULT],
       {
         timeout: OCR_TIMEOUT_MS,
@@ -108,6 +120,7 @@ export {
   OCR_TIMEOUT_MS,
   OCR_SUPPORTED_IMAGE_EXTENSIONS,
   TESSERACT_LANGUAGE_DEFAULT,
+  TESSERACT_BINARY,
   resolveImageOcrChars,
   runOcrFromImagePath,
   sanitizeOcrOutput,

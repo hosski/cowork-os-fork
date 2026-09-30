@@ -342,7 +342,7 @@ export type MCPClientEvent =
 // ==================== MCP Registry Types ====================
 
 // Installation method for MCP servers
-export type MCPInstallMethod = "npm" | "pip" | "binary" | "docker" | "manual";
+export type MCPInstallMethod = "npm" | "pip" | "binary" | "docker" | "manual" | "local";
 
 // Registry entry for an MCP server
 export interface MCPRegistryEntry {

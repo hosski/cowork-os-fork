@@ -1263,7 +1263,7 @@ function getConnectorEntries(): MCPRegistryEntry[] {
       homepage: "https://github.com/CoWork-OS/CoWork-OS",
       repository: "https://github.com/CoWork-OS/CoWork-OS",
       license: "MIT",
-      installMethod: "manual",
+      installMethod: "local",
       transport: "stdio",
       defaultCommand: comfyuiCommand.command,
       defaultArgs: comfyuiCommand.args,
@@ -1287,7 +1287,6 @@ function getConnectorEntries(): MCPRegistryEntry[] {
       category: "creative",
       verified: true,
     },
-    // --- npm-based connectors ---
     {
       id: "miro",
       name: "Miro",

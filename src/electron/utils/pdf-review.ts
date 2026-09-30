@@ -3,10 +3,12 @@ import * as os from "os";
 import * as path from "path";
 import { execFile as execFileCallback } from "child_process";
 import { promisify } from "util";
+import { existsSync } from "fs";
 import { parsePdfBuffer } from "./pdf-parser";
 import {
   OCR_TIMEOUT_MS,
   TESSERACT_LANGUAGE_DEFAULT,
+  TESSERACT_BINARY,
   isTesseractInstalled,
   sanitizeOcrOutput,
 } from "../ipc/image-viewer-ocr";
@@ -188,7 +190,7 @@ async function runPdfPageOcr(imagePath: string): Promise<string | null> {
 
   try {
     const { stdout } = await execFile(
-      "tesseract",
+      TESSERACT_BINARY,
       [imagePath, "stdout", "-l", TESSERACT_LANGUAGE_DEFAULT],
       {
         timeout: OCR_TIMEOUT_MS,

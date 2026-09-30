@@ -90,8 +90,17 @@ import { AutomationRunOutcomeRepository } from "./automation/automation-outcome-
 import { AutomationOutcomeService } from "./automation/AutomationOutcomeService";
 import { RecurringApprovalService } from "./security/recurring-approval-repository-facades";
 import { ProactiveSuggestionsService } from "./agent/ProactiveSuggestionsService";
-import { AgentDaemon } from "./agent/daemon";
-import { approvalPromptsDisabled } from "./agent/approval-policy";
+import { AgentDaemon } from './agent/daemon';
+import { approvalPromptsDisabled } from './agent/approval-policy';
+import { getGraftIndexer } from './graft/GraftSymbolIndexer';
+import { OpenVikingGraftIndexer } from './graft/OpenVikingGraftIndexer';
+import { graftContextTool, handleGraftContextSearch } from './graft/GraftContextTool';
+import {
+  buildMissionControlBrief,
+  listMissionControlItems,
+  getMissionControlItemEvidence,
+} from './mission-control/MissionControlDataProvider';
+import type { TaskStoreProxy } from './mission-control/MissionControlDataProvider';
 
 import { CoreMemoryCandidateService } from "./core/CoreMemoryCandidateService";
 
@@ -243,6 +252,8 @@ import { HooksSettingsManager } from "./hooks/settings";
 import { WebAccessServer } from "./web-server/WebAccessServer";
 import { DEFAULT_WEB_ACCESS_CONFIG, type WebAccessConfig } from "./web-server/types";
 import { setupWebAccessHandlers } from "./ipc/web-access-handlers";
+import { registerBernsteinHandlers } from "./ipc/bernstein-handlers";
+import { registerGenerateHandlers } from "./ipc/generate-handlers";
 import {
   ManagedAccountManager,
   type ManagedAccountStatus,
@@ -1656,10 +1667,32 @@ if (isMacSafeStorageMigrationWorker) {
       const logPhase = (name: string, phaseStartedAt: number): void => {
         logger.debug(`Startup phase "${name}" completed in ${Date.now() - phaseStartedAt} ms`);
       };
+      
+      // Defer graft indexing to background (don't block startup)
       const deferredStartupTasks: Array<{
         name: string;
         task: () => Promise<void>;
       }> = [];
+      
+      // Add graft indexing as deferred task
+      deferredStartupTasks.push({
+        name: "graft_symbol_indexing",
+        task: async () => {
+          const graftStartedAt = Date.now();
+          const graftIndexer = getGraftIndexer();
+          await graftIndexer.initialize();
+          logPhase("graft_indexing", graftStartedAt);
+          
+          // Index symbols to OpenViking for semantic search
+          const vikingIndexStartedAt = Date.now();
+          const vikingIndexer = new OpenVikingGraftIndexer();
+          const indexResult = await vikingIndexer.indexSymbols(graftIndexer.getAllSymbols());
+          if (!indexResult.error) {
+            logPhase("openviking_graft_indexing", vikingIndexStartedAt);
+          }
+        },
+      });
+      
       const startupQuietMode = isStartupQuietMode();
       if (startupQuietMode) {
         logger.info("Startup quiet mode enabled; background autostart is disabled.");
@@ -1720,7 +1753,7 @@ if (isMacSafeStorageMigrationWorker) {
                   "style-src 'self' 'unsafe-inline'; " + // Allow inline styles for React
                   "img-src 'self' data: media: https:; " + // Allow images from self, data URIs, HTTPS, and preview media URLs
                   "font-src 'self' data:; " + // Allow fonts from self and data URIs
-                  "connect-src 'self' https:; " + // Allow API calls to HTTPS endpoints
+                  "connect-src 'self' https: http://127.0.0.1:11234 http://127.0.0.1:11235 http://127.0.0.1:1933 http://127.0.0.1:4789 http://127.0.0.1:8052; " + // Allow API calls to HTTPS, local inference, Executor, and Bernstein
                   "media-src 'self' data: blob: media: https:; " + // Allow inline video previews via blob/data URLs and the media:// protocol
                   "worker-src 'self' blob:; " + // Allow web workers from blob URLs
                   "frame-ancestors 'none'; " + // Prevent embedding in iframes
@@ -3156,45 +3189,31 @@ if (isMacSafeStorageMigrationWorker) {
 
       // Setup Mission Control IPC handlers
       try {
-        if (
-          !heartbeatService ||
-          !coreTraceService ||
-          !coreMemoryDistiller ||
-          !coreFailureMiningService ||
-          !coreFailureClusterService ||
-          !coreEvalCaseService ||
-          !coreHarnessExperimentService ||
-          !coreHarnessExperimentRunner ||
-          !coreLearningsService
-        ) {
-          logger.error("Mission Control handlers skipped: core automation services unavailable");
-        } else {
-          const db = dbManager.getDatabase();
-          const agentRoleRepo = new AgentRoleRepository(db);
-          const taskSubscriptionRepo = new TaskSubscriptionRepository(db);
-          const standupService = new StandupReportService(db);
+        const db = dbManager.getDatabase();
+        const agentRoleRepo = new AgentRoleRepository(db);
+        const taskSubscriptionRepo = new TaskSubscriptionRepository(db);
+        const standupService = new StandupReportService(db);
 
-          setupMissionControlHandlers({
-            db,
-            agentRoleRepo,
-            taskSubscriptionRepo,
-            standupService,
-            heartbeatService,
-            getPlannerService: () => strategicPlannerService,
-            getMainWindow: () => mainWindow,
-            coreTraceService,
-            coreMemoryDistiller,
-            coreFailureMiningService,
-            coreFailureClusterService,
-            coreEvalCaseService,
-            coreHarnessExperimentService,
-            coreHarnessExperimentRunner,
-            coreLearningsService,
-            automationOutcomeService,
-          });
+        setupMissionControlHandlers({
+          db,
+          agentRoleRepo,
+          taskSubscriptionRepo,
+          standupService,
+          heartbeatService: heartbeatService!,
+          getPlannerService: () => strategicPlannerService,
+          getMainWindow: () => mainWindow,
+          coreTraceService: coreTraceService!,
+          coreMemoryDistiller: coreMemoryDistiller!,
+          coreFailureMiningService: coreFailureMiningService!,
+          coreFailureClusterService: coreFailureClusterService!,
+          coreEvalCaseService: coreEvalCaseService!,
+          coreHarnessExperimentService: coreHarnessExperimentService!,
+          coreHarnessExperimentRunner: coreHarnessExperimentRunner!,
+          coreLearningsService: coreLearningsService!,
+          automationOutcomeService,
+        });
 
-          logger.info("Mission Control services initialized");
-        }
+        logger.info("Mission Control services initialized");
       } catch (error) {
         logger.error("Failed to initialize Mission Control:", error);
         // Don't fail app startup if Mission Control init fails
@@ -3944,8 +3963,8 @@ if (isMacSafeStorageMigrationWorker) {
           db,
         );
         setupFileHubHandlers(fileHubService);
-
-        // Web Access
+        registerBernsteinHandlers();
+        registerGenerateHandlers();
         const loadWebAccessSettings = (): WebAccessConfig => {
           try {
             if (!SecureSettingsRepository.isInitialized()) {
@@ -4442,6 +4461,121 @@ if (isMacSafeStorageMigrationWorker) {
     );
 
     // Window control handlers (used by custom title bar buttons on Windows)
+    // Task creation via IPC
+    ipcMain.handle("TASK_CREATE", async (_event, params) => {
+      try {
+        // Inject graft context from pre-indexed symbols
+        let enrichedPrompt = params.prompt;
+        try {
+          const graftIndexer = getGraftIndexer();
+          if (graftIndexer.isIndexed()) {
+            // Get relevant symbols based on prompt keywords
+            const keywords = params.prompt.split(/\s+/).filter((w: string) => w.length > 3).slice(0, 3);
+            const keywordFilter = keywords.length > 0 ? keywords[0].toLowerCase() : undefined;
+            
+            const symbols = graftIndexer.getTopSymbols(15, keywordFilter ? { keyword: keywordFilter } : undefined);
+            
+            if (symbols.length > 0) {
+              const symbolsList = symbols
+                .map(s => `${s.kind}: ${s.name} (${s.path})`)
+                .join('\n');
+              
+              enrichedPrompt = `${params.prompt}\n\n## Code Context (from Graft)\nKey symbols and types in codebase:\n${symbolsList}`;
+            }
+          }
+        } catch (graftErr) {
+          // Graft not available; proceed without context silently
+        }
+        
+        const task = await agentDaemon.createTask({
+          title: params.title,
+          prompt: enrichedPrompt,
+          workspaceId: params.workspaceId || "default",
+          ...(params.assignedAgentRoleId ? { taskOverrides: { assignedAgentRoleId: params.assignedAgentRoleId } } : {}),
+        });
+        return task;
+      } catch (err) {
+        return {
+          error: {
+            message: err instanceof Error ? err.message : String(err),
+          },
+        };
+      }
+    });
+
+    // Graft codebase search tool for agents
+    ipcMain.handle("GRAFT_SEARCH", async (_event, params: { intent: string; limit?: number }) => {
+      try {
+        const result = await handleGraftContextSearch(params);
+        return result;
+      } catch (err) {
+        return {
+          success: false,
+          count: 0,
+          query: params.intent,
+          error: err instanceof Error ? err.message : String(err),
+        };
+      }
+    });
+
+    // Mission Control data handlers
+    const taskStore: TaskStoreProxy = {
+      async listTasks(workspaceId?: string | null) {
+        try {
+          // Fetch from daemon's taskRepo (private but accessible via 'as any')
+          const daemon = agentDaemon as any;
+          const taskRepo = daemon.taskRepo;
+          
+          if (!taskRepo) return [];
+          
+          // Get all tasks across all statuses
+          const all = await Promise.all([
+            taskRepo.findByStatus?.(['completed']) ?? [],
+            taskRepo.findByStatus?.(['executing']) ?? [],
+            taskRepo.findByStatus?.(['failed']) ?? [],
+            taskRepo.findByStatus?.(['pending']) ?? [],
+            taskRepo.findByStatus?.(['paused']) ?? [],
+          ]).catch(() => [[], [], [], [], []]);
+          
+          const tasks = all.flat().filter(Boolean);
+          
+          // Filter by workspaceId if provided
+          if (workspaceId && workspaceId !== '__all__') {
+            return tasks.filter((t: any) => t.workspaceId === workspaceId);
+          }
+          
+          return tasks;
+        } catch (err) {
+          console.error('Failed to list tasks:', err);
+          return [];
+        }
+      },
+      async getTask(taskId: string) {
+        try {
+          const daemon = agentDaemon as any;
+          const taskRepo = daemon.taskRepo;
+          if (!taskRepo) return null;
+          return taskRepo.findById?.(taskId) ?? null;
+        } catch (err) {
+          console.error('Failed to get task:', err);
+          return null;
+        }
+      },
+    };
+
+    // Core Harness / Failure analysis handlers (stub for now)
+    ipcMain.handle(IPC_CHANNELS.CORE_FAILURE_LIST, async () => {
+      return [];
+    });
+
+    ipcMain.handle(IPC_CHANNELS.CORE_FAILURE_CLUSTER_LIST, async () => {
+      return [];
+    });
+
+    ipcMain.handle(IPC_CHANNELS.CORE_FAILURE_CLUSTER_REVIEW, async (_event, clusterId: string) => {
+      return null;
+    });
+
     ipcMain.handle(IPC_CHANNELS.WINDOW_MINIMIZE, () => {
       BrowserWindow.getFocusedWindow()?.minimize();
     });

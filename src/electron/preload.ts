@@ -5337,6 +5337,33 @@ contextBridge.exposeInMainWorld("electronAPI", {
       wslDistroName: process.env.WSL_DISTRO_NAME,
       osRelease: os.release(),
     }),
+
+  // Bernstein orchestration
+  invoke: (channel: string, ...args: unknown[]) =>
+    ipcRenderer.invoke(channel, ...args),
+
+  // Execute a DAG/workflow via Bernstein TaskServer
+  executeDAG: (dagJson: unknown) =>
+    ipcRenderer.invoke('bernstein:create-workflow', {
+      name: (dagJson as any)?.title ?? (dagJson as any)?.name ?? 'Workflow',
+      type: (dagJson as any)?.type ?? 'custom',
+      tiers: (dagJson as any)?.tiers ?? [],
+      model: 'heavy',
+    }),
+
+  // ComfyUI generation
+  generateImage: (args: { prompt: string; negativePrompt?: string; seed?: number }) =>
+    ipcRenderer.invoke('generate:image', args),
+  generateVideo: (args: { prompt: string; seed?: number }) =>
+    ipcRenderer.invoke('generate:video', args),
+  generateStatus: (args: { promptId: string }) =>
+    ipcRenderer.invoke('generate:status', args),
+  generateComfyUIHealth: () =>
+    ipcRenderer.invoke('generate:comfyui-health'),
+  generateListWorkflows: () =>
+    ipcRenderer.invoke('generate:list-workflows'),
+  generateRun: (args: { workflowPath: string; prompt: string; negativePrompt?: string; batchSize?: number; seed?: number; referenceImagePath?: string }) =>
+    ipcRenderer.invoke('generate:run', args),
 });
 
 // Type declarations for TypeScript
@@ -8728,6 +8755,14 @@ export interface ElectronAPI {
   windowIsMaximized: () => Promise<boolean>;
   getPlatform: () => string;
   getNativeFrameMode: () => boolean;
+
+  // ComfyUI generation
+  generateImage: (args: { prompt: string; negativePrompt?: string; seed?: number }) => Promise<{ urls: string[]; promptId: string }>;
+  generateVideo: (args: { prompt: string; seed?: number }) => Promise<{ urls: string[]; promptId: string }>;
+  generateStatus: (args: { promptId: string }) => Promise<{ done: boolean; urls: string[]; error?: string }>;
+  generateComfyUIHealth: () => Promise<{ online: boolean }>;
+  generateListWorkflows: () => Promise<Array<{ name: string; filename: string; dir: string; fullPath: string; type: string; needsReferenceImage: boolean }>>;
+  generateRun: (args: { workflowPath: string; prompt: string; negativePrompt?: string; batchSize?: number; seed?: number; referenceImagePath?: string }) => Promise<{ urls: string[]; promptId: string }>;
 }
 
 // Migration status type (for showing one-time notifications after app rename)
@@ -8769,7 +8804,7 @@ export interface TunnelStatusData {
 }
 
 // Voice Mode types (inlined for sandboxed preload)
-export type VoiceProvider = "elevenlabs" | "openai" | "azure" | "local";
+export type VoiceProvider = "elevenlabs" | "openai" | "azure" | "local" | "voicebox";
 export type VoiceInputMode = "push_to_talk" | "voice_activity" | "disabled";
 export type VoiceResponseMode = "auto" | "manual" | "smart";
 

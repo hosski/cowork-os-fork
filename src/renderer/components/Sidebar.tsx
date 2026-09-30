@@ -28,6 +28,7 @@ import {
   Search,
   Server,
   Workflow,
+  Wand2,
   Lightbulb,
   Inbox,
   Users,
@@ -115,6 +116,8 @@ interface SidebarProps {
   botConversationProjections?: Readonly<Record<string, BotConversationRosterProjection>>;
   isBotViewActive?: boolean;
   isAutomationsActive?: boolean;
+  isWorkflowsActive?: boolean;
+  isGenerateActive?: boolean;
   isIdeasActive?: boolean;
   isInboxAgentActive?: boolean;
   isAgentsActive?: boolean;
@@ -125,6 +128,8 @@ interface SidebarProps {
   completionAttentionTaskIds?: string[];
   onSelectTask: (id: string | null) => void;
   onOpenAutomations?: () => void;
+  onOpenWorkflows?: () => void;
+  onOpenGenerate?: () => void;
   onOpenIdeas?: () => void;
   onOpenInboxAgent?: () => void;
   onOpenAgents?: () => void;
@@ -894,6 +899,8 @@ function SidebarComponent({
   botConversationProjections,
   isBotViewActive = false,
   isAutomationsActive = false,
+  isWorkflowsActive = false,
+  isGenerateActive = false,
   isIdeasActive = false,
   isInboxAgentActive = false,
   isAgentsActive = false,
@@ -903,6 +910,8 @@ function SidebarComponent({
   completionAttentionTaskIds = [],
   onSelectTask,
   onOpenAutomations,
+  onOpenWorkflows,
+  onOpenGenerate,
   onOpenIdeas,
   onOpenInboxAgent,
   onOpenAgents,
@@ -3059,6 +3068,50 @@ function SidebarComponent({
                   <Workflow size={16} strokeWidth={2} style={{ display: "block" }} />
                 </span>
                 <span>Automations</span>
+              </span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            className={`new-task-btn cli-new-task-btn cli-action-btn sidebar-home-btn sidebar-nav-item ${isWorkflowsActive ? "active" : ""}`}
+            onClick={onOpenWorkflows}
+            aria-pressed={isWorkflowsActive}
+            title="Workflows"
+          >
+            <span className="cli-btn-text">
+              <span className="terminal-only">workflows</span>
+              <span className="modern-only cli-new-task-modern-label">
+                <span
+                  className="sidebar-home-btn-icon"
+                  aria-hidden="true"
+                  style={{ display: "flex" }}
+                >
+                  <GitBranch size={16} strokeWidth={2} style={{ display: "block" }} />
+                </span>
+                <span>Workflows</span>
+              </span>
+            </span>
+          </button>
+
+          <button
+            type="button"
+            className={`new-task-btn cli-new-task-btn cli-action-btn sidebar-home-btn sidebar-nav-item ${isGenerateActive ? "active" : ""}`}
+            onClick={onOpenGenerate}
+            aria-pressed={isGenerateActive}
+            title="Generate"
+          >
+            <span className="cli-btn-text">
+              <span className="terminal-only">generate</span>
+              <span className="modern-only cli-new-task-modern-label">
+                <span
+                  className="sidebar-home-btn-icon"
+                  aria-hidden="true"
+                  style={{ display: "flex" }}
+                >
+                  <Wand2 size={16} strokeWidth={2} style={{ display: "block" }} />
+                </span>
+                <span>Generate</span>
               </span>
             </span>
           </button>

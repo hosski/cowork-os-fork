@@ -296,7 +296,7 @@ export function SkillsSettings({ onSkillSelect }: SkillsSettingsProps) {
                                     { enabled: e.target.checked },
                                   );
                                   setSkills((prev) =>
-                                    prev.map((s) => (s.id === updated.id ? updated : s)),
+                                    prev.map((s) => (updated && s.id === updated.id ? updated : s)),
                                   );
                                 } catch (err) {
                                   console.error("Failed to toggle skill:", err);

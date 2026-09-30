@@ -4071,24 +4071,24 @@ function renderAgentsStyles() {
     <style>{`
       .agents-panel,
       .agents-studio {
-        --agents-bg: #f6f5f1;
-        --agents-surface: rgba(255, 255, 255, 0.82);
-        --agents-surface-strong: #ffffff;
-        --agents-border: rgba(15, 23, 42, 0.08);
-        --agents-border-strong: rgba(15, 23, 42, 0.12);
-        --agents-text: #101828;
-        --agents-muted: #667085;
-        --agents-subtle: #98a2b3;
-        --agents-accent: #1570ef;
-        --agents-accent-soft: rgba(21, 112, 239, 0.12);
-        --agents-shadow: 0 24px 64px -34px rgba(15, 23, 42, 0.22);
+        --agents-bg: var(--color-bg-primary, #1a1a1c);
+        --agents-surface: var(--color-bg-elevated, rgba(45, 45, 48, 0.9));
+        --agents-surface-strong: var(--color-bg-secondary, rgba(60, 60, 65, 0.6));
+        --agents-border: var(--color-border-subtle, rgba(255, 255, 255, 0.06));
+        --agents-border-strong: var(--color-border, rgba(255, 255, 255, 0.12));
+        --agents-text: var(--color-text-primary, #ffffff);
+        --agents-muted: var(--color-text-secondary, rgba(255, 255, 255, 0.7));
+        --agents-subtle: var(--color-text-muted, rgba(255, 255, 255, 0.45));
+        --agents-accent: var(--color-accent, #22d3ee);
+        --agents-accent-soft: var(--color-accent-subtle, rgba(34, 211, 238, 0.15));
+        --agents-shadow: 0 24px 64px -34px rgba(0, 0, 0, 0.5);
         padding: 28px;
         color: var(--agents-text);
         height: 100%;
         overflow-y: auto;
         background:
-          radial-gradient(circle at top right, rgba(34, 197, 246, 0.14), transparent 24%),
-          linear-gradient(180deg, #fcfbf8 0%, var(--agents-bg) 100%);
+          radial-gradient(circle at top right, var(--color-accent-subtle, rgba(34, 211, 238, 0.08)), transparent 24%),
+          linear-gradient(180deg, var(--color-bg-elevated, rgba(45, 45, 48, 0.9)) 0%, var(--agents-bg) 100%);
         font-family:
           "SF Pro Display",
           "SF Pro Text",
@@ -4098,7 +4098,7 @@ function renderAgentsStyles() {
       }
       .agents-create-screen {
         min-height: 100%;
-        background: #ffffff;
+        background: var(--agents-bg);
       }
       .agents-panel-loading,
       .agents-empty-state {
@@ -4112,7 +4112,7 @@ function renderAgentsStyles() {
         height: 100%;
         min-height: 0;
         overflow: hidden;
-        background: #ffffff;
+        background: var(--agents-bg);
       }
       .agents-agent-back {
         width: fit-content;
@@ -4143,7 +4143,7 @@ function renderAgentsStyles() {
         justify-content: space-between;
         gap: 18px;
         padding: 12px 0;
-        background: rgba(255, 255, 255, 0.94);
+        background: var(--color-bg-elevated, rgba(30,30,34,0.94));
         backdrop-filter: blur(12px);
         color: var(--agents-subtle);
         font-size: 0.92rem;
@@ -4182,8 +4182,8 @@ function renderAgentsStyles() {
         justify-content: center;
         border-radius: 24px;
         background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.6)),
-          rgba(255, 255, 255, 0.82);
+          linear-gradient(180deg, var(--color-bg-elevated, rgba(45,45,48,0.94)), var(--color-bg-secondary, rgba(60,60,65,0.6))),
+          var(--color-bg-glass, rgba(255,255,255,0.05));
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.95),
           0 18px 38px -28px rgba(15, 23, 42, 0.3);
@@ -4234,15 +4234,15 @@ function renderAgentsStyles() {
         gap: 8px;
         padding: 8px 13px;
         border-radius: 999px;
-        border: 1px solid rgba(15, 23, 42, 0.1);
-        background: #ffffff;
+        border: 1px solid var(--agents-border-strong);
+        background: var(--agents-surface);
         color: var(--agents-text);
         font-size: 0.92rem;
         font-weight: 600;
       }
       .agents-agent-action-button.primary {
-        border-color: #111827;
-        background: #111827;
+        border-color: var(--color-accent);
+        background: var(--color-accent);
         color: #ffffff;
       }
       .agents-agent-action-button:disabled {
@@ -4287,8 +4287,8 @@ function renderAgentsStyles() {
         gap: 5px;
         padding: 18px;
         border-radius: 16px;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        background: #ffffff;
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
         color: var(--agents-text);
         text-align: left;
       }
@@ -4315,8 +4315,8 @@ function renderAgentsStyles() {
         gap: 10px;
         padding: 18px 16px;
         border-radius: 14px;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        background: #ffffff;
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
         color: var(--agents-text);
         text-align: center;
       }
@@ -4341,8 +4341,8 @@ function renderAgentsStyles() {
         gap: 16px;
         padding: 14px 16px;
         border-radius: 14px;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        background: #ffffff;
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
       }
       .agents-agent-connect-row div {
         display: grid;
@@ -4360,8 +4360,8 @@ function renderAgentsStyles() {
         min-height: 34px;
         padding: 0 14px;
         border-radius: 999px;
-        background: #111827;
-        color: #ffffff;
+        background: var(--color-accent, #22d3ee);
+        color: var(--color-bg-primary, #0f1117);
       }
       .agents-agent-resource-list {
         display: grid;
@@ -4392,8 +4392,8 @@ function renderAgentsStyles() {
         max-width: 100%;
         padding: 7px 12px;
         border-radius: 999px;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        background: #ffffff;
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
         color: var(--agents-text);
         white-space: nowrap;
       }
@@ -4467,8 +4467,8 @@ function renderAgentsStyles() {
         height: 24px;
         place-items: center;
         border-radius: 999px;
-        background: #111827;
-        color: #ffffff;
+        background: var(--color-accent, #22d3ee);
+        color: var(--color-bg-primary, #0f1117);
         font-size: 0.78rem;
         font-weight: 650;
       }
@@ -4538,8 +4538,8 @@ function renderAgentsStyles() {
         margin-top: 38px;
         padding: 12px 12px 12px 22px;
         border-radius: 999px;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.94),
           0 18px 40px -30px rgba(15, 23, 42, 0.22);
@@ -4574,8 +4574,8 @@ function renderAgentsStyles() {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: #111827;
-        color: #ffffff;
+        background: var(--color-accent, #22d3ee);
+        color: var(--color-bg-primary, #0f1117);
         cursor: pointer;
         box-shadow: 0 12px 24px -18px rgba(17, 24, 39, 0.42);
       }
@@ -4593,9 +4593,9 @@ function renderAgentsStyles() {
         width: min(100%, 880px);
         margin-top: 32px;
         border-radius: 18px;
-        border: 1px solid rgba(15, 23, 42, 0.1);
-        background: #ffffff;
-        box-shadow: 0 18px 56px -38px rgba(15, 23, 42, 0.32);
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
+        box-shadow: 0 18px 56px -38px rgba(0, 0, 0, 0.5);
         text-align: left;
       }
       .agents-builder-progress-card {
@@ -4638,7 +4638,7 @@ function renderAgentsStyles() {
         align-items: center;
         justify-content: center;
         border-radius: 16px;
-        background: #f8fafc;
+        background: var(--color-bg-secondary, rgba(60,60,65,0.6));
         border: 1px solid rgba(15, 23, 42, 0.08);
       }
       .agents-builder-plan-header span {
@@ -4668,7 +4668,7 @@ function renderAgentsStyles() {
         min-height: 30px;
         padding: 0 10px;
         border-radius: 999px;
-        background: #f2f4f7;
+        background: var(--color-bg-secondary, rgba(60,60,65,0.6));
         color: var(--agents-text);
         font-size: 0.86rem;
       }
@@ -4731,8 +4731,8 @@ function renderAgentsStyles() {
         min-height: 72px;
         padding: 12px;
         border-radius: 14px;
-        border: 1px solid rgba(15, 23, 42, 0.09);
-        background: #ffffff;
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
         color: var(--agents-text);
         text-align: left;
       }
@@ -4767,8 +4767,8 @@ function renderAgentsStyles() {
         min-height: 34px;
         padding: 0 14px;
         border-radius: 999px;
-        background: #111827;
-        color: #ffffff;
+        background: var(--color-accent, #22d3ee);
+        color: var(--color-bg-primary, #0f1117);
       }
       .agents-builder-starters > div {
         display: flex;
@@ -4779,8 +4779,8 @@ function renderAgentsStyles() {
         min-height: 34px;
         padding: 0 12px;
         border-radius: 999px;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        background: #ffffff;
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
         color: var(--agents-text);
       }
       .agents-builder-plan-actions {
@@ -4815,7 +4815,7 @@ function renderAgentsStyles() {
         cursor: pointer;
       }
       .agents-create-screen-row:hover {
-        background: rgba(255, 255, 255, 0.42);
+        background: var(--color-bg-hover, rgba(255,255,255,0.08));
       }
       .agents-create-screen-row-icon {
         display: inline-flex;
@@ -4836,7 +4836,7 @@ function renderAgentsStyles() {
       .agents-empty-state {
         border: 1px dashed var(--agents-border-strong);
         border-radius: 28px;
-        background: rgba(255, 255, 255, 0.48);
+        background: var(--agents-surface);
       }
       .agents-inline-permission-note {
         margin: 0 0 16px;
@@ -4899,11 +4899,10 @@ function renderAgentsStyles() {
         justify-content: center;
         border-radius: 22px;
         background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.55)),
-          rgba(255, 255, 255, 0.76);
+          linear-gradient(180deg, var(--color-bg-elevated, rgba(55,55,60,0.9)), var(--color-bg-secondary, rgba(45,45,50,0.8)));
         box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.88),
-          0 14px 34px -24px rgba(15, 23, 42, 0.35);
+          inset 0 1px 0 rgba(255, 255, 255, 0.12),
+          0 14px 34px -24px rgba(0, 0, 0, 0.5);
         color: var(--agents-accent);
       }
       .agents-create-badge {
@@ -4937,8 +4936,8 @@ function renderAgentsStyles() {
         min-height: 80px;
         padding: 10px 12px 10px 18px;
         border-radius: 999px;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.92),
           0 16px 36px -28px rgba(15, 23, 42, 0.22);
@@ -4981,7 +4980,7 @@ function renderAgentsStyles() {
         border: 1px solid var(--agents-border);
         border-radius: 999px;
         padding: 12px 16px;
-        background: rgba(255, 255, 255, 0.88);
+        background: var(--agents-surface);
         color: var(--agents-text);
         cursor: pointer;
         transition:
@@ -4994,8 +4993,8 @@ function renderAgentsStyles() {
       }
       .agents-preset-chip:hover {
         transform: translateY(-1px);
-        border-color: rgba(21, 112, 239, 0.22);
-        background: rgba(255, 255, 255, 0.96);
+        border-color: var(--color-accent-subtle);
+        background: var(--agents-surface-strong);
       }
       .agents-showcase {
         position: relative;
@@ -5088,10 +5087,10 @@ function renderAgentsStyles() {
         border-radius: 999px;
         border: 0;
         cursor: pointer;
-        background: rgba(255, 255, 255, 0.28);
+        background: var(--color-text-muted);
       }
       .agents-showcase-dot.active {
-        background: rgba(255, 255, 255, 0.96);
+        background: var(--color-text-primary);
       }
       .agents-showcase-visual {
         min-height: 0;
@@ -5107,8 +5106,8 @@ function renderAgentsStyles() {
         align-self: flex-end;
         padding: 14px 22px;
         border-radius: 22px;
-        background: rgba(247, 251, 255, 0.96);
-        color: #111827;
+        background: var(--agents-surface-strong);
+        color: var(--agents-text);
         box-shadow: 0 14px 32px -24px rgba(15, 23, 42, 0.42);
         max-width: 360px;
         font-size: 1rem;
@@ -5116,14 +5115,12 @@ function renderAgentsStyles() {
       }
       .agents-showcase-core-card,
       .agents-showcase-side-card {
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.88)),
-          rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--agents-border);
+        background: var(--agents-surface);
         color: var(--agents-text);
         box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.4),
-          0 28px 48px -32px rgba(15, 23, 42, 0.42);
+          inset 0 1px 0 rgba(255, 255, 255, 0.12),
+          0 28px 48px -32px rgba(0, 0, 0, 0.5);
       }
       .agents-showcase-core-card {
         display: flex;
@@ -5162,6 +5159,8 @@ function renderAgentsStyles() {
         text-align: left;
         padding: 18px 20px;
         border-radius: 22px;
+        background: var(--agents-surface);
+        border: 1px solid var(--agents-border);
         cursor: pointer;
         align-self: flex-end;
         transition:
@@ -5251,13 +5250,13 @@ function renderAgentsStyles() {
         height: 52px;
         justify-content: center;
         padding: 0;
-        background: #111827;
-        color: #ffffff;
+        background: var(--color-accent, #22d3ee);
+        color: var(--color-bg-primary, #0f1117);
         box-shadow: 0 12px 24px -18px rgba(17, 24, 39, 0.42);
       }
       .agents-secondary-btn,
       .agents-link-card {
-        background: rgba(255, 255, 255, 0.84);
+        background: var(--agents-surface);
         color: var(--agents-text);
         border: 1px solid var(--agents-border);
       }
@@ -5286,7 +5285,7 @@ function renderAgentsStyles() {
         padding: 14px;
         border-radius: 18px;
         border: 1px solid var(--agents-border);
-        background: rgba(255, 255, 255, 0.4);
+        background: var(--agents-surface);
       }
       .agents-error-banner {
         margin: 0 0 16px;
@@ -5374,8 +5373,8 @@ function renderAgentsStyles() {
         padding: 14px 16px;
         border-radius: 20px;
         border: 1px solid var(--agents-border);
-        background: rgba(255, 255, 255, 0.92);
-        box-shadow: 0 14px 28px -24px rgba(15, 23, 42, 0.18);
+        background: var(--agents-surface);
+        box-shadow: 0 14px 28px -24px rgba(0,0,0,0.4);
       }
       .agents-studio-test-bubble.user {
         margin-left: auto;
@@ -5418,7 +5417,7 @@ function renderAgentsStyles() {
         padding: 16px 18px;
         border-radius: 22px;
         border: 1px solid var(--agents-border);
-        background: rgba(255, 255, 255, 0.74);
+        background: var(--agents-surface);
       }
       .agents-studio-test-summary-card span,
       .agents-studio-test-workpaper span {
@@ -5448,8 +5447,8 @@ function renderAgentsStyles() {
         padding: 18px 20px;
         border-radius: 24px;
         border: 1px solid var(--agents-border);
-        background: rgba(255, 255, 255, 0.72);
-        box-shadow: 0 18px 32px -28px rgba(15, 23, 42, 0.18);
+        background: var(--agents-surface);
+        box-shadow: 0 18px 32px -28px rgba(0,0,0,0.4);
       }
       .agents-metric-pill span,
       .agents-kpi span {
@@ -5484,7 +5483,7 @@ function renderAgentsStyles() {
       .agents-surface-preview-card {
         padding: 14px 16px;
         border-radius: 18px;
-        background: rgba(255, 255, 255, 0.56);
+        background: var(--agents-surface);
         border: 1px solid var(--agents-border);
       }
       .agents-approval-preview-card strong,
@@ -5646,7 +5645,7 @@ function renderAgentsStyles() {
       .agents-tab {
         border: 1px solid transparent;
         background: transparent;
-        color: var(--agents-muted);
+        color: var(--color-text-secondary, rgba(255,255,255,0.6));
         padding: 8px 14px;
         border-radius: 999px;
         cursor: pointer;
@@ -5659,12 +5658,12 @@ function renderAgentsStyles() {
       }
       .agents-tab.active {
         color: var(--agents-text);
-        border-color: rgba(17, 24, 39, 0.58);
-        background: #ffffff;
+        border-color: var(--color-accent);
+        background: var(--color-accent-subtle);
         box-shadow: none;
       }
       .agents-tab.subtle {
-        background: rgba(255, 255, 255, 0.64);
+        background: var(--color-bg-hover);
       }
       .agents-detail-grid,
       .agents-studio-grid {
@@ -5685,7 +5684,7 @@ function renderAgentsStyles() {
         text-align: left;
         border-radius: 18px;
         border: 1px solid var(--agents-border);
-        background: rgba(255, 255, 255, 0.86);
+        background: var(--agents-surface);
         box-shadow: none;
         transition:
           transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
@@ -5693,7 +5692,7 @@ function renderAgentsStyles() {
       }
       .agents-library-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 18px 44px -34px rgba(15, 23, 42, 0.28);
+        box-shadow: 0 18px 44px -34px rgba(0, 0, 0, 0.5);
       }
       .agents-library-card.legacy {
         border-style: dashed;
@@ -5711,7 +5710,11 @@ function renderAgentsStyles() {
       .agents-library-card-icon {
         width: 44px;
         height: 44px;
-        border-radius: 16px;
+        border-radius: 15px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-accent-subtle, rgba(34, 211, 238, 0.15));
       }
       .agents-library-card-status {
         border-radius: 999px;
@@ -5730,7 +5733,8 @@ function renderAgentsStyles() {
         font-size: 1.16rem;
         line-height: 1.15;
         letter-spacing: 0;
-        font-weight: 500;
+        font-weight: 700;
+        color: var(--color-text-primary, #ffffff);
       }
       .agents-library-card-copy p {
         margin: 9px 0 0;
@@ -5769,8 +5773,8 @@ function renderAgentsStyles() {
         padding: 18px;
         border-radius: 18px;
         background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.84)),
-          radial-gradient(circle at top left, color-mix(in srgb, var(--template-accent), transparent 78%), transparent 42%);
+          linear-gradient(180deg, var(--color-bg-elevated, rgba(45,45,50,0.9)), var(--color-bg-secondary, rgba(60,60,65,0.8))),
+          radial-gradient(circle at top left, color-mix(in srgb, var(--template-accent), transparent 92%), transparent 62%);
         color: inherit;
         text-align: left;
         border: 1px solid var(--agents-border);
@@ -5805,7 +5809,7 @@ function renderAgentsStyles() {
         border: 1px solid rgba(15, 23, 42, 0.1);
         border-radius: 999px;
         padding: 2px 7px;
-        background: rgba(255, 255, 255, 0.68);
+        background: var(--color-bg-secondary);
         color: var(--agents-muted);
         font-size: 0.68rem;
         line-height: 1.2;
@@ -5895,7 +5899,7 @@ function renderAgentsStyles() {
       .agents-detail-meta div {
         padding: 14px;
         border-radius: 18px;
-        background: rgba(255, 255, 255, 0.58);
+        background: var(--agents-surface);
         border: 1px solid var(--agents-border);
       }
       .agents-detail-meta-secondary {
@@ -5912,7 +5916,7 @@ function renderAgentsStyles() {
         margin-bottom: 14px;
         padding: 14px 16px;
         border-radius: 18px;
-        background: rgba(255, 255, 255, 0.6);
+        background: var(--agents-surface);
         border: 1px solid var(--agents-border);
       }
       .agents-note-card strong {
@@ -5965,7 +5969,7 @@ function renderAgentsStyles() {
         width: 100%;
         border-radius: 16px;
         border: 1px solid var(--agents-border);
-        background: rgba(255, 255, 255, 0.88);
+        background: var(--color-bg-input, rgba(0,0,0,0.25));
         color: var(--agents-text);
         padding: 11px 12px;
         font: inherit;
@@ -5981,7 +5985,7 @@ function renderAgentsStyles() {
       .agents-chip {
         padding: 10px 12px;
         border-radius: 16px;
-        background: rgba(255, 255, 255, 0.7);
+        background: var(--agents-surface);
         border: 1px solid var(--agents-border);
         color: var(--agents-muted);
         text-align: left;
@@ -6022,7 +6026,7 @@ function renderAgentsStyles() {
         min-width: 0;
         padding: 14px;
         border-radius: 20px;
-        background: rgba(255, 255, 255, 0.6);
+        background: var(--agents-surface);
         border: 1px solid var(--agents-border);
       }
       .agents-runtime-surface-head {
@@ -6111,7 +6115,7 @@ function renderAgentsStyles() {
         max-width: 100%;
         padding: 5px 9px;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.82);
+        background: var(--agents-surface);
         border: 1px solid var(--agents-border);
         font-size: 12px;
         line-height: 1.2;
@@ -6136,15 +6140,15 @@ function renderAgentsStyles() {
         padding: 16px 18px;
         border-radius: 22px;
         border: 1px solid var(--agents-border);
-        background: rgba(255, 255, 255, 0.72);
-        box-shadow: 0 16px 28px -26px rgba(15, 23, 42, 0.14);
+        background: var(--agents-surface);
+        box-shadow: 0 16px 28px -26px rgba(0,0,0,0.4);
       }
       .agents-conversion-card {
         margin-bottom: 20px;
       }
       .agents-section-card,
       .agents-hero-card {
-        background: rgba(255, 255, 255, 0.86);
+        background: var(--agents-surface);
       }
       .agents-hero-card {
         border-radius: 28px;
@@ -6157,7 +6161,7 @@ function renderAgentsStyles() {
       .agents-approval-preview-card select {
         border-radius: 14px;
         border: 1px solid var(--agents-border);
-        background: #ffffff;
+        background: var(--color-bg-input);
         color: var(--agents-text);
         padding: 10px 12px;
         font: inherit;

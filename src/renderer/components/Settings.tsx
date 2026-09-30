@@ -8025,7 +8025,7 @@ export function Settings({
                   },
                   {
                     label: "Qwen3.6 35B A3B · ~21 GB",
-                    model: "mlx-community/Qwen3.6-35B-A3B-4bit-DWQ",
+                    model: "symrex/Qwen3.6-35B-A3B-Uncensored-Genesis-Hermes-V13-dequantized-oQ4e-mtp",
                   },
                 ].map(({ label, model }) => (
                   <button

@@ -13546,7 +13546,7 @@ export const DEFAULT_PERSONALITY_CONFIG_V2: PersonalityConfigV2 = {
 /**
  * Voice provider options
  */
-export type VoiceProvider = "elevenlabs" | "openai" | "azure" | "local";
+export type VoiceProvider = "elevenlabs" | "openai" | "azure" | "local" | "voicebox";
 
 export type SystemVoiceAdapter = "macos-say" | "windows-sapi" | "espeak" | null;
 
