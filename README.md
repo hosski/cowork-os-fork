@@ -89,6 +89,22 @@ Generated 2026-09-29T09:47:25.341Z. These are public GitHub/npm adoption signals
 Generated 2026-09-30T09:40:11.434Z. These are public GitHub/npm adoption signals, not active-user or in-app telemetry numbers. All-time values are shown only where the source API provides lifetime coverage. [Full report](docs/public-adoption-stats.md).
 <!-- COWORK_PUBLIC_ADOPTION_STATS_END -->
 
+<!-- COWORK_PUBLIC_ADOPTION_STATS_START -->
+### Public Adoption Signals
+
+| Signal | Current | All time |
+|---|---:|---:|
+| GitHub stars | 466 | n/a |
+| GitHub forks | 82 | n/a |
+| Installer/server downloads | 1,560 | 1,560 |
+| Download delta | +11 | n/a |
+| npm downloads | 254 (last week) | 9,292 |
+| GitHub views, last 14-ish days | unavailable | n/a |
+| GitHub clones, last 14-ish days | unavailable | n/a |
+
+Generated 2026-10-01T10:05:48.857Z. These are public GitHub/npm adoption signals, not active-user or in-app telemetry numbers. All-time values are shown only where the source API provides lifetime coverage. [Full report](docs/public-adoption-stats.md).
+<!-- COWORK_PUBLIC_ADOPTION_STATS_END -->
+
 <p align="center">
   <img src="resources/branding/images/cowork-os-1.webp" alt="CoWork OS home interface" width="700">
 </p>
